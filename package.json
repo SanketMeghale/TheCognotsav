@@ -1,0 +1,43 @@
+{
+  "name": "ceas-tech-fest-2026-–-cognotsav",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently -k \"npm:dev:server\" \"npm:dev:client\"",
+    "dev:client": "vite",
+    "dev:server": "node --watch server/index.mjs",
+    "server": "node server/index.mjs",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "canvas-confetti": "^1.9.3",
+    "concurrently": "^9.2.1",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "lucide-react": "^0.564.0",
+    "nodemailer": "^8.0.3",
+    "pg": "^8.20.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "recharts": "2.12.7",
+    "xlsx": "0.18.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^22.14.0",
+    "@typescript-eslint/eslint-plugin": "^8.56.1",
+    "@typescript-eslint/parser": "^8.56.1",
+    "@vitejs/plugin-react": "^5.0.0",
+    "eslint": "^9.39.3",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.4.0",
+    "typescript": "~5.8.2",
+    "typescript-eslint": "^8.56.1",
+    "vite": "^6.2.0"
+  }
+}

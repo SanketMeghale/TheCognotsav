@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: thecogno-portal-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: thecogno_portal
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5434:5432"
+    volumes:
+      - thecogno_portal_data:/var/lib/postgresql/data
+
+volumes:
+  thecogno_portal_data:

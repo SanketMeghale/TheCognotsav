@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AURA 2.0 - Event Concluded</title>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+       (function(){
+          emailjs.init("XhUuPDiNPY_BsDrrT"); 
+       })();
+    </script>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        orbitron: ['Orbitron', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        html { scroll-behavior: smooth; }
+        body { overflow-x: hidden; background-color: #0f111a; }
+        
+        .blob {
+            position: absolute;
+            filter: blur(80px);
+            z-index: 0;
+            opacity: 0.4;
+            animation: float 10s infinite ease-in-out;
+        }
+        .blob-1 { top: 0; left: 0; width: 300px; height: 300px; background: #3b82f6; }
+        .blob-2 { bottom: 0; right: 0; width: 300px; height: 300px; background: #a855f7; animation-delay: 2s; }
+        
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            50% { transform: translate(20px, -20px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        .glass-card {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .fade-in { animation: fadeInUp 0.6s ease-out forwards; opacity: 0; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="text-white font-sans antialiased relative selection:bg-blue-500 selection:text-white pb-10">
+
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5"></div>
+    </div>
+
+    <div class="relative z-10 flex flex-col items-center min-h-screen px-4 pt-8">
+        
+        <header class="text-center mb-8 fade-in w-full">
+            <div class="inline-block px-3 py-1 mb-3 rounded-full bg-blue-500/10 border border-blue-500/20 backdrop-blur-md">
+                <p class="text-blue-400 text-[10px] md:text-xs font-bold tracking-widest uppercase">Dr. Vithalrao Vikhe Patil College of Engineering Ahilyanagar</p>
+            </div>
+            <h2 class="text-lg md:text-2xl font-bold text-gray-300 font-orbitron tracking-wide">ACDS Association</h2>
+            <h1 class="text-5xl md:text-7xl font-black font-orbitron text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 drop-shadow-lg mt-2">AURA 2.0</h1>
+            
+            <div class="text-center py-10 fade-in">
+                <h1 class="text-2xl md:text-4xl font-orbitron font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600 mb-4">
+                    FEST OFFICIALLY CONCLUDED!
+                </h1>
+                <p class="text-sm md:text-base text-gray-400 max-w-2xl mx-auto px-4">
+                    Thank you to everyone who participated, competed, and made this fest a massive success. We will see you next year!
+                </p>
+            </div>
+        </header>
+
+        <div id="overallPrizeBanner" class="relative w-full max-w-2xl mx-auto mb-10 fade-in px-4">
+            <div class="absolute inset-0 bg-gradient-to-r from-yellow-500 via-orange-500 to-yellow-500 rounded-2xl blur opacity-20 animate-pulse"></div>
+            
+            <div class="relative bg-gray-900/80 border border-yellow-500/50 rounded-2xl p-5 text-center shadow-[0_0_30px_rgba(234,179,8,0.2)] backdrop-blur-xl transition-transform duration-300">
+                
+                <div class="absolute -top-7 left-1/2 -translate-x-1/2 bg-gray-900 border-2 border-yellow-500 rounded-full w-14 h-14 flex items-center justify-center shadow-[0_0_20px_rgba(234,179,8,0.4)]">
+                    <i class="fa-solid fa-trophy text-2xl text-yellow-400 drop-shadow-[0_0_10px_rgba(250,204,21,0.8)]"></i>
+                </div>
+
+                <div class="mt-5">
+                    <h3 class="text-yellow-500 font-bold tracking-[0.2em] text-[10px] md:text-xs uppercase font-orbitron mb-1">Total Prize Pool Distributed</h3>
+                    
+                    <h2 class="text-3xl md:text-5xl font-black font-orbitron text-white drop-shadow-lg">
+                        OVER <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-orange-400 to-yellow-300">₹50,000</span>
+                    </h2>
+                    
+                    <div class="flex flex-wrap justify-center gap-x-4 gap-y-2 mt-3 text-[10px] md:text-xs text-gray-400 font-mono">
+                        <span class="flex items-center gap-1"><i class="fa-solid fa-medal text-yellow-600"></i> Cash Rewards</span>
+                        <span class="text-gray-600 hidden sm:inline">|</span>
+                        <span class="flex items-center gap-1"><i class="fa-solid fa-file-contract text-blue-400"></i> Participation Certificates</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="step1-games" class="w-full max-w-6xl fade-in pb-10">
+            <div class="flex items-center justify-center gap-2 mb-6">
+                <i class="fa-solid fa-gamepad text-blue-400 text-xl"></i>
+                <h2 class="text-xl md:text-3xl font-orbitron font-bold text-white">Event Roster</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                
+                <div onclick="initForm('Bug Auction')" class="glass-card rounded-xl overflow-hidden cursor-pointer hover:border-blue-500/50 transition-all duration-300 group relative flex sm:block items-center h-24 sm:h-auto">
+                    <div class="w-24 sm:w-full h-full sm:h-40 relative flex-shrink-0">
+                        <img src="bugauction.jpg" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                    </div>
+                    <div class="p-4 flex-grow">
+                        <h3 class="text-lg font-orbitron font-bold text-white mb-1">Bug Auction</h3>
+                        <p class="text-[10px] text-gray-400">Bid, Buy, Debug.</p>
+                    </div>
+                </div>
+
+                <div onclick="initForm('Tech Treasure Hunt')" class="glass-card rounded-xl overflow-hidden cursor-pointer hover:border-blue-500/50 transition-all duration-300 group relative flex sm:block items-center h-24 sm:h-auto">
+                    <div class="w-24 sm:w-full h-full sm:h-40 relative flex-shrink-0">
+                        <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=500" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                    </div>
+                    <div class="p-4 flex-grow">
+                        <h3 class="text-lg font-orbitron font-bold text-white mb-1">Tech Treasure Hunt</h3>
+                        <p class="text-[10px] text-gray-400">Coding + Hunting.</p>
+                    </div>
+                </div>
+
+                <div onclick="initForm('Court of chaos')" class="glass-card rounded-xl overflow-hidden cursor-pointer hover:border-blue-500/50 transition-all duration-300 group relative flex sm:block items-center h-24 sm:h-auto">
+                    <div class="w-24 sm:w-full h-full sm:h-40 relative flex-shrink-0">
+                        <img src="courtroom.jpg" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                    </div>
+                    <div class="p-4 flex-grow">
+                        <h3 class="text-lg font-orbitron font-bold text-white mb-1">Court of Chaos</h3>
+                        <p class="text-[10px] text-gray-400">Tech Debate.</p>
+                    </div>
+                </div>
+
+                <div onclick="initForm('Treasure Hunt')" class="glass-card rounded-xl overflow-hidden cursor-pointer hover:border-blue-500/50 transition-all duration-300 group relative flex sm:block items-center h-24 sm:h-auto">
+                    <div class="w-24 sm:w-full h-full sm:h-40 relative flex-shrink-0">
+                        <img src="https://cdn.8thwall.com/apps/cover/2mj23ocmdp5bri1474c6zv6rqmrrtp891jwjp9lhy61txl8xf571ib07-preview-1200x630" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                    </div>
+                    <div class="p-4 flex-grow">
+                        <h3 class="text-lg font-orbitron font-bold text-white mb-1">Treasure Hunt</h3>
+                        <p class="text-[10px] text-gray-400">Classic Campus Hunt.</p>
+                    </div>
+                </div>
+
+                <div onclick="initForm('Prompt Showdown')" class="glass-card rounded-xl overflow-hidden cursor-pointer hover:border-blue-500/50 transition-all duration-300 group relative flex sm:block items-center h-24 sm:h-auto">
+                    <div class="w-24 sm:w-full h-full sm:h-40 relative flex-shrink-0">
+                        <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?w=500" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                    </div>
+                    <div class="p-4 flex-grow">
+                        <h3 class="text-lg font-orbitron font-bold text-white mb-1">Prompt Showdown</h3>
+                        <p class="text-[10px] text-gray-400">AI Art Battle.</p>
+                    </div>
+                </div>
+
+               <div onclick="initForm('BGMI')" class="glass-card rounded-xl overflow-hidden cursor-pointer hover:border-blue-500/50 transition-all duration-300 group relative flex sm:block items-center h-24 sm:h-auto">
+                    <div class="w-24 sm:w-full h-full sm:h-40 relative flex-shrink-0">
+                        <img src="bgmi.jpg" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                    </div>
+                    <div class="p-4 flex-grow">
+                        <h3 class="text-lg font-orbitron font-bold text-white mb-1">BGMI</h3>
+                        <p class="text-[10px] text-gray-400">Battle Royale.</p>
+                    </div>
+                </div>
+
+                <div onclick="initForm('Free Fire')" class="glass-card rounded-xl overflow-hidden cursor-pointer hover:border-blue-500/50 transition-all duration-300 group relative flex sm:block items-center h-24 sm:h-auto">
+                    <div class="w-24 sm:w-full h-full sm:h-40 relative flex-shrink-0">
+                        <img src="freefire.jpg" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                    </div>
+                    <div class="p-4 flex-grow">
+                        <h3 class="text-lg font-orbitron font-bold text-white mb-1">Free Fire</h3>
+                        <p class="text-[10px] text-gray-400">Survival Shooter.</p>
+                    </div>
+                </div>
+
+                <div onclick="initForm('Box Cricket')" class="glass-card rounded-xl overflow-hidden cursor-pointer hover:border-blue-500/50 transition-all duration-300 group relative flex sm:block items-center h-24 sm:h-auto">
+                    <div class="w-24 sm:w-full h-full sm:h-40 relative flex-shrink-0">
+                        <img src="boxcricket.jpg" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                    </div>
+                    <div class="p-4 flex-grow">
+                        <h3 class="text-lg font-orbitron font-bold text-white mb-1">Box Cricket</h3>
+                        <p class="text-[10px] text-gray-400">Turf Tournament.</p>
+                    </div>
+                </div>
+
+               <div onclick="initForm('Project Competition')" class="glass-card rounded-xl overflow-hidden cursor-pointer hover:border-blue-500/50 transition-all duration-300 group relative flex sm:block items-center h-24 sm:h-auto">
+                    <div class="w-24 sm:w-full h-full sm:h-40 relative flex-shrink-0">
+                        <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=500" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                    </div>
+                    <div class="p-4 flex-grow">
+                        <h3 class="text-lg font-orbitron font-bold text-white mb-1">Project Competition</h3>
+                        <p class="text-[10px] text-gray-400">Tech Showcase.</p>
+                    </div>
+                </div>
+
+                <div onclick="initForm('Talent Utsav')" class="glass-card rounded-xl overflow-hidden cursor-pointer hover:border-blue-500/50 transition-all duration-300 group relative flex sm:block items-center h-24 sm:h-auto">
+                    <div class="w-24 sm:w-full h-full sm:h-40 relative flex-shrink-0">
+                        <img src="https://media.istockphoto.com/id/1446944015/vector/microphone-stage-performance-stand-up-comedy-spotlight-background.jpg?s=2048x2048&w=is&k=20&c=0I2pNMPLhzs0bWqMgyBP7ePndZ-7rT_KGLLJgFfcZuM=" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                    </div>
+                    <div class="p-4 flex-grow">
+                        <h3 class="text-lg font-orbitron font-bold text-white mb-1">Talent Utsav</h3>
+                        <p class="text-[10px] text-gray-400">Singing, Dance, etc.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="step2-form" class="hidden w-full max-w-lg fade-in pb-10">
+            <button onclick="resetToHome()" class="mb-4 text-gray-400 hover:text-white flex items-center gap-2 text-sm">
+                 <i class="fa-solid fa-arrow-left"></i> Back
+            </button>
+
+            <div class="bg-gradient-to-br from-blue-900/40 to-purple-900/40 border border-blue-500/30 p-5 rounded-2xl mb-6 relative overflow-hidden">
+                <h3 id="descTitle" class="text-xl font-orbitron font-bold text-white mb-3">Event Info</h3>
+                
+                <div id="eventPrizeContainer" class="hidden mb-4 bg-gradient-to-r from-yellow-900/40 to-orange-900/40 border border-yellow-500/30 rounded-xl p-3 items-center justify-center gap-4 shadow-[0_0_15px_rgba(234,179,8,0.1)]">
+                    <div class="bg-yellow-500/20 p-2 rounded-full">
+                        <i class="fa-solid fa-trophy text-yellow-400 text-lg"></i>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-[10px] text-yellow-500 font-bold uppercase tracking-widest">#1 Prize Pool upto </p>
+                        <p id="eventPrizeText" class="text-xl font-orbitron font-bold text-white tracking-wide">...</p>
+                    </div>
+                </div>
+
+                <div id="eventDateContainer" class="hidden mb-4 bg-gradient-to-r from-blue-900/40 to-indigo-900/40 border border-blue-500/30 rounded-xl p-3 items-center justify-center gap-4 shadow-[0_0_15px_rgba(59,130,246,0.1)]">
+                    <div class="bg-blue-500/20 p-2 rounded-full">
+                        <i class="fa-regular fa-calendar-check text-blue-400 text-lg"></i>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-[10px] text-blue-400 font-bold uppercase tracking-widest">Date & Time</p>
+                        <p id="eventDateText" class="text-base font-orbitron font-bold text-white tracking-wide">...</p>
+                    </div>
+                </div>
+
+                <div id="videoContainer" class="mb-4 hidden rounded-xl overflow-hidden border border-white/20 shadow-lg relative aspect-video">
+                    <iframe id="ytPlayer" class="w-full h-full absolute top-0 left-0" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+
+                <div class="bg-black/30 p-5 rounded-lg">
+                    <p id="longDesc" class="text-sm text-gray-300 mb-4 leading-relaxed italic"></p>
+
+                    <a id="rulebookBtn" href="#" target="_blank" class="hidden inline-flex items-center gap-2 bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-500 hover:to-teal-500 text-white text-xs font-bold px-4 py-2 rounded-lg mb-4 transition shadow-lg transform hover:scale-105 border border-white/20">
+                        <i class="fa-brands fa-google-drive text-lg"></i> View Rule Book
+                    </a>
+
+                    <div class="mb-6">
+                        <p class="text-xs font-bold text-blue-300 uppercase mb-2">Rules:</p>
+                        <ul id="miniRules" class="text-sm text-gray-400 list-disc pl-4 space-y-2"></ul>
+                    </div>
+
+                    <div id="coordinatorSection" class="border-t border-gray-700 pt-4 hidden">
+                        <p class="text-xs font-bold text-yellow-400 uppercase mb-3 tracking-wider text-center">
+                            <i class="fa-solid fa-star mr-1"></i> Contact Coordinators
+                        </p>
+                        <div id="coordinatorList" class="space-y-3"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card p-6 rounded-2xl shadow-xl border border-white/10 relative overflow-hidden">
+                <div class="mb-5 border-b border-gray-700 pb-3">
+                    <h2 class="text-xl font-orbitron font-bold text-white">Register <span id="displayEventName" class="text-blue-400">...</span></h2>
+                </div>
+
+                <form id="regForm" class="space-y-4">
+                    <input type="hidden" id="selectedEventInput">
+                    <input type="hidden" id="calculatedFeeInput">
+
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-wider">College</label>
+                        <select id="collegeSelect" onchange="toggleCollegeInput()" class="w-full bg-gray-900/50 border border-gray-700 text-white rounded-lg p-3 text-sm focus:border-blue-500 outline-none">
+                            <option value="Dr. Vithalrao Vikhe Patil COE">Dr. Vithalrao Vikhe Patil COE</option>
+                            <option value="Other">Other College</option>
+                        </select>
+                        <input type="text" id="otherCollegeInput" placeholder="Enter College Name" class="hidden w-full mt-2 bg-gray-900/50 border border-gray-700 text-white rounded-lg p-3 text-sm focus:border-blue-500 outline-none">
+                    </div>
+
+                    <div id="teamSizeSelectorContainer" class="hidden">
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-wider">Number of Members</label>
+                        <select id="teamSizeSelect" onchange="updateDynamicFields()" class="w-full bg-gray-900/50 border border-gray-700 text-white rounded-lg p-3 text-sm focus:border-blue-500 outline-none">
+                        </select>
+                    </div>
+
+                    <div id="teamFieldsContainer" class="space-y-3"></div>
+
+                    <div class="grid grid-cols-1 gap-3">
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-wider">Leader Email</label>
+                            <input type="email" id="email" required placeholder="example@gmail.com" class="w-full bg-gray-900/50 border border-gray-700 text-white rounded-lg p-3 text-sm focus:border-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-wider">Leader Mobile</label>
+                            <input type="tel" id="mobile" required pattern="[0-9]{10}" placeholder="10 Digit Number" class="w-full bg-gray-900/50 border border-gray-700 text-white rounded-lg p-3 text-sm focus:border-blue-500 outline-none">
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-800/50 border border-gray-700 p-6 rounded-xl text-center">
+                        <p class="text-xs text-gray-400 font-bold uppercase mb-4">Scan to Pay: <span id="feeDisplay" class="text-green-400 text-lg">...</span></p>
+                        <div class="bg-white p-3 rounded-xl inline-block mb-4 shadow-xl">
+                            <img id="dynamicQr" 
+                                src="payment_qr.png" 
+                                alt="QR Code" 
+                                onclick="this.classList.toggle('scale-[1.8]'); this.classList.toggle('z-50'); this.classList.toggle('shadow-[0_0_50px_rgba(0,0,0,0.5)]');" 
+                                class="w-64 h-64 object-contain transition-all duration-300 cursor-zoom-in bg-white p-2 rounded-xl relative z-0">
+                        </div>
+                        <p class="text-[10px] text-gray-500 mb-2 font-bold tracking-widest">OR PAY VIA UPI ID</p>
+                        <div class="flex items-center justify-center gap-3 bg-black/40 p-3 rounded-lg border border-gray-600 mb-4 max-w-[280px] mx-auto">
+                            <span class="text-white font-mono select-all text-xs sm:text-sm tracking-wide break-all">sohamgadekar3@okaxis</span>
+                            <button type="button" onclick="copyUPI()" class="text-gray-400 hover:text-white transition flex-shrink-0">
+                                <i class="fa-regular fa-copy text-lg"></i>
+                            </button>
+                        </div>
+                        <input type="text" id="txnId" required placeholder="Enter Transaction ID (UTR)" class="w-full bg-black/30 border border-gray-600 text-white rounded-lg p-3 text-sm font-mono focus:border-green-500 outline-none text-center placeholder-gray-500">
+                    </div>
+
+                    <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all text-sm tracking-wide font-orbitron">
+                        CONFIRM REGISTRATION
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <footer class="mt-8 w-full border-t border-gray-800 bg-[#0a0c10]/80 backdrop-blur-md rounded-t-3xl p-8 mb-20 text-center shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+            <h3 class="text-xl md:text-2xl font-orbitron font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 mb-2">AURA 2.0 Registration Portal</h3>
+            <p class="text-gray-400 text-xs md:text-sm mb-6 max-w-lg mx-auto">A live, high-traffic project that successfully managed online registrations, payments, and team data for the 2026 tech fest.</p>
+            
+            <div class="flex flex-col md:flex-row justify-center items-center gap-2 md:gap-4 text-xs md:text-sm text-gray-300">
+                <p>Developed & Maintained by <br class="md:hidden">
+                    <a href="https://github.com/S0HAM03" target="_blank" class="text-cyan-400 hover:text-cyan-300 font-bold transition-colors tracking-wide ml-1">Soham Gadekar</a> 
+                </p>
+                <span class="hidden md:inline text-gray-600">|</span>
+                <p class="mt-2 md:mt-0">In collaboration with <br class="md:hidden">
+                    <a href="https://www.levtechsolution.com/" target="_blank" class="text-blue-500 hover:text-blue-400 font-bold transition-colors ml-1">LevTech Solutions</a>
+                </p>
+            </div>
+            <p class="font-orbitron tracking-widest text-[10px] text-gray-600 mt-6">&copy; 2026 AURA 2.0</p>
+        </footer>
+    </div>
+
+    <script type="module">
+        import { db } from './config.js';
+        import { collection, addDoc, query, where, getDocs, getCountFromServer } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // EVENT DATA
+        const eventContent = {
+            "Bug Auction": { 
+                fee: 150, size: 3, type: "fixed", id: "BA",
+                qr: "payment_qr.png",
+                video: "kkT7BQhucBM", 
+                prizepool: "₹2,100",
+                datetime: "Feb 23 | 11:15 AM",
+                rulebook: "https://drive.google.com/file/d/157cbHfAVAMyxtXcSfDyM6k78x8_5SlZU/view?usp=sharing",
+                desc: "Bid on code snippets with bugs. Use virtual currency to buy the bugs and fix them to win! ,  Each team is allotted 12,000 VIRTUAL CREDITS at the beginning of the game. Credits are used only for bidding, not for scoring. ",
+                coordinators: [
+                    { name: "Prathamesh Vasagadekar", contact: "8237698094" },
+                ],
+                rules: ["Minimum Bid for each bug: 400 credits.", "Each bid increments the amount by 200 Credits.", "Maximum bid for each bug 2000 Credits.","The highest bidding team wins the right to attempt the bug, deducting their VIRTUAL CREDITS by their bidding amount.","No credit refunds will be provided for unsuccessful bug-solving attempts. Additionally, no bonus or extra virtual credits will be awarded to any team at any stage of the game."]
+            },
+            "Tech Treasure Hunt": { 
+                fee: 200, size: 4, type: "fixed", id: "TT",
+                qr: "payment_qr.png",
+                video: "KqZJfmjklcA",
+                prizepool: "₹3,100", 
+                datetime: "Feb 23 | 01:45 PM",
+                desc: "A battlefield of brains where puzzles grow tougher at every stage. Precision, speed, and teamwork decide the ultimate winner.",
+                coordinators: [
+                    { name: "Tanisha Gandhi", contact: "7820894904" },
+                    { name: "Parth Bhokare", contact: "9699927727" }
+                ],
+                rules: [
+                    "Each team must consist of 4 members. No individual participation allowed.",
+                    "The competition will consist of a set of technical questions.",
+                    "Questions will range in difficulty level from easy to difficult.",
+                    "Each correct answer will earn the team 50 points.",
+                    "Teams may request a hint if needed.",
+                    "Taking a hint will result in a deduction of 25 points from that question.",
+                    "Answers must be submitted within the allotted time.",
+                    "The team with the maximum total points at the end of all rounds will be declared the winner.",
+                    "In case of a tie, a Surprise Round will be conducted.",
+                    "The decision of the organizing committee will be final and binding."
+                ]
+            },
+            "Court of chaos": { 
+                fee: 100, size: 2, type: "fixed", id: "TC",
+                qr: "payment_qr.png",
+                video: "bymDrU97nhA",
+                prizepool: "₹2,100",
+                datetime: "Feb 23 | 03:00 PM",
+                desc: "Court of Chaos is a courtroom-themed technical competition where participants battle using logic, technical knowledge, and critical thinking skills.In this intense face-off, teams are presented with real-world technical scenarios. They must carefully analyze the problem, propose strong solutions, defend their arguments, and challenge opposing viewpoints — just like lawyers in a courtroom..",
+                coordinators: [{ name: "Raghav Kulkarni", contact: "7888267842" },
+                    { name: "Kadambari Jaher", contact: "8329681354" }],
+                rules: ["Team of 2 members.", "Topic given on spot.", "5-7 minutes to speak.","Win Condition: Judged on logic, confidence, and facts.",]
+            },
+            "Treasure Hunt": { 
+                fee: 250, size: 5, type: "fixed", id: "TH",
+                qr: "payment_qr.png",
+                video: "69XctUUipLM", 
+                prizepool: "₹5,000",
+                datetime: "Feb 24 | 09:00 AM",
+                desc: "Follow the Clues. Find the Truth. A murder mystery hunt across the campus.",
+                coordinators: [
+                    { name: "Tanisha Gandhi", contact: "7820894904" },
+                    { name: "Parth Bhokare", contact: "9699927727" }
+                ],
+                rules: [
+                    "Each team must consist of 5 members.",
+                    "Teams receive a murder case file (Suspect profile & clues) at the start.",
+                    "Each team will be assigned volunteers from the organizing side.",
+                    "Clues must be solved sequentially to unlock the next location.",
+                    "Teams must not skip any clue; each must be solved correctly.",
+                    "If a team is stuck, they may request a hint.",
+                    "Taking a hint will result in a points/time deduction.",
+                    "Tampering with clues or disturbing other teams leads to disqualification.",
+                    "To win, the team must identify: The Murderer, The Motive, and The Weapon."
+                ]
+            },
+            "Prompt Showdown": { 
+                fee: 100, size: 2, type: "fixed", id: "PW",
+                qr: "payment_qr.png",
+                video: "V_hg0cmuZdo",
+                prizepool: "₹1,500",
+                datetime: "Feb 24 | 01:00 PM",
+                desc: "Battle of AI Art! Use AI tools to generate the most accurate image for a given theme.",
+                coordinators: [{ name: "Vivek Kadam", contact: "9373704901" },
+                    { name: "Anushka Adhav", contact: "8975943123" }],
+                rules: ["Team of 2 members.", "Each team will receive a prompt topic at the given time.", "Judged on accuracy & creativity.","Prompt must match the given theme.",]
+            },
+            "BGMI": { 
+                fee: 250, size: 4, type: "fixed", id: "BG",
+                qr: "payment_qr.png",
+                video: "",
+                prizepool: "₹5,000",
+                datetime: "Feb 24 | 01:15 PM",
+                desc: "The ultimate Battle Royale. Squad vs Squad. Strategy and aim will decide the champion.",
+                coordinators: [{ name: "Soham Gadekar", contact: "7841980875" },
+                ],
+                rules: ["Squad of 4.", "The Tournament will consist of two rounds of Erangel.", "Screen shot Of Every Match Result Is Must",]
+            },
+            "Free Fire": { 
+                fee: 250, size: 4, type: "fixed", id: "FF",
+                qr: "payment_qr.png",
+                video: "",
+                prizepool: "₹5,000",
+                datetime: "Feb 24 | 03:00 PM",
+                desc: "Fast-paced survival shooter. Coordinate with your squad to secure the Booyah!",
+                coordinators: [{ name: "Krushna Wandhekar", contact: "9579692845" }],
+                rules: ["Squad of 4.","Screen shot Of Every Match Result Is Must", ]
+            },
+            "Box Cricket": { 
+                fee: 350, size: 7, type: "fixed", id: "BC",
+                qr: "payment_qr.png",
+                video: "",
+                prizepool: "₹5,000",
+                datetime: "Feb 25 | 09:00 AM",
+                desc: "Short boundaries, high energy! 7-a-side cricket tournament with underarm bowling.",
+                coordinators: [{ name: "Devidas Pund", contact: "7020364718" },
+                    { name: "Prathmesh Ghule", contact: "7028929860" }],
+                rules: ["7 Players.", "4 Overs per match.", "Underarm bowling only.","Umpire decision final."]
+            },
+            "Project Competition": { 
+                fee: 250, 
+                size: 0, 
+                type: "per_person", 
+                isFixedFee: true,  
+                min: 1, max: 4, 
+                id: "PC",
+                qr: "payment_qr.png",
+                video: "",
+                prizepool: "₹3,100",
+                datetime: "Feb 25 | 10:00 AM",
+                desc: "Showcase your innovative projects (Hardware/Software) to industry experts.",
+                coordinators: [
+                    { name: "Aditi Mahadik", contact: "9588460064" },
+                    { name: "Prassana Joshi", contact: "7972850026" }
+                ],
+                rules: ["Max 4-5 members.","Hardware/Software projects are allowed.","Show live Model and Explain.","Time Limit 10 min.",]
+            },
+            "Talent Utsav": { 
+                fee: 50, size: 0, type: "per_person", min: 1, max: 3, id: "TU",
+                video: "",
+                prizepool: "2,000",
+                datetime: "Feb 25 | 01:00 PM",
+                desc: "Singing, Dancing, Stand-up, or Magic! Show your hidden talent to the world.",
+                coordinators: [{ name: "Raghav Kulkarni", contact: "7888267842" },
+                    { name: "Jatin Sahadev", contact: "9322996639" }],
+                rules: ["Solo or Group (max 3).", "Time limit: 2 mins.",]
+            }
+        };
+
+        const step1 = document.getElementById('step1-games');
+        const step2 = document.getElementById('step2-form');
+        const container = document.getElementById('teamFieldsContainer');
+        const teamSizeSelect = document.getElementById('teamSizeSelect');
+        const teamSizeContainer = document.getElementById('teamSizeSelectorContainer');
+
+        let currentEvent = null;
+
+        // UNIVERSAL "GO HOME" LOGIC
+        window.resetToHome = function() {
+            history.replaceState(null, "", window.location.pathname);
+            step1.classList.remove('hidden'); 
+            step2.classList.add('hidden');    
+            document.getElementById('ytPlayer').src = ""; 
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('overallPrizeBanner').classList.remove('hidden');
+        }
+
+        // GLOBAL FUNCTIONS FOR HTML ACCESS 
+        window.initForm = function(eventName, pushHistory = true) {
+            currentEvent = eventName;
+            const content = eventContent[eventName];
+
+            const qrImg = document.getElementById('dynamicQr');
+            if (content.qr) {
+                qrImg.src = content.qr;
+            } else {
+                qrImg.src = "payment_qr.png"; 
+            }
+            
+            if(!content) return;
+
+            if (pushHistory) {
+                const newUrl = `${window.location.pathname}?event=${encodeURIComponent(eventName)}`;
+                history.pushState({ event: eventName }, "", newUrl);
+            }
+
+            document.getElementById('selectedEventInput').value = eventName;
+            document.getElementById('displayEventName').innerText = eventName;
+            document.getElementById('descTitle').innerText = eventName + " Info";
+            
+            // VIDEO LOGIC
+            const vidContainer = document.getElementById('videoContainer');
+            const player = document.getElementById('ytPlayer');
+            
+            if(content.video && content.video.trim() !== "") {
+                vidContainer.classList.remove('hidden');
+                player.src = `https://www.youtube.com/embed/${content.video}?rel=0`;
+            } else {
+                vidContainer.classList.add('hidden');
+                player.src = "";
+            }
+
+            // PRIZE POOL LOGIC
+            const prizeContainer = document.getElementById('eventPrizeContainer');
+            const prizeText = document.getElementById('eventPrizeText');
+
+            if (content.prizepool) {
+                prizeText.innerText = content.prizepool;
+                prizeContainer.classList.remove('hidden');
+                prizeContainer.classList.add('flex');
+            } else {
+                prizeContainer.classList.add('hidden');
+                prizeContainer.classList.remove('flex');
+            }
+
+            // DATE TIME LOGIC
+            const dateContainer = document.getElementById('eventDateContainer');
+            const dateText = document.getElementById('eventDateText');
+
+            if (content.datetime) {
+                dateText.innerText = content.datetime;
+                dateContainer.classList.remove('hidden');
+                dateContainer.classList.add('flex');
+            } else {
+                dateContainer.classList.add('hidden');
+                dateContainer.classList.remove('flex');
+            }
+
+            // TEXT CONTENT 
+            document.getElementById('longDesc').innerText = content.desc;
+
+            // RULEBOOK LOGIC 
+            const rbBtn = document.getElementById('rulebookBtn');
+            if(content.rulebook) {
+                rbBtn.href = content.rulebook;
+                rbBtn.classList.remove('hidden'); 
+            } else {
+                rbBtn.classList.add('hidden');    
+            }
+            
+            // COORDINATOR LOGIC
+            const coordSection = document.getElementById('coordinatorSection');
+            const coordList = document.getElementById('coordinatorList');
+            coordList.innerHTML = "";
+            
+            if (content.coordinators && content.coordinators.length > 0) {
+                coordSection.classList.remove('hidden');
+                content.coordinators.forEach(c => {
+                    coordList.innerHTML += `
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between bg-white/5 p-4 rounded-xl border border-white/10 hover:bg-white/10 transition gap-3">
+                            <span class="text-base font-bold text-white flex items-center gap-3">
+                                <div class="bg-blue-500/20 p-2 rounded-full"><i class="fa-solid fa-user text-blue-400 text-sm"></i></div>
+                                ${c.name}
+                            </span>
+                            <a href="tel:${c.contact}" class="text-sm font-mono text-green-400 flex items-center gap-2 bg-green-500/10 px-4 py-2 rounded-lg border border-green-500/20 hover:bg-green-500/20 transition w-fit">
+                                <i class="fa-solid fa-phone text-xs"></i> ${c.contact}
+                            </a>
+                        </div>
+                    `;
+                });
+            } else {
+                coordSection.classList.add('hidden');
+            }
+
+            // RULES
+            const rulesList = document.getElementById('miniRules');
+            rulesList.innerHTML = "";
+            (content.rules || []).forEach(r => rulesList.innerHTML += `<li>${r}</li>`);
+
+            // FORM LOGIC
+            container.innerHTML = '';
+            if (content.type === "fixed") {
+                teamSizeContainer.classList.add('hidden');
+                generateMemberInputs(content.size);
+                updateFee(content.fee);
+            } else {
+                teamSizeContainer.classList.remove('hidden');
+                teamSizeSelect.innerHTML = "";
+                for(let i = content.min; i <= content.max; i++) {
+                    teamSizeSelect.innerHTML += `<option value="${i}">${i} Member${i>1?'s':''}</option>`;
+                }
+                teamSizeSelect.value = content.min;
+                generateMemberInputs(content.min);
+                
+                if (content.isFixedFee) {
+                    updateFee(content.fee);
+                } else {
+                    updateFee(content.fee * content.min);
+                }
+            }
+
+            // Hide Banner
+            document.getElementById('overallPrizeBanner').classList.add('hidden');
+
+            step1.classList.add('hidden');
+            step2.classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.goBack = function() { 
+            history.back(); 
+        }
+
+        window.copyUPI = function() {
+            const upiID = "sohamgadekar3@okaxis";
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(upiID).then(() => {
+                    alert('UPI Copied: ' + upiID);
+                }).catch(() => {
+                    fallbackCopy(upiID);
+                });
+            } else {
+                fallbackCopy(upiID);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                alert('UPI Copied: ' + text);
+            } catch (err) {
+                prompt("Copy this UPI ID manually:", text);
+            }
+            document.body.removeChild(textArea);
+        }
+
+        window.addEventListener('popstate', (event) => {
+            if (event.state && event.state.event) {
+                initForm(event.state.event, false); 
+            } else {
+                step2.classList.add('hidden'); 
+                step1.classList.remove('hidden');
+                document.getElementById('ytPlayer').src = ""; 
+                document.getElementById('overallPrizeBanner').classList.remove('hidden');
+            }
+        });
+        
+        window.updateDynamicFields = function() {
+            const size = parseInt(teamSizeSelect.value);
+            const content = eventContent[currentEvent];
+            generateMemberInputs(size);
+            if (content.isFixedFee) {
+                updateFee(content.fee);
+            } else {
+                updateFee(content.fee * size);
+            }
+        }
+
+        function generateMemberInputs(size) {
+            container.innerHTML = '';
+            if (size > 1) {
+                container.innerHTML += `
+                    <div class="mb-4">
+                        <label class="block text-[10px] font-bold text-blue-400 uppercase mb-1">Team Name</label>
+                        <input type="text" id="teamName" required placeholder="Squad Name" class="w-full bg-gray-900/50 border border-blue-500/50 text-white rounded-lg p-3 text-sm focus:border-blue-500 outline-none">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Leader Name</label>
+                        <input type="text" id="memberName_1" required placeholder="Full Name" class="w-full bg-gray-900/50 border border-gray-700 text-white rounded-lg p-3 text-sm focus:border-blue-500 outline-none">
+                    </div>`;
+            } else {
+                container.innerHTML += `
+                    <div class="mb-4">
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Full Name</label>
+                        <input type="text" id="memberName_1" required placeholder="Enter Name" class="w-full bg-gray-900/50 border border-gray-700 text-white rounded-lg p-3 text-sm focus:border-blue-500 outline-none">
+                    </div>`;
+            }
+
+            for(let i = 2; i <= size; i++) {
+                container.innerHTML += `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3 border-l-2 border-gray-700 pl-3">
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Member ${i} Name</label>
+                            <input type="text" id="memberName_${i}" required placeholder="Name" class="w-full bg-gray-900/50 border border-gray-700 text-white rounded-lg p-3 text-sm focus:border-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Member ${i} Email</label>
+                            <input type="email" id="memberEmail_${i}" required placeholder="Email" class="w-full bg-gray-900/50 border border-gray-700 text-white rounded-lg p-3 text-sm focus:border-blue-500 outline-none">
+                        </div>
+                    </div>`;
+            }
+        }
+
+        function updateFee(amount) {
+            document.getElementById('feeDisplay').innerText = "₹" + amount;
+            document.getElementById('calculatedFeeInput').value = amount;
+        }
+
+        window.toggleCollegeInput = function() {
+            const val = document.getElementById('collegeSelect').value;
+            const inp = document.getElementById('otherCollegeInput');
+            if(val==="Other"){inp.classList.remove('hidden');inp.required=true;}else{inp.classList.add('hidden');inp.required=false;}
+        }
+
+        const form = document.getElementById('regForm');
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // 🛑 NEW: BLOCK SUBMISSION ALERT
+            alert("Registrations for AURA 2.0 are officially closed. Thank you for making it a massive success! See you next year.");
+            return; 
+
+            // (The rest of the backend code below will no longer run because of the return statement above)
+        });
+        
+        // INITIAL LOAD LOGIC
+        const urlParams = new URLSearchParams(window.location.search);
+        const eventParam = urlParams.get('event');
+
+        if (eventParam) {
+            const decodedEvent = decodeURIComponent(eventParam);
+            setTimeout(() => {
+                initForm(decodedEvent, false); 
+            }, 200); 
+        }
+    </script>
+    
+    <div class="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-3">
+
+        <div id="helpMenu" class="flex flex-col gap-3 opacity-0 translate-y-10 scale-90 pointer-events-none transition-all duration-300 origin-bottom-right">
+            
+            <a href="tel:+917841980875" class="flex items-center gap-3 backdrop-blur-md bg-white/10 border border-white/20 p-2 pr-4 rounded-full shadow-xl hover:bg-white/20 transition">
+                <div class="bg-blue-500 text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg">
+                    <i class="fa-solid fa-phone"></i>
+                </div>
+                <span class="text-white font-bold text-sm">Call Soham</span>
+            </a>
+
+            <a href="tel:+919146459327" class="flex items-center gap-3 backdrop-blur-md bg-white/10 border border-white/20 p-2 pr-4 rounded-full shadow-xl hover:bg-white/20 transition">
+                <div class="bg-purple-500 text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg">
+                    <i class="fa-solid fa-phone"></i>
+                </div>
+                <span class="text-white font-bold text-sm">Call Siddhesh</span>
+            </a>
+
+            <a href="https://wa.me/917841980875?text=Hey,%20I%20have%20a%20query%20regarding%20AURA%202.0" target="_blank" class="flex items-center gap-3 backdrop-blur-md bg-white/10 border border-white/20 p-2 pr-4 rounded-full shadow-xl hover:bg-white/20 transition">
+                <div class="bg-green-500 text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg">
+                    <i class="fa-brands fa-whatsapp text-xl"></i>
+                </div>
+                <span class="text-white font-bold text-sm">WhatsApp</span>
+            </a>
+        </div>
+
+        <button id="helpTriggerBtn" onclick="toggleHelpMenu()" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform duration-300 z-50 relative">
+            <i id="helpIcon" class="fa-solid fa-headset text-2xl"></i>
+            <i id="closeIcon" class="fa-solid fa-xmark text-2xl hidden"></i>
+            <span class="absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-30 animate-ping -z-10"></span>
+        </button>
+
+    </div>
+
+<script>
+    function toggleHelpMenu() {
+        const menu = document.getElementById('helpMenu');
+        const helpIcon = document.getElementById('helpIcon');
+        const closeIcon = document.getElementById('closeIcon');
+
+        menu.classList.toggle('opacity-0');
+        menu.classList.toggle('translate-y-10');
+        menu.classList.toggle('scale-90');
+        menu.classList.toggle('pointer-events-none');
+
+        helpIcon.classList.toggle('hidden');
+        closeIcon.classList.toggle('hidden');
+    }
+
+    // CLICK OUTSIDE TO CLOSE
+    document.addEventListener('click', function(event) {
+        const menu = document.getElementById('helpMenu');
+        const btn = document.getElementById('helpTriggerBtn');
+        
+        if (!menu.classList.contains('opacity-0') && 
+            !menu.contains(event.target) && 
+            !btn.contains(event.target)) {
+            toggleHelpMenu(); 
+        }
+    });
+</script>
+</body>
+</html>

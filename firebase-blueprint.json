@@ -1,0 +1,86 @@
+{
+  "entities": {
+    "Registration": {
+      "title": "Registration",
+      "description": "A competition registration entry",
+      "type": "object",
+      "properties": {
+        "competition": { "type": "string" },
+        "teamName": { "type": "string" },
+        "leaderName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "mobile": { "type": "string" },
+        "college": { "type": "string" },
+        "collegeType": { "type": "string" },
+        "otherCollege": { "type": "string" },
+        "transactionId": { "type": "string" },
+        "teamSize": { "type": "number" },
+        "amountPaid": { "type": "number" },
+        "status": { "type": "string", "enum": ["active", "inactive"] },
+        "paymentStatus": { "type": "string", "enum": ["pending", "verified", "rejected"] },
+        "submittedAt": { "type": "string", "format": "date-time" },
+        "members": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "email": { "type": "string" },
+              "mobile": { "type": "string" }
+            }
+          }
+        }
+      },
+      "required": ["competition", "leaderName", "email", "mobile", "paymentStatus"]
+    },
+    "Stats": {
+      "title": "Stats",
+      "description": "Global and competition-specific statistics",
+      "type": "object",
+      "properties": {
+        "totalVerifiedRevenue": { "type": "number" },
+        "totalVerifiedRegistrations": { "type": "number" },
+        "totalParticipants": { "type": "number" },
+        "totalPendingRegistrations": { "type": "number" },
+        "totalGlobalRegistrations": { "type": "number" },
+        "totalGlobalParticipants": { "type": "number" },
+        "competitions": { "type": "object" }
+      }
+    },
+    "Role": {
+      "title": "Role",
+      "description": "User role for access control",
+      "type": "object",
+      "properties": {
+        "role": { "type": "string", "enum": ["admin", "user"] }
+      },
+      "required": ["role"]
+    },
+    "Setting": {
+      "title": "Setting",
+      "description": "Application settings",
+      "type": "object",
+      "properties": {
+        "competition_status": { "type": "object" }
+      }
+    }
+  },
+  "firestore": {
+    "registrations": {
+      "schema": "Registration",
+      "description": "Collection of all registrations"
+    },
+    "stats": {
+      "schema": "Stats",
+      "description": "Global statistics"
+    },
+    "roles": {
+      "schema": "Role",
+      "description": "User roles"
+    },
+    "settings": {
+      "schema": "Setting",
+      "description": "App settings"
+    }
+  }
+}
