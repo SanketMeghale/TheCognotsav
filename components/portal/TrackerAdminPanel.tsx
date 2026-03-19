@@ -222,11 +222,11 @@ export const TrackerAdminPanel: React.FC<Props> = ({
                     <div className="inline-flex rounded-2xl border border-blue-300/20 bg-blue-400/10 p-3 text-blue-100">
                       <QrCode size={18} />
                     </div>
-                    <div className="mt-4 rounded-[1.5rem] bg-white p-4">
+                    <div className="mt-4 flex aspect-square items-center justify-center rounded-[1.5rem] bg-white p-4">
                       <img
                         src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(result.qr_value)}`}
                         alt={`${result.registration_code} QR`}
-                        className="mx-auto h-36 w-36 sm:h-40 sm:w-40 md:h-44 md:w-44"
+                        className="h-full w-full max-w-[11rem] object-contain sm:max-w-[12rem] md:max-w-[13rem]"
                       />
                     </div>
                     <p className="mt-4 text-xs uppercase tracking-[0.24em] text-slate-400">Event-day entry pass</p>

@@ -397,8 +397,8 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                     <QrCode size={18} />
                     <p className="text-sm font-semibold">Scan event payment QR</p>
                   </div>
-                  <div className="mt-4 rounded-[1.6rem] bg-white p-4 shadow-[0_18px_50px_rgba(255,255,255,0.08)]">
-                    {qrUrl ? <img src={qrUrl} alt={`${selectedEvent.name} payment QR`} className="mx-auto h-48 w-48 sm:h-52 sm:w-52 md:h-56 md:w-56" /> : <div className="mx-auto h-48 w-48 rounded-2xl bg-slate-200/30 sm:h-52 sm:w-52 md:h-56 md:w-56" />}
+                  <div className="mt-4 flex aspect-square items-center justify-center rounded-[1.6rem] bg-white p-4 shadow-[0_18px_50px_rgba(255,255,255,0.08)]">
+                    {qrUrl ? <img src={qrUrl} alt={`${selectedEvent.name} payment QR`} className="h-full w-full max-w-[14rem] object-contain sm:max-w-[15rem] md:max-w-[16rem]" /> : <div className="h-full w-full max-w-[14rem] rounded-2xl bg-slate-200/30 sm:max-w-[15rem] md:max-w-[16rem]" />}
                   </div>
                 </div>
 

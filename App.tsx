@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { BellRing, CheckCircle2 } from 'lucide-react';
+import { BellRing, CheckCircle2, Menu, X } from 'lucide-react';
 import { AdminRegistrationsPage } from './components/portal/AdminRegistrationsPage.tsx';
 import { AnnouncementArchiveSection } from './components/portal/AnnouncementArchiveSection.tsx';
 import { AnnouncementBanner } from './components/portal/AnnouncementBanner.tsx';
@@ -216,6 +216,7 @@ export const App: React.FC = () => {
   const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>({});
   const [toastMessage, setToastMessage] = useState('');
   const [toastClosing, setToastClosing] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [form, setForm] = useState<FormState>({
     teamName: '',
     collegeName: '',
@@ -504,6 +505,7 @@ export const App: React.FC = () => {
         });
       }, 120);
     }
+    setMobileMenuOpen(false);
   };
 
   const handleTeamSizeChange = (nextSize: number) => {
@@ -1149,16 +1151,30 @@ export const App: React.FC = () => {
             <BellRing size={16} className="text-blue-300" />
             DVVPOE CE Department
           </div>
+
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen((current) => !current)}
+            className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.06] text-slate-100 md:hidden"
+            aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+            aria-expanded={mobileMenuOpen}
+          >
+            {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+          </button>
         </div>
 
-        <div className="border-t border-white/5 md:hidden">
-          <div className={`${shellClassName} flex items-center justify-between gap-2 py-3`}>
-            <a href="#overview" className="portal-mobile-nav-pill flex-1 text-center">Home</a>
-            <a href="#registration-panel" className="portal-mobile-nav-pill flex-1 text-center">Register</a>
-            <a href="#tracker" className="portal-mobile-nav-pill flex-1 text-center">Track</a>
-            <a href="#timeline" className="portal-mobile-nav-pill flex-1 text-center">Timeline</a>
+        {mobileMenuOpen ? (
+          <div className="border-t border-white/5 md:hidden">
+            <div className={`${shellClassName} grid grid-cols-2 gap-2 py-3`}>
+              <a href="#overview" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-nav-pill text-center">Home</a>
+              <a href="#registration-panel" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-nav-pill text-center">Register</a>
+              <a href="#tracker" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-nav-pill text-center">Track</a>
+              <a href="#timeline" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-nav-pill text-center">Timeline</a>
+              <a href="#announcement-archive" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-nav-pill text-center">Updates</a>
+              <a href="#admin-registrations" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-nav-pill text-center">Admin</a>
+            </div>
           </div>
-        </div>
+        ) : null}
       </header>
 
       <AnnouncementBanner announcement={pinnedAnnouncement} />
@@ -1251,7 +1267,7 @@ export const App: React.FC = () => {
 
       {!isAdminPage && !isTimelinePage ? (
         <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-[rgba(8,12,22,0.9)] px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] pt-3 backdrop-blur-2xl md:hidden">
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-5 gap-2">
             <a href="#overview" className="rounded-2xl border border-white/10 bg-white/[0.05] px-3 py-3 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-100">
               Home
             </a>
@@ -1263,6 +1279,9 @@ export const App: React.FC = () => {
             </a>
             <a href="#timeline" className="rounded-2xl border border-yellow-400/20 bg-yellow-500/14 px-3 py-3 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-yellow-100">
               Timeline
+            </a>
+            <a href="#admin-registrations" className="rounded-2xl border border-cyan-400/20 bg-cyan-500/14 px-3 py-3 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-cyan-100">
+              Admin
             </a>
           </div>
         </div>
