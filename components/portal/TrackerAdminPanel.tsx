@@ -28,6 +28,7 @@ type Props = {
   onLoadAdminRows: () => void;
   onDownload: (format: 'csv' | 'xlsx') => void;
   onStatusChange: (registrationId: string, status: 'verified' | 'rejected' | 'pending') => void;
+  showAdmin?: boolean;
 };
 
 const statusStyles: Record<string, string> = {
@@ -81,13 +82,14 @@ export const TrackerAdminPanel: React.FC<Props> = ({
   onLoadAdminRows,
   onDownload,
   onStatusChange,
+  showAdmin = true,
 }) => {
   const pendingRows = adminRows.filter((row) => row.status === 'pending');
   const verifiedRows = adminRows.filter((row) => row.status === 'verified');
   const rejectedRows = adminRows.filter((row) => row.status === 'rejected');
 
   return (
-    <section id="tracker" className="grid gap-5 xl:grid-cols-[0.92fr_1.08fr] xl:gap-6">
+    <section id="tracker" className={`grid gap-5 ${showAdmin ? 'xl:grid-cols-[0.92fr_1.08fr] xl:gap-6' : ''}`}>
       <div data-reveal="left" className="portal-glow-card portal-glass rounded-[1.6rem] p-4 md:rounded-[2rem] md:p-8">
         <p className="text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Registration lookup</p>
         <h3 className="portal-title-lg mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron font-black uppercase text-transparent">
@@ -122,7 +124,7 @@ export const TrackerAdminPanel: React.FC<Props> = ({
           <button
             type="submit"
             disabled={lookupLoading || !lookupQuery.trim()}
-              className="animated-gradient-button rounded-2xl px-5 py-3 font-bold text-slate-950 disabled:opacity-60 sm:min-w-[10rem]"
+            className="animated-gradient-button rounded-2xl px-5 py-3 font-bold text-slate-950 disabled:opacity-60 sm:min-w-[10rem]"
           >
             {lookupLoading ? 'Searching...' : 'Search'}
           </button>
@@ -250,6 +252,7 @@ export const TrackerAdminPanel: React.FC<Props> = ({
         </div>
       </div>
 
+      {showAdmin ? (
       <div data-reveal="right" className="portal-glow-card portal-glass rounded-[1.6rem] p-4 md:rounded-[2rem] md:p-8">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -453,6 +456,7 @@ export const TrackerAdminPanel: React.FC<Props> = ({
           ) : null}
         </div>
       </div>
+      ) : null}
     </section>
   );
 };

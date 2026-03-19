@@ -179,11 +179,6 @@ img {
     var(--portal-shadow);
 }
 
-.portal-shell-padding {
-  padding-left: clamp(0.9rem, 3vw, 1.6rem);
-  padding-right: clamp(0.9rem, 3vw, 1.6rem);
-}
-
 .portal-title-xl {
   font-size: clamp(1.85rem, 7vw, 4rem);
   line-height: 1.04;
@@ -483,12 +478,6 @@ select.floating-field-input option {
   min-width: 0;
 }
 
-.hero-countdown-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem;
-}
-
 .hero-highlight-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -509,11 +498,6 @@ select.floating-field-input option {
 }
 
 @media (max-width: 768px) {
-  .portal-shell-padding {
-    padding-left: 0.9rem;
-    padding-right: 0.9rem;
-  }
-
   .portal-glass,
   .portal-glow-card {
     border-radius: 1.35rem;
@@ -552,7 +536,6 @@ select.floating-field-input option {
 
   .hero-spotlight-grid,
   .hero-stat-grid,
-  .hero-countdown-grid,
   .hero-highlight-grid {
     grid-template-columns: minmax(0, 1fr);
   }

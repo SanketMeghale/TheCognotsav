@@ -1122,7 +1122,7 @@ export const App: React.FC = () => {
 
       <header className="sticky top-0 z-30 border-b border-white/10 bg-[rgba(15,17,26,0.78)] backdrop-blur-2xl">
         <div className="h-px w-full bg-gradient-to-r from-transparent via-blue-400/60 to-transparent" />
-        <div className={`${shellClassName} portal-shell-padding flex flex-wrap items-center justify-between gap-3 py-3 md:py-4`}>
+        <div className={`${shellClassName} flex flex-wrap items-center justify-between gap-3 py-3 md:py-4`}>
           <div className="min-w-0 flex-1">
             <p className="text-[11px] uppercase tracking-[0.3em] text-blue-300/80">Participant Portal</p>
             <div className="flex flex-wrap items-center gap-2 md:gap-3">
@@ -1152,12 +1152,11 @@ export const App: React.FC = () => {
         </div>
 
         <div className="border-t border-white/5 md:hidden">
-          <div className={`${shellClassName} portal-shell-padding portal-mobile-nav flex items-center gap-2 overflow-x-auto py-3`}>
-            <a href="#overview" className="portal-mobile-nav-pill">Overview</a>
-            <a href="#timeline" className="portal-mobile-nav-pill">Timeline</a>
-            <a href="#registration-panel" className="portal-mobile-nav-pill">Register</a>
-            <a href="#tracker" className="portal-mobile-nav-pill">Tracker</a>
-            <a href="#admin-registrations" className="portal-mobile-nav-pill">Admin</a>
+          <div className={`${shellClassName} flex items-center justify-between gap-2 py-3`}>
+            <a href="#overview" className="portal-mobile-nav-pill flex-1 text-center">Home</a>
+            <a href="#registration-panel" className="portal-mobile-nav-pill flex-1 text-center">Register</a>
+            <a href="#tracker" className="portal-mobile-nav-pill flex-1 text-center">Track</a>
+            <a href="#timeline" className="portal-mobile-nav-pill flex-1 text-center">Timeline</a>
           </div>
         </div>
       </header>
@@ -1195,7 +1194,7 @@ export const App: React.FC = () => {
             totalRemainingSlots={totalRemainingSlots}
           />
 
-          <main className={`${shellClassName} portal-shell-padding space-y-6 pb-24 md:space-y-10 md:pb-20`}>
+          <main className={`${shellClassName} space-y-6 pb-24 md:space-y-10 md:pb-20`}>
             <AnnouncementArchiveSection
               announcements={visibleAnnouncements}
               loading={loadingAnnouncements}
@@ -1242,6 +1241,7 @@ export const App: React.FC = () => {
               onAdminKeyChange={setAdminKey}
               onLoadAdminRows={loadAdminRows}
               onDownload={downloadAdminFile}
+              showAdmin={false}
             />
           </main>
         </>

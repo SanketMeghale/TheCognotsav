@@ -4,7 +4,7 @@ import { shellClassName } from './utils';
 
 export const PortalFooter: React.FC = () => {
   return (
-    <footer className="pt-4 pb-12 md:pt-6 md:pb-16">
+    <footer className="pt-4 pb-4 md:pt-6 md:pb-10">
       <div className={`${shellClassName}`}>
         <div className="portal-glow-card portal-glass overflow-hidden rounded-[2rem] p-6 md:p-8">
           <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr_0.8fr]">

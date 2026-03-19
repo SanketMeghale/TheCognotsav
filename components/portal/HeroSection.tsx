@@ -65,13 +65,6 @@ const highlightTracks = [
 
 const posterTags = ['Live registrations', 'Event-wise payments', 'Instant tracker'];
 
-const countdownAccents = [
-  'from-cyan-500/20 via-blue-500/16 to-indigo-600/12 border-cyan-400/18',
-  'from-purple-500/20 via-pink-500/16 to-magenta-600/12 border-purple-400/18',
-  'from-yellow-500/22 via-orange-500/16 to-red-600/12 border-yellow-400/18',
-  'from-pink-500/20 via-purple-500/16 to-violet-600/12 border-pink-400/18',
-];
-
 export const HeroSection: React.FC<Props> = ({ totalEvents, totalRegistrations, totalRemainingSlots }) => {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
@@ -291,19 +284,15 @@ export const HeroSection: React.FC<Props> = ({ totalEvents, totalRegistrations, 
               Ahilyanagar
             </div>
           </div>
-
-          <div className="hero-countdown-grid mt-6">
-            {countdownBlocks.map((block, index) => (
-              <div
-                key={block.label}
-                data-reveal="up"
-                className={`tilt-card floating-card rounded-[1.45rem] border bg-gradient-to-br p-4 text-center shadow-[0_16px_42px_rgba(2,8,23,0.16)] backdrop-blur-xl ${countdownAccents[index]}`}
-                style={{ animationDelay: `${index * 0.16}s` }}
-              >
-                <p className="text-[11px] uppercase tracking-[0.25em] text-slate-300">{block.label}</p>
-                <p className="mt-2 font-orbitron text-3xl font-black text-white">{block.value}</p>
-              </div>
-            ))}
+          <div className="mt-5 rounded-[1.5rem] border border-white/10 bg-[linear-gradient(145deg,rgba(12,20,35,0.9),rgba(20,18,42,0.84))] p-4 shadow-[0_16px_42px_rgba(2,8,23,0.16)]">
+            <div className="grid grid-cols-4 gap-2 sm:gap-3">
+              {countdownBlocks.map((block) => (
+                <div key={block.label} className="rounded-[1.15rem] border border-white/10 bg-white/[0.05] px-2 py-3 text-center">
+                  <p className="text-[10px] uppercase tracking-[0.16em] text-slate-300">{block.label}</p>
+                  <p className="mt-2 font-orbitron text-xl font-black text-white sm:text-2xl">{block.value}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 

@@ -180,7 +180,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const selectedTheme = selectedEvent ? categoryThemes[selectedEvent.category] || categoryThemes.Technical : categoryThemes.Technical;
 
   return (
-    <section id="registration-panel" className="grid gap-5 xl:grid-cols-[1.08fr_0.92fr] xl:gap-6">
+    <section id="registration-panel" className="grid gap-4 xl:grid-cols-[1.08fr_0.92fr] xl:gap-6">
       <div data-reveal="left" className="portal-glow-card portal-glass rounded-[1.6rem] p-4 md:rounded-[2rem] md:p-8">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -215,7 +215,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                 onClick={() => onSelectEvent(event.slug)}
                 data-reveal="up"
                 aria-pressed={active}
-                className={`tilt-card group relative h-full overflow-hidden rounded-[1.65rem] border bg-[linear-gradient(180deg,rgba(10,18,32,0.94),rgba(10,18,32,0.76))] text-left transition duration-300 ${active ? theme.active : 'border-white/10'}`}
+                className={`tilt-card group relative h-full overflow-hidden rounded-[1.35rem] border bg-[linear-gradient(180deg,rgba(10,18,32,0.94),rgba(10,18,32,0.76))] text-left transition duration-300 md:rounded-[1.65rem] ${active ? theme.active : 'border-white/10'}`}
               >
                 <div className={`absolute inset-0 bg-gradient-to-br opacity-0 transition duration-300 group-hover:opacity-100 ${theme.card}`} />
                 <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${theme.progress}`} />
@@ -224,20 +224,20 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                     <img src={event.poster_path} alt={event.name} className="h-full w-full object-cover transition duration-700 group-hover:scale-110" />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#07111d] via-[#07111d]/38 to-transparent" />
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.14),transparent_24%)]" />
-                    <div className="absolute left-4 top-4 flex flex-wrap gap-2">
-                      <span className={`rounded-full border px-3 py-1 text-[10px] uppercase tracking-[0.22em] backdrop-blur-md ${theme.badge}`}>
+                    <div className="absolute left-3 top-3 flex max-w-[calc(100%-1.5rem)] flex-wrap gap-1.5 md:left-4 md:top-4 md:gap-2">
+                      <span className={`rounded-full border px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] backdrop-blur-md md:px-3 md:tracking-[0.22em] ${theme.badge}`}>
                         {event.category}
                       </span>
-                      <span className="rounded-full border border-white/12 bg-black/25 px-3 py-1 text-[10px] uppercase tracking-[0.22em] text-white/84 backdrop-blur-md">
+                      <span className="rounded-full border border-white/12 bg-black/25 px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-white/84 backdrop-blur-md md:px-3 md:tracking-[0.22em]">
                         {event.registration_fee_label || formatCurrency(event.registration_fee)}
                       </span>
-                      <span className={`rounded-full border border-white/12 bg-black/25 px-3 py-1 text-[10px] uppercase tracking-[0.22em] backdrop-blur-md ${heat.accent}`}>
+                      <span className={`rounded-full border border-white/12 bg-black/25 px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] backdrop-blur-md md:px-3 md:tracking-[0.22em] ${heat.accent}`}>
                         {heat.label}
                       </span>
                     </div>
-                    <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-4 md:p-5">
-                      <h4 className="text-lg font-bold text-white md:text-xl">{event.name}</h4>
-                      <span className={`rounded-full border px-3 py-1 text-[11px] backdrop-blur md:text-xs ${theme.badge}`}>
+                    <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 p-4 md:p-5">
+                      <h4 className="max-w-[70%] text-base font-bold text-white md:text-xl">{event.name}</h4>
+                      <span className={`rounded-full border px-2.5 py-1 text-[10px] backdrop-blur md:px-3 md:text-xs ${theme.badge}`}>
                         {getTeamLabel(event)}
                       </span>
                     </div>
@@ -266,7 +266,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                         <p className="mt-2 text-xs text-fuchsia-100">{event.waitlist_count} team(s) already on waitlist</p>
                       ) : null}
                     </div>
-                    <div className="mt-3 grid gap-3 sm:grid-cols-2 md:mt-4">
+                    <div className="mt-3 grid gap-2 sm:grid-cols-2 md:mt-4 md:gap-3">
                       <div className={`rounded-2xl border border-white/10 bg-gradient-to-r p-3 text-sm text-slate-100 backdrop-blur-md ${theme.surface}`}>
                         {event.date_label} / {event.time_label}
                       </div>
@@ -342,7 +342,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
               </div>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2 md:gap-4">
+            <div className="grid gap-2 sm:grid-cols-2 md:gap-4">
               {selectedEvent.max_members > selectedEvent.min_members ? (
                 <label className={`block rounded-[1.45rem] border border-white/10 bg-gradient-to-r p-4 backdrop-blur-md ${selectedTheme.surface}`}>
                   <span className="mb-2 block text-sm text-slate-200">Team size</span>
@@ -362,7 +362,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
               </div>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2 md:gap-4">
+            <div className="grid gap-2 sm:grid-cols-2 md:gap-4">
               {selectedEvent.min_members === 1 && !selectedEvent.is_team_event ? null : (
                 <div className="sm:col-span-2">
                   <FloatingField label="Team name" value={form.teamName} onChange={(value) => onFormFieldChange('teamName', value)} onBlur={() => onFieldBlur('teamName')} error={showError('teamName')} required />
@@ -391,7 +391,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                 </div>
               </div>
 
-              <div className="mt-5 grid gap-4 lg:grid-cols-[0.92fr_1.08fr] lg:gap-5">
+              <div className="mt-4 grid gap-3 lg:grid-cols-[0.92fr_1.08fr] lg:gap-5">
                 <div className={`tilt-card rounded-[1.5rem] border border-white/10 bg-gradient-to-br p-5 backdrop-blur-md ${selectedTheme.surface}`}>
                   <div className="flex items-center gap-2 text-blue-100">
                     <QrCode size={18} />
@@ -458,7 +458,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                 </div>
               </div>
 
-              <div className="mt-4 space-y-4 md:mt-5">
+              <div className="mt-4 space-y-3 md:mt-5 md:space-y-4">
                 {form.participants.map((participant, index) => {
                   const participantTone = index === 0 ? 'border-blue-400/16 bg-gradient-to-br from-blue-500/10 to-transparent' : index % 2 === 1 ? 'border-purple-400/14 bg-gradient-to-br from-purple-500/8 to-transparent' : 'border-yellow-400/14 bg-gradient-to-br from-yellow-500/8 to-transparent';
 
