@@ -68,6 +68,7 @@ const handbookBySlug: Record<string, {
   overview: string;
   highlights: string[];
   rules: string[];
+  handbookUrl?: string;
   contact?: string[];
 }> = {
   'rang-manch': {
@@ -76,6 +77,7 @@ const handbookBySlug: Record<string, {
       'Rangmanch is a solo or group stage-performance competition focused on acting, expressive ability, and confidence on stage. It is designed for theatre, drama, and performance-driven entries.',
     highlights: ['Solo or group format', '5 minute stage slot', 'Rs 50 solo and Rs 200 up to 5 members', 'Performance-first judging'],
     rules: ['Express emotions, ideas, and stories clearly through acting', 'Report before the event start time', 'Maintain stage discipline and follow organizer instructions'],
+    handbookUrl: '/handbooks/rangmanch.pdf',
   },
   'squid-game': {
     theme: 'Survival and Strategy',
@@ -83,6 +85,7 @@ const handbookBySlug: Record<string, {
       'Squid Game is an individual elimination event with multiple themed rounds that test speed, decision-making, teamwork under pressure, and survival instincts.',
     highlights: ['Individual competition', 'Rounds include mingle, tug of war, battleship, dalgona, and red light green light', 'Rs 50 per participant', 'Judges decision is final'],
     rules: ['No cheating or unfair play', 'Eliminated players cannot re-enter', 'Players must be present before the event starts', 'Failure to follow instructions leads to elimination'],
+    handbookUrl: '/handbooks/squid-game.pdf',
   },
   techxcelerate: {
     theme: 'Future Tech and Innovation',
@@ -90,6 +93,7 @@ const handbookBySlug: Record<string, {
       'TechXcelerate combines poster presentation and project or paper presentation into a showcase for innovation, technical understanding, and communication quality.',
     highlights: ['Poster competition at Rs 50 per participant', 'Project or paper presentation at Rs 200 per team', 'Project demo or PPT allowed', 'Presentation plus Q and A based judging'],
     rules: ['All submissions must be original', 'Bring laptop, model, or backup presentation as needed', 'Paper format should follow standard structure', 'Late entries will not be accepted'],
+    handbookUrl: '/handbooks/techxcelerate.docx',
   },
   'bgmi-esports': {
     theme: 'Enter the Arena. Survive the Battle.',
@@ -97,6 +101,7 @@ const handbookBySlug: Record<string, {
       'Runbhumi eSports is a squad-based competitive gaming event for BGMI and Free Fire, built around strategy, survival, kill points, and final-stage qualification.',
     highlights: ['4 players per team', 'Qualifier plus final structure', 'Kill points and placement points both matter', 'Seminar Hall venue'],
     rules: ['No cheating, hacking, or unfair play', 'Same team must play throughout', 'No restart for network issues', 'Players must join rooms on time'],
+    handbookUrl: '/handbooks/runbhumi-esports.pdf',
     contact: ['Harshad Dike - 9322665964', 'Rutvik Shinde - 9168277048', 'Sanket Meghale - 9356776307'],
   },
   'ff-esports': {
@@ -105,6 +110,7 @@ const handbookBySlug: Record<string, {
       'Runbhumi eSports is a squad-based competitive gaming event for BGMI and Free Fire, built around strategy, survival, kill points, and final-stage qualification.',
     highlights: ['4 players per team', 'Qualifier plus final structure', 'Kill points and placement points both matter', 'Seminar Hall venue'],
     rules: ['No cheating, hacking, or unfair play', 'Same team must play throughout', 'No restart for network issues', 'Players must join rooms on time'],
+    handbookUrl: '/handbooks/runbhumi-esports.pdf',
     contact: ['Harshad Dike - 9322665964', 'Rutvik Shinde - 9168277048', 'Sanket Meghale - 9356776307'],
   },
 };
@@ -182,9 +188,16 @@ export const EventRegistrationPanel: React.FC<Props> = ({ selectedEvent, teamSiz
                     {selectedHandbook?.theme || 'Key details'}
                   </p>
                 </div>
-                <a href="#registration-form-start" className={`inline-flex items-center justify-center rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] ${selectedTheme.button}`}>
-                  Register for this event
-                </a>
+                <div className="flex flex-wrap gap-2">
+                  {selectedHandbook?.handbookUrl ? (
+                    <a href={selectedHandbook.handbookUrl} target="_blank" rel="noreferrer" className="magnetic-button inline-flex items-center justify-center rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-white">
+                      View Handbook
+                    </a>
+                  ) : null}
+                  <a href="#registration-form-start" className={`inline-flex items-center justify-center rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] ${selectedTheme.button}`}>
+                    Register for this event
+                  </a>
+                </div>
               </div>
 
               <p className="mt-4 text-sm leading-7 text-slate-300">
