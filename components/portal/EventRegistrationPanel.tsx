@@ -181,14 +181,14 @@ export const EventRegistrationPanel: React.FC<Props> = ({
 
   return (
     <section id="registration-panel" className="grid gap-5 xl:grid-cols-[1.08fr_0.92fr] xl:gap-6">
-      <div data-reveal="left" className="portal-glow-card portal-glass rounded-[2rem] p-6 md:p-8">
+      <div data-reveal="left" className="portal-glow-card portal-glass rounded-[1.6rem] p-4 md:rounded-[2rem] md:p-8">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Events</p>
-            <h3 className="mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron text-3xl font-black uppercase text-transparent">
+            <h3 className="portal-title-lg mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron font-black uppercase text-transparent">
               Choose an event
             </h3>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300">
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300 md:leading-7">
               Stronger category accents and clearer slot signals make the selection step easier to scan.
             </p>
           </div>
@@ -285,11 +285,11 @@ export const EventRegistrationPanel: React.FC<Props> = ({
         </div>
       </div>
 
-      <div id={formAnchorId} data-reveal="right" className="portal-glow-card portal-glass rounded-[2rem] p-5 md:p-8">
+      <div id={formAnchorId} data-reveal="right" className="portal-glow-card portal-glass rounded-[1.6rem] p-4 md:rounded-[2rem] md:p-8">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Registration form</p>
-            <h3 className="mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron text-3xl font-black uppercase text-transparent">
+            <h3 className="portal-title-lg mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron font-black uppercase text-transparent">
               Participant details
             </h3>
           </div>
@@ -543,7 +543,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
 
             {errorMessage ? <div className="rounded-2xl border border-rose-400/25 bg-gradient-to-r from-rose-500/14 to-orange-500/8 px-4 py-3 text-sm text-rose-100">{errorMessage}</div> : null}
 
-            <button type="submit" disabled={submitting} className="animated-gradient-button inline-flex w-full items-center justify-center rounded-2xl px-6 py-4 font-bold text-slate-950 disabled:opacity-60">
+            <button type="submit" disabled={submitting} className="animated-gradient-button inline-flex w-full items-center justify-center rounded-2xl px-6 py-4 text-base font-bold text-slate-950 disabled:opacity-60">
               {submitting ? 'Submitting registration...' : 'Submit registration'}
               <ArrowRight size={18} />
             </button>

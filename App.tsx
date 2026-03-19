@@ -1122,11 +1122,11 @@ export const App: React.FC = () => {
 
       <header className="sticky top-0 z-30 border-b border-white/10 bg-[rgba(15,17,26,0.78)] backdrop-blur-2xl">
         <div className="h-px w-full bg-gradient-to-r from-transparent via-blue-400/60 to-transparent" />
-        <div className={`${shellClassName} flex flex-wrap items-center justify-between gap-4 py-4`}>
-          <div className="min-w-0">
+        <div className={`${shellClassName} portal-shell-padding flex flex-wrap items-center justify-between gap-3 py-3 md:py-4`}>
+          <div className="min-w-0 flex-1">
             <p className="text-[11px] uppercase tracking-[0.3em] text-blue-300/80">Participant Portal</p>
-            <div className="flex flex-wrap items-center gap-3">
-              <h1 className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron text-xl font-black uppercase tracking-tight text-transparent md:text-2xl">
+            <div className="flex flex-wrap items-center gap-2 md:gap-3">
+              <h1 className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron text-lg font-black uppercase tracking-tight text-transparent sm:text-xl md:text-2xl">
                 CEAS COGNOTSAV Registration Portal
               </h1>
               <span className="hidden rounded-full border border-yellow-400/20 bg-yellow-500/10 px-4 py-2 text-[11px] uppercase tracking-[0.22em] text-yellow-200 lg:inline-flex">
@@ -1152,10 +1152,8 @@ export const App: React.FC = () => {
         </div>
 
         <div className="border-t border-white/5 md:hidden">
-          <div className={`${shellClassName} portal-mobile-nav flex items-center gap-2 overflow-x-auto py-3`}>
+          <div className={`${shellClassName} portal-shell-padding portal-mobile-nav flex items-center gap-2 overflow-x-auto py-3`}>
             <a href="#overview" className="portal-mobile-nav-pill">Overview</a>
-            <a href="#smart-alerts" className="portal-mobile-nav-pill">Alerts</a>
-            <a href="#announcement-archive" className="portal-mobile-nav-pill">Updates</a>
             <a href="#timeline" className="portal-mobile-nav-pill">Timeline</a>
             <a href="#registration-panel" className="portal-mobile-nav-pill">Register</a>
             <a href="#tracker" className="portal-mobile-nav-pill">Tracker</a>
@@ -1197,7 +1195,7 @@ export const App: React.FC = () => {
             totalRemainingSlots={totalRemainingSlots}
           />
 
-          <main className={`${shellClassName} space-y-8 pb-16 md:space-y-10 md:pb-20`}>
+          <main className={`${shellClassName} portal-shell-padding space-y-6 pb-24 md:space-y-10 md:pb-20`}>
             <AnnouncementArchiveSection
               announcements={visibleAnnouncements}
               loading={loadingAnnouncements}
@@ -1250,6 +1248,25 @@ export const App: React.FC = () => {
       )}
 
       <PortalFooter />
+
+      {!isAdminPage && !isTimelinePage ? (
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-[rgba(8,12,22,0.9)] px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] pt-3 backdrop-blur-2xl md:hidden">
+          <div className="grid grid-cols-4 gap-2">
+            <a href="#overview" className="rounded-2xl border border-white/10 bg-white/[0.05] px-3 py-3 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-100">
+              Home
+            </a>
+            <a href="#registration-panel" className="rounded-2xl border border-blue-400/20 bg-blue-500/14 px-3 py-3 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-blue-100">
+              Register
+            </a>
+            <a href="#tracker" className="rounded-2xl border border-purple-400/20 bg-purple-500/14 px-3 py-3 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-purple-100">
+              Track
+            </a>
+            <a href="#timeline" className="rounded-2xl border border-yellow-400/20 bg-yellow-500/14 px-3 py-3 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-yellow-100">
+              Timeline
+            </a>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 };

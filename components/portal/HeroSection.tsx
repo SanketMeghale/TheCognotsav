@@ -145,10 +145,10 @@ export const HeroSection: React.FC<Props> = ({ totalEvents, totalRegistrations, 
   );
 
   return (
-    <section id="overview" className={`${shellClassName} hero-layout py-8 md:py-12 xl:py-14`}>
+    <section id="overview" className={`${shellClassName} hero-layout py-5 md:py-12 xl:py-14`}>
       <div
         data-reveal="left"
-        className="portal-glow-card portal-glass relative overflow-hidden rounded-[2.6rem] p-6 md:p-8 xl:p-10"
+        className="portal-glow-card portal-glass relative overflow-hidden rounded-[2rem] p-5 md:rounded-[2.6rem] md:p-8 xl:p-10"
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.16),transparent_24%),radial-gradient(circle_at_82%_18%,rgba(168,85,247,0.16),transparent_22%),radial-gradient(circle_at_bottom_right,rgba(251,191,36,0.12),transparent_24%)]" />
         <div className="absolute -left-10 bottom-0 h-56 w-56 rounded-full bg-blue-500/18 blur-[110px]" />
@@ -165,7 +165,7 @@ export const HeroSection: React.FC<Props> = ({ totalEvents, totalRegistrations, 
 
           <div data-reveal="up" className="max-w-4xl">
             <p className="text-[11px] uppercase tracking-[0.38em] text-blue-300/80">Our Legacy</p>
-            <h2 className="mt-5 font-orbitron text-[clamp(2.15rem,5.4vw,4.1rem)] font-black uppercase leading-[1.03]">
+            <h2 className="portal-title-xl mt-4 font-orbitron font-black uppercase">
               <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
                 Where Engineering
               </span>
@@ -175,17 +175,17 @@ export const HeroSection: React.FC<Props> = ({ totalEvents, totalRegistrations, 
               </span>
             </h2>
 
-            <p className="mt-6 max-w-[44rem] text-[clamp(1rem,1.3vw,1.12rem)] leading-8 text-slate-100/95 md:leading-9">
+            <p className="portal-copy mt-5 max-w-[44rem] text-slate-100/95">
               COGNOTSAV is the flagship technical festival of the Computer Engineering Department at Dr.
               Vithalrao Vikhe Patil College of Engineering, Ahilyanagar. It gives students a premium stage
               to showcase innovation, technical skill, and competitive energy.
             </p>
-            <p className="mt-4 max-w-[42rem] text-[clamp(0.98rem,1.08vw,1.05rem)] leading-8 text-slate-300">
+            <p className="portal-copy mt-3 max-w-[42rem] text-slate-300">
               Through competitions, esports, project exhibitions, and UTOPIA, the fest pushes teams to
               collaborate, create, and perform beyond the classroom.
             </p>
 
-            <div className="mt-7 flex flex-wrap gap-3">
+            <div className="mt-5 flex flex-wrap gap-2 md:mt-7 md:gap-3">
               {highlightTracks.map((track) => (
                 <div
                   key={track.label}
@@ -205,7 +205,7 @@ export const HeroSection: React.FC<Props> = ({ totalEvents, totalRegistrations, 
                 <div
                   key={card.label}
                   data-reveal="up"
-                  className={`tilt-card rounded-[1.8rem] border bg-gradient-to-br p-5 shadow-[0_20px_55px_rgba(2,8,23,0.16)] backdrop-blur-xl ${card.border} ${card.accent}`}
+                  className={`tilt-card rounded-[1.4rem] border bg-gradient-to-br p-4 shadow-[0_20px_55px_rgba(2,8,23,0.16)] backdrop-blur-xl md:rounded-[1.8rem] md:p-5 ${card.border} ${card.accent}`}
                   style={{ animationDelay: `${index * 0.14}s` }}
                 >
                   <div className={`flex items-center gap-3 ${card.iconTone}`}>
@@ -224,11 +224,11 @@ export const HeroSection: React.FC<Props> = ({ totalEvents, totalRegistrations, 
               <div
                 key={card.label}
                 data-reveal="up"
-                className={`tilt-card floating-card rounded-[1.65rem] border border-white/10 bg-gradient-to-br ${card.accent} p-5 shadow-[0_20px_50px_rgba(2,8,23,0.16)] backdrop-blur-xl`}
+                className={`tilt-card floating-card rounded-[1.35rem] border border-white/10 bg-gradient-to-br ${card.accent} p-4 shadow-[0_20px_50px_rgba(2,8,23,0.16)] backdrop-blur-xl md:rounded-[1.65rem] md:p-5`}
                 style={{ animationDelay: `${index * 0.15}s` }}
               >
                 <p className="text-sm text-slate-200/88">{card.label}</p>
-                <p className={`mt-2 font-orbitron text-3xl font-black ${card.textTone}`}>{card.value}</p>
+                <p className={`mt-2 font-orbitron text-2xl font-black md:text-3xl ${card.textTone}`}>{card.value}</p>
               </div>
             ))}
           </div>
@@ -238,17 +238,17 @@ export const HeroSection: React.FC<Props> = ({ totalEvents, totalRegistrations, 
       <div className="hero-side-grid min-w-0">
         <div
           data-reveal="right"
-          className="group relative overflow-hidden rounded-[2.25rem] bg-gradient-to-br from-blue-500/28 via-purple-500/10 to-pink-500/24 p-px shadow-[0_30px_95px_rgba(2,8,23,0.28)]"
+          className="group relative overflow-hidden rounded-[1.6rem] bg-gradient-to-br from-blue-500/28 via-purple-500/10 to-pink-500/24 p-px shadow-[0_30px_95px_rgba(2,8,23,0.28)] md:rounded-[2.25rem]"
         >
           <div className="absolute -right-8 top-8 h-36 w-36 rounded-full bg-blue-500/18 blur-[90px]" />
           <div className="absolute -left-8 bottom-10 h-40 w-40 rounded-full bg-purple-500/16 blur-[95px]" />
-          <div className="relative overflow-hidden rounded-[calc(2.25rem-1px)] border border-white/12 bg-[linear-gradient(165deg,rgba(13,19,36,0.76),rgba(9,15,29,0.56))] backdrop-blur-2xl transition duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_36px_110px_rgba(56,189,248,0.16)]">
+            <div className="relative overflow-hidden rounded-[calc(1.6rem-1px)] border border-white/12 bg-[linear-gradient(165deg,rgba(13,19,36,0.76),rgba(9,15,29,0.56))] backdrop-blur-2xl transition duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_36px_110px_rgba(56,189,248,0.16)] md:rounded-[calc(2.25rem-1px)]">
             <div className="absolute inset-x-[12%] top-0 h-px bg-gradient-to-r from-transparent via-white/60 to-transparent opacity-90" />
             <div className="relative overflow-hidden">
               <img
                 src="/images/ceasposter.jpeg"
                 alt="CEAS COGNOTSAV 2026 poster"
-                className="block h-[26rem] w-full object-cover object-center transition duration-500 group-hover:scale-[1.03] md:h-[30rem]"
+                className="block h-[19rem] w-full object-cover object-center transition duration-500 group-hover:scale-[1.03] sm:h-[22rem] md:h-[30rem]"
               />
               <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,17,29,0.04),rgba(7,17,29,0.2)_34%,rgba(7,17,29,0.92))]" />
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.28),transparent_24%),radial-gradient(circle_at_20%_30%,rgba(59,130,246,0.18),transparent_30%)]" />
@@ -257,10 +257,10 @@ export const HeroSection: React.FC<Props> = ({ totalEvents, totalRegistrations, 
               </div>
               <div className="absolute inset-x-0 bottom-0 p-6 md:p-7">
                 <p className="text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Flagship Fest</p>
-                <h3 className="mt-3 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron text-2xl font-black uppercase text-transparent md:text-[2rem]">
+                <h3 className="portal-title-lg mt-3 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron font-black uppercase text-transparent">
                   Code. Compete. Conquer.
                 </h3>
-                <p className="mt-3 max-w-md text-sm leading-7 text-slate-200">
+                <p className="mt-3 max-w-md text-sm leading-6 text-slate-200 md:leading-7">
                   A sharper visual stage for registrations, event discovery, live payments, and participant
                   momentum.
                 </p>
@@ -280,11 +280,11 @@ export const HeroSection: React.FC<Props> = ({ totalEvents, totalRegistrations, 
           </div>
         </div>
 
-        <div data-reveal="right" className="portal-glow-card portal-glass rounded-[2rem] p-6 md:p-7">
+        <div data-reveal="right" className="portal-glow-card portal-glass rounded-[1.6rem] p-5 md:rounded-[2rem] md:p-7">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="min-w-0 max-w-full">
                 <p className="text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Countdown</p>
-              <h3 className="mt-2 text-2xl font-semibold text-white">07-08 April 2026</h3>
+              <h3 className="portal-title-lg mt-2 font-semibold text-white">07-08 April 2026</h3>
             </div>
             <div className="rounded-full border border-white/10 bg-white/[0.06] px-4 py-2 text-sm text-slate-100 backdrop-blur-md">
               <CalendarDays size={16} className="mr-2 inline" />
@@ -307,11 +307,11 @@ export const HeroSection: React.FC<Props> = ({ totalEvents, totalRegistrations, 
           </div>
         </div>
 
-        <div data-reveal="right" className="portal-glow-card portal-glass rounded-[2rem] p-6 md:p-7">
+        <div data-reveal="right" className="portal-glow-card portal-glass rounded-[1.6rem] p-5 md:rounded-[2rem] md:p-7">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <p className="text-[11px] uppercase tracking-[0.35em] text-purple-300/80">Festival Spectrum</p>
-              <h3 className="mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron text-2xl font-black uppercase text-transparent">
+              <h3 className="portal-title-lg mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron font-black uppercase text-transparent">
                 Tracks across tech, play, and showcase
               </h3>
             </div>

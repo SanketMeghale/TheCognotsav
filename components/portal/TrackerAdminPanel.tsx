@@ -87,13 +87,13 @@ export const TrackerAdminPanel: React.FC<Props> = ({
   const rejectedRows = adminRows.filter((row) => row.status === 'rejected');
 
   return (
-    <section id="tracker" className="grid gap-6 xl:grid-cols-[0.92fr_1.08fr]">
-      <div data-reveal="left" className="portal-glow-card portal-glass rounded-[2rem] p-6 md:p-8">
+    <section id="tracker" className="grid gap-5 xl:grid-cols-[0.92fr_1.08fr] xl:gap-6">
+      <div data-reveal="left" className="portal-glow-card portal-glass rounded-[1.6rem] p-4 md:rounded-[2rem] md:p-8">
         <p className="text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Registration lookup</p>
-        <h3 className="mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron text-3xl font-black uppercase text-transparent">
+        <h3 className="portal-title-lg mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron font-black uppercase text-transparent">
           Track your status
         </h3>
-        <p className="mt-3 text-sm leading-7 text-slate-200">
+        <p className="mt-3 text-sm leading-6 text-slate-200 md:leading-7">
           Participants can search by registration code or contact email and instantly see where their
           payment review stands.
         </p>
@@ -110,7 +110,7 @@ export const TrackerAdminPanel: React.FC<Props> = ({
           </span>
         </div>
 
-        <form onSubmit={onLookup} className="mt-6 flex flex-col gap-3 sm:flex-row">
+        <form onSubmit={onLookup} className="mt-5 flex flex-col gap-3 sm:flex-row">
           <div className="flex-1">
             <FloatingSearchField
               label="Enter registration code or contact email"
@@ -122,7 +122,7 @@ export const TrackerAdminPanel: React.FC<Props> = ({
           <button
             type="submit"
             disabled={lookupLoading || !lookupQuery.trim()}
-            className="animated-gradient-button rounded-2xl px-5 py-3 font-bold text-slate-950 disabled:opacity-60"
+              className="animated-gradient-button rounded-2xl px-5 py-3 font-bold text-slate-950 disabled:opacity-60 sm:min-w-[10rem]"
           >
             {lookupLoading ? 'Searching...' : 'Search'}
           </button>
@@ -143,7 +143,7 @@ export const TrackerAdminPanel: React.FC<Props> = ({
                     : 'border-cyan-300/10 bg-gradient-to-r from-cyan-400/10 to-fuchsia-400/8'
               }`}
             >
-              <div className="grid gap-5 xl:grid-cols-[1.1fr_0.9fr]">
+              <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr] xl:gap-5">
                 <div>
                   <div className="flex flex-wrap items-center gap-3">
                     <p className="text-lg font-bold text-white">{result.team_name}</p>
@@ -224,7 +224,7 @@ export const TrackerAdminPanel: React.FC<Props> = ({
                       <img
                         src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(result.qr_value)}`}
                         alt={`${result.registration_code} QR`}
-                        className="mx-auto h-44 w-44"
+                        className="mx-auto h-36 w-36 sm:h-40 sm:w-40 md:h-44 md:w-44"
                       />
                     </div>
                     <p className="mt-4 text-xs uppercase tracking-[0.24em] text-slate-400">Event-day entry pass</p>
@@ -250,11 +250,11 @@ export const TrackerAdminPanel: React.FC<Props> = ({
         </div>
       </div>
 
-      <div data-reveal="right" className="portal-glow-card portal-glass rounded-[2rem] p-6 md:p-8">
+      <div data-reveal="right" className="portal-glow-card portal-glass rounded-[1.6rem] p-4 md:rounded-[2rem] md:p-8">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Admin payment operations</p>
-            <h3 className="mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron text-3xl font-black uppercase text-transparent">
+            <h3 className="portal-title-lg mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron font-black uppercase text-transparent">
               Verify and export
             </h3>
           </div>
@@ -294,7 +294,7 @@ export const TrackerAdminPanel: React.FC<Props> = ({
           </button>
         </div>
 
-        <div className="mt-4 flex flex-wrap gap-3">
+        <div className="mt-4 grid gap-3 sm:flex sm:flex-wrap">
           <button
             type="button"
             onClick={() => onDownload('csv')}
