@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { BellRing, CheckCircle2, Menu, X } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Menu, X } from 'lucide-react';
 import { AdminRegistrationsPage } from './components/portal/AdminRegistrationsPage.tsx';
 import { AnnouncementArchiveSection } from './components/portal/AnnouncementArchiveSection.tsx';
 import { AnnouncementBanner } from './components/portal/AnnouncementBanner.tsx';
@@ -217,6 +217,7 @@ export const App: React.FC = () => {
   const [toastMessage, setToastMessage] = useState('');
   const [toastClosing, setToastClosing] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [form, setForm] = useState<FormState>({
     teamName: '',
     collegeName: '',
@@ -478,6 +479,12 @@ export const App: React.FC = () => {
     .filter((announcement) => isAnnouncementActive(announcement))
     .slice(0, 8);
 
+  useEffect(() => {
+    if (successReceipt) {
+      setShowSuccessModal(true);
+    }
+  }, [successReceipt]);
+
   const markFieldTouched = (field: string) => {
     setTouchedFields((current) => (current[field] ? current : { ...current, [field]: true }));
   };
@@ -494,6 +501,7 @@ export const App: React.FC = () => {
     setSuccessMessage('');
     setErrorMessage('');
     setSuccessReceipt(null);
+    setShowSuccessModal(false);
     setPaymentScreenshotDataUrl(null);
     setPaymentScreenshotName('');
 
@@ -1122,40 +1130,84 @@ export const App: React.FC = () => {
         </div>
       ) : null}
 
-      <header className="sticky top-0 z-30 border-b border-white/10 bg-[rgba(15,17,26,0.78)] backdrop-blur-2xl">
-        <div className="h-px w-full bg-gradient-to-r from-transparent via-blue-400/60 to-transparent" />
-        <div className={`${shellClassName} flex flex-wrap items-center justify-between gap-3 py-3 md:py-4`}>
-          <div className="min-w-0 flex-1">
-            <p className="text-[11px] uppercase tracking-[0.3em] text-blue-300/80">Participant Portal</p>
-            <div className="flex flex-wrap items-center gap-2 md:gap-3">
-              <h1 className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron text-lg font-black uppercase tracking-tight text-transparent sm:text-xl md:text-2xl">
-                CEAS COGNOTSAV Registration Portal
-              </h1>
-              <span className="hidden rounded-full border border-yellow-400/20 bg-yellow-500/10 px-4 py-2 text-[11px] uppercase tracking-[0.22em] text-yellow-200 lg:inline-flex">
-                Live approvals
-              </span>
+      {loadingEvents && events.length === 0 && !isAdminPage && !isTimelinePage ? (
+        <div className="portal-loader-overlay">
+          <div className="portal-loader-card">
+            <div className="portal-loader-ring" />
+            <p className="mt-4 text-sm font-semibold text-white">Loading competitions...</p>
+          </div>
+        </div>
+      ) : null}
+
+      {showSuccessModal && successReceipt ? (
+        <div className="portal-modal-backdrop px-4" onClick={() => setShowSuccessModal(false)}>
+          <div className="portal-modal-card" onClick={(event) => event.stopPropagation()}>
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-3">
+                <div className="rounded-2xl bg-emerald-400/12 p-3 text-emerald-200">
+                  <CheckCircle2 size={20} />
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-emerald-200/75">Registration Successful</p>
+                  <h3 className="mt-2 text-xl font-semibold text-white">{successReceipt.eventName}</h3>
+                  <p className="mt-2 text-sm text-slate-300">Save the registration code and use tracker anytime.</p>
+                </div>
+              </div>
+              <button type="button" onClick={() => setShowSuccessModal(false)} className="rounded-xl border border-white/10 bg-white/[0.05] px-3 py-2 text-sm text-slate-200">
+                Close
+              </button>
+            </div>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              <div className="rounded-[1.2rem] border border-white/10 bg-white/[0.05] p-4">
+                <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400">Registration Code</p>
+                <p className="mt-2 text-2xl font-semibold text-white">{successReceipt.registrationCode}</p>
+              </div>
+              <div className="rounded-[1.2rem] border border-white/10 bg-white/[0.05] p-4">
+                <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400">Lead Contact</p>
+                <p className="mt-2 text-base font-semibold text-white">{successReceipt.contactName}</p>
+                <p className="mt-1 text-sm text-slate-300">{successReceipt.contactEmail}</p>
+              </div>
+            </div>
+            <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+              <button type="button" onClick={() => downloadConfirmationPass(successReceipt)} className="animated-gradient-button inline-flex flex-1 items-center justify-center rounded-2xl px-5 py-3 font-bold text-slate-950">
+                Download Pass
+                <ArrowRight size={16} />
+              </button>
+              <a href="#tracker" onClick={() => setShowSuccessModal(false)} className="magnetic-button inline-flex flex-1 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] px-5 py-3 font-semibold text-white">
+                Open Tracker
+              </a>
             </div>
           </div>
+        </div>
+      ) : null}
 
-          <nav className="hidden items-center gap-6 text-sm md:flex">
-            <a href="#overview" className="portal-nav-link">Overview</a>
-            <a href="#smart-alerts" className="portal-nav-link">Alerts</a>
+      <header className="sticky top-0 z-30 px-3 pt-3 sm:px-4 md:px-0">
+        <div className={`${shellClassName} portal-nav-shell`}>
+          <a href="#overview" className="min-w-0">
+            <p className="text-[10px] uppercase tracking-[0.22em] text-cyan-200/80 sm:text-[11px]">Runbhumi 2026</p>
+            <h1 className="truncate text-base font-semibold text-white sm:text-lg">CEAS COGNOTSAV</h1>
+          </a>
+
+          <nav className="hidden items-center gap-5 text-sm lg:flex">
+            <a href="#overview" className="portal-nav-link">Home</a>
+            <a href="#registration-panel" className="portal-nav-link">Competitions</a>
+            <a href="#tracker" className="portal-nav-link">Tracker</a>
             <a href="#announcement-archive" className="portal-nav-link">Updates</a>
             <a href="#timeline" className="portal-nav-link">Timeline</a>
-            <a href="#registration-panel" className="portal-nav-link">Register</a>
-            <a href="#tracker" className="portal-nav-link">Tracker</a>
             <a href="#admin-registrations" className="portal-nav-link">Admin</a>
           </nav>
 
-          <div className="hidden items-center gap-3 rounded-full border border-white/10 bg-white/[0.06] px-4 py-2 text-sm text-slate-200 shadow-[0_0_30px_rgba(59,130,246,0.14)] xl:flex">
-            <BellRing size={16} className="text-blue-300" />
-            DVVPOE CE Department
+          <div className="hidden items-center gap-3 lg:flex">
+            <a href="#registration-panel" className="animated-gradient-button inline-flex items-center justify-center rounded-2xl px-4 py-3 text-sm font-bold text-slate-950">
+              Register
+              <ArrowRight size={14} />
+            </a>
           </div>
 
           <button
             type="button"
             onClick={() => setMobileMenuOpen((current) => !current)}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.06] text-slate-100 md:hidden"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.06] text-slate-100 lg:hidden"
             aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
             aria-expanded={mobileMenuOpen}
           >
@@ -1164,13 +1216,13 @@ export const App: React.FC = () => {
         </div>
 
         {mobileMenuOpen ? (
-          <div className="border-t border-white/5 md:hidden">
-            <div className={`${shellClassName} grid grid-cols-2 gap-2 py-3`}>
+          <div className={`${shellClassName} mt-2 lg:hidden`}>
+            <div className="portal-mobile-menu">
               <a href="#overview" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-nav-pill text-center">Home</a>
-              <a href="#registration-panel" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-nav-pill text-center">Register</a>
-              <a href="#tracker" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-nav-pill text-center">Track</a>
-              <a href="#timeline" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-nav-pill text-center">Timeline</a>
+              <a href="#registration-panel" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-nav-pill text-center">Competitions</a>
+              <a href="#tracker" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-nav-pill text-center">Tracker</a>
               <a href="#announcement-archive" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-nav-pill text-center">Updates</a>
+              <a href="#timeline" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-nav-pill text-center">Timeline</a>
               <a href="#admin-registrations" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-nav-pill text-center">Admin</a>
             </div>
           </div>
@@ -1210,11 +1262,7 @@ export const App: React.FC = () => {
             totalRemainingSlots={totalRemainingSlots}
           />
 
-          <main className={`${shellClassName} space-y-6 pb-24 md:space-y-10 md:pb-20`}>
-            <AnnouncementArchiveSection
-              announcements={visibleAnnouncements}
-              loading={loadingAnnouncements}
-            />
+          <main className={`${shellClassName} space-y-5 pb-28 md:space-y-8 md:pb-16`}>
             <EventRegistrationPanel
               events={events}
               loadingEvents={loadingEvents}
@@ -1259,6 +1307,11 @@ export const App: React.FC = () => {
               onDownload={downloadAdminFile}
               showAdmin={false}
             />
+
+            <AnnouncementArchiveSection
+              announcements={visibleAnnouncements}
+              loading={loadingAnnouncements}
+            />
           </main>
         </>
       )}
@@ -1266,23 +1319,22 @@ export const App: React.FC = () => {
       <PortalFooter />
 
       {!isAdminPage && !isTimelinePage ? (
-        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-[rgba(8,12,22,0.9)] px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] pt-3 backdrop-blur-2xl md:hidden">
-          <div className="grid grid-cols-5 gap-2">
+        <div className="fixed inset-x-0 bottom-0 z-40 px-3 pb-[calc(0.8rem+env(safe-area-inset-bottom,0px))] md:hidden">
+          <div className="rounded-[1.8rem] border border-white/10 bg-[rgba(8,12,22,0.92)] p-2 shadow-[0_18px_60px_rgba(2,8,23,0.35)] backdrop-blur-2xl">
+            <div className="grid grid-cols-4 gap-2">
             <a href="#overview" className="rounded-2xl border border-white/10 bg-white/[0.05] px-3 py-3 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-100">
               Home
             </a>
-            <a href="#registration-panel" className="rounded-2xl border border-blue-400/20 bg-blue-500/14 px-3 py-3 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-blue-100">
+            <a href="#registration-panel" className="animated-gradient-button inline-flex items-center justify-center rounded-2xl px-3 py-3 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-950">
               Register
             </a>
             <a href="#tracker" className="rounded-2xl border border-purple-400/20 bg-purple-500/14 px-3 py-3 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-purple-100">
               Track
             </a>
-            <a href="#timeline" className="rounded-2xl border border-yellow-400/20 bg-yellow-500/14 px-3 py-3 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-yellow-100">
-              Timeline
-            </a>
             <a href="#admin-registrations" className="rounded-2xl border border-cyan-400/20 bg-cyan-500/14 px-3 py-3 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-cyan-100">
               Admin
             </a>
+          </div>
           </div>
         </div>
       ) : null}

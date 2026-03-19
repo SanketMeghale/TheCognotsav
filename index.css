@@ -453,6 +453,112 @@ select.floating-field-input option {
   color: #ffffff;
 }
 
+.portal-nav-shell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(9, 13, 24, 0.76);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 1.6rem;
+  padding: 0.95rem 1rem;
+  box-shadow: 0 20px 50px rgba(2, 8, 23, 0.2);
+}
+
+.portal-mobile-menu {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(9, 13, 24, 0.84);
+  border-radius: 1.4rem;
+  padding: 0.8rem;
+  backdrop-filter: blur(20px);
+}
+
+.portal-hero-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.portal-countdown-card {
+  display: grid;
+  grid-template-columns: auto auto auto auto auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.portal-hero-poster {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.5rem;
+  min-height: 15rem;
+}
+
+.portal-form-card {
+  border-radius: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(9, 13, 24, 0.44));
+  padding: 1rem;
+}
+
+.portal-loader-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  background: rgba(3, 7, 18, 0.52);
+  backdrop-filter: blur(8px);
+}
+
+.portal-loader-card,
+.portal-modal-card {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: linear-gradient(145deg, rgba(10, 15, 28, 0.94), rgba(17, 24, 39, 0.92));
+  box-shadow: 0 24px 70px rgba(2, 8, 23, 0.36);
+  backdrop-filter: blur(20px);
+}
+
+.portal-loader-card {
+  width: min(18rem, calc(100vw - 2rem));
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.portal-loader-ring {
+  width: 3rem;
+  height: 3rem;
+  margin: 0 auto;
+  border-radius: 999px;
+  border: 3px solid rgba(255, 255, 255, 0.16);
+  border-top-color: rgba(56, 189, 248, 0.95);
+  border-right-color: rgba(217, 70, 239, 0.95);
+  animation: spin 1s linear infinite;
+}
+
+.portal-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  display: grid;
+  place-items: center;
+  background: rgba(2, 6, 23, 0.68);
+  backdrop-filter: blur(10px);
+}
+
+.portal-modal-card {
+  width: min(34rem, 100%);
+  border-radius: 1.7rem;
+  padding: 1.25rem;
+  animation: portalModalIn 220ms ease;
+}
+
 .hero-layout {
   display: grid;
   grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
@@ -525,6 +631,16 @@ select.floating-field-input option {
     letter-spacing: 0.1em;
   }
 
+  .portal-nav-shell {
+    border-radius: 1.35rem;
+    padding: 0.85rem 0.9rem;
+  }
+
+  .portal-form-card {
+    border-radius: 1.25rem;
+    padding: 0.9rem;
+  }
+
   .hero-layout {
     grid-template-columns: minmax(0, 1fr);
     gap: 1rem;
@@ -552,6 +668,18 @@ select.floating-field-input option {
 
   .portal-title-lg {
     font-size: clamp(1.05rem, 5.2vw, 1.5rem);
+  }
+
+  .portal-countdown-card {
+    gap: 0.5rem;
+  }
+
+  .portal-hero-poster {
+    min-height: 13rem;
+  }
+
+  .portal-mobile-menu {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -618,6 +746,23 @@ select.floating-field-input option {
   to {
     opacity: 0;
     transform: translateY(-10px) scale(0.98);
+  }
+}
+
+@keyframes portalModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 

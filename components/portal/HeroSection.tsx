@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { CalendarDays, Sparkles, Target, Trophy } from 'lucide-react';
+import { ArrowRight, CalendarDays, Sparkles } from 'lucide-react';
 import { shellClassName } from './utils';
 
 type Props = {
@@ -10,68 +10,12 @@ type Props = {
 
 const eventDate = new Date('2026-04-07T09:00:00');
 
-const spotlightCards = [
-  {
-    label: 'Our Vision',
-    title: 'Innovate with confidence',
-    detail: 'A portal experience that feels polished, trustworthy, and ready for a flagship fest.',
-    icon: Target,
-    accent: 'from-cyan-400/20 via-blue-500/18 to-purple-600/12',
-    border: 'border-cyan-300/20',
-    iconTone: 'text-cyan-200',
-  },
-  {
-    label: 'Our Mission',
-    title: 'Code. Compete. Conquer.',
-    detail: 'From first click to final confirmation pass, every step stays clear and high energy.',
-    icon: Sparkles,
-    accent: 'from-pink-500/20 via-purple-500/18 to-magenta-600/12',
-    border: 'border-pink-300/20',
-    iconTone: 'text-pink-200',
-  },
-  {
-    label: 'Participant Promise',
-    title: 'Fast flows, fewer doubts',
-    detail: 'Live slots, event-specific payments, and instant tracking give teams more confidence.',
-    icon: Trophy,
-    accent: 'from-yellow-400/20 via-orange-500/18 to-red-600/12',
-    border: 'border-yellow-300/20',
-    iconTone: 'text-yellow-200',
-  },
-];
-
-const highlightTracks = [
-  {
-    label: 'Hackathon',
-    detail: 'Problem solving under pressure',
-    accent: 'border-cyan-400/24 bg-cyan-500/16 text-cyan-100',
-  },
-  {
-    label: 'Esports',
-    detail: 'Competitive gaming brackets',
-    accent: 'border-purple-400/24 bg-purple-500/16 text-purple-100',
-  },
-  {
-    label: 'Project Expo',
-    detail: 'Builds, demos, and showcases',
-    accent: 'border-pink-400/24 bg-pink-500/16 text-pink-100',
-  },
-  {
-    label: 'UTOPIA',
-    detail: 'Energy beyond the classroom',
-    accent: 'border-yellow-400/24 bg-yellow-500/16 text-yellow-100',
-  },
-];
-
-const posterTags = ['Live registrations', 'Event-wise payments', 'Instant tracker'];
-
 export const HeroSection: React.FC<Props> = ({ totalEvents, totalRegistrations, totalRemainingSlots }) => {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
     const update = () => {
-      const now = Date.now();
-      const diff = Math.max(eventDate.getTime() - now, 0);
+      const diff = Math.max(eventDate.getTime() - Date.now(), 0);
       setTimeLeft({
         days: Math.floor(diff / (1000 * 60 * 60 * 24)),
         hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
@@ -85,240 +29,119 @@ export const HeroSection: React.FC<Props> = ({ totalEvents, totalRegistrations, 
     return () => window.clearInterval(timer);
   }, []);
 
-  const countdownBlocks = useMemo(
+  const quickStats = useMemo(
     () => [
-      { label: 'Days', value: timeLeft.days },
-      { label: 'Hours', value: timeLeft.hours },
-      { label: 'Minutes', value: timeLeft.minutes },
-      { label: 'Seconds', value: timeLeft.seconds },
-    ],
-    [timeLeft],
-  );
-
-  const festivalStats = useMemo(
-    () => [
-      {
-        label: 'Live Events',
-        value: String(totalEvents),
-        accent: 'from-blue-500/18 via-cyan-400/12 to-transparent',
-        textTone: 'text-blue-100',
-      },
-      {
-        label: 'Registrations',
-        value: String(totalRegistrations),
-        accent: 'from-purple-500/18 via-pink-500/12 to-transparent',
-        textTone: 'text-purple-100',
-      },
-      {
-        label: 'Open Slots',
-        value: String(totalRemainingSlots),
-        accent: 'from-cyan-500/18 via-blue-500/12 to-transparent',
-        textTone: 'text-cyan-100',
-      },
-      {
-        label: 'Prize Pool',
-        value: 'Rs 1 Lakh+',
-        accent: 'from-yellow-500/18 via-orange-400/12 to-transparent',
-        textTone: 'text-yellow-100',
-      },
-      {
-        label: 'Fest Days',
-        value: '2',
-        accent: 'from-purple-500/18 via-violet-400/12 to-transparent',
-        textTone: 'text-violet-100',
-      },
-      {
-        label: 'Campus Reach',
-        value: '1500+',
-        accent: 'from-pink-500/18 via-rose-400/12 to-transparent',
-        textTone: 'text-pink-100',
-      },
+      { label: 'Competitions', value: totalEvents },
+      { label: 'Registrations', value: totalRegistrations },
+      { label: 'Open Slots', value: totalRemainingSlots },
     ],
     [totalEvents, totalRegistrations, totalRemainingSlots],
   );
 
   return (
-    <section id="overview" className={`${shellClassName} hero-layout py-5 md:py-12 xl:py-14`}>
-      <div
-        data-reveal="left"
-        className="portal-glow-card portal-glass relative overflow-hidden rounded-[2rem] p-5 md:rounded-[2.6rem] md:p-8 xl:p-10"
-      >
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.16),transparent_24%),radial-gradient(circle_at_82%_18%,rgba(168,85,247,0.16),transparent_22%),radial-gradient(circle_at_bottom_right,rgba(251,191,36,0.12),transparent_24%)]" />
-        <div className="absolute -left-10 bottom-0 h-56 w-56 rounded-full bg-blue-500/18 blur-[110px]" />
-        <div className="absolute -right-12 top-10 h-64 w-64 rounded-full bg-purple-500/16 blur-[120px]" />
-        <div className="absolute inset-x-[8%] top-0 h-px bg-gradient-to-r from-transparent via-white/45 to-transparent" />
-
-        <div className="relative z-10 flex h-full flex-col gap-8">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="inline-flex w-fit items-center gap-3 rounded-full border border-blue-400/18 bg-blue-500/10 px-5 py-3 text-sm text-blue-100 shadow-[0_0_25px_rgba(59,130,246,0.18)]">
-              <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-yellow-300" />
-              CEAS COGNOTSAV 2026
+    <section id="overview" className={`${shellClassName} pt-4 pb-4 md:pt-7 md:pb-6`}>
+      <div className="portal-hero-grid">
+        <div
+          data-reveal="left"
+          className="portal-glow-card portal-glass relative overflow-hidden rounded-[2rem] px-4 py-5 sm:px-5 sm:py-6 md:px-8 md:py-8"
+        >
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.18),transparent_30%),radial-gradient(circle_at_80%_10%,rgba(217,70,239,0.16),transparent_24%),radial-gradient(circle_at_70%_80%,rgba(251,191,36,0.12),transparent_26%)]" />
+          <div className="relative z-10">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.26em] text-slate-100 sm:text-[11px]">
+              <Sparkles size={14} className="text-cyan-200" />
+              Runbhumi 2026 Registrations
             </div>
-          </div>
 
-          <div data-reveal="up" className="max-w-4xl">
-            <p className="text-[11px] uppercase tracking-[0.38em] text-blue-300/80">Our Legacy</p>
-            <h2 className="portal-title-xl mt-4 font-orbitron font-black uppercase">
-              <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                Where Engineering
-              </span>
-              <br />
-              <span className="bg-gradient-to-r from-cyan-300 via-white to-yellow-300 bg-clip-text text-transparent">
-                Meets Excellence
-              </span>
+            <h2 className="portal-title-xl mt-4 max-w-[10ch] font-semibold text-white">
+              Register for the most energetic tech fest on campus.
             </h2>
-
-            <p className="portal-copy mt-5 max-w-[44rem] text-slate-100/95">
-              COGNOTSAV is the flagship technical festival of the Computer Engineering Department at Dr.
-              Vithalrao Vikhe Patil College of Engineering, Ahilyanagar. It gives students a premium stage
-              to showcase innovation, technical skill, and competitive energy.
-            </p>
-            <p className="portal-copy mt-3 max-w-[42rem] text-slate-300">
-              Through competitions, esports, project exhibitions, and UTOPIA, the fest pushes teams to
-              collaborate, create, and perform beyond the classroom.
+            <p className="portal-copy mt-3 max-w-2xl text-slate-300">
+              Discover competitions, pay event-wise, and complete registration in a smooth mobile-first
+              flow built for quick submissions.
             </p>
 
-            <div className="mt-5 flex flex-wrap gap-2 md:mt-7 md:gap-3">
-              {highlightTracks.map((track) => (
+            <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+              <a
+                href="#registration-panel"
+                className="animated-gradient-button inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-bold text-slate-950"
+              >
+                Register Now
+                <ArrowRight size={16} />
+              </a>
+              <a
+                href="#tracker"
+                className="magnetic-button inline-flex items-center justify-center rounded-2xl border border-white/12 bg-white/6 px-5 py-3 text-sm font-semibold text-white"
+              >
+                Track Registration
+              </a>
+            </div>
+
+            <div className="mt-5 grid grid-cols-3 gap-2 sm:gap-3">
+              {quickStats.map((stat) => (
                 <div
-                  key={track.label}
-                  className={`rounded-full border px-4 py-2 text-sm font-medium backdrop-blur-md ${track.accent}`}
+                  key={stat.label}
+                  className="rounded-[1.35rem] border border-white/12 bg-white/[0.06] px-3 py-3 backdrop-blur-md"
                 >
-                  {track.label}
+                  <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400 sm:text-[11px]">{stat.label}</p>
+                  <p className="mt-1 text-lg font-semibold text-white sm:text-2xl">{stat.value}</p>
                 </div>
               ))}
             </div>
           </div>
-
-          <div className="hero-spotlight-grid">
-            {spotlightCards.map((card, index) => {
-              const Icon = card.icon;
-
-              return (
-                <div
-                  key={card.label}
-                  data-reveal="up"
-                  className={`tilt-card rounded-[1.4rem] border bg-gradient-to-br p-4 shadow-[0_20px_55px_rgba(2,8,23,0.16)] backdrop-blur-xl md:rounded-[1.8rem] md:p-5 ${card.border} ${card.accent}`}
-                  style={{ animationDelay: `${index * 0.14}s` }}
-                >
-                  <div className={`flex items-center gap-3 ${card.iconTone}`}>
-                    <Icon size={18} />
-                    <p className="text-[11px] uppercase tracking-[0.35em]">{card.label}</p>
-                  </div>
-                  <p className="mt-4 text-[1.35rem] font-semibold text-white">{card.title}</p>
-                  <p className="mt-3 text-sm leading-7 text-slate-200">{card.detail}</p>
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="hero-stat-grid">
-            {festivalStats.map((card, index) => (
-              <div
-                key={card.label}
-                data-reveal="up"
-                className={`tilt-card floating-card rounded-[1.35rem] border border-white/10 bg-gradient-to-br ${card.accent} p-4 shadow-[0_20px_50px_rgba(2,8,23,0.16)] backdrop-blur-xl md:rounded-[1.65rem] md:p-5`}
-                style={{ animationDelay: `${index * 0.15}s` }}
-              >
-                <p className="text-sm text-slate-200/88">{card.label}</p>
-                <p className={`mt-2 font-orbitron text-2xl font-black md:text-3xl ${card.textTone}`}>{card.value}</p>
-              </div>
-            ))}
-          </div>
         </div>
-      </div>
 
-      <div className="hero-side-grid min-w-0">
-        <div
-          data-reveal="right"
-          className="group relative overflow-hidden rounded-[1.6rem] bg-gradient-to-br from-blue-500/28 via-purple-500/10 to-pink-500/24 p-px shadow-[0_30px_95px_rgba(2,8,23,0.28)] md:rounded-[2.25rem]"
-        >
-          <div className="absolute -right-8 top-8 h-36 w-36 rounded-full bg-blue-500/18 blur-[90px]" />
-          <div className="absolute -left-8 bottom-10 h-40 w-40 rounded-full bg-purple-500/16 blur-[95px]" />
-            <div className="relative overflow-hidden rounded-[calc(1.6rem-1px)] border border-white/12 bg-[linear-gradient(165deg,rgba(13,19,36,0.76),rgba(9,15,29,0.56))] backdrop-blur-2xl transition duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_36px_110px_rgba(56,189,248,0.16)] md:rounded-[calc(2.25rem-1px)]">
-            <div className="absolute inset-x-[12%] top-0 h-px bg-gradient-to-r from-transparent via-white/60 to-transparent opacity-90" />
-            <div className="relative overflow-hidden">
+        <div className="grid gap-3 sm:gap-4">
+          <div
+            data-reveal="right"
+            className="portal-glow-card portal-glass overflow-hidden rounded-[1.8rem] p-4 sm:p-5"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.24em] text-cyan-200/85 sm:text-[11px]">Fest Date</p>
+                <h3 className="portal-title-lg mt-2 font-semibold text-white">07-08 April 2026</h3>
+              </div>
+              <div className="rounded-full border border-white/12 bg-white/[0.06] px-3 py-2 text-xs text-slate-200">
+                <CalendarDays size={14} className="mr-2 inline text-yellow-200" />
+                Ahilyanagar
+              </div>
+            </div>
+
+            <div className="mt-4 rounded-[1.45rem] border border-white/12 bg-[linear-gradient(145deg,rgba(11,18,34,0.94),rgba(18,22,44,0.84))] p-4">
+              <div className="portal-countdown-card">
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">Days</p>
+                  <p className="mt-1 text-xl font-semibold text-white sm:text-2xl">{timeLeft.days}</p>
+                </div>
+                <div className="h-9 w-px bg-white/10" />
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">Hours</p>
+                  <p className="mt-1 text-xl font-semibold text-white sm:text-2xl">{timeLeft.hours}</p>
+                </div>
+                <div className="h-9 w-px bg-white/10" />
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">Minutes</p>
+                  <p className="mt-1 text-xl font-semibold text-white sm:text-2xl">{timeLeft.minutes}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            data-reveal="right"
+            className="portal-glow-card portal-glass overflow-hidden rounded-[1.8rem] p-3 sm:p-4"
+          >
+            <div className="portal-hero-poster">
               <img
                 src="/images/ceasposter.jpeg"
                 alt="CEAS COGNOTSAV 2026 poster"
-                className="block h-[19rem] w-full object-cover object-center transition duration-500 group-hover:scale-[1.03] sm:h-[22rem] md:h-[30rem]"
+                className="h-full w-full object-cover"
               />
-              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,17,29,0.04),rgba(7,17,29,0.2)_34%,rgba(7,17,29,0.92))]" />
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.28),transparent_24%),radial-gradient(circle_at_20%_30%,rgba(59,130,246,0.18),transparent_30%)]" />
-              <div className="absolute right-5 top-5 rounded-full border border-white/14 bg-white/8 px-4 py-2 text-[11px] uppercase tracking-[0.28em] text-white/90 backdrop-blur-md">
-                Official Poster
-              </div>
-              <div className="absolute inset-x-0 bottom-0 p-6 md:p-7">
-                <p className="text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Flagship Fest</p>
-                <h3 className="portal-title-lg mt-3 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron font-black uppercase text-transparent">
-                  Code. Compete. Conquer.
-                </h3>
-                <p className="mt-3 max-w-md text-sm leading-6 text-slate-200 md:leading-7">
-                  A sharper visual stage for registrations, event discovery, live payments, and participant
-                  momentum.
-                </p>
-
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {posterTags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-full border border-white/12 bg-black/25 px-3 py-2 text-[11px] uppercase tracking-[0.22em] text-white/82 backdrop-blur-md"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,10,25,0.04),rgba(5,10,25,0.84))]" />
+              <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
+                <p className="text-[10px] uppercase tracking-[0.24em] text-blue-100/70 sm:text-[11px]">Flagship Event</p>
+                <p className="mt-2 text-lg font-semibold text-white sm:text-xl">Competitions, gaming, projects, and more.</p>
               </div>
             </div>
-          </div>
-        </div>
-
-        <div data-reveal="right" className="portal-glow-card portal-glass rounded-[1.6rem] p-5 md:rounded-[2rem] md:p-7">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div className="min-w-0 max-w-full">
-                <p className="text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Countdown</p>
-              <h3 className="portal-title-lg mt-2 font-semibold text-white">07-08 April 2026</h3>
-            </div>
-            <div className="rounded-full border border-white/10 bg-white/[0.06] px-4 py-2 text-sm text-slate-100 backdrop-blur-md">
-              <CalendarDays size={16} className="mr-2 inline" />
-              Ahilyanagar
-            </div>
-          </div>
-          <div className="mt-5 rounded-[1.5rem] border border-white/10 bg-[linear-gradient(145deg,rgba(12,20,35,0.9),rgba(20,18,42,0.84))] p-4 shadow-[0_16px_42px_rgba(2,8,23,0.16)]">
-            <div className="grid grid-cols-4 gap-2 sm:gap-3">
-              {countdownBlocks.map((block) => (
-                <div key={block.label} className="rounded-[1.15rem] border border-white/10 bg-white/[0.05] px-2 py-3 text-center">
-                  <p className="text-[10px] uppercase tracking-[0.16em] text-slate-300">{block.label}</p>
-                  <p className="mt-2 font-orbitron text-xl font-black text-white sm:text-2xl">{block.value}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div data-reveal="right" className="portal-glow-card portal-glass rounded-[1.6rem] p-5 md:rounded-[2rem] md:p-7">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <p className="text-[11px] uppercase tracking-[0.35em] text-purple-300/80">Festival Spectrum</p>
-              <h3 className="portal-title-lg mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron font-black uppercase text-transparent">
-                Tracks across tech, play, and showcase
-              </h3>
-            </div>
-            <div className="rounded-full border border-yellow-400/16 bg-yellow-500/10 px-4 py-2 text-sm text-yellow-100">
-              CE Department
-            </div>
-          </div>
-
-          <div className="hero-highlight-grid mt-6">
-            {highlightTracks.map((track) => (
-              <div
-                key={track.label}
-                className={`rounded-[1.45rem] border px-4 py-4 shadow-[0_16px_42px_rgba(2,8,23,0.14)] backdrop-blur-xl ${track.accent}`}
-              >
-                <p className="text-sm font-semibold text-white">{track.label}</p>
-                <p className="mt-2 text-sm leading-6 text-slate-200">{track.detail}</p>
-              </div>
-            ))}
           </div>
         </div>
       </div>
