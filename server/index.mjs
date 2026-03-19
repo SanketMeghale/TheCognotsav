@@ -10,6 +10,7 @@ import path from 'node:path';
 import { initDatabase, pool } from './db.mjs';
 
 dns.setDefaultResultOrder('ipv4first');
+const dnsLookup = dns.promises.lookup;
 
 const app = express();
 const port = Number(process.env.PORT || 8787);
@@ -51,12 +52,26 @@ const monthIndexByShortName = {
   Nov: 10,
   Dec: 11,
 };
+
+async function resolveSmtpConnectHost(host) {
+  if (!host) return host;
+
+  try {
+    const result = await dnsLookup(host, { family: 4 });
+    return result.address || host;
+  } catch {
+    return host;
+  }
+}
+
+const smtpConnectHost = smtpConfigured ? await resolveSmtpConnectHost(smtpHost) : '';
 const mailTransport = smtpConfigured
   ? nodemailer.createTransport({
-      host: smtpHost,
+      host: smtpConnectHost,
       port: smtpPort,
       secure: smtpSecure,
       auth: smtpUser && smtpPass ? { user: smtpUser, pass: smtpPass } : undefined,
+      tls: smtpConnectHost !== smtpHost ? { servername: smtpHost } : undefined,
     })
   : null;
 
