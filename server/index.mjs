@@ -4,9 +4,12 @@ import express from 'express';
 import nodemailer from 'nodemailer';
 import XLSX from 'xlsx';
 import { randomUUID } from 'node:crypto';
+import dns from 'node:dns';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { initDatabase, pool } from './db.mjs';
+
+dns.setDefaultResultOrder('ipv4first');
 
 const app = express();
 const port = Number(process.env.PORT || 8787);
