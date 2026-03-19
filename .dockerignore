@@ -1,0 +1,16 @@
+.git
+.gitignore
+node_modules
+dist
+backups
+uploads
+.env
+.env.*
+!.env.example
+!.env.production
+*.log
+.portal-*.err
+.portal-*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*

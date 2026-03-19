@@ -17,8 +17,12 @@ export const pool = new Pool({
 });
 
 export async function initDatabase() {
-  await fs.mkdir(path.resolve(process.cwd(), 'uploads', 'payment-proofs'), { recursive: true });
-  await fs.mkdir(path.resolve(process.cwd(), 'backups'), { recursive: true });
+  const storageRoot = path.resolve(
+    process.env.RAILWAY_VOLUME_MOUNT_PATH || process.env.STORAGE_ROOT || process.cwd(),
+  );
+
+  await fs.mkdir(path.join(storageRoot, 'uploads', 'payment-proofs'), { recursive: true });
+  await fs.mkdir(path.join(storageRoot, 'backups'), { recursive: true });
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS events (

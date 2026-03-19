@@ -1,25 +1,24 @@
-FROM node:18-alpine
+FROM node:20-alpine AS build
 
-# Set working directory
 WORKDIR /app
 
-# Copy package files
 COPY package*.json ./
+RUN npm ci
 
-# Install dependencies
-RUN npm ci --only=production
+COPY . .
+RUN npm run build
 
-# Copy built frontend
-COPY dist ./dist
+FROM node:20-alpine AS runtime
 
-# Copy server code
-COPY server ./server
+WORKDIR /app
+ENV NODE_ENV=production
 
-# Copy environment file (you'll need to create this)
-COPY .env ./
+COPY package*.json ./
+RUN npm ci --omit=dev
 
-# Expose port
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/server ./server
+
 EXPOSE 8787
 
-# Start the server
-CMD ["npm", "run", "server"]
+CMD ["npm", "start"]

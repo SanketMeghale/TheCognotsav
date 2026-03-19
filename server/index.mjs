@@ -11,8 +11,11 @@ import { initDatabase, pool } from './db.mjs';
 const app = express();
 const port = Number(process.env.PORT || 8787);
 const adminAccessKey = process.env.ADMIN_ACCESS_KEY || 'change-this-admin-key';
-const uploadsDir = path.resolve(process.cwd(), 'uploads', 'payment-proofs');
-const backupsDir = path.resolve(process.cwd(), 'backups');
+const storageRoot = path.resolve(
+  process.env.RAILWAY_VOLUME_MOUNT_PATH || process.env.STORAGE_ROOT || process.cwd(),
+);
+const uploadsDir = path.join(storageRoot, 'uploads', 'payment-proofs');
+const backupsDir = path.join(storageRoot, 'backups');
 const smtpProvider = String(process.env.SMTP_PROVIDER || '').trim().toLowerCase();
 const defaultSmtpHost = smtpProvider === 'gmail' ? 'smtp.gmail.com' : '';
 const defaultSmtpPort = smtpProvider === 'gmail' ? 465 : 587;
@@ -56,7 +59,15 @@ const mailTransport = smtpConfigured
 
 app.use(cors());
 app.use(express.json({ limit: '8mb' }));
-app.use('/uploads', express.static(path.resolve(process.cwd(), 'uploads')));
+app.use('/uploads', express.static(path.join(storageRoot, 'uploads')));
+app.use(express.static(path.resolve(process.cwd(), 'dist')));
+
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+    return next();
+  }
+  res.sendFile(path.resolve(process.cwd(), 'dist', 'index.html'));
+});
 
 function buildRegistrationCode() {
   return `CGN-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
