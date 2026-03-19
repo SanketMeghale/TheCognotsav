@@ -17,11 +17,10 @@ export const TimelinePage: React.FC = () => {
         <div className="mt-5 max-w-3xl">
           <p className="text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Timeline page</p>
           <h2 className="mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron text-3xl font-black uppercase text-transparent md:text-4xl">
-            Cognotsav schedule at a glance
+            Event flow and live alerts
           </h2>
           <p className="mt-4 text-sm leading-7 text-slate-200">
-            This view is split out from the main registration flow so mobile visitors can focus on signing up
-            first and check the event sequence separately when needed.
+            This page keeps the registration flow separate while giving participants a cleaner place to check reporting, verification, and event-day movement.
           </p>
         </div>
       </section>

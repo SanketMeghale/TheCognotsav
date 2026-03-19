@@ -49,11 +49,11 @@ export const HeroSection: React.FC<Props> = ({ totalEvents, totalRegistrations, 
           <div className="relative z-10">
             <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.26em] text-slate-100 sm:text-[11px]">
               <Sparkles size={14} className="text-cyan-200" />
-              Runbhumi 2026 Registrations
+              CEAS COGNOTSAV 2026
             </div>
 
-            <h2 className="portal-title-xl mt-4 max-w-[10ch] font-semibold text-white">
-              Register for the most energetic tech fest on campus.
+            <h2 className="portal-title-xl mt-4 max-w-[11ch] font-semibold text-white">
+              Register for competitions with a cleaner mobile-first flow.
             </h2>
             <p className="portal-copy mt-3 max-w-2xl text-slate-300">
               Discover competitions, pay event-wise, and complete registration in a smooth mobile-first
@@ -107,20 +107,24 @@ export const HeroSection: React.FC<Props> = ({ totalEvents, totalRegistrations, 
             </div>
 
             <div className="mt-4 rounded-[1.45rem] border border-white/12 bg-[linear-gradient(145deg,rgba(11,18,34,0.94),rgba(18,22,44,0.84))] p-4">
-              <div className="portal-countdown-card">
+              <div className="portal-countdown-modern">
                 <div>
-                  <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">Days</p>
-                  <p className="mt-1 text-xl font-semibold text-white sm:text-2xl">{timeLeft.days}</p>
+                  <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">Days Left</p>
+                  <p className="mt-2 text-3xl font-semibold text-white">{timeLeft.days}</p>
                 </div>
-                <div className="h-9 w-px bg-white/10" />
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">Hours</p>
-                  <p className="mt-1 text-xl font-semibold text-white sm:text-2xl">{timeLeft.hours}</p>
-                </div>
-                <div className="h-9 w-px bg-white/10" />
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">Minutes</p>
-                  <p className="mt-1 text-xl font-semibold text-white sm:text-2xl">{timeLeft.minutes}</p>
+                <div className="portal-countdown-modern__mini">
+                  <div>
+                    <p className="text-[10px] uppercase tracking-[0.16em] text-slate-500">Hours</p>
+                    <p className="mt-1 text-lg font-semibold text-white">{timeLeft.hours}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase tracking-[0.16em] text-slate-500">Minutes</p>
+                    <p className="mt-1 text-lg font-semibold text-white">{timeLeft.minutes}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase tracking-[0.16em] text-slate-500">Seconds</p>
+                    <p className="mt-1 text-lg font-semibold text-white">{timeLeft.seconds}</p>
+                  </div>
                 </div>
               </div>
             </div>

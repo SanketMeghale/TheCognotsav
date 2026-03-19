@@ -34,12 +34,13 @@
 
 html {
   background: #0f111a;
+  overflow-x: clip;
 }
 
 body {
   min-height: 100vh;
   margin: 0;
-  overflow-x: hidden;
+  overflow-x: clip;
   background:
     radial-gradient(circle at top left, rgba(59, 130, 246, 0.18), transparent 28%),
     radial-gradient(circle at 82% 18%, rgba(168, 85, 247, 0.18), transparent 28%),
@@ -56,6 +57,10 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+#root {
+  overflow-x: clip;
 }
 
 img {
@@ -482,6 +487,7 @@ select.floating-field-input option {
   display: grid;
   gap: 1rem;
   grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
 }
 
 .portal-countdown-card {
@@ -492,11 +498,23 @@ select.floating-field-input option {
   gap: 0.75rem;
 }
 
+.portal-countdown-modern {
+  display: grid;
+  gap: 1rem;
+}
+
+.portal-countdown-modern__mini {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
 .portal-hero-poster {
   position: relative;
   overflow: hidden;
   border-radius: 1.5rem;
   min-height: 15rem;
+  min-width: 0;
 }
 
 .portal-form-card {
@@ -504,6 +522,17 @@ select.floating-field-input option {
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(9, 13, 24, 0.44));
   padding: 1rem;
+}
+
+.portal-shell {
+  overflow-x: clip;
+}
+
+.portal-shell section,
+.portal-shell article,
+.portal-shell div,
+.portal-shell main {
+  min-width: 0;
 }
 
 .portal-loader-overlay {
@@ -680,6 +709,10 @@ select.floating-field-input option {
 
   .portal-mobile-menu {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .portal-countdown-modern__mini {
+    gap: 0.5rem;
   }
 }
 

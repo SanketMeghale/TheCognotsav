@@ -245,9 +245,6 @@ export const App: React.FC = () => {
         }
 
         setEvents(data);
-        if (data.length > 0) {
-          setSelectedEventSlug(data[0].slug);
-        }
       } catch (error) {
         console.error('Failed to load events', error);
       } finally {
@@ -1184,7 +1181,7 @@ export const App: React.FC = () => {
       <header className="sticky top-0 z-30 px-3 pt-3 sm:px-4 md:px-0">
         <div className={`${shellClassName} portal-nav-shell`}>
           <a href="#overview" className="min-w-0">
-            <p className="text-[10px] uppercase tracking-[0.22em] text-cyan-200/80 sm:text-[11px]">Runbhumi 2026</p>
+            <p className="text-[10px] uppercase tracking-[0.22em] text-cyan-200/80 sm:text-[11px]">Registration Portal</p>
             <h1 className="truncate text-base font-semibold text-white sm:text-lg">CEAS COGNOTSAV</h1>
           </a>
 
@@ -1256,13 +1253,18 @@ export const App: React.FC = () => {
         <TimelinePage />
       ) : (
         <>
-          <HeroSection
-            totalEvents={events.length}
-            totalRegistrations={totalRegistrations}
-            totalRemainingSlots={totalRemainingSlots}
-          />
-
           <main className={`${shellClassName} space-y-5 pb-28 md:space-y-8 md:pb-16`}>
+            <AnnouncementArchiveSection
+              announcements={visibleAnnouncements}
+              loading={loadingAnnouncements}
+            />
+
+            <HeroSection
+              totalEvents={events.length}
+              totalRegistrations={totalRegistrations}
+              totalRemainingSlots={totalRemainingSlots}
+            />
+
             <EventRegistrationPanel
               events={events}
               loadingEvents={loadingEvents}
@@ -1306,11 +1308,6 @@ export const App: React.FC = () => {
               onLoadAdminRows={loadAdminRows}
               onDownload={downloadAdminFile}
               showAdmin={false}
-            />
-
-            <AnnouncementArchiveSection
-              announcements={visibleAnnouncements}
-              loading={loadingAnnouncements}
             />
           </main>
         </>
