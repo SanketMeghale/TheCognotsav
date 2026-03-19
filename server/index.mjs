@@ -68,13 +68,11 @@ function buildTransportOptions({ label, host, connectHost, port, secure }) {
   return {
     label,
     options: {
-      service: smtpProvider === 'gmail' ? 'gmail' : undefined,
       host: connectHost,
       port,
       secure,
       requireTLS: !secure,
       auth: smtpUser && smtpPass ? { user: smtpUser, pass: smtpPass } : undefined,
-      family: 4,
       connectionTimeout: 15000,
       greetingTimeout: 15000,
       socketTimeout: 20000,
