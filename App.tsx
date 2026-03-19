@@ -5,8 +5,8 @@ import { AnnouncementArchiveSection } from './components/portal/AnnouncementArch
 import { AnnouncementBanner } from './components/portal/AnnouncementBanner.tsx';
 import { HeroSection } from './components/portal/HeroSection.tsx';
 import { SmartAlertsPanel } from './components/portal/SmartAlertsPanel.tsx';
-import { TimelineSection } from './components/portal/TimelineSection.tsx';
 import { TimelinePage } from './components/portal/TimelinePage.tsx';
+import { CompetitionGridSection } from './components/portal/CompetitionGridSection.tsx';
 import { EventRegistrationPanel } from './components/portal/EventRegistrationPanel.tsx';
 import { TrackerAdminPanel } from './components/portal/TrackerAdminPanel.tsx';
 import { PortalFooter } from './components/portal/PortalFooter.tsx';
@@ -435,37 +435,18 @@ export const App: React.FC = () => {
     return () => window.removeEventListener('hashchange', syncHashRoute);
   }, []);
 
+  const eventPageSlug = hashRoute.startsWith('#events/') ? hashRoute.slice('#events/'.length) : '';
   const isAdminPage = hashRoute.startsWith('#admin-registrations');
   const isTimelinePage = hashRoute === '#timeline';
+  const isEventPage = Boolean(eventPageSlug);
   const pinnedAnnouncement =
     announcements.find((announcement) => announcement.is_pinned && isAnnouncementActive(announcement)) || null;
 
   useEffect(() => {
-    if (typeof window === 'undefined' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      return;
+    if (isEventPage && eventPageSlug && events.some((event) => event.slug === eventPageSlug)) {
+      setSelectedEventSlug(eventPageSlug);
     }
-
-    // Observe marked elements once and reveal them as they enter the viewport.
-    const elements = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal]'));
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.16, rootMargin: '0px 0px -10% 0px' },
-    );
-
-    elements.forEach((element, index) => {
-      element.style.setProperty('--reveal-delay', `${Math.min(index * 55, 260)}ms`);
-      observer.observe(element);
-    });
-
-    return () => observer.disconnect();
-  }, [adminRows.length, events.length, hashRoute, lookupResults.length]);
+  }, [eventPageSlug, events, isEventPage]);
 
   const totalRegistrations = events.reduce((sum, event) => sum + event.registrations_count, 0);
   const totalRemainingSlots = events.reduce(
@@ -501,14 +482,8 @@ export const App: React.FC = () => {
     setShowSuccessModal(false);
     setPaymentScreenshotDataUrl(null);
     setPaymentScreenshotName('');
-
-    if (typeof window !== 'undefined' && window.innerWidth < 1280) {
-      window.setTimeout(() => {
-        document.getElementById('registration-form-start')?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start',
-        });
-      }, 120);
+    if (typeof window !== 'undefined') {
+      window.location.hash = `#events/${slug}`;
     }
     setMobileMenuOpen(false);
   };
@@ -1251,6 +1226,45 @@ export const App: React.FC = () => {
         />
       ) : isTimelinePage ? (
         <TimelinePage />
+      ) : isEventPage && selectedEvent ? (
+        <main className={`${shellClassName} space-y-5 pb-28 pt-4 md:space-y-8 md:pb-16`}>
+          <section className="portal-glow-card portal-glass rounded-[1.8rem] p-4 sm:p-5 md:p-6">
+            <a href="#overview" className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-sm text-slate-100 transition hover:border-white/20 hover:text-white">
+              <ArrowRight size={16} className="rotate-180" />
+              Back to competitions
+            </a>
+            <div className="mt-4 max-w-3xl">
+              <p className="text-[10px] uppercase tracking-[0.22em] text-cyan-200/80 sm:text-[11px]">Event Page</p>
+              <h2 className="mt-2 text-2xl font-semibold text-white sm:text-3xl">{selectedEvent.name}</h2>
+              <p className="mt-2 text-sm leading-7 text-slate-300">
+                Review the event details, rules, and payment instructions below, then complete the registration form for this competition.
+              </p>
+            </div>
+          </section>
+
+          <EventRegistrationPanel
+            selectedEvent={selectedEvent}
+            teamSize={teamSize}
+            form={form}
+            submitting={submitting}
+            successMessage={successMessage}
+            errorMessage={errorMessage}
+            successReceipt={successReceipt}
+            draftRecovered={draftRecovered}
+            validationErrors={validationErrors}
+            touchedFields={touchedFields}
+            onFieldBlur={markFieldTouched}
+            onDownloadPass={downloadConfirmationPass}
+            onDismissDraftRecovered={() => setDraftRecovered(false)}
+            paymentScreenshotName={paymentScreenshotName}
+            paymentScreenshotReady={Boolean(paymentScreenshotDataUrl)}
+            onPaymentScreenshotChange={handlePaymentScreenshotChange}
+            onTeamSizeChange={handleTeamSizeChange}
+            onFormFieldChange={updateFormField}
+            onParticipantChange={handleParticipantChange}
+            onSubmit={handleSubmit}
+          />
+        </main>
       ) : (
         <>
           <main className={`${shellClassName} space-y-5 pb-28 md:space-y-8 md:pb-16`}>
@@ -1265,31 +1279,11 @@ export const App: React.FC = () => {
               totalRemainingSlots={totalRemainingSlots}
             />
 
-            <EventRegistrationPanel
+            <CompetitionGridSection
               events={events}
               loadingEvents={loadingEvents}
               selectedEventSlug={selectedEventSlug}
-              selectedEvent={selectedEvent}
-              teamSize={teamSize}
-              form={form}
-              submitting={submitting}
-              successMessage={successMessage}
-              errorMessage={errorMessage}
-              successReceipt={successReceipt}
-              draftRecovered={draftRecovered}
-              validationErrors={validationErrors}
-              touchedFields={touchedFields}
-              onFieldBlur={markFieldTouched}
-              onDownloadPass={downloadConfirmationPass}
-              onDismissDraftRecovered={() => setDraftRecovered(false)}
-              paymentScreenshotName={paymentScreenshotName}
-              paymentScreenshotReady={Boolean(paymentScreenshotDataUrl)}
-              onPaymentScreenshotChange={handlePaymentScreenshotChange}
               onSelectEvent={handleSelectEvent}
-              onTeamSizeChange={handleTeamSizeChange}
-              onFormFieldChange={updateFormField}
-              onParticipantChange={handleParticipantChange}
-              onSubmit={handleSubmit}
             />
 
             <TrackerAdminPanel

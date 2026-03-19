@@ -1,7 +1,7 @@
 import React from 'react';
 import { ArrowRight, CheckCircle2, Clock3, Copy, CreditCard, Download, MapPin, Phone, QrCode, Save, ShieldCheck, Sparkles, Trophy, Upload, Users } from 'lucide-react';
 import type { EventRecord, ParticipantDraft, RegistrationReceipt } from './types';
-import { formatCurrency, getEventHeatLevel, getTeamLabel } from './utils';
+import { formatCurrency, getTeamLabel } from './utils';
 
 type FormState = {
   teamName: string;
@@ -17,9 +17,6 @@ type FormState = {
 };
 
 type Props = {
-  events: EventRecord[];
-  loadingEvents: boolean;
-  selectedEventSlug: string;
   selectedEvent: EventRecord | null;
   teamSize: number;
   form: FormState;
@@ -36,7 +33,6 @@ type Props = {
   onDismissDraftRecovered: () => void;
   onFieldBlur: (field: string) => void;
   onPaymentScreenshotChange: (file: File | null) => void;
-  onSelectEvent: (slug: string) => void;
   onTeamSizeChange: (size: number) => void;
   onFormFieldChange: (field: keyof FormState, value: string) => void;
   onParticipantChange: (index: number, field: keyof ParticipantDraft, value: string) => void;
@@ -137,7 +133,7 @@ function SectionCard({ title, subtitle, children }: { title: string; subtitle: s
   );
 }
 
-export const EventRegistrationPanel: React.FC<Props> = ({ events, loadingEvents, selectedEventSlug, selectedEvent, teamSize, form, submitting, successMessage, errorMessage, successReceipt, draftRecovered, validationErrors, touchedFields, paymentScreenshotName, paymentScreenshotReady, onDownloadPass, onDismissDraftRecovered, onFieldBlur, onPaymentScreenshotChange, onSelectEvent, onTeamSizeChange, onFormFieldChange, onParticipantChange, onSubmit }) => {
+export const EventRegistrationPanel: React.FC<Props> = ({ selectedEvent, teamSize, form, submitting, successMessage, errorMessage, successReceipt, draftRecovered, validationErrors, touchedFields, paymentScreenshotName, paymentScreenshotReady, onDownloadPass, onDismissDraftRecovered, onFieldBlur, onPaymentScreenshotChange, onTeamSizeChange, onFormFieldChange, onParticipantChange, onSubmit }) => {
   const showError = (field: string) => (touchedFields[field] ? validationErrors[field] : '');
   const selectedTheme = selectedEvent ? categoryThemes[selectedEvent.category] || categoryThemes.Technical : categoryThemes.Technical;
   const selectedHandbook = selectedEvent ? handbookBySlug[selectedEvent.slug] : null;
@@ -145,68 +141,8 @@ export const EventRegistrationPanel: React.FC<Props> = ({ events, loadingEvents,
   const qrUrl = upiLink ? `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(upiLink)}` : '';
 
   return (
-    <section id="registration-panel" className="grid gap-4 xl:grid-cols-[0.98fr_1.02fr] xl:gap-6">
-      <div data-reveal="left" className="portal-glow-card portal-glass rounded-[1.8rem] p-4 sm:p-5 md:p-6">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-[10px] uppercase tracking-[0.24em] text-cyan-200/80 sm:text-[11px]">Competitions</p>
-            <h3 className="portal-title-lg mt-2 font-semibold text-white">Pick your event.</h3>
-            <p className="mt-2 text-sm leading-6 text-slate-300">Browse cards, compare fees and slots, then jump straight into the form.</p>
-          </div>
-          <div className="rounded-full border border-white/12 bg-white/[0.06] px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-200">{events.length} live</div>
-        </div>
-
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
-          {loadingEvents
-            ? Array.from({ length: 4 }).map((_, index) => (
-                <div key={index} className="animate-pulse rounded-[1.5rem] border border-white/10 bg-white/[0.05] p-4">
-                  <div className="h-28 rounded-[1.1rem] bg-white/10" />
-                  <div className="mt-4 h-4 w-24 rounded-full bg-white/10" />
-                  <div className="mt-3 h-5 w-3/4 rounded-full bg-white/10" />
-                  <div className="mt-3 h-4 w-full rounded-full bg-white/10" />
-                </div>
-              ))
-            : events.map((event) => {
-                const active = event.slug === selectedEventSlug;
-                const theme = categoryThemes[event.category] || categoryThemes.Technical;
-                const slotsLeft = event.max_slots !== null ? Math.max(event.max_slots - event.registrations_count, 0) : null;
-                const heat = getEventHeatLevel(event);
-                return (
-                  <button key={event.slug} type="button" onClick={() => onSelectEvent(event.slug)} aria-pressed={active} className={`tilt-card group relative overflow-hidden rounded-[1.55rem] border bg-[linear-gradient(180deg,rgba(12,18,34,0.96),rgba(14,20,36,0.84))] text-left transition duration-300 ${active ? 'border-white/20 shadow-[0_24px_60px_rgba(56,189,248,0.16)]' : 'border-white/10 hover:border-white/18'}`}>
-                    <div className={`absolute inset-0 bg-gradient-to-br ${theme.accent}`} />
-                    <div className="relative">
-                      <div className="relative h-36 overflow-hidden">
-                        <img src={event.poster_path} alt={event.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
-                        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,10,21,0.14),rgba(7,10,21,0.84))]" />
-                        <div className="absolute left-3 top-3 flex flex-wrap gap-2">
-                          <span className={`rounded-full border px-3 py-1 text-[10px] uppercase tracking-[0.16em] ${theme.badge}`}>{event.category}</span>
-                          <span className="rounded-full border border-white/12 bg-black/30 px-3 py-1 text-[10px] uppercase tracking-[0.16em] text-white/86">{formatCurrency(event.registration_fee)}</span>
-                        </div>
-                      </div>
-                      <div className="space-y-4 p-4">
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <h4 className="text-base font-semibold text-white sm:text-lg">{event.name}</h4>
-                            <p className="mt-1 text-xs uppercase tracking-[0.16em] text-slate-400">{getTeamLabel(event)}</p>
-                          </div>
-                          <span className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] ${theme.badge}`}>{heat.label}</span>
-                        </div>
-                        <p className="line-clamp-3 text-sm leading-6 text-slate-200">{event.description}</p>
-                        <div className="rounded-[1.2rem] border border-white/10 bg-black/18 p-3">
-                          <div className="flex items-center justify-between gap-3 text-xs uppercase tracking-[0.16em] text-slate-400"><span>{event.date_label}</span><span>{event.time_label}</span></div>
-                          <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10"><div className={`h-full rounded-full bg-gradient-to-r ${theme.progress}`} style={{ width: `${heat.fillPercent}%` }} /></div>
-                          <div className="mt-2 flex items-center justify-between gap-3 text-sm text-slate-300"><span>{event.venue}</span><span>{slotsLeft !== null ? `${slotsLeft} left` : 'Open'}</span></div>
-                        </div>
-                        <div className="flex items-center justify-between gap-3"><span className="text-xs uppercase tracking-[0.18em] text-slate-400">Tap to fill form</span><span className={`rounded-full border px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] ${theme.button}`}>Register</span></div>
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
-        </div>
-      </div>
-
-      <div data-reveal="right" className="portal-glow-card portal-glass rounded-[1.8rem] p-4 sm:p-5 md:p-6">
+    <section id="registration-panel">
+      <div className="portal-glow-card portal-glass rounded-[1.8rem] p-4 sm:p-5 md:p-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="text-[10px] uppercase tracking-[0.24em] text-purple-200/80 sm:text-[11px]">Competition Details</p>

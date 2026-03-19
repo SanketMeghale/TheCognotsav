@@ -22,8 +22,8 @@ const uploadsDir = path.join(storageRoot, 'uploads', 'payment-proofs');
 const backupsDir = path.join(storageRoot, 'backups');
 const smtpProvider = String(process.env.SMTP_PROVIDER || '').trim().toLowerCase();
 const defaultSmtpHost = smtpProvider === 'gmail' ? 'smtp.gmail.com' : '';
-const defaultSmtpPort = smtpProvider === 'gmail' ? 465 : 587;
-const defaultSmtpSecure = smtpProvider === 'gmail';
+const defaultSmtpPort = smtpProvider === 'gmail' ? 587 : 587;
+const defaultSmtpSecure = false;
 const smtpHost = String(process.env.SMTP_HOST || defaultSmtpHost).trim();
 const smtpPort = Number(process.env.SMTP_PORT || defaultSmtpPort);
 const smtpSecure = String(process.env.SMTP_SECURE || String(defaultSmtpSecure)).trim().toLowerCase() === 'true';
@@ -64,16 +64,76 @@ async function resolveSmtpConnectHost(host) {
   }
 }
 
-const smtpConnectHost = smtpConfigured ? await resolveSmtpConnectHost(smtpHost) : '';
-const mailTransport = smtpConfigured
-  ? nodemailer.createTransport({
-      host: smtpConnectHost,
+function buildTransportOptions({ label, host, connectHost, port, secure }) {
+  return {
+    label,
+    options: {
+      service: smtpProvider === 'gmail' ? 'gmail' : undefined,
+      host: connectHost,
+      port,
+      secure,
+      requireTLS: !secure,
+      auth: smtpUser && smtpPass ? { user: smtpUser, pass: smtpPass } : undefined,
+      family: 4,
+      connectionTimeout: 15000,
+      greetingTimeout: 15000,
+      socketTimeout: 20000,
+      tls: {
+        minVersion: 'TLSv1.2',
+        ...(connectHost !== host ? { servername: host } : {}),
+      },
+    },
+  };
+}
+
+const smtpPrimaryConnectHost = smtpConfigured ? await resolveSmtpConnectHost(smtpHost) : '';
+const smtpTransportDefinitions = [];
+
+if (smtpConfigured) {
+  smtpTransportDefinitions.push(
+    buildTransportOptions({
+      label: `primary:${smtpHost}:${smtpPort}:${smtpSecure ? 'secure' : 'starttls'}`,
+      host: smtpHost,
+      connectHost: smtpPrimaryConnectHost,
       port: smtpPort,
       secure: smtpSecure,
-      auth: smtpUser && smtpPass ? { user: smtpUser, pass: smtpPass } : undefined,
-      tls: smtpConnectHost !== smtpHost ? { servername: smtpHost } : undefined,
-    })
-  : null;
+    }),
+  );
+
+  if (smtpProvider === 'gmail' && (smtpPort !== 587 || smtpSecure)) {
+    const fallbackHost = 'smtp.gmail.com';
+    const fallbackConnectHost = await resolveSmtpConnectHost(fallbackHost);
+    smtpTransportDefinitions.push(
+      buildTransportOptions({
+        label: 'gmail-fallback:smtp.gmail.com:587:starttls',
+        host: fallbackHost,
+        connectHost: fallbackConnectHost,
+        port: 587,
+        secure: false,
+      }),
+    );
+  }
+}
+
+const mailTransports = smtpTransportDefinitions.map((definition) => ({
+  label: definition.label,
+  transport: nodemailer.createTransport(definition.options),
+}));
+
+async function sendPortalMail(message) {
+  let lastError = null;
+
+  for (const candidate of mailTransports) {
+    try {
+      return await candidate.transport.sendMail(message);
+    } catch (error) {
+      lastError = error;
+      console.error(`SMTP transport failed (${candidate.label})`, error);
+    }
+  }
+
+  throw lastError || new Error('SMTP transport is not configured.');
+}
 
 app.use(cors());
 app.use(express.json({ limit: '8mb' }));
@@ -463,7 +523,7 @@ async function sendStatusNotification(registration) {
 
   const email = buildStatusEmail(registration);
 
-  if (!smtpConfigured || !mailTransport) {
+  if (!smtpConfigured || mailTransports.length === 0) {
     return logRegistrationNotification({
       registrationId: registration.id,
       notificationType: 'status-update',
@@ -477,7 +537,7 @@ async function sendStatusNotification(registration) {
   }
 
   try {
-    const info = await mailTransport.sendMail({
+    const info = await sendPortalMail({
       from: smtpFromName ? `"${smtpFromName}" <${smtpFromEmail}>` : smtpFromEmail,
       to: registration.contact_email,
       subject: email.subject,
@@ -578,7 +638,7 @@ async function sendEventStartReminderNotification(registration, eventStart) {
 
   const email = buildEventStartReminderEmail(registration, eventStart);
 
-  if (!smtpConfigured || !mailTransport) {
+  if (!smtpConfigured || mailTransports.length === 0) {
     return logRegistrationNotification({
       registrationId: registration.id,
       notificationType: 'event-reminder',
@@ -592,7 +652,7 @@ async function sendEventStartReminderNotification(registration, eventStart) {
   }
 
   try {
-    const info = await mailTransport.sendMail({
+    const info = await sendPortalMail({
       from: smtpFromName ? `"${smtpFromName}" <${smtpFromEmail}>` : smtpFromEmail,
       to: registration.contact_email,
       subject: email.subject,
@@ -1054,7 +1114,7 @@ async function sendBroadcastAnnouncement({
 
   for (const registration of result.rows) {
     const email = buildBroadcastEmail(registration, announcement);
-    if (!smtpConfigured || !mailTransport) {
+    if (!smtpConfigured || mailTransports.length === 0) {
       console.log('SMTP not configured, skipping email to:', registration.contact_email);
       await logRegistrationNotification({
         registrationId: registration.id,
@@ -1072,7 +1132,7 @@ async function sendBroadcastAnnouncement({
 
     try {
       console.log('Sending email to:', registration.contact_email);
-      const info = await mailTransport.sendMail({
+      const info = await sendPortalMail({
         from: smtpFromName ? `"${smtpFromName}" <${smtpFromEmail}>` : smtpFromEmail,
         to: registration.contact_email,
         subject: email.subject,
@@ -1973,6 +2033,16 @@ app.listen(port, () => {
   console.log(`Portal API running on http://localhost:${port}`);
   if (smtpConfigured) {
     console.log(`Status emails enabled via ${smtpProvider || smtpHost}.`);
+    Promise.all(
+      mailTransports.map(async (candidate) => {
+        try {
+          await candidate.transport.verify();
+          console.log(`SMTP ready: ${candidate.label}`);
+        } catch (error) {
+          console.error(`SMTP verify failed: ${candidate.label}`, error);
+        }
+      }),
+    ).catch(() => {});
   } else {
     console.log('Status emails are not configured yet. Add SMTP settings to enable Gmail notifications.');
   }
