@@ -31,6 +31,8 @@ const smtpUser = String(process.env.SMTP_USER || '').trim();
 const smtpPass = String(process.env.SMTP_PASS || '').trim();
 const smtpFromEmail = String(process.env.SMTP_FROM_EMAIL || smtpUser || '').trim();
 const smtpFromName = String(process.env.SMTP_FROM_NAME || 'CEAS COGNOTSAV').trim();
+const resendApiKey = String(process.env.RESEND_API_KEY || '').trim();
+const resendConfigured = Boolean(resendApiKey && smtpFromEmail);
 const smtpConfigured = Boolean(smtpHost && smtpPort && smtpFromEmail);
 const IST_OFFSET_MINUTES = 330;
 const EVENT_START_REMINDER_WINDOW_MS = 60 * 60 * 1000;
@@ -119,6 +121,37 @@ const mailTransports = smtpTransportDefinitions.map((definition) => ({
 }));
 
 async function sendPortalMail(message) {
+  if (resendConfigured) {
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${resendApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: message.from,
+        to: Array.isArray(message.to) ? message.to : [message.to],
+        subject: message.subject,
+        html: message.html,
+        text: message.text,
+      }),
+    });
+
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(
+        typeof payload?.message === 'string'
+          ? `Resend API error: ${payload.message}`
+          : `Resend API error (HTTP ${response.status})`,
+      );
+    }
+
+    return {
+      messageId: payload?.id || null,
+      provider: 'resend',
+    };
+  }
+
   let lastError = null;
 
   for (const candidate of mailTransports) {
@@ -2029,7 +2062,9 @@ startBackupWorker();
 
 app.listen(port, () => {
   console.log(`Portal API running on http://localhost:${port}`);
-  if (smtpConfigured) {
+  if (resendConfigured) {
+    console.log('Transactional emails enabled via Resend API.');
+  } else if (smtpConfigured) {
     console.log(`Status emails enabled via ${smtpProvider || smtpHost}.`);
     Promise.all(
       mailTransports.map(async (candidate) => {
