@@ -285,10 +285,6 @@ export const HeroSection: React.FC<Props> = ({ totalEvents, totalRegistrations, 
             <div className="min-w-0 max-w-full">
                 <p className="text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Countdown</p>
               <h3 className="mt-2 text-2xl font-semibold text-white">07-08 April 2026</h3>
-              <p className="mt-2 max-w-sm text-sm leading-7 text-slate-300">
-                Keep registrations open, payments ready, and participants informed as the fest window gets
-                closer.
-              </p>
             </div>
             <div className="rounded-full border border-white/10 bg-white/[0.06] px-4 py-2 text-sm text-slate-100 backdrop-blur-md">
               <CalendarDays size={16} className="mr-2 inline" />

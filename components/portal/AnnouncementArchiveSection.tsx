@@ -16,9 +16,6 @@ export const AnnouncementArchiveSection: React.FC<Props> = ({ announcements, loa
           <h3 className="mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron text-3xl font-black uppercase text-transparent">
             Official updates
           </h3>
-          <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-200">
-            Reporting-time changes, venue updates, and organizer broadcasts stay visible here so participants can re-check the latest instructions anytime.
-          </p>
         </div>
         <div className="rounded-full border border-white/10 bg-white/6 px-4 py-2 text-xs uppercase tracking-[0.2em] text-slate-200">
           {announcements.length} notices

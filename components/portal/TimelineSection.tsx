@@ -65,9 +65,9 @@ const toneMap = {
   },
 };
 
-export const TimelineSection: React.FC = () => {
+export const TimelineSection: React.FC<{ standalone?: boolean }> = ({ standalone = false }) => {
   return (
-    <section id="timeline" className={`${shellClassName} py-4 md:py-8`}>
+    <section id={standalone ? undefined : 'timeline'} className={standalone ? '' : `${shellClassName} py-4 md:py-8`}>
       <div data-reveal="up" className="portal-glass rounded-[2.2rem] p-6 md:p-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>

@@ -169,6 +169,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   onParticipantChange,
   onSubmit,
 }) => {
+  const formAnchorId = 'registration-form-start';
   const upiLink = selectedEvent?.payment_upi
     ? `upi://pay?pa=${selectedEvent.payment_upi}&pn=${encodeURIComponent(selectedEvent.payment_payee || selectedEvent.name)}&am=${selectedEvent.registration_fee}&cu=INR&tn=${encodeURIComponent(selectedEvent.name)}`
     : '';
@@ -179,7 +180,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const selectedTheme = selectedEvent ? categoryThemes[selectedEvent.category] || categoryThemes.Technical : categoryThemes.Technical;
 
   return (
-    <section id="registration-panel" className="grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
+    <section id="registration-panel" className="grid gap-5 xl:grid-cols-[1.08fr_0.92fr] xl:gap-6">
       <div data-reveal="left" className="portal-glow-card portal-glass rounded-[2rem] p-6 md:p-8">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -199,7 +200,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
           </div>
         </div>
 
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
+        <div className="mt-5 grid gap-3 md:mt-6 md:gap-4 md:grid-cols-2">
           {events.map((event) => {
             const active = event.slug === selectedEventSlug;
             const slotsLeft = event.max_slots !== null ? Math.max(event.max_slots - event.registrations_count, 0) : null;
@@ -219,7 +220,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                 <div className={`absolute inset-0 bg-gradient-to-br opacity-0 transition duration-300 group-hover:opacity-100 ${theme.card}`} />
                 <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${theme.progress}`} />
                 <div className="relative flex h-full flex-col">
-                  <div className="relative h-44 overflow-hidden">
+                  <div className="relative h-36 overflow-hidden sm:h-40 md:h-44">
                     <img src={event.poster_path} alt={event.name} className="h-full w-full object-cover transition duration-700 group-hover:scale-110" />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#07111d] via-[#07111d]/38 to-transparent" />
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.14),transparent_24%)]" />
@@ -234,16 +235,16 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                         {heat.label}
                       </span>
                     </div>
-                    <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-5">
-                      <h4 className="text-xl font-bold text-white">{event.name}</h4>
-                      <span className={`rounded-full border px-3 py-1 text-xs backdrop-blur ${theme.badge}`}>
+                    <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-4 md:p-5">
+                      <h4 className="text-lg font-bold text-white md:text-xl">{event.name}</h4>
+                      <span className={`rounded-full border px-3 py-1 text-[11px] backdrop-blur md:text-xs ${theme.badge}`}>
                         {getTeamLabel(event)}
                       </span>
                     </div>
                   </div>
-                  <div className="relative flex flex-1 flex-col p-5">
-                    <p className="text-sm leading-7 text-slate-200">{event.description}</p>
-                    <div className={`mt-4 rounded-2xl border border-white/10 bg-gradient-to-r p-4 ${theme.slotPanel}`}>
+                  <div className="relative flex flex-1 flex-col p-4 md:p-5">
+                    <p className="text-sm leading-6 text-slate-200 md:leading-7">{event.description}</p>
+                    <div className={`mt-3 rounded-2xl border border-white/10 bg-gradient-to-r p-4 md:mt-4 ${theme.slotPanel}`}>
                       <div className="flex items-center justify-between gap-3">
                         <div className="flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-white">
                           <TimerReset size={14} />
@@ -265,7 +266,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                         <p className="mt-2 text-xs text-fuchsia-100">{event.waitlist_count} team(s) already on waitlist</p>
                       ) : null}
                     </div>
-                    <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                    <div className="mt-3 grid gap-3 sm:grid-cols-2 md:mt-4">
                       <div className={`rounded-2xl border border-white/10 bg-gradient-to-r p-3 text-sm text-slate-100 backdrop-blur-md ${theme.surface}`}>
                         {event.date_label} / {event.time_label}
                       </div>
@@ -273,7 +274,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                         {event.registration_fee_label || formatCurrency(event.registration_fee)}
                       </div>
                     </div>
-                    <div className="mt-3 rounded-2xl border border-white/10 bg-black/20 px-3 py-3 text-xs uppercase tracking-[0.24em] text-slate-200">
+                    <div className="mt-3 rounded-2xl border border-white/10 bg-black/20 px-3 py-3 text-[11px] uppercase tracking-[0.22em] text-slate-200 md:text-xs md:tracking-[0.24em]">
                       {countdown}
                     </div>
                   </div>
@@ -284,7 +285,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
         </div>
       </div>
 
-      <div data-reveal="right" className="portal-glow-card portal-glass rounded-[2rem] p-6 md:p-8">
+      <div id={formAnchorId} data-reveal="right" className="portal-glow-card portal-glass rounded-[2rem] p-5 md:p-8">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Registration form</p>
@@ -305,7 +306,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
         </div>
 
         {selectedEvent ? (
-          <form onSubmit={onSubmit} className="mt-6 space-y-5">
+          <form onSubmit={onSubmit} className="mt-5 space-y-4 md:mt-6 md:space-y-5">
             {draftRecovered ? (
               <div data-reveal="up" className="flex items-start justify-between gap-4 rounded-[1.5rem] border border-blue-400/20 bg-gradient-to-r from-blue-500/14 to-purple-500/10 px-4 py-4 text-sm text-blue-100 backdrop-blur-md">
                 <div className="flex items-start gap-3">
@@ -321,7 +322,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
               </div>
             ) : null}
 
-            <div className="grid gap-4 sm:grid-cols-3">
+            <div className="grid gap-3 sm:grid-cols-3 md:gap-4">
               <div data-reveal="up" className={`tilt-card rounded-2xl border border-white/10 bg-gradient-to-br p-4 backdrop-blur-md ${selectedTheme.surface}`}>
                 <p className="text-xs uppercase tracking-[0.2em] text-slate-300">Selected event</p>
                 <p className="mt-2 text-lg font-bold text-white">{selectedEvent.name}</p>
@@ -341,7 +342,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
               </div>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-3 sm:grid-cols-2 md:gap-4">
               {selectedEvent.max_members > selectedEvent.min_members ? (
                 <label className={`block rounded-[1.45rem] border border-white/10 bg-gradient-to-r p-4 backdrop-blur-md ${selectedTheme.surface}`}>
                   <span className="mb-2 block text-sm text-slate-200">Team size</span>
@@ -361,7 +362,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
               </div>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-3 sm:grid-cols-2 md:gap-4">
               {selectedEvent.min_members === 1 && !selectedEvent.is_team_event ? null : (
                 <div className="sm:col-span-2">
                   <FloatingField label="Team name" value={form.teamName} onChange={(value) => onFormFieldChange('teamName', value)} onBlur={() => onFieldBlur('teamName')} error={showError('teamName')} required />
@@ -390,14 +391,14 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                 </div>
               </div>
 
-              <div className="mt-5 grid gap-5 lg:grid-cols-[0.92fr_1.08fr]">
+              <div className="mt-5 grid gap-4 lg:grid-cols-[0.92fr_1.08fr] lg:gap-5">
                 <div className={`tilt-card rounded-[1.5rem] border border-white/10 bg-gradient-to-br p-5 backdrop-blur-md ${selectedTheme.surface}`}>
                   <div className="flex items-center gap-2 text-blue-100">
                     <QrCode size={18} />
                     <p className="text-sm font-semibold">Scan event payment QR</p>
                   </div>
                   <div className="mt-4 rounded-[1.6rem] bg-white p-4 shadow-[0_18px_50px_rgba(255,255,255,0.08)]">
-                    {qrUrl ? <img src={qrUrl} alt={`${selectedEvent.name} payment QR`} className="mx-auto h-56 w-56" /> : <div className="mx-auto h-56 w-56 rounded-2xl bg-slate-200/30" />}
+                    {qrUrl ? <img src={qrUrl} alt={`${selectedEvent.name} payment QR`} className="mx-auto h-48 w-48 sm:h-52 sm:w-52 md:h-56 md:w-56" /> : <div className="mx-auto h-48 w-48 rounded-2xl bg-slate-200/30 sm:h-52 sm:w-52 md:h-56 md:w-56" />}
                   </div>
                 </div>
 
@@ -457,7 +458,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                 </div>
               </div>
 
-              <div className="mt-5 space-y-4">
+              <div className="mt-4 space-y-4 md:mt-5">
                 {form.participants.map((participant, index) => {
                   const participantTone = index === 0 ? 'border-blue-400/16 bg-gradient-to-br from-blue-500/10 to-transparent' : index % 2 === 1 ? 'border-purple-400/14 bg-gradient-to-br from-purple-500/8 to-transparent' : 'border-yellow-400/14 bg-gradient-to-br from-yellow-500/8 to-transparent';
 
@@ -467,7 +468,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                         Participant {index + 1}
                         {index === 0 ? ' - Lead' : ''}
                       </p>
-                      <div className="mt-4 grid gap-4 sm:grid-cols-3">
+                      <div className="mt-4 grid gap-3 sm:grid-cols-3 md:gap-4">
                         <FloatingField label="Full name" value={participant.fullName} onChange={(value) => onParticipantChange(index, 'fullName', value)} onBlur={() => onFieldBlur(`participants.${index}.fullName`)} error={showError(`participants.${index}.fullName`)} required />
                         <FloatingField label="Email" value={participant.email} onChange={(value) => onParticipantChange(index, 'email', value)} onBlur={() => onFieldBlur(`participants.${index}.email`)} error={showError(`participants.${index}.email`)} type="email" required />
                         <FloatingField label="Phone" value={participant.phone} onChange={(value) => onParticipantChange(index, 'phone', value)} onBlur={() => onFieldBlur(`participants.${index}.phone`)} error={showError(`participants.${index}.phone`)} required />

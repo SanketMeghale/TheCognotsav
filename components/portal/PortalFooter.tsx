@@ -77,7 +77,7 @@ export const PortalFooter: React.FC = () => {
                   Overview
                 </a>
                 <a href="#timeline" className="rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200 transition hover:border-purple-400/30 hover:text-white">
-                  Timeline
+                  Timeline Page
                 </a>
                 <a href="#registration-panel" className="rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200 transition hover:border-pink-400/30 hover:text-white">
                   Register

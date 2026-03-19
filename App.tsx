@@ -6,6 +6,7 @@ import { AnnouncementBanner } from './components/portal/AnnouncementBanner.tsx';
 import { HeroSection } from './components/portal/HeroSection.tsx';
 import { SmartAlertsPanel } from './components/portal/SmartAlertsPanel.tsx';
 import { TimelineSection } from './components/portal/TimelineSection.tsx';
+import { TimelinePage } from './components/portal/TimelinePage.tsx';
 import { EventRegistrationPanel } from './components/portal/EventRegistrationPanel.tsx';
 import { TrackerAdminPanel } from './components/portal/TrackerAdminPanel.tsx';
 import { PortalFooter } from './components/portal/PortalFooter.tsx';
@@ -436,6 +437,7 @@ export const App: React.FC = () => {
   }, []);
 
   const isAdminPage = hashRoute.startsWith('#admin-registrations');
+  const isTimelinePage = hashRoute === '#timeline';
   const pinnedAnnouncement =
     announcements.find((announcement) => announcement.is_pinned && isAnnouncementActive(announcement)) || null;
 
@@ -493,6 +495,15 @@ export const App: React.FC = () => {
     setSuccessReceipt(null);
     setPaymentScreenshotDataUrl(null);
     setPaymentScreenshotName('');
+
+    if (typeof window !== 'undefined' && window.innerWidth < 1280) {
+      window.setTimeout(() => {
+        document.getElementById('registration-form-start')?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+      }, 120);
+    }
   };
 
   const handleTeamSizeChange = (nextSize: number) => {
@@ -1136,7 +1147,7 @@ export const App: React.FC = () => {
 
           <div className="hidden items-center gap-3 rounded-full border border-white/10 bg-white/[0.06] px-4 py-2 text-sm text-slate-200 shadow-[0_0_30px_rgba(59,130,246,0.14)] xl:flex">
             <BellRing size={16} className="text-blue-300" />
-            DVVPOE CE Department / PostgreSQL-backed registrations
+            DVVPOE CE Department
           </div>
         </div>
 
@@ -1176,6 +1187,8 @@ export const App: React.FC = () => {
           onRunBackup={runBackup}
           onDownloadBackup={downloadBackupFile}
         />
+      ) : isTimelinePage ? (
+        <TimelinePage />
       ) : (
         <>
           <HeroSection
@@ -1185,7 +1198,6 @@ export const App: React.FC = () => {
           />
 
           <main className={`${shellClassName} space-y-8 pb-16 md:space-y-10 md:pb-20`}>
-            <TimelineSection />
             <AnnouncementArchiveSection
               announcements={visibleAnnouncements}
               loading={loadingAnnouncements}
