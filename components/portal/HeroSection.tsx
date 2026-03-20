@@ -41,7 +41,7 @@ export const HeroSection: React.FC<Props> = ({ totalEvents: _totalEvents, totalR
         <div className="portal-front-hero__content">
           <div className="portal-hero-topbar">
             <div className="portal-cognotsav-heading-wrap">
-              <p className="portal-cognotsav-heading-kicker">Tech Fest Portal</p>
+              <p className="portal-cognotsav-heading-kicker">CEAS Presents</p>
               <h1 className="portal-cognotsav-heading">COGNOTSAV</h1>
             </div>
 
