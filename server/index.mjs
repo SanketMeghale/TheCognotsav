@@ -15,6 +15,7 @@ const dnsLookup = dns.promises.lookup;
 const app = express();
 const port = Number(process.env.PORT || 8787);
 const adminAccessKey = process.env.ADMIN_ACCESS_KEY || 'change-this-admin-key';
+const rawEventAdminKeys = String(process.env.EVENT_ADMIN_KEYS_JSON || process.env.EVENT_ADMIN_KEYS || '').trim();
 const storageRoot = path.resolve(
   process.env.RAILWAY_VOLUME_MOUNT_PATH || process.env.STORAGE_ROOT || process.cwd(),
 );
@@ -56,6 +57,89 @@ const monthIndexByShortName = {
   Nov: 10,
   Dec: 11,
 };
+
+function parseEventAdminKeys(rawValue) {
+  if (!rawValue) return new Map();
+
+  try {
+    const parsed = JSON.parse(rawValue);
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+      return new Map(
+        Object.entries(parsed)
+          .filter(([slug, key]) => String(slug || '').trim() && typeof key === 'string' && key.trim())
+          .map(([slug, key]) => [String(slug).trim(), String(key).trim()]),
+      );
+    }
+  } catch {
+    // Fall back to the simple delimited format below.
+  }
+
+  return new Map(
+    rawValue
+      .split(',')
+      .map((entry) => entry.trim())
+      .filter(Boolean)
+      .map((entry) => {
+        const separator = entry.includes('=') ? '=' : ':';
+        const [slug, key] = entry.split(separator);
+        return [String(slug || '').trim(), String(key || '').trim()];
+      })
+      .filter(([slug, key]) => slug && key),
+  );
+}
+
+const eventAdminKeys = parseEventAdminKeys(rawEventAdminKeys);
+
+function resolveAdminAccess(key) {
+  const normalizedKey = String(key || '').trim();
+  if (!normalizedKey) return null;
+
+  if (normalizedKey === adminAccessKey) {
+    return { mode: 'global', eventSlug: null };
+  }
+
+  for (const [eventSlug, eventKey] of eventAdminKeys.entries()) {
+    if (normalizedKey === eventKey) {
+      return { mode: 'event', eventSlug };
+    }
+  }
+
+  return null;
+}
+
+async function buildAdminAccessPayload(access) {
+  if (!access || access.mode === 'global') {
+    return {
+      mode: 'global',
+      event_slug: null,
+      event_name: null,
+      can_export: true,
+      can_manage_backups: true,
+      can_manage_broadcasts: true,
+      can_manage_announcements: true,
+    };
+  }
+
+  const result = await pool.query(
+    `
+      SELECT slug, name
+      FROM events
+      WHERE slug = $1
+      LIMIT 1
+    `,
+    [access.eventSlug],
+  );
+
+  return {
+    mode: 'event',
+    event_slug: access.eventSlug,
+    event_name: result.rows[0]?.name || access.eventSlug,
+    can_export: true,
+    can_manage_backups: false,
+    can_manage_broadcasts: false,
+    can_manage_announcements: false,
+  };
+}
 
 async function resolveSmtpConnectHost(host) {
   if (!host) return host;
@@ -253,10 +337,20 @@ function normalizeEmail(value) {
 
 function requireAdmin(req, res, next) {
   const key = req.header('x-admin-key');
-  if (!key || key !== adminAccessKey) {
+  const access = resolveAdminAccess(key);
+  if (!access) {
     return res.status(401).json({ error: 'Invalid admin access key.' });
   }
+  req.adminAccess = access;
   return next();
+}
+
+function hasScopedEventAccess(req, eventSlug) {
+  if (!req.adminAccess || req.adminAccess.mode !== 'event') {
+    return true;
+  }
+
+  return req.adminAccess.eventSlug === eventSlug;
 }
 
 function getPaymentStatusLabel(status) {
@@ -594,6 +688,7 @@ async function getNotificationReadyRegistration(registrationId) {
     `
       SELECT
         r.id,
+        r.event_slug,
         r.registration_code,
         r.team_name,
         r.contact_name,
@@ -1035,14 +1130,23 @@ async function fetchLookupRegistrations(query) {
   });
 }
 
-async function fetchAnnouncements({ includeExpired = false, limit = 16 } = {}) {
+async function fetchAnnouncements({ includeExpired = false, limit = 16, eventSlug = null, includeGeneral = true } = {}) {
   const clauses = [];
+  const params = [];
+  let paramIndex = 1;
   if (!includeExpired) {
     clauses.push('(a.starts_at IS NULL OR a.starts_at <= NOW())');
     clauses.push('(a.expires_at IS NULL OR a.expires_at >= NOW())');
   }
 
+  if (eventSlug) {
+    params.push(eventSlug);
+    clauses.push(includeGeneral ? `(a.event_slug = $${paramIndex} OR a.event_slug IS NULL)` : `a.event_slug = $${paramIndex}`);
+    paramIndex += 1;
+  }
+
   const whereClause = clauses.length > 0 ? `WHERE ${clauses.join(' AND ')}` : '';
+  params.push(limit);
   const result = await pool.query(
     `
       SELECT
@@ -1060,9 +1164,9 @@ async function fetchAnnouncements({ includeExpired = false, limit = 16 } = {}) {
       LEFT JOIN events e ON e.slug = a.event_slug
       ${whereClause}
       ORDER BY a.is_pinned DESC, a.created_at DESC
-      LIMIT $1
+      LIMIT $${paramIndex}
     `,
-    [limit],
+    params,
   );
 
   return result.rows;
@@ -1578,8 +1682,10 @@ async function fetchAdminRegistrations(whereClause = '', params = []) {
   });
 }
 
-async function fetchAdminRegistrationById(registrationId) {
-  const rows = await fetchAdminRegistrations('WHERE r.id = $1', [registrationId]);
+async function fetchAdminRegistrationById(registrationId, eventSlug = null) {
+  const rows = eventSlug
+    ? await fetchAdminRegistrations('WHERE r.id = $1 AND r.event_slug = $2', [registrationId, eventSlug])
+    : await fetchAdminRegistrations('WHERE r.id = $1', [registrationId]);
   return rows[0] ?? null;
 }
 
@@ -1840,6 +1946,10 @@ app.patch('/api/admin/registrations/:id/status', requireAdmin, async (req, res) 
   const previousStatus = currentResult.rows[0].status;
   const eventSlug = currentResult.rows[0].event_slug;
 
+  if (!hasScopedEventAccess(req, eventSlug)) {
+    return res.status(403).json({ error: 'This access key can verify registrations only for its assigned event.' });
+  }
+
   await pool.query(
     `
       UPDATE registrations
@@ -1870,7 +1980,10 @@ app.patch('/api/admin/registrations/:id/status', requireAdmin, async (req, res) 
     promotedRegistration = await promoteNextWaitlistedRegistration(eventSlug);
   }
 
-  const refreshedRegistration = await fetchAdminRegistrationById(id);
+  const refreshedRegistration = await fetchAdminRegistrationById(
+    id,
+    req.adminAccess?.mode === 'event' ? req.adminAccess.eventSlug : null,
+  );
   return res.json({
     registration: refreshedRegistration,
     notification,
@@ -1883,6 +1996,24 @@ app.patch('/api/admin/registrations/:id/review-note', requireAdmin, async (req, 
   const { id } = req.params;
   const reviewNote = String(req.body?.reviewNote || '').trim();
 
+  const registrationScope = await pool.query(
+    `
+      SELECT event_slug
+      FROM registrations
+      WHERE id = $1
+      LIMIT 1
+    `,
+    [id],
+  );
+
+  if (registrationScope.rowCount === 0) {
+    return res.status(404).json({ error: 'Registration not found.' });
+  }
+
+  if (!hasScopedEventAccess(req, registrationScope.rows[0].event_slug)) {
+    return res.status(403).json({ error: 'This access key can update only its assigned event registrations.' });
+  }
+
   await pool.query(
     `
       UPDATE registrations
@@ -1893,7 +2024,10 @@ app.patch('/api/admin/registrations/:id/review-note', requireAdmin, async (req, 
     [id, reviewNote || null],
   );
 
-  const registration = await fetchAdminRegistrationById(id);
+  const registration = await fetchAdminRegistrationById(
+    id,
+    req.adminAccess?.mode === 'event' ? req.adminAccess.eventSlug : null,
+  );
   if (!registration) {
     return res.status(404).json({ error: 'Registration not found.' });
   }
@@ -1907,6 +2041,24 @@ app.patch('/api/admin/registrations/:id/attendance', requireAdmin, async (req, r
 
   if (!['registered', 'arrived', 'checked-in', 'absent', 'completed'].includes(attendanceStatus)) {
     return res.status(400).json({ error: 'Invalid attendance status.' });
+  }
+
+  const registrationScope = await pool.query(
+    `
+      SELECT event_slug
+      FROM registrations
+      WHERE id = $1
+      LIMIT 1
+    `,
+    [id],
+  );
+
+  if (registrationScope.rowCount === 0) {
+    return res.status(404).json({ error: 'Registration not found.' });
+  }
+
+  if (!hasScopedEventAccess(req, registrationScope.rows[0].event_slug)) {
+    return res.status(403).json({ error: 'This access key can update only its assigned event registrations.' });
   }
 
   await pool.query(
@@ -1923,7 +2075,10 @@ app.patch('/api/admin/registrations/:id/attendance', requireAdmin, async (req, r
     [id, attendanceStatus],
   );
 
-  const registration = await fetchAdminRegistrationById(id);
+  const registration = await fetchAdminRegistrationById(
+    id,
+    req.adminAccess?.mode === 'event' ? req.adminAccess.eventSlug : null,
+  );
   if (!registration) {
     return res.status(404).json({ error: 'Registration not found.' });
   }
@@ -1931,17 +2086,30 @@ app.patch('/api/admin/registrations/:id/attendance', requireAdmin, async (req, r
   return res.json({ registration });
 });
 
-app.get('/api/admin/registrations', requireAdmin, async (_req, res) => {
-  const rows = await fetchAdminRegistrations();
-  res.json(rows);
+app.get('/api/admin/registrations', requireAdmin, async (req, res) => {
+  const rows =
+    req.adminAccess?.mode === 'event'
+      ? await fetchAdminRegistrations('WHERE r.event_slug = $1', [req.adminAccess.eventSlug])
+      : await fetchAdminRegistrations();
+  const access = await buildAdminAccessPayload(req.adminAccess);
+  res.json({ rows, access });
 });
 
-app.get('/api/admin/announcements', requireAdmin, async (_req, res) => {
-  const rows = await fetchAnnouncements({ includeExpired: true, limit: 30 });
+app.get('/api/admin/announcements', requireAdmin, async (req, res) => {
+  const rows = await fetchAnnouncements({
+    includeExpired: true,
+    limit: 30,
+    eventSlug: req.adminAccess?.mode === 'event' ? req.adminAccess.eventSlug : null,
+    includeGeneral: true,
+  });
   res.json(rows);
 });
 
 app.delete('/api/admin/announcements/:id', requireAdmin, async (req, res) => {
+  if (req.adminAccess?.mode === 'event') {
+    return res.status(403).json({ error: 'Event-scoped access cannot delete updates.' });
+  }
+
   try {
     const announcementId = String(req.params.id || '').trim();
 
@@ -1962,6 +2130,10 @@ app.delete('/api/admin/announcements/:id', requireAdmin, async (req, res) => {
 });
 
 app.post('/api/admin/broadcasts', requireAdmin, async (req, res) => {
+  if (req.adminAccess?.mode === 'event') {
+    return res.status(403).json({ error: 'Event-scoped access cannot publish broadcasts.' });
+  }
+
   try {
     const title = String(req.body?.title || '').trim();
     const message = String(req.body?.message || '').trim();
@@ -2001,32 +2173,53 @@ app.post('/api/admin/registrations/:id/notifications/status-email', requireAdmin
     return res.status(404).json({ error: 'Registration not found.' });
   }
 
+  if (!hasScopedEventAccess(req, registration.event_slug)) {
+    return res.status(403).json({ error: 'This access key can email only its assigned event registrations.' });
+  }
+
   const notification = await sendStatusNotification(registration);
-  const refreshedRegistration = await fetchAdminRegistrationById(id);
+  const refreshedRegistration = await fetchAdminRegistrationById(
+    id,
+    req.adminAccess?.mode === 'event' ? req.adminAccess.eventSlug : null,
+  );
   return res.json({
     registration: refreshedRegistration,
     notification,
   });
 });
 
-app.get('/api/admin/backups', requireAdmin, async (_req, res) => {
+app.get('/api/admin/backups', requireAdmin, async (req, res) => {
+  if (req.adminAccess?.mode === 'event') {
+    return res.json([]);
+  }
+
   const rows = await listBackupSnapshots();
   res.json(rows);
 });
 
-app.post('/api/admin/backups/run', requireAdmin, async (_req, res) => {
+app.post('/api/admin/backups/run', requireAdmin, async (req, res) => {
+  if (req.adminAccess?.mode === 'event') {
+    return res.status(403).json({ error: 'Event-scoped access cannot create backups.' });
+  }
+
   const backup = await writeBackupSnapshot('manual');
   res.json({ backup });
 });
 
 app.get('/api/admin/backups/:fileName', requireAdmin, async (req, res) => {
+  if (req.adminAccess?.mode === 'event') {
+    return res.status(403).json({ error: 'Event-scoped access cannot download backups.' });
+  }
+
   const safeFileName = path.basename(String(req.params.fileName || ''));
   const filePath = path.join(backupsDir, safeFileName);
   await fs.access(filePath);
   res.download(filePath, safeFileName);
 });
 
-app.get('/api/admin/export.csv', requireAdmin, async (_req, res) => {
+app.get('/api/admin/export.csv', requireAdmin, async (req, res) => {
+  const scopeClause = req.adminAccess?.mode === 'event' ? 'WHERE r.event_slug = $1' : '';
+  const scopeParams = req.adminAccess?.mode === 'event' ? [req.adminAccess.eventSlug] : [];
   const result = await pool.query(
     `
       SELECT
@@ -2068,9 +2261,11 @@ app.get('/api/admin/export.csv', requireAdmin, async (_req, res) => {
         LIMIT 1
       ) latest_notification ON TRUE
       LEFT JOIN registration_participants p ON p.registration_id = r.id
+      ${scopeClause}
       GROUP BY r.id, e.name, latest_notification.delivery_status, latest_notification.created_at, latest_notification.error_message
       ORDER BY r.created_at DESC
     `,
+    scopeParams,
   );
 
   const headers = [
@@ -2113,7 +2308,9 @@ app.get('/api/admin/export.csv', requireAdmin, async (_req, res) => {
   res.send(csvRows.join('\n'));
 });
 
-app.get('/api/admin/export.xlsx', requireAdmin, async (_req, res) => {
+app.get('/api/admin/export.xlsx', requireAdmin, async (req, res) => {
+  const scopeClause = req.adminAccess?.mode === 'event' ? 'WHERE r.event_slug = $1' : '';
+  const scopeParams = req.adminAccess?.mode === 'event' ? [req.adminAccess.eventSlug] : [];
   const result = await pool.query(
     `
       SELECT
@@ -2147,8 +2344,10 @@ app.get('/api/admin/export.xlsx', requireAdmin, async (_req, res) => {
         ORDER BY n.created_at DESC
         LIMIT 1
       ) latest_notification ON TRUE
+      ${scopeClause}
       ORDER BY r.created_at DESC
     `,
+    scopeParams,
   );
 
   const workbook = XLSX.utils.book_new();

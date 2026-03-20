@@ -1,14 +1,15 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Activity, AlertTriangle, ArrowLeft, BarChart3, CheckCircle2, Clock3, Download,
   Eye, FileSpreadsheet, HardDriveDownload, Mail, Megaphone, QrCode,
   RotateCcw, Save, Search, Send, ShieldCheck, Trash2, Users, XCircle,
 } from 'lucide-react';
-import type { AdminNotificationSummary, AdminRegistration, BackupSnapshot, EventRecord, PortalAnnouncement } from './types';
+import type { AdminAccessScope, AdminNotificationSummary, AdminRegistration, BackupSnapshot, EventRecord, PortalAnnouncement } from './types';
 import { formatBytes, formatCurrency, shellClassName } from './utils';
 
 type Props = {
   adminKey: string;
+  adminScope: AdminAccessScope | null;
   adminRows: AdminRegistration[];
   events: EventRecord[];
   announcements: PortalAnnouncement[];
@@ -59,7 +60,7 @@ function FloatingField({ label, icon, value, type = 'text', onChange }: { label:
   return <label className="floating-field block"><span className="pointer-events-none absolute left-4 top-[1.15rem] text-cyan-200/70">{icon}</span><input type={type} value={value} onChange={(event) => onChange(event.target.value)} placeholder=" " className="floating-field-input pl-11" /><span className="floating-field-label left-11">{label}</span></label>;
 }
 
-export const AdminRegistrationsPage: React.FC<Props> = ({ adminKey, adminRows, events, announcements, backups, adminLoading, adminError, onAdminKeyChange, onLoadAdminRows, onDownload, onStatusChange, onAttendanceChange, onSaveReviewNote, onResendStatusEmail, onSendBroadcast, onDeleteAnnouncement, onRunBackup, onDownloadBackup }) => {
+export const AdminRegistrationsPage: React.FC<Props> = ({ adminKey, adminScope, adminRows, events, announcements, backups, adminLoading, adminError, onAdminKeyChange, onLoadAdminRows, onDownload, onStatusChange, onAttendanceChange, onSaveReviewNote, onResendStatusEmail, onSendBroadcast, onDeleteAnnouncement, onRunBackup, onDownloadBackup }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [eventFilter, setEventFilter] = useState('all');
@@ -70,6 +71,14 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminKey, adminRows, e
   const [broadcastEventSlug, setBroadcastEventSlug] = useState('');
   const [broadcastPinned, setBroadcastPinned] = useState(true);
   const [checkInQuery, setCheckInQuery] = useState('');
+  const scopedEventSlug = adminScope?.mode === 'event' ? adminScope.event_slug : null;
+  const scopedEventName = adminScope?.mode === 'event' ? adminScope.event_name : null;
+
+  useEffect(() => {
+    if (scopedEventSlug) {
+      setEventFilter(scopedEventSlug);
+    }
+  }, [scopedEventSlug]);
 
   const counts = useMemo(() => ({ all: adminRows.length, pending: adminRows.filter((row) => row.status === 'pending').length, verified: adminRows.filter((row) => row.status === 'verified').length, waitlisted: adminRows.filter((row) => row.status === 'waitlisted').length, rejected: adminRows.filter((row) => row.status === 'rejected').length }), [adminRows]);
   const eventBuckets = useMemo(() => events.map((event) => ({
@@ -93,6 +102,13 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminKey, adminRows, e
             <a href="#overview" className="magnetic-button inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200"><ArrowLeft size={16} />Back to portal</a>
             <p className="mt-5 text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Admin workspace</p>
             <h2 className="mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron text-2xl font-black uppercase text-transparent md:text-4xl">Operations dashboard</h2>
+            {adminScope ? (
+              <p className="mt-3 text-sm text-slate-300">
+                {adminScope.mode === 'event'
+                  ? `Scoped access: ${scopedEventName || 'Assigned event'} verification only.`
+                  : 'Global access: all events and organizer controls are available.'}
+              </p>
+            ) : null}
           </div>
           <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
             <a href="#admin-analytics" className="rounded-[1.4rem] border border-cyan-300/14 bg-cyan-400/10 p-4 transition hover:-translate-y-0.5 hover:border-cyan-300/24"><p className="text-xs uppercase tracking-[0.24em] text-cyan-100/80">Registrations</p><p className="mt-2 text-3xl font-black text-white">{counts.all}</p></a>
@@ -104,8 +120,8 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminKey, adminRows, e
         <div className="mt-6 grid gap-4 xl:grid-cols-[1.2fr_auto_auto_auto]">
           <FloatingField label="Enter admin access key" icon={<ShieldCheck size={18} />} type="password" value={adminKey} onChange={onAdminKeyChange} />
           <button type="button" onClick={onLoadAdminRows} disabled={adminLoading || !adminKey.trim()} className="animated-gradient-button rounded-2xl px-5 py-3 font-bold text-slate-950 disabled:opacity-60">{adminLoading ? 'Loading...' : 'Load dashboard'}</button>
-          <button type="button" onClick={() => onDownload('csv')} disabled={!adminKey.trim()} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-cyan-300/12 bg-white/5 px-4 py-3 text-sm font-bold text-white disabled:opacity-60"><Download size={16} />CSV</button>
-          <button type="button" onClick={() => onDownload('xlsx')} disabled={!adminKey.trim()} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-fuchsia-300/12 bg-white/5 px-4 py-3 text-sm font-bold text-white disabled:opacity-60"><FileSpreadsheet size={16} />Excel</button>
+          <button type="button" onClick={() => onDownload('csv')} disabled={!adminKey.trim() || adminScope?.can_export === false} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-cyan-300/12 bg-white/5 px-4 py-3 text-sm font-bold text-white disabled:opacity-60"><Download size={16} />CSV</button>
+          <button type="button" onClick={() => onDownload('xlsx')} disabled={!adminKey.trim() || adminScope?.can_export === false} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-fuchsia-300/12 bg-white/5 px-4 py-3 text-sm font-bold text-white disabled:opacity-60"><FileSpreadsheet size={16} />Excel</button>
         </div>
         {adminError ? <div className="mt-5 rounded-2xl border border-rose-400/25 bg-gradient-to-r from-rose-500/14 to-orange-500/8 px-4 py-3 text-sm text-rose-100">{adminError}</div> : null}
       </section>
@@ -113,7 +129,7 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminKey, adminRows, e
       <div className="flex flex-wrap gap-2">
         <a href="#admin-analytics" className="magnetic-button rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Analytics</a>
         <a href="#admin-verification" className="magnetic-button rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Verification</a>
-        <a href="#admin-broadcast" className="magnetic-button rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Broadcast</a>
+        {adminScope?.can_manage_broadcasts === false ? null : <a href="#admin-broadcast" className="magnetic-button rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Broadcast</a>}
         <a href="#admin-checkin" className="magnetic-button rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Check-in</a>
       </div>
 
@@ -142,7 +158,7 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminKey, adminRows, e
         </div>
 
         <div data-reveal="up" className="space-y-4 md:space-y-6">
-          <div id="admin-broadcast" className="portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-6">
+          {adminScope?.can_manage_broadcasts === false ? null : <div id="admin-broadcast" className="portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-6">
             <div className="flex items-center gap-3"><Megaphone size={18} className="text-fuchsia-200" /><h3 className="text-xl font-bold text-white">Broadcast center</h3></div>
             <div className="mt-5 grid gap-4">
               <label className="block rounded-[1.4rem] border border-white/10 bg-white/5 p-4">
@@ -157,9 +173,9 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminKey, adminRows, e
               <label className="inline-flex items-center gap-3 rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200"><input type="checkbox" checked={broadcastPinned} onChange={(event) => setBroadcastPinned(event.target.checked)} /> Pin this on the public portal</label>
               <button type="button" onClick={() => onSendBroadcast({ title: broadcastTitle, message: broadcastMessage, eventSlug: broadcastEventSlug, isPinned: broadcastPinned })} className="animated-gradient-button inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 font-bold text-slate-950"><Send size={16} />Publish and send</button>
             </div>
-          </div>
+          </div>}
 
-          <div className="portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-6">
+          {adminScope?.can_manage_backups === false ? null : <div className="portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-6">
             <div className="flex items-center gap-3"><HardDriveDownload size={18} className="text-yellow-200" /><h3 className="text-xl font-bold text-white">Backups and archive</h3></div>
             <div className="mt-5 flex flex-wrap gap-3"><button type="button" onClick={onRunBackup} className="magnetic-button inline-flex items-center gap-2 rounded-2xl border border-yellow-300/18 bg-yellow-400/10 px-4 py-3 text-sm font-bold text-yellow-100"><HardDriveDownload size={16} />Run backup now</button></div>
             <div className="mt-5 space-y-3">
@@ -168,7 +184,7 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminKey, adminRows, e
             <div className="mt-5 space-y-3">
               {announcements.slice(0, 3).map((announcement) => <div key={announcement.id} className="rounded-[1.4rem] border border-white/10 bg-black/20 p-4"><div className="flex flex-wrap items-start justify-between gap-3"><div className="flex flex-wrap items-center gap-2">{announcement.is_pinned ? <span className="rounded-full border border-yellow-300/20 bg-yellow-400/10 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-yellow-100">Pinned</span> : null}{announcement.event_name ? <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-slate-200">{announcement.event_name}</span> : null}</div><button type="button" onClick={() => onDeleteAnnouncement(announcement.id)} className="magnetic-button inline-flex items-center gap-2 rounded-xl border border-rose-300/18 bg-rose-400/10 px-3 py-2 text-xs font-bold uppercase tracking-[0.16em] text-rose-100"><Trash2 size={14} />Delete</button></div><p className="mt-3 font-semibold text-white">{announcement.title}</p><p className="mt-2 text-sm text-slate-300">{announcement.message}</p></div>)}
             </div>
-          </div>
+          </div>}
         </div>
       </section>
 
@@ -220,12 +236,12 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminKey, adminRows, e
         <div className="mt-4">
           <p className="text-[11px] uppercase tracking-[0.24em] text-cyan-200/80">Competition-wise verification</p>
           <div className="mt-3 flex flex-wrap gap-3">
-            <button type="button" onClick={() => setEventFilter('all')} className={`rounded-[1.2rem] border px-4 py-3 text-left text-sm transition ${eventFilter === 'all' ? 'border-cyan-300/24 bg-cyan-400/10 text-white' : 'border-white/10 bg-white/5 text-slate-200'}`}>
+            <button type="button" onClick={() => setEventFilter(scopedEventSlug || 'all')} disabled={Boolean(scopedEventSlug)} className={`rounded-[1.2rem] border px-4 py-3 text-left text-sm transition disabled:opacity-70 ${eventFilter === (scopedEventSlug || 'all') ? 'border-cyan-300/24 bg-cyan-400/10 text-white' : 'border-white/10 bg-white/5 text-slate-200'}`}>
               <span className="block font-semibold">All competitions</span>
-              <span className="mt-1 block text-xs uppercase tracking-[0.16em] text-slate-400">{counts.all} registrations</span>
+              <span className="mt-1 block text-xs uppercase tracking-[0.16em] text-slate-400">{scopedEventSlug ? `Locked to ${scopedEventName || 'assigned event'}` : `${counts.all} registrations`}</span>
             </button>
             {eventBuckets.map((event) => (
-              <button key={event.slug} type="button" onClick={() => setEventFilter(event.slug)} className={`rounded-[1.2rem] border px-4 py-3 text-left text-sm transition ${eventFilter === event.slug ? 'border-fuchsia-300/24 bg-fuchsia-400/10 text-white' : 'border-white/10 bg-white/5 text-slate-200'}`}>
+              <button key={event.slug} type="button" onClick={() => setEventFilter(event.slug)} disabled={Boolean(scopedEventSlug && scopedEventSlug !== event.slug)} className={`rounded-[1.2rem] border px-4 py-3 text-left text-sm transition disabled:opacity-50 ${eventFilter === event.slug ? 'border-fuchsia-300/24 bg-fuchsia-400/10 text-white' : 'border-white/10 bg-white/5 text-slate-200'}`}>
                 <span className="block font-semibold">{event.name}</span>
                 <span className="mt-1 block text-xs uppercase tracking-[0.16em] text-slate-400">{event.total} total / {event.pending} pending / {event.verified} verified</span>
               </button>

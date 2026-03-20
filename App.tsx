@@ -10,6 +10,7 @@ import { FAQSection } from './components/portal/FAQSection.tsx';
 import { TrackerAdminPanel } from './components/portal/TrackerAdminPanel.tsx';
 import { PortalFooter } from './components/portal/PortalFooter.tsx';
 import type {
+  AdminAccessScope,
   AdminNotificationSummary,
   AdminRegistration,
   BackupSnapshot,
@@ -323,6 +324,7 @@ export const App: React.FC = () => {
   const [adminRows, setAdminRows] = useState<AdminRegistration[]>([]);
   const [backupSnapshots, setBackupSnapshots] = useState<BackupSnapshot[]>([]);
   const [adminAnnouncements, setAdminAnnouncements] = useState<PortalAnnouncement[]>([]);
+  const [adminScope, setAdminScope] = useState<AdminAccessScope | null>(null);
   const [adminLoading, setAdminLoading] = useState(false);
   const [adminError, setAdminError] = useState('');
   const [hashRoute, setHashRoute] = useState(() =>
@@ -961,7 +963,10 @@ export const App: React.FC = () => {
       ]);
 
       const [{ data: rowsPayload, rawText: rowsText }, { data: announcementsPayload, rawText: announcementsText }, { data: backupsPayload, rawText: backupsText }] = await Promise.all([
-        readApiBody<AdminRegistration[]>(rowsResponse),
+        readApiBody<{
+          rows?: AdminRegistration[];
+          access?: AdminAccessScope | null;
+        } | AdminRegistration[]>(rowsResponse),
         readApiBody<PortalAnnouncement[]>(announcementsResponse),
         readApiBody<BackupSnapshot[]>(backupsResponse),
       ]);
@@ -970,7 +975,9 @@ export const App: React.FC = () => {
         throw new Error(getApiErrorMessage(rowsResponse, rowsPayload, rowsText, 'Failed to load registrations.'));
       }
 
-      if (!Array.isArray(rowsPayload)) {
+      const rows = Array.isArray(rowsPayload) ? rowsPayload : Array.isArray(rowsPayload?.rows) ? rowsPayload.rows : null;
+
+      if (!rows) {
         throw new Error('Failed to load registrations. The server returned an invalid response.');
       }
 
@@ -982,13 +989,15 @@ export const App: React.FC = () => {
         throw new Error(getApiErrorMessage(backupsResponse, backupsPayload, backupsText, 'Failed to load backups.'));
       }
 
-      setAdminRows(rowsPayload);
+      setAdminRows(rows);
       setAdminAnnouncements(Array.isArray(announcementsPayload) ? announcementsPayload : []);
       setBackupSnapshots(Array.isArray(backupsPayload) ? backupsPayload : []);
+      setAdminScope(Array.isArray(rowsPayload) ? null : rowsPayload?.access || null);
     } catch (error) {
       setAdminRows([]);
       setAdminAnnouncements([]);
       setBackupSnapshots([]);
+      setAdminScope(null);
       setAdminError(error instanceof Error ? error.message : 'Failed to load registrations.');
     } finally {
       setAdminLoading(false);
@@ -1437,13 +1446,17 @@ export const App: React.FC = () => {
       {isAdminPage ? (
         <AdminRegistrationsPage
           adminKey={adminKey}
+          adminScope={adminScope}
           adminRows={adminRows}
           events={events}
           announcements={adminAnnouncements}
           backups={backupSnapshots}
           adminLoading={adminLoading}
           adminError={adminError}
-          onAdminKeyChange={setAdminKey}
+          onAdminKeyChange={(value) => {
+            setAdminKey(value);
+            setAdminScope(null);
+          }}
           onLoadAdminRows={loadAdminRows}
           onDownload={downloadAdminFile}
           onStatusChange={updateAdminStatus}
@@ -1518,7 +1531,10 @@ export const App: React.FC = () => {
               onStatusChange={updateAdminStatus}
               onLookupQueryChange={setLookupQuery}
               onLookup={handleLookup}
-              onAdminKeyChange={setAdminKey}
+              onAdminKeyChange={(value) => {
+                setAdminKey(value);
+                setAdminScope(null);
+              }}
               onLoadAdminRows={loadAdminRows}
               onDownload={downloadAdminFile}
               showAdmin={false}

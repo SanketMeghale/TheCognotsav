@@ -93,6 +93,16 @@ export type AdminNotificationSummary = {
   created_at: string | null;
 };
 
+export type AdminAccessScope = {
+  mode: 'global' | 'event';
+  event_slug: string | null;
+  event_name: string | null;
+  can_export: boolean;
+  can_manage_backups: boolean;
+  can_manage_broadcasts: boolean;
+  can_manage_announcements: boolean;
+};
+
 export type AdminRegistration = {
   id: string;
   registration_code: string;

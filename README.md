@@ -48,6 +48,7 @@ Required variables:
 
 - `DATABASE_URL`
 - `ADMIN_ACCESS_KEY`
+- `EVENT_ADMIN_KEYS_JSON` if you want separate event-wise verification passwords
 - `SMTP_FROM_EMAIL`
 - `SMTP_FROM_NAME`
 
@@ -69,5 +70,20 @@ Recommended on Railway:
 - Attach a volume to the app service so uploads and backups persist across redeploys
 
 If a Railway volume is attached, the app will automatically use `RAILWAY_VOLUME_MOUNT_PATH` for uploads and backups.
+
+## Event-wise verification keys
+
+You can optionally define separate event verification passwords using `EVENT_ADMIN_KEYS_JSON`.
+
+Example:
+
+`{"techxcelerate":"techx-verify-2026","runbhumi-bgmi":"bgmi-verify-2026"}`
+
+Behavior:
+
+- `ADMIN_ACCESS_KEY` keeps full global access
+- event keys only show registrations for their own event
+- event keys can verify status, save review notes, resend status emails, and mark attendance only for that event
+- event keys cannot publish broadcasts, delete updates, or manage backups
 
 Use that key in the portal’s admin export section to preview registrations and download files.
