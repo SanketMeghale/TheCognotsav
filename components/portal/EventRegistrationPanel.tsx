@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  ArrowLeft, ArrowRight, CheckCircle2, Clock3, Copy, CreditCard, Download, ExternalLink,
+  ArrowLeft, ArrowRight, Clock3, Copy, CreditCard, ExternalLink,
   MapPin, Phone, QrCode, Save, ShieldCheck, Sparkles, Trophy, Upload, Users,
 } from 'lucide-react';
 import type { EventRecord, ParticipantDraft, RegistrationReceipt } from './types';
@@ -411,32 +411,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                 </div>
               </SectionCard>
 
-              {successMessage ? <div className="rounded-[1.35rem] border border-emerald-300/20 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-100">{successMessage}</div> : null}
-              {successReceipt ? (
-                <div className="rounded-[1.45rem] border border-emerald-300/18 bg-[linear-gradient(145deg,rgba(4,23,18,0.88),rgba(10,25,29,0.84))] p-4">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="rounded-2xl bg-emerald-400/12 p-3 text-emerald-200">
-                        <CheckCircle2 size={18} />
-                      </div>
-                      <div>
-                        <p className="text-[10px] uppercase tracking-[0.18em] text-emerald-200/75">Registration code</p>
-                        <p className="mt-1 text-lg font-semibold text-white">{successReceipt.registrationCode}</p>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <button type="button" onClick={() => onDownloadPass(successReceipt)} className="magnetic-button inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white">
-                        <Download size={14} />
-                        Pass
-                      </button>
-                      <button type="button" onClick={() => navigator.clipboard.writeText(successReceipt.registrationCode)} className="magnetic-button inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white">
-                        <Copy size={14} />
-                        Copy
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ) : null}
+              {successMessage && !successReceipt ? <div className="rounded-[1.35rem] border border-emerald-300/20 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-100">{successMessage}</div> : null}
               {errorMessage ? <div className="rounded-[1.35rem] border border-rose-300/20 bg-rose-400/10 px-4 py-3 text-sm text-rose-100">{errorMessage}</div> : null}
 
               <button type="submit" disabled={submitting} className="animated-gradient-button inline-flex w-full items-center justify-center rounded-2xl px-6 py-4 text-base font-bold text-slate-950 disabled:opacity-60">

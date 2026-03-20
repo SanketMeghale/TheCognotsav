@@ -1660,8 +1660,12 @@ select.floating-field-input option {
   border-radius: 1.7rem;
   padding: 1.25rem;
   margin: auto;
-  overflow: hidden;
+  overflow: auto;
   animation: portalModalIn 220ms ease;
+}
+
+.portal-pass-modal {
+  width: min(46rem, 100%);
 }
 
 .hero-layout {

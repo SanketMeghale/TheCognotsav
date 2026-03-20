@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowRight, CheckCircle2, Menu, X } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Copy, Menu, X } from 'lucide-react';
 import { AdminRegistrationsPage } from './components/portal/AdminRegistrationsPage.tsx';
 import { AnnouncementArchiveSection } from './components/portal/AnnouncementArchiveSection.tsx';
 import { HeroSection } from './components/portal/HeroSection.tsx';
@@ -225,6 +225,18 @@ function describeNotificationResult(notification: AdminNotificationSummary | nul
   }
 
   return 'Status updated.';
+}
+
+function getReceiptStatusLabel(receipt: RegistrationReceipt) {
+  if (receipt.status === 'waitlisted') {
+    return `Waitlisted${receipt.waitlistPosition ? ` (#${receipt.waitlistPosition})` : ''}`;
+  }
+
+  if (receipt.status === 'verified') {
+    return 'Verified';
+  }
+
+  return 'Pending review';
 }
 
 function isAnnouncementActive(announcement: PortalAnnouncement) {
@@ -612,10 +624,6 @@ export const App: React.FC = () => {
     document.body.style.left = '0';
     document.body.style.right = '0';
 
-    const frame = window.requestAnimationFrame(() => {
-      window.scrollTo({ top: 0, behavior: 'auto' });
-    });
-
     return () => {
       document.body.style.overflow = previousOverflow;
       document.body.style.position = previousPosition;
@@ -623,7 +631,6 @@ export const App: React.FC = () => {
       document.body.style.width = previousWidth;
       document.body.style.left = previousLeft;
       document.body.style.right = previousRight;
-      window.cancelAnimationFrame(frame);
       window.scrollTo({ top: scrollY, behavior: 'auto' });
     };
   }, [showSuccessModal]);
@@ -717,12 +724,7 @@ export const App: React.FC = () => {
     const printWindow = window.open('', '_blank', 'width=920,height=760');
     if (!printWindow) return;
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(receipt.qrValue)}`;
-    const statusLabel =
-      receipt.status === 'waitlisted'
-        ? `Waitlisted${receipt.waitlistPosition ? ` (#${receipt.waitlistPosition})` : ''}`
-        : receipt.status === 'verified'
-          ? 'Verified'
-          : 'Pending review';
+    const statusLabel = getReceiptStatusLabel(receipt);
 
     const passHtml = `
       <!doctype html>
@@ -1381,7 +1383,7 @@ export const App: React.FC = () => {
 
       {showSuccessModal && successReceipt ? (
         <div className="portal-modal-backdrop px-4" onClick={() => setShowSuccessModal(false)}>
-          <div className="portal-modal-card" onClick={(event) => event.stopPropagation()}>
+          <div className="portal-modal-card portal-pass-modal" onClick={(event) => event.stopPropagation()}>
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-start gap-3">
                 <div className="rounded-2xl bg-emerald-400/12 p-3 text-emerald-200">
@@ -1390,28 +1392,65 @@ export const App: React.FC = () => {
                 <div>
                   <p className="text-[10px] uppercase tracking-[0.2em] text-emerald-200/75">Registration Successful</p>
                   <h3 className="mt-2 text-xl font-semibold text-white">{successReceipt.eventName}</h3>
-                  <p className="mt-2 text-sm text-slate-300">Save the registration code and use tracker anytime.</p>
+                  <p className="mt-2 text-sm text-slate-300">Your pass is ready below. Save the code and use the tracker for status updates.</p>
                 </div>
               </div>
               <button type="button" onClick={() => setShowSuccessModal(false)} className="rounded-xl border border-white/10 bg-white/[0.05] px-3 py-2 text-sm text-slate-200">
                 Close
               </button>
             </div>
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              <div className="rounded-[1.2rem] border border-white/10 bg-white/[0.05] p-4">
-                <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400">Registration Code</p>
-                <p className="mt-2 text-2xl font-semibold text-white">{successReceipt.registrationCode}</p>
-              </div>
-              <div className="rounded-[1.2rem] border border-white/10 bg-white/[0.05] p-4">
-                <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400">Lead Contact</p>
-                <p className="mt-2 text-base font-semibold text-white">{successReceipt.contactName}</p>
-                <p className="mt-1 text-sm text-slate-300">{successReceipt.contactEmail}</p>
+            <div className="mt-5 rounded-[1.5rem] border border-cyan-300/16 bg-[linear-gradient(145deg,rgba(6,13,25,0.96),rgba(16,23,38,0.92))] p-4 md:p-5">
+              <div className="grid gap-4 md:grid-cols-[0.95fr_1.05fr]">
+                <div className="rounded-[1.35rem] border border-white/10 bg-white/[0.05] p-4 text-center">
+                  <div className="inline-flex rounded-full border border-cyan-300/16 bg-cyan-400/10 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-cyan-100">
+                    {getReceiptStatusLabel(successReceipt)}
+                  </div>
+                  <div className="mx-auto mt-4 w-fit rounded-[1.3rem] bg-white p-3">
+                    <img
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(successReceipt.qrValue)}`}
+                      alt={`${successReceipt.registrationCode} QR`}
+                      className="h-44 w-44"
+                    />
+                  </div>
+                  <p className="mt-4 text-[10px] uppercase tracking-[0.2em] text-slate-400">Registration Code</p>
+                  <p className="mt-2 text-2xl font-semibold text-white">{successReceipt.registrationCode}</p>
+                </div>
+                <div className="space-y-3">
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div className="rounded-[1.2rem] border border-white/10 bg-white/[0.05] p-4">
+                      <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400">Team Name</p>
+                      <p className="mt-2 text-base font-semibold text-white">{successReceipt.teamName}</p>
+                    </div>
+                    <div className="rounded-[1.2rem] border border-white/10 bg-white/[0.05] p-4">
+                      <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400">Amount Paid</p>
+                      <p className="mt-2 text-base font-semibold text-white">INR {successReceipt.totalAmount}</p>
+                    </div>
+                    <div className="rounded-[1.2rem] border border-white/10 bg-white/[0.05] p-4">
+                      <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400">Lead Contact</p>
+                      <p className="mt-2 text-base font-semibold text-white">{successReceipt.contactName}</p>
+                      <p className="mt-1 text-sm text-slate-300">{successReceipt.contactEmail}</p>
+                    </div>
+                    <div className="rounded-[1.2rem] border border-white/10 bg-white/[0.05] p-4">
+                      <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400">Schedule</p>
+                      <p className="mt-2 text-base font-semibold text-white">{successReceipt.dateLabel}</p>
+                      <p className="mt-1 text-sm text-slate-300">{successReceipt.timeLabel} / {successReceipt.venue}</p>
+                    </div>
+                  </div>
+                  <div className="rounded-[1.2rem] border border-emerald-300/16 bg-emerald-400/10 p-4">
+                    <p className="text-[10px] uppercase tracking-[0.18em] text-emerald-100/80">Quick Instructions</p>
+                    <p className="mt-2 text-sm leading-7 text-emerald-50">1. Save or download this pass. 2. Keep your registration code ready. 3. Bring the QR code on event day and use tracker for approval status.</p>
+                  </div>
+                </div>
               </div>
             </div>
             <div className="mt-5 flex flex-col gap-3 sm:flex-row">
               <button type="button" onClick={() => downloadConfirmationPass(successReceipt)} className="animated-gradient-button inline-flex flex-1 items-center justify-center rounded-2xl px-5 py-3 font-bold text-slate-950">
                 Download Pass
                 <ArrowRight size={16} />
+              </button>
+              <button type="button" onClick={() => navigator.clipboard.writeText(successReceipt.registrationCode)} className="magnetic-button inline-flex flex-1 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.05] px-5 py-3 font-semibold text-white">
+                <Copy size={16} />
+                Copy Code
               </button>
               <a href="#tracker" onClick={() => setShowSuccessModal(false)} className="magnetic-button inline-flex flex-1 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] px-5 py-3 font-semibold text-white">
                 Open Tracker
