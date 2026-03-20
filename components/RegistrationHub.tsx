@@ -63,18 +63,14 @@ const RegistrationHub: React.FC = () => {
     return COMPETITIONS.map((competition) => {
       const counts = competitionStats[competition.name] || {};
       const registeredTeams = (counts.verified || 0) + (counts.pending || 0);
-      const maxSlots = competition.maxSlots || 0;
-      const slotsLeft = Math.max(maxSlots - registeredTeams, 0);
 
       return {
         id: competition.id,
         name: competition.name,
-        slotsLeft,
-        maxSlots,
         registeredTeams
       };
     })
-      .sort((a, b) => a.slotsLeft - b.slotsLeft)
+      .sort((a, b) => b.registeredTeams - a.registeredTeams)
       .slice(0, 3);
   }, [competitionStats]);
 
@@ -112,7 +108,7 @@ const RegistrationHub: React.FC = () => {
           </div>
 
           <p className="max-w-2xl text-gray-400 text-sm md:text-base leading-relaxed mb-8">
-            Enter your team ID or registration email to check your live verification status. This section also highlights high-demand events with limited remaining slots.
+            Enter your team ID or registration email to check your live verification status and monitor the most active competitions.
           </p>
 
           <form onSubmit={handleSearch} className="grid gap-4 md:grid-cols-[1fr_auto]">
@@ -207,7 +203,7 @@ const RegistrationHub: React.FC = () => {
             <div className="mb-6 flex items-center justify-between gap-4">
               <div>
                 <p className="text-[11px] uppercase tracking-[0.35em] text-cyan-300/70 font-black">Hottest Events</p>
-                <h3 className="text-2xl font-orbitron font-black text-white">Slots Closing Fast</h3>
+                <h3 className="text-2xl font-orbitron font-black text-white">Most Active Right Now</h3>
               </div>
               <a href="#events" className="text-xs font-black uppercase tracking-[0.25em] text-cyan-300">
                 Explore
@@ -223,18 +219,18 @@ const RegistrationHub: React.FC = () => {
                       <h4 className="text-lg font-black text-white">{event.name}</h4>
                     </div>
                     <span className="rounded-full bg-rose-500/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.25em] text-rose-300">
-                      {event.slotsLeft} left
+                      Live activity
                     </span>
                   </div>
                   <div className="h-2 overflow-hidden rounded-full bg-white/5">
                     <div
                       className="h-full rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-rose-400"
-                      style={{ width: `${event.maxSlots ? (event.registeredTeams / event.maxSlots) * 100 : 0}%` }}
+                      style={{ width: `${Math.min(event.registeredTeams * 10, 100)}%` }}
                     />
                   </div>
                   <div className="mt-3 flex items-center justify-between text-xs text-gray-500">
                     <span>{event.registeredTeams} teams registered</span>
-                    <span>{event.maxSlots} total slots</span>
+                    <span>Trending event</span>
                   </div>
                 </div>
               ))}

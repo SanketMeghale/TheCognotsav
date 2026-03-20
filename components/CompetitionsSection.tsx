@@ -63,9 +63,6 @@ const CompetitionsSection: React.FC<Props> = ({ onRegister }) => {
                   competition={comp}
                   onRegister={onRegister}
                   registeredTeams={(competitionStats[comp.name]?.verified || 0) + (competitionStats[comp.name]?.pending || 0)}
-                  slotsLeft={typeof comp.maxSlots === 'number'
-                    ? Math.max(comp.maxSlots - ((competitionStats[comp.name]?.verified || 0) + (competitionStats[comp.name]?.pending || 0)), 0)
-                    : undefined}
                 />
               </div>
             ))

@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import type { EventRecord } from './types';
-import { formatCurrency, getEventHeatLevel, getTeamLabel } from './utils';
+import { formatCurrency, getTeamLabel } from './utils';
 
 type Props = {
   events: EventRecord[];
@@ -94,8 +94,6 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
             ))
           : visibleEvents.map((event) => {
               const active = event.slug === selectedEventSlug;
-              const slotsLeft = event.max_slots !== null ? Math.max(event.max_slots - event.registrations_count, 0) : null;
-              const heat = getEventHeatLevel(event);
               const displayCategory = getDisplayCategory(event);
               const theme = categoryThemes[displayCategory] || categoryThemes.Technical;
 
@@ -127,15 +125,10 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <p className="text-xs uppercase tracking-[0.16em] text-slate-400">{getTeamLabel(event)}</p>
-                        <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-white/8">
-                          <div
-                            className="h-full rounded-full bg-gradient-to-r from-cyan-300 via-sky-400 to-fuchsia-400"
-                            style={{ width: `${Math.max(heat.fillPercent, 12)}%` }}
-                          />
-                        </div>
+                        <p className="mt-3 text-sm text-slate-300">{event.venue}</p>
                       </div>
                       <span className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-300">
-                        {heat.label}
+                        Open registration
                       </span>
                     </div>
 
@@ -143,7 +136,7 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
 
                     <div className="mt-5 flex items-center justify-between gap-3 text-sm text-slate-400">
                       <span>{event.date_label}</span>
-                      <span>{slotsLeft !== null ? `${slotsLeft} left` : 'Open'}</span>
+                      <span>{event.time_label}</span>
                     </div>
 
                     <div className={`mt-5 inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r px-4 py-3 text-sm font-semibold ${theme.button}`}>

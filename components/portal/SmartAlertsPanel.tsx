@@ -74,7 +74,6 @@ export const SmartAlertsPanel: React.FC<Props> = ({ alerts, loading }) => {
                           <p className="mt-2 text-sm leading-7 text-slate-200">{alert.message}</p>
                           <p className="mt-3 text-xs uppercase tracking-[0.22em] text-slate-400">
                             {alert.event_name}
-                            {alert.remaining_slots !== null ? ` / ${alert.remaining_slots} slots left` : ''}
                           </p>
                         </div>
                       </div>

@@ -316,7 +316,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                     </div>
                   )}
                   <div className="rounded-[1.15rem] border border-white/10 bg-white/[0.05] px-4 py-4 text-sm text-slate-200">
-                    Slot status: {selectedEvent.max_slots !== null ? `${Math.max(selectedEvent.max_slots - selectedEvent.registrations_count, 0)} remaining` : 'Open capacity'}
+                    Review flow: payment proof is checked by admins after submission.
                   </div>
                   {selectedEvent.min_members === 1 && !selectedEvent.is_team_event ? null : (
                     <div className="sm:col-span-2">

@@ -1,21 +1,15 @@
 
 import React from 'react';
 import { Competition } from '../types';
-import { Users, Trophy, ExternalLink, CreditCard, TimerReset } from 'lucide-react';
+import { Users, Trophy, ExternalLink, CreditCard } from 'lucide-react';
 
 interface Props {
   competition: Competition;
   onRegister: (comp: Competition) => void;
-  slotsLeft?: number;
   registeredTeams?: number;
 }
 
-const CompetitionCard: React.FC<Props> = ({ competition, onRegister, slotsLeft, registeredTeams }) => {
-  const showSlots = typeof slotsLeft === 'number' && typeof competition.maxSlots === 'number';
-  const capacity = showSlots && competition.maxSlots
-    ? Math.min((registeredTeams || 0) / competition.maxSlots, 1) * 100
-    : 0;
-
+const CompetitionCard: React.FC<Props> = ({ competition, onRegister, registeredTeams }) => {
   return (
     <div className="group relative bg-[#111] rounded-2xl overflow-hidden border border-white/5 hover:border-cyan-500/50 transition-all duration-500 hover:-translate-y-2 flex flex-col h-full shadow-2xl">
       {/* Poster */}
@@ -59,19 +53,15 @@ const CompetitionCard: React.FC<Props> = ({ competition, onRegister, slotsLeft, 
             </span>
           </div>
 
-          {showSlots && (
+          {typeof registeredTeams === 'number' && (
             <div className="p-3 bg-cyan-500/5 rounded-xl border border-cyan-500/10">
               <div className="flex items-center justify-between gap-3 mb-2">
                 <div className="flex items-center gap-2 text-cyan-300 text-xs uppercase tracking-[0.2em] font-black">
-                  <TimerReset size={14} />
-                  Live Slots
+                  Live Entries
                 </div>
-                <span className={`text-xs font-black uppercase tracking-widest ${slotsLeft && slotsLeft <= 10 ? 'text-rose-300' : 'text-cyan-300'}`}>
-                  {slotsLeft} left
+                <span className="text-xs font-black uppercase tracking-widest text-cyan-300">
+                  {registeredTeams} teams
                 </span>
-              </div>
-              <div className="h-2 rounded-full bg-white/5 overflow-hidden">
-                <div className="h-full rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500" style={{ width: `${capacity}%` }}></div>
               </div>
             </div>
           )}

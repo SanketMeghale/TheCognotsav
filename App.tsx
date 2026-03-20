@@ -584,10 +584,6 @@ export const App: React.FC = () => {
   }, [eventPageSlug, events, isEventPage]);
 
   const totalRegistrations = events.reduce((sum, event) => sum + event.registrations_count, 0);
-  const totalRemainingSlots = events.reduce(
-    (sum, event) => sum + Math.max((event.max_slots ?? 0) - event.registrations_count, 0),
-    0,
-  );
   const visibleAnnouncements = announcements
     .filter((announcement) => isAnnouncementActive(announcement))
     .slice(0, 8);
@@ -1549,7 +1545,6 @@ export const App: React.FC = () => {
           <main className={`${shellClassName} space-y-5 pb-8 md:space-y-8 md:pb-12`}>
             <HeroSection
               totalEvents={events.length}
-              totalRemainingSlots={totalRemainingSlots}
             />
 
             <div className={`${shellClassName} portal-section-divider`} aria-hidden="true" />

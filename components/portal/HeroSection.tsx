@@ -4,12 +4,11 @@ import { shellClassName } from './utils';
 
 type Props = {
   totalEvents: number;
-  totalRemainingSlots: number;
 };
 
 const eventDate = new Date('2026-04-07T09:00:00');
 
-export const HeroSection: React.FC<Props> = ({ totalEvents: _totalEvents, totalRemainingSlots: _totalRemainingSlots }) => {
+export const HeroSection: React.FC<Props> = ({ totalEvents }) => {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
@@ -109,6 +108,19 @@ export const HeroSection: React.FC<Props> = ({ totalEvents: _totalEvents, totalR
         <div className="portal-front-hero__panel">
           <div className="portal-front-hero__visual-card">
             <img src="/images/ceasposter.jpeg" alt="CEAS COGNOTSAV crest" className="portal-front-hero__visual-image" />
+          </div>
+
+          <div className="portal-ceas-signature">
+            <p className="portal-ceas-signature__eyebrow">Official student body</p>
+            <h2 className="portal-ceas-signature__title">
+              <span>CEAS</span>
+              <em>2026</em>
+            </h2>
+            <p className="portal-ceas-signature__subtitle">Computer Engineering Association of Student</p>
+            <div className="portal-ceas-signature__meta">
+              <span>{totalEvents} flagship competitions</span>
+              <span>Ahilyanagar campus</span>
+            </div>
           </div>
 
           <div className="portal-front-hero__countdown portal-festival-counter portal-festival-counter--compact">
