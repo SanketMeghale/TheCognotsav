@@ -69,23 +69,69 @@ body {
 }
 
 .portal-brand-card {
-  background: linear-gradient(135deg, rgba(18, 25, 41, 0.94), rgba(11, 16, 28, 0.9));
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: linear-gradient(180deg, rgba(26, 34, 50, 0.96), rgba(11, 18, 30, 0.98));
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04),
     0 16px 34px rgba(2, 8, 23, 0.22);
 }
 
+.portal-brand-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 42%);
+  pointer-events: none;
+}
+
+.portal-brand-logo-frame {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  display: inline-flex;
+  height: 3rem;
+  width: 3rem;
+  overflow: hidden;
+  border-radius: 1rem;
+  padding: 0.22rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(203, 213, 225, 0.08));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.48),
+    0 12px 24px rgba(2, 8, 23, 0.2);
+}
+
+.portal-brand-logo-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 0.78rem;
+  object-fit: cover;
+}
+
+.portal-brand-overline {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 0.28rem;
+  font-size: clamp(0.46rem, 0.8vw, 0.62rem);
+  font-weight: 700;
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+  color: #96cbdf;
+}
+
 .portal-brand-mark {
+  position: relative;
+  z-index: 1;
   margin: 0;
-  font-size: clamp(0.92rem, 2vw, 1.12rem);
-  font-weight: 900;
+  font-size: clamp(0.92rem, 2vw, 1.16rem);
+  font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #f8fafc;
-  text-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.9),
-    0 3px 0 rgba(34, 211, 238, 0.22),
-    0 12px 22px rgba(34, 211, 238, 0.15);
+  color: #eef6ff;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.28), 0 0 14px rgba(125, 211, 252, 0.12);
 }
 
 #root {
@@ -542,14 +588,12 @@ img {
   position: relative;
   overflow: hidden;
   border-radius: 1.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background:
-    radial-gradient(circle at top left, rgba(34, 211, 238, 0.22), transparent 38%),
-    radial-gradient(circle at bottom right, rgba(251, 191, 36, 0.18), transparent 34%),
-    linear-gradient(145deg, rgba(7, 12, 24, 0.96), rgba(17, 24, 39, 0.92));
-  padding: 1.2rem 1.25rem 1.3rem;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: linear-gradient(180deg, rgba(27, 35, 52, 0.96), rgba(13, 19, 31, 0.98));
+  padding: 1rem 1.15rem;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04),
     0 24px 54px rgba(2, 8, 23, 0.28);
 }
 
@@ -562,18 +606,19 @@ img {
 
 .portal-ceas-signature::before {
   inset: 0;
-  background: linear-gradient(120deg, rgba(255, 255, 255, 0.14), transparent 28%, transparent 72%, rgba(255, 255, 255, 0.06));
-  opacity: 0.7;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 44%);
+  opacity: 1;
 }
 
 .portal-ceas-signature::after {
-  top: -3rem;
-  right: -2.2rem;
-  width: 8rem;
-  height: 8rem;
+  top: auto;
+  right: -1.6rem;
+  bottom: -2.4rem;
+  width: 6rem;
+  height: 6rem;
   border-radius: 999px;
-  background: rgba(56, 189, 248, 0.2);
-  filter: blur(14px);
+  background: rgba(96, 165, 250, 0.14);
+  filter: blur(18px);
 }
 
 .portal-ceas-signature__brand {
@@ -591,11 +636,19 @@ img {
   width: 3.4rem;
   padding: 0.24rem;
   border-radius: 1.1rem;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.16), rgba(15, 23, 42, 0.92));
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(203, 213, 225, 0.08));
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.48),
     0 16px 30px rgba(2, 8, 23, 0.22);
+}
+
+.portal-ceas-signature__copy {
+  min-width: 0;
+}
+
+.portal-ceas-signature__overline {
+  margin-bottom: 0.34rem;
 }
 
 .portal-ceas-signature__title {
@@ -604,15 +657,12 @@ img {
   margin: 0;
   font-family: 'Orbitron', 'Inter', sans-serif;
   font-size: clamp(1.18rem, 2.4vw, 1.7rem);
-  font-weight: 900;
-  letter-spacing: 0.12em;
+  font-weight: 800;
+  letter-spacing: 0.14em;
   line-height: 1.05;
   text-transform: uppercase;
-  color: #f8fafc;
-  text-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.92),
-    0 4px 0 rgba(30, 41, 59, 0.72),
-    0 12px 22px rgba(34, 211, 238, 0.18);
+  color: #eef6ff;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.28), 0 0 18px rgba(125, 211, 252, 0.12);
 }
 
 .portal-festival-counter--compact {
@@ -1956,9 +2006,15 @@ select.floating-field-input option {
     border-radius: 1rem;
   }
 
+  .portal-brand-overline,
+  .portal-ceas-signature__overline {
+    font-size: 0.44rem;
+    letter-spacing: 0.26em;
+  }
+
   .portal-ceas-signature__title {
     font-size: 1.02rem;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em;
   }
 
   .portal-competition-card__media {

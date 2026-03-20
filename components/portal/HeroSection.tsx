@@ -108,9 +108,12 @@ export const HeroSection: React.FC<Props> = () => {
           <div className="portal-ceas-signature">
             <div className="portal-ceas-signature__brand">
               <span className="portal-ceas-signature__logo">
-                <img src="/images/ceasposter.jpeg" alt="CEAS COGNOTSAV logo" className="h-full w-full rounded-[0.85rem] object-cover" />
+                <img src="/images/ceasposter.jpeg" alt="CEAS COGNOTSAV logo" className="portal-brand-logo-image" />
               </span>
-              <h2 className="portal-ceas-signature__title">CEAS COGNOTSAV 2026</h2>
+              <div className="portal-ceas-signature__copy">
+                <p className="portal-brand-overline portal-ceas-signature__overline">Computer Engineering Association</p>
+                <h2 className="portal-ceas-signature__title">CEAS COGNOTSAV 2026</h2>
+              </div>
             </div>
           </div>
 

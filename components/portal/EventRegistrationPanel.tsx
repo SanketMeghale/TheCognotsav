@@ -501,7 +501,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
 
                   <div className="mt-4 rounded-[1.15rem] border border-white/10 bg-black/20 p-4 text-sm leading-7 text-slate-300">
                     <p className="font-semibold text-white">Short instructions</p>
-                    <p className="mt-2">Download the pass, keep the code safe, and also check your email after admin verification for the final pass copy.</p>
+                    <p className="mt-2">Download the pass, keep the code safe, and watch your email for organizer status updates if they review or change your registration.</p>
                   </div>
 
                   <div className="mt-4 flex flex-col gap-3 sm:flex-row">

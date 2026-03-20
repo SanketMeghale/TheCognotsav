@@ -62,26 +62,6 @@ const monthIndexByShortName = {
   Dec: 11,
 };
 
-async function resolveEmailLogoSrc() {
-  const candidatePaths = [
-    path.join(process.cwd(), 'public', 'images', 'ceasposter.jpeg'),
-    path.join(process.cwd(), 'dist', 'images', 'ceasposter.jpeg'),
-  ];
-
-  for (const candidatePath of candidatePaths) {
-    try {
-      const fileBuffer = await fs.readFile(candidatePath);
-      return `data:image/jpeg;base64,${fileBuffer.toString('base64')}`;
-    } catch {
-      // Try the next candidate path.
-    }
-  }
-
-  return `${publicAppUrl}/images/ceasposter.jpeg`;
-}
-
-const emailLogoSrc = await resolveEmailLogoSrc();
-
 function parseEventAdminKeys(rawValue) {
   if (!rawValue) return new Map();
 
@@ -589,96 +569,6 @@ function formatStatusTitle(status) {
   return 'Registration Under Review';
 }
 
-function getVerifiedPassInstructions() {
-  return [
-    'Keep this pass accessible on your phone or as a printout.',
-    'Show the QR code and registration code at the entry or verification desk.',
-    'Arrive at least 20 minutes early and report to the assigned venue on time.',
-  ];
-}
-
-function buildVerifiedPassCard(registration) {
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(buildQrValue(registration.registration_code))}`;
-  const logoUrl = emailLogoSrc;
-  const statusLabel = getPaymentStatusLabel(registration.status);
-  const eventLine = `${registration.date_label} / ${registration.time_label}`;
-  const instructions = getVerifiedPassInstructions();
-
-  return `
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;margin-top:18px;border:2px solid rgba(125,211,252,0.2);border-radius:24px;background:linear-gradient(145deg,rgba(7,12,24,0.98),rgba(15,23,42,0.95));">
-      <tr>
-        <td style="padding:22px;">
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;border-bottom:1px solid rgba(255,255,255,0.08);padding-bottom:18px;">
-            <tr>
-              <td width="76" valign="middle" style="width:76px;padding-right:14px;">
-                <div style="width:64px;height:64px;border-radius:20px;padding:6px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.08);">
-                  <img src="${escapeHtml(logoUrl)}" alt="CEAS logo" width="52" height="52" style="width:52px;height:52px;border-radius:14px;display:block;object-fit:cover;" />
-                </div>
-              </td>
-              <td valign="middle">
-                <div style="font-size:10px;letter-spacing:0.32em;text-transform:uppercase;color:#7dd3fc;font-weight:800;">CEAS Presents</div>
-                <div style="margin-top:8px;font-family:Orbitron,Inter,Arial,sans-serif;font-size:24px;line-height:1.15;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;color:#ffffff;">CEAS COGNOTSAV 2026</div>
-              </td>
-            </tr>
-          </table>
-
-          <div style="display:inline-block;margin-top:18px;border-radius:999px;border:1px solid rgba(52,211,153,0.18);background:rgba(16,185,129,0.1);padding:8px 14px;font-size:11px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#d1fae5;">${escapeHtml(statusLabel)}</div>
-          <h2 style="margin:16px 0 0;font-size:26px;line-height:1.15;color:#ffffff;">${escapeHtml(registration.event_name)}</h2>
-          <p style="margin:12px 0 0;color:#cbd5e1;line-height:1.7;">Official one-page event pass for CEAS COGNOTSAV 2026. Keep this pass for tracker reference, verification, and event-day entry.</p>
-
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;margin-top:18px;">
-            <tr>
-              <td align="center" style="padding-bottom:14px;">
-                <table role="presentation" cellpadding="0" cellspacing="0" style="border-radius:18px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);">
-                  <tr>
-                    <td align="center" style="padding:16px;">
-                      <div style="display:inline-block;border-radius:18px;background:#fff;padding:12px;">
-                        <img src="${escapeHtml(qrUrl)}" alt="Registration QR" width="190" height="190" style="width:190px;height:190px;display:block;" />
-                      </div>
-                      <p style="margin:14px 0 0;color:#cbd5e1;font-size:13px;line-height:1.6;">Scan or show this QR at the entry desk.</p>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
-
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;margin-top:4px;">
-            ${[
-              ['Registration Code', registration.registration_code],
-              ['Team / Participant', registration.team_name],
-              ['Schedule', eventLine],
-              ['Venue', registration.venue],
-              ['Amount Paid', `INR ${registration.total_amount}`],
-              ['Payment Reference', registration.payment_reference || 'Pending manual entry'],
-            ].map(([label, value]) => `
-              <tr>
-                <td style="padding-bottom:12px;">
-                  <div style="border-radius:16px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);padding:14px;">
-                    <div style="font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:#94a3b8;">${escapeHtml(label)}</div>
-                    <div style="margin-top:8px;color:#fff;font-size:14px;font-weight:700;line-height:1.6;word-break:break-word;">${escapeHtml(value)}</div>
-                  </div>
-                </td>
-              </tr>
-            `).join('')}
-          </table>
-
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;margin-top:6px;border-radius:18px;border:1px solid rgba(52,211,153,0.16);background:rgba(16,185,129,0.1);">
-            <tr>
-              <td style="padding:16px;">
-                <div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#a7f3d0;font-weight:800;">Important Instructions</div>
-                <ol style="margin:12px 0 0;padding-left:18px;color:#ecfdf5;">
-                  ${instructions.map((instruction) => `<li style="margin-bottom:8px;line-height:1.6;">${escapeHtml(instruction)}</li>`).join('')}
-                </ol>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
-  `;
-}
-
 function buildStatusEmail(registration) {
   const eventLine = `${registration.event_name} / ${registration.date_label} / ${registration.time_label}`;
   const salutation = registration.contact_name || registration.team_name || 'Participant';
@@ -686,7 +576,7 @@ function buildStatusEmail(registration) {
 
   const introByStatus = {
     verified:
-      `Your registration for ${registration.event_name} has been verified successfully. Your event pass is included below for CEAS COGNOTSAV 2026.`,
+      `Your registration for ${registration.event_name} has been verified successfully.`,
     rejected:
       `We reviewed your registration for ${registration.event_name}, but we could not verify the payment details yet. Please review the details below and connect with the organizers if needed.`,
     waitlisted:
@@ -697,7 +587,7 @@ function buildStatusEmail(registration) {
 
   const nextStepByStatus = {
     verified:
-      'Please keep this email, your QR code, and your registration code handy on the event day.',
+      'Please keep your registration code handy and report to the venue on time on the event day.',
     rejected:
       'You can reply with the correct payment proof or contact the event organizers with your transaction reference.',
     waitlisted:
@@ -710,7 +600,6 @@ function buildStatusEmail(registration) {
   const intro = introByStatus[registration.status] || introByStatus.pending;
   const nextStep = nextStepByStatus[registration.status] || nextStepByStatus.pending;
   const reviewNoteLine = registration.review_note ? `Organizer note: ${registration.review_note}` : null;
-  const verifiedPassInstructions = getVerifiedPassInstructions();
   const text = [
     `Hi ${salutation},`,
     '',
@@ -726,10 +615,6 @@ function buildStatusEmail(registration) {
       ? [
           `Amount paid: INR ${registration.total_amount}`,
           `Payment reference: ${registration.payment_reference || 'Pending manual entry'}`,
-          `QR value: ${buildQrValue(registration.registration_code)}`,
-          '',
-          'Important instructions:',
-          ...verifiedPassInstructions.map((instruction, index) => `${index + 1}. ${instruction}`),
         ]
       : []),
     ...(reviewNoteLine ? ['', reviewNoteLine] : []),
@@ -757,7 +642,8 @@ function buildStatusEmail(registration) {
   const safeEventLine = escapeHtml(eventLine);
   const safeVenue = escapeHtml(registration.venue);
   const safeStatusLabel = escapeHtml(getPaymentStatusLabel(registration.status));
-  const verifiedPassHtml = registration.status === 'verified' ? buildVerifiedPassCard(registration) : '';
+  const safePaymentReference = escapeHtml(registration.payment_reference || 'Pending manual entry');
+  const safeTotalAmount = escapeHtml(`INR ${registration.total_amount}`);
 
   const html = `
     <div style="background:#0f111a;padding:32px 18px;font-family:Inter,Arial,sans-serif;color:#e2e8f0;">
@@ -769,22 +655,22 @@ function buildStatusEmail(registration) {
         <div style="padding:24px;">
           <p style="margin:0 0 16px;color:#e2e8f0;">Hi ${safeSalutation},</p>
           <p style="margin:0 0 18px;color:#cbd5e1;line-height:1.7;">${safeIntro}</p>
-          ${
-            registration.status === 'verified'
-              ? verifiedPassHtml
-              : `
-                <div style="border-radius:20px;padding:18px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);">
-                  <div style="display:grid;gap:12px;">
-                    <div><div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#94a3b8;">Registration code</div><div style="margin-top:4px;color:#fff;font-weight:700;">${safeRegistrationCode}</div></div>
-                    <div><div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#94a3b8;">Team name</div><div style="margin-top:4px;color:#fff;font-weight:700;">${safeTeamName}</div></div>
-                    <div><div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#94a3b8;">Event</div><div style="margin-top:4px;color:#fff;font-weight:700;">${safeEventName}</div></div>
-                    <div><div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#94a3b8;">Schedule</div><div style="margin-top:4px;color:#fff;font-weight:700;">${safeEventLine}</div></div>
-                    <div><div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#94a3b8;">Venue</div><div style="margin-top:4px;color:#fff;font-weight:700;">${safeVenue}</div></div>
-                    <div><div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#94a3b8;">Current status</div><div style="margin-top:4px;color:${accentColor};font-weight:700;">${safeStatusLabel}</div></div>
-                  </div>
-                </div>
-              `
-          }
+          <div style="border-radius:20px;padding:18px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);">
+            <div style="display:grid;gap:12px;">
+              <div><div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#94a3b8;">Registration code</div><div style="margin-top:4px;color:#fff;font-weight:700;">${safeRegistrationCode}</div></div>
+              <div><div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#94a3b8;">Team name</div><div style="margin-top:4px;color:#fff;font-weight:700;">${safeTeamName}</div></div>
+              <div><div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#94a3b8;">Event</div><div style="margin-top:4px;color:#fff;font-weight:700;">${safeEventName}</div></div>
+              <div><div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#94a3b8;">Schedule</div><div style="margin-top:4px;color:#fff;font-weight:700;">${safeEventLine}</div></div>
+              <div><div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#94a3b8;">Venue</div><div style="margin-top:4px;color:#fff;font-weight:700;">${safeVenue}</div></div>
+              <div><div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#94a3b8;">Current status</div><div style="margin-top:4px;color:${accentColor};font-weight:700;">${safeStatusLabel}</div></div>
+              ${
+                registration.status === 'verified'
+                  ? `<div><div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#94a3b8;">Amount paid</div><div style="margin-top:4px;color:#fff;font-weight:700;">${safeTotalAmount}</div></div>
+                     <div><div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#94a3b8;">Payment reference</div><div style="margin-top:4px;color:#fff;font-weight:700;word-break:break-word;">${safePaymentReference}</div></div>`
+                  : ''
+              }
+            </div>
+          </div>
           ${registration.review_note ? `<div style="margin-top:18px;border-radius:18px;padding:16px;background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.16);color:#fef3c7;">Organizer note: ${escapeHtml(registration.review_note)}</div>` : ''}
           <p style="margin:18px 0 0;color:#cbd5e1;line-height:1.7;">${safeNextStep}</p>
           <div style="margin-top:22px;border-radius:18px;padding:16px;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.16);color:#dbeafe;">

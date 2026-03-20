@@ -268,7 +268,7 @@ function getReceiptInstructions(receipt: RegistrationReceipt) {
   return [
     'Download this pending pass and save the registration code.',
     'Use the tracker to follow payment verification status.',
-    'A verified pass will also be sent to your email after approval.',
+    'You will continue receiving organizer status updates on your registered email.',
   ];
 }
 
@@ -298,11 +298,11 @@ function buildPassWindowHtml(receipt: RegistrationReceipt) {
           .toolbar-actions .secondary { background: rgba(255,255,255,0.05); color: #e2e8f0; }
           .wrap { padding: 24px 18px 36px; }
           .sheet { max-width: 920px; margin: 0 auto; border-radius: 30px; border: 2px solid rgba(125,211,252,0.22); background: linear-gradient(145deg, rgba(7,12,24,0.98), rgba(15,23,42,0.96)); box-shadow: 0 30px 80px rgba(2,8,23,0.42); padding: 28px; }
-          .brand { display: flex; align-items: center; gap: 14px; padding-bottom: 18px; border-bottom: 1px solid rgba(255,255,255,0.08); }
-          .brand-logo { width: 70px; height: 70px; border-radius: 22px; padding: 6px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.14); }
+          .brand { display: flex; align-items: center; gap: 14px; padding: 16px 18px; border: 1px solid rgba(148,163,184,0.18); border-radius: 24px; background: linear-gradient(180deg, rgba(27,35,52,0.96), rgba(13,19,31,0.98)); box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.04), 0 18px 34px rgba(2,8,23,0.24); }
+          .brand-logo { width: 70px; height: 70px; border-radius: 22px; padding: 6px; background: linear-gradient(180deg, rgba(255,255,255,0.24), rgba(203,213,225,0.1)); border: 1px solid rgba(255,255,255,0.16); box-shadow: inset 0 1px 0 rgba(255,255,255,0.48), 0 12px 24px rgba(2,8,23,0.2); }
           .brand-logo img { width: 100%; height: 100%; object-fit: cover; border-radius: 18px; }
-          .brand-kicker { margin: 0; font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: #7dd3fc; font-weight: 800; }
-          .brand-title { margin: 8px 0 0; font-family: Orbitron, Inter, Arial, sans-serif; font-size: 30px; line-height: 1.05; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; background: linear-gradient(90deg, #67e8f9 0%, #60a5fa 24%, #c084fc 52%, #f472b6 76%, #fbbf24 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+          .brand-kicker { margin: 0 0 6px; font-size: 10px; letter-spacing: 0.38em; text-transform: uppercase; color: #9bd5ea; font-weight: 700; }
+          .brand-title { margin: 0; font-family: Orbitron, Inter, Arial, sans-serif; font-size: 30px; line-height: 1.05; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: #eef6ff; text-shadow: 0 1px 0 rgba(255,255,255,0.24), 0 0 18px rgba(125,211,252,0.12); }
           .hero { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(260px, 0.85fr); gap: 18px; margin-top: 22px; }
           .event-title { margin: 0; font-size: 28px; color: #fff; }
           .event-copy { margin: 10px 0 0; font-size: 14px; line-height: 1.7; color: #cbd5e1; }
@@ -351,7 +351,7 @@ function buildPassWindowHtml(receipt: RegistrationReceipt) {
                 <img src="${escapePassHtml(logoUrl)}" alt="CEAS logo" />
               </div>
               <div>
-                <p class="brand-kicker">CEAS Presents</p>
+                <p class="brand-kicker">Computer Engineering Association</p>
                 <div class="brand-title">CEAS COGNOTSAV 2026</div>
               </div>
             </div>
@@ -387,7 +387,7 @@ function buildPassWindowHtml(receipt: RegistrationReceipt) {
             </div>
 
             <div class="footer">
-              Use <strong>${escapePassHtml(receipt.registrationCode)}</strong> in the tracker to check approval status anytime. After admin verification, the verified event pass will also be sent to the registered email address.
+              Use <strong>${escapePassHtml(receipt.registrationCode)}</strong> in the tracker to check approval status anytime. Organizer status updates will continue on your registered email address.
             </div>
           </div>
         </div>
@@ -1447,11 +1447,12 @@ export const App: React.FC = () => {
 
       <header className="sticky top-0 z-30 px-3 pt-3 sm:px-4 md:px-0">
         <div className={`${shellClassName} portal-nav-shell`}>
-          <a href="#overview" className="portal-brand-card flex min-w-0 items-center gap-3 rounded-[1.2rem] border border-white/10 bg-white/[0.04] px-3 py-2 transition hover:border-cyan-300/28 hover:bg-white/[0.08]">
-            <div className="h-11 w-11 overflow-hidden rounded-[0.95rem] border border-cyan-300/20 bg-white/10 p-1">
-              <img src="/images/ceasposter.jpeg" alt="CEAS COGNOTSAV logo" className="h-full w-full rounded-[0.75rem] object-cover" />
+          <a href="#overview" className="portal-brand-card flex min-w-0 items-center gap-3 rounded-[1.4rem] px-3 py-2 transition hover:border-slate-200/18 hover:bg-white/[0.06]">
+            <div className="portal-brand-logo-frame">
+              <img src="/images/ceasposter.jpeg" alt="CEAS COGNOTSAV logo" className="portal-brand-logo-image" />
             </div>
             <div className="min-w-0">
+              <p className="portal-brand-overline truncate">Computer Engineering Association</p>
               <h1 className="portal-brand-mark truncate">CEAS COGNOTSAV 2026</h1>
             </div>
           </a>
