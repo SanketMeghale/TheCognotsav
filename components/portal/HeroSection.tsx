@@ -2,13 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { ArrowRight, CalendarDays } from 'lucide-react';
 import { shellClassName } from './utils';
 
-type Props = {
-  totalEvents: number;
-};
+type Props = {};
 
 const eventDate = new Date('2026-04-07T09:00:00');
 
-export const HeroSection: React.FC<Props> = ({ totalEvents }) => {
+export const HeroSection: React.FC<Props> = () => {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
@@ -40,16 +38,13 @@ export const HeroSection: React.FC<Props> = ({ totalEvents }) => {
         <div className="portal-front-hero__content">
           <div className="portal-hero-topbar">
             <div className="portal-cognotsav-heading-wrap">
-              <p className="portal-cognotsav-heading-kicker">CEAS Presents</p>
-              <h1 className="portal-cognotsav-heading">COGNOTSAV</h1>
-            </div>
-
-            <div className="portal-legacy-badge">
-              <img src="/images/ceasposter.jpeg" alt="CEAS COGNOTSAV logo" className="h-11 w-11 rounded-[0.95rem] object-cover" />
-              <div>
-                <p className="text-[10px] uppercase tracking-[0.24em] text-cyan-200/70">CEAS COGNOTSAV 2026</p>
-                <p className="text-sm font-semibold text-white">Computer Engineering Association</p>
+              <div className="portal-cognotsav-heading-kicker-row">
+                <span className="portal-cognotsav-heading-logo">
+                  <img src="/images/ceasposter.jpeg" alt="CEAS logo" className="h-full w-full rounded-[0.75rem] object-cover" />
+                </span>
+                <p className="portal-cognotsav-heading-kicker">CEAS Presents</p>
               </div>
+              <h1 className="portal-cognotsav-heading">COGNOTSAV</h1>
             </div>
           </div>
 
@@ -111,15 +106,11 @@ export const HeroSection: React.FC<Props> = ({ totalEvents }) => {
           </div>
 
           <div className="portal-ceas-signature">
-            <p className="portal-ceas-signature__eyebrow">Official student body</p>
-            <h2 className="portal-ceas-signature__title">
-              <span>CEAS</span>
-              <em>2026</em>
-            </h2>
-            <p className="portal-ceas-signature__subtitle">Computer Engineering Association of Student</p>
-            <div className="portal-ceas-signature__meta">
-              <span>{totalEvents} flagship competitions</span>
-              <span>Ahilyanagar campus</span>
+            <div className="portal-ceas-signature__brand">
+              <span className="portal-ceas-signature__logo">
+                <img src="/images/ceasposter.jpeg" alt="CEAS COGNOTSAV logo" className="h-full w-full rounded-[0.85rem] object-cover" />
+              </span>
+              <h2 className="portal-ceas-signature__title">CEAS COGNOTSAV 2026</h2>
             </div>
           </div>
 
