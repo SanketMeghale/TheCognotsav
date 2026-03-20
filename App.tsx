@@ -618,8 +618,19 @@ export const App: React.FC = () => {
     if (typeof window === 'undefined' || typeof document === 'undefined') return undefined;
     if (!showSuccessModal) return undefined;
 
+    const scrollY = window.scrollY;
     const previousOverflow = document.body.style.overflow;
+    const previousPosition = document.body.style.position;
+    const previousTop = document.body.style.top;
+    const previousWidth = document.body.style.width;
+    const previousLeft = document.body.style.left;
+    const previousRight = document.body.style.right;
     document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+    document.body.style.left = '0';
+    document.body.style.right = '0';
 
     const frame = window.requestAnimationFrame(() => {
       window.scrollTo({ top: 0, behavior: 'auto' });
@@ -627,7 +638,13 @@ export const App: React.FC = () => {
 
     return () => {
       document.body.style.overflow = previousOverflow;
+      document.body.style.position = previousPosition;
+      document.body.style.top = previousTop;
+      document.body.style.width = previousWidth;
+      document.body.style.left = previousLeft;
+      document.body.style.right = previousRight;
       window.cancelAnimationFrame(frame);
+      window.scrollTo({ top: scrollY, behavior: 'auto' });
     };
   }, [showSuccessModal]);
 
