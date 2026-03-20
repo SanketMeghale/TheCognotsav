@@ -1484,7 +1484,7 @@ export const App: React.FC = () => {
       ) : null}
 
       {showSuccessModal && successReceipt ? (
-        <div className="portal-modal-backdrop px-4" onClick={() => setShowSuccessModal(false)}>
+        <div className="portal-modal-backdrop px-4 py-4" onClick={() => setShowSuccessModal(false)}>
           <div className="portal-modal-card portal-pass-modal" onClick={(event) => event.stopPropagation()}>
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-start gap-3">

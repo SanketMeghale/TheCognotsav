@@ -1648,9 +1648,10 @@ select.floating-field-input option {
   position: fixed;
   inset: 0;
   z-index: 55;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  overflow-y: auto;
   touch-action: none;
   overscroll-behavior: none;
   background: rgba(2, 6, 23, 0.68);
@@ -1658,17 +1659,16 @@ select.floating-field-input option {
 }
 
 .portal-modal-card {
-  width: min(34rem, 100%);
-  max-height: calc(100vh - 2rem);
+  width: min(34rem, calc(100vw - 2rem));
   border-radius: 1.7rem;
   padding: 1.25rem;
-  margin: auto;
-  overflow: auto;
+  margin: 0;
+  overflow: visible;
   animation: portalModalIn 220ms ease;
 }
 
 .portal-pass-modal {
-  width: min(46rem, 100%);
+  width: min(46rem, calc(100vw - 2rem));
 }
 
 .hero-layout {
