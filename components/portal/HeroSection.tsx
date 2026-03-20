@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowRight, CalendarDays, Sparkles } from 'lucide-react';
+import { ArrowRight, CalendarDays } from 'lucide-react';
 import { shellClassName } from './utils';
 
 type Props = {
@@ -40,9 +40,9 @@ export const HeroSection: React.FC<Props> = ({ totalEvents: _totalEvents, totalR
       <div className="portal-front-hero">
         <div className="portal-front-hero__content">
           <div className="portal-hero-topbar">
-            <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/18 bg-cyan-400/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-cyan-100">
-              <Sparkles size={14} />
-              Official Festival Registration
+            <div className="portal-cognotsav-heading-wrap">
+              <p className="portal-cognotsav-heading-kicker">Tech Fest Portal</p>
+              <h1 className="portal-cognotsav-heading">COGNOTSAV</h1>
             </div>
 
             <div className="portal-legacy-badge">

@@ -219,6 +219,38 @@ img {
   gap: 0.85rem;
 }
 
+.portal-cognotsav-heading-wrap {
+  display: inline-flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.portal-cognotsav-heading-kicker {
+  margin: 0;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgba(125, 211, 252, 0.78);
+}
+
+.portal-cognotsav-heading {
+  margin: 0;
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  font-size: clamp(1.8rem, 5vw, 3.2rem);
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #22d3ee 0%, #60a5fa 18%, #a855f7 38%, #ec4899 58%, #fbbf24 78%, #34d399 100%);
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 24px rgba(34, 211, 238, 0.16);
+  animation: gradientShift 5s linear infinite;
+}
+
 .portal-section-divider {
   position: relative;
   height: 1.5rem;
@@ -1705,6 +1737,16 @@ select.floating-field-input option {
 
   .portal-hero-topbar {
     gap: 0.65rem;
+  }
+
+  .portal-cognotsav-heading-kicker {
+    font-size: 0.56rem;
+    letter-spacing: 0.24em;
+  }
+
+  .portal-cognotsav-heading {
+    font-size: 1.55rem;
+    letter-spacing: 0.12em;
   }
 
   .portal-legacy-title {
