@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowRight, CheckCircle2, Copy, Menu, X } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Menu, X } from 'lucide-react';
 import { AdminRegistrationsPage } from './components/portal/AdminRegistrationsPage.tsx';
 import { AnnouncementArchiveSection } from './components/portal/AnnouncementArchiveSection.tsx';
 import { HeroSection } from './components/portal/HeroSection.tsx';
@@ -237,6 +237,163 @@ function getReceiptStatusLabel(receipt: RegistrationReceipt) {
   }
 
   return 'Pending review';
+}
+
+function escapePassHtml(value: string | number | null | undefined) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
+function getReceiptInstructions(receipt: RegistrationReceipt) {
+  if (receipt.status === 'verified') {
+    return [
+      'Download or print this pass before event day.',
+      'Show the QR code and registration code at the venue entry desk.',
+      'Arrive at least 20 minutes early for verification and check-in.',
+    ];
+  }
+
+  if (receipt.status === 'waitlisted') {
+    return [
+      'Keep this code saved while you are on the waitlist.',
+      'Track your status regularly from the tracker section.',
+      'You will receive an updated email if a confirmed slot opens.',
+    ];
+  }
+
+  return [
+    'Download this pending pass and save the registration code.',
+    'Use the tracker to follow payment verification status.',
+    'A verified pass will also be sent to your email after approval.',
+  ];
+}
+
+function buildPassWindowHtml(receipt: RegistrationReceipt) {
+  const statusLabel = getReceiptStatusLabel(receipt);
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(receipt.qrValue)}`;
+  const logoUrl = `${window.location.origin}/images/ceasposter.jpeg`;
+  const instructions = getReceiptInstructions(receipt);
+
+  return `
+    <!doctype html>
+    <html>
+      <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>CEAS COGNOTSAV Registration Pass</title>
+        <style>
+          * { box-sizing: border-box; }
+          body { margin: 0; font-family: Inter, Arial, sans-serif; background: linear-gradient(180deg, #07111d 0%, #0f172a 100%); color: #e2e8f0; }
+          .toolbar { position: sticky; top: 0; z-index: 2; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; padding: 16px 18px; border-bottom: 1px solid rgba(255,255,255,0.08); background: rgba(7, 17, 29, 0.92); backdrop-filter: blur(12px); }
+          .toolbar-copy { max-width: 620px; }
+          .toolbar-copy h1 { margin: 0; font-size: 18px; color: #fff; }
+          .toolbar-copy p { margin: 6px 0 0; font-size: 13px; line-height: 1.6; color: #cbd5e1; }
+          .toolbar-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+          .toolbar-actions button { border: 1px solid rgba(255,255,255,0.12); border-radius: 999px; padding: 10px 16px; font-size: 13px; font-weight: 700; cursor: pointer; }
+          .toolbar-actions .primary { background: linear-gradient(90deg, #67e8f9, #fbbf24); color: #041018; }
+          .toolbar-actions .secondary { background: rgba(255,255,255,0.05); color: #e2e8f0; }
+          .wrap { padding: 24px 18px 36px; }
+          .sheet { max-width: 920px; margin: 0 auto; border-radius: 30px; border: 2px solid rgba(125,211,252,0.22); background: linear-gradient(145deg, rgba(7,12,24,0.98), rgba(15,23,42,0.96)); box-shadow: 0 30px 80px rgba(2,8,23,0.42); padding: 28px; }
+          .brand { display: flex; align-items: center; gap: 14px; padding-bottom: 18px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+          .brand-logo { width: 70px; height: 70px; border-radius: 22px; padding: 6px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.14); }
+          .brand-logo img { width: 100%; height: 100%; object-fit: cover; border-radius: 18px; }
+          .brand-kicker { margin: 0; font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: #7dd3fc; font-weight: 800; }
+          .brand-title { margin: 8px 0 0; font-family: Orbitron, Inter, Arial, sans-serif; font-size: 30px; line-height: 1.05; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; background: linear-gradient(90deg, #67e8f9 0%, #60a5fa 24%, #c084fc 52%, #f472b6 76%, #fbbf24 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+          .hero { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(260px, 0.85fr); gap: 18px; margin-top: 22px; }
+          .event-title { margin: 0; font-size: 28px; color: #fff; }
+          .event-copy { margin: 10px 0 0; font-size: 14px; line-height: 1.7; color: #cbd5e1; }
+          .status { display: inline-flex; margin-top: 14px; border-radius: 999px; border: 1px solid rgba(103,232,249,0.18); background: rgba(34,211,238,0.1); padding: 8px 14px; font-size: 12px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: #cffafe; }
+          .qr-card { border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); padding: 18px; text-align: center; }
+          .qr-frame { display: inline-flex; border-radius: 20px; background: #fff; padding: 12px; }
+          .qr-frame img { width: 200px; height: 200px; }
+          .qr-card p { margin: 14px 0 0; color: #cbd5e1; font-size: 13px; }
+          .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }
+          .cell { border-radius: 18px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.04); padding: 16px; }
+          .label { font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase; color: #94a3b8; font-weight: 700; }
+          .value { margin-top: 8px; font-size: 18px; font-weight: 700; color: #fff; word-break: break-word; }
+          .value--small { font-size: 14px; line-height: 1.6; }
+          .instructions { margin-top: 18px; border-radius: 20px; border: 1px solid rgba(52,211,153,0.16); background: rgba(16,185,129,0.1); padding: 18px; }
+          .instructions h2 { margin: 0; font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: #a7f3d0; }
+          .instructions ol { margin: 12px 0 0; padding-left: 18px; color: #ecfdf5; }
+          .instructions li { margin-bottom: 8px; line-height: 1.6; }
+          .footer { margin-top: 18px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.08); background: rgba(59,130,246,0.08); padding: 16px; font-size: 13px; line-height: 1.7; color: #dbeafe; }
+          @media (max-width: 820px) { .hero, .grid { grid-template-columns: 1fr; } .sheet { padding: 20px; } .brand-title { font-size: 22px; } .event-title { font-size: 24px; } }
+          @media print {
+            body { background: #fff; }
+            .toolbar { display: none; }
+            .wrap { padding: 0; }
+            .sheet { box-shadow: none; border-color: #cbd5e1; background: #fff; color: #0f172a; min-height: 100vh; }
+            .event-title, .value { color: #0f172a; }
+            .event-copy, .qr-card p, .footer { color: #334155; }
+            .qr-card, .cell, .instructions, .footer { border-color: #dbeafe; background: #f8fafc; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="toolbar">
+          <div class="toolbar-copy">
+            <h1>Registration Pass Window</h1>
+            <p>Review your pass, then use <strong>Print / Save PDF</strong> to download it. Keep the QR and registration code ready for tracker and event-day entry.</p>
+          </div>
+          <div class="toolbar-actions">
+            <button type="button" class="primary" onclick="window.print()">Print / Save PDF</button>
+            <button type="button" class="secondary" onclick="window.close()">Close</button>
+          </div>
+        </div>
+        <div class="wrap">
+          <div class="sheet">
+            <div class="brand">
+              <div class="brand-logo">
+                <img src="${escapePassHtml(logoUrl)}" alt="CEAS logo" />
+              </div>
+              <div>
+                <p class="brand-kicker">CEAS Presents</p>
+                <div class="brand-title">CEAS COGNOTSAV 2026</div>
+              </div>
+            </div>
+
+            <div class="hero">
+              <div>
+                <h2 class="event-title">${escapePassHtml(receipt.eventName)}</h2>
+                <p class="event-copy">Official participant pass for entry, verification, and tracker reference. Keep this one-page pass with you until the event is completed.</p>
+                <div class="status">${escapePassHtml(statusLabel)}</div>
+              </div>
+              <div class="qr-card">
+                <div class="qr-frame">
+                  <img src="${escapePassHtml(qrUrl)}" alt="Registration QR" />
+                </div>
+                <p>Scan or show this QR at the verification desk.</p>
+              </div>
+            </div>
+
+            <div class="grid">
+              <div class="cell"><div class="label">Registration Code</div><div class="value">${escapePassHtml(receipt.registrationCode)}</div></div>
+              <div class="cell"><div class="label">Team / Participant</div><div class="value">${escapePassHtml(receipt.teamName)}</div></div>
+              <div class="cell"><div class="label">Lead Contact</div><div class="value value--small">${escapePassHtml(receipt.contactName)}<br />${escapePassHtml(receipt.contactEmail)}</div></div>
+              <div class="cell"><div class="label">Schedule</div><div class="value value--small">${escapePassHtml(receipt.dateLabel)}<br />${escapePassHtml(receipt.timeLabel)}</div></div>
+              <div class="cell"><div class="label">Venue</div><div class="value">${escapePassHtml(receipt.venue)}</div></div>
+              <div class="cell"><div class="label">Payment Reference</div><div class="value value--small">${escapePassHtml(receipt.paymentReference || 'Pending manual entry')}</div></div>
+              <div class="cell"><div class="label">Amount Paid</div><div class="value">INR ${escapePassHtml(receipt.totalAmount)}</div></div>
+              <div class="cell"><div class="label">Submitted At</div><div class="value value--small">${escapePassHtml(receipt.submittedAt)}</div></div>
+            </div>
+
+            <div class="instructions">
+              <h2>Important Instructions</h2>
+              <ol>${instructions.map((instruction) => `<li>${escapePassHtml(instruction)}</li>`).join('')}</ol>
+            </div>
+
+            <div class="footer">
+              Use <strong>${escapePassHtml(receipt.registrationCode)}</strong> in the tracker to check approval status anytime. After admin verification, the verified event pass will also be sent to the registered email address.
+            </div>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
 }
 
 function isAnnouncementActive(announcement: PortalAnnouncement) {
@@ -721,70 +878,13 @@ export const App: React.FC = () => {
   };
 
   const downloadConfirmationPass = (receipt: RegistrationReceipt) => {
-    const printWindow = window.open('', '_blank', 'width=920,height=760');
-    if (!printWindow) return;
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(receipt.qrValue)}`;
-    const statusLabel = getReceiptStatusLabel(receipt);
+    const passWindow = window.open('', 'ceas-registration-pass', 'width=980,height=860');
+    if (!passWindow) return;
 
-    const passHtml = `
-      <!doctype html>
-      <html>
-        <head>
-          <meta charset="utf-8" />
-          <title>CEAS COGNOTSAV Registration Pass</title>
-          <style>
-            body { font-family: Inter, Arial, sans-serif; background: #07111d; color: #f8fafc; margin: 0; padding: 36px; }
-            .card { max-width: 840px; margin: 0 auto; padding: 34px; border-radius: 28px; border: 1px solid rgba(125,211,252,0.28); background: linear-gradient(135deg, rgba(8,19,27,0.95), rgba(15,23,42,0.98)); }
-            .eyebrow { font-size: 12px; letter-spacing: 0.35em; text-transform: uppercase; color: #7dd3fc; font-weight: 700; }
-            h1 { font-size: 40px; margin: 14px 0 10px; }
-            p { color: #cbd5e1; }
-            .hero { display: grid; grid-template-columns: 1.25fr 0.75fr; gap: 20px; align-items: start; }
-            .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 26px; }
-            .cell { border-radius: 18px; padding: 18px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
-            .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.22em; color: #94a3b8; margin-bottom: 8px; }
-            .value { font-size: 20px; color: #fff; font-weight: 700; word-break: break-word; }
-            .qr { border-radius: 22px; padding: 18px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); text-align: center; }
-            .status { display: inline-block; margin-top: 16px; border-radius: 999px; padding: 8px 14px; background: rgba(59,130,246,0.12); color: #dbeafe; font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; }
-            .footer { margin-top: 24px; border-radius: 18px; padding: 18px; background: rgba(125,211,252,0.1); }
-            @media (max-width: 720px) { .hero, .grid { grid-template-columns: 1fr; } }
-            @media print { body { background: white; color: black; padding: 0; } .card { background: white; color: black; border-color: #cbd5e1; } .value { color: black; } p, .footer { color: #111827; background: #f8fafc; } }
-          </style>
-        </head>
-        <body>
-          <div class="card">
-            <div class="eyebrow">CEAS COGNOTSAV Confirmation Pass</div>
-            <div class="hero">
-              <div>
-                <h1>${receipt.eventName}</h1>
-                <p>Your registration has been submitted successfully. Keep this pass for verification and live status tracking.</p>
-                <div class="status">${statusLabel}</div>
-              </div>
-              <div class="qr">
-                <img src="${qrUrl}" alt="Registration QR" style="width:200px;height:200px;margin:0 auto;" />
-                <div class="label" style="margin-top:16px;">Scan on event day</div>
-                <div class="value" style="font-size:16px;">${receipt.registrationCode}</div>
-              </div>
-            </div>
-            <div class="grid">
-              <div class="cell"><div class="label">Registration Code</div><div class="value">${receipt.registrationCode}</div></div>
-              <div class="cell"><div class="label">Team Name</div><div class="value">${receipt.teamName}</div></div>
-              <div class="cell"><div class="label">Lead Contact</div><div class="value">${receipt.contactName}</div></div>
-              <div class="cell"><div class="label">Email</div><div class="value">${receipt.contactEmail}</div></div>
-              <div class="cell"><div class="label">Schedule</div><div class="value">${receipt.dateLabel} / ${receipt.timeLabel}</div></div>
-              <div class="cell"><div class="label">Venue</div><div class="value">${receipt.venue}</div></div>
-              <div class="cell"><div class="label">Amount Paid</div><div class="value">INR ${receipt.totalAmount}</div></div>
-              <div class="cell"><div class="label">Payment Reference</div><div class="value">${receipt.paymentReference || 'Pending manual entry'}</div></div>
-            </div>
-            <div class="footer">Submitted on ${receipt.submittedAt}. Use ${receipt.registrationCode} in the tracker to check verification status instantly.</div>
-          </div>
-          <script>window.onload = function(){ window.print(); }</script>
-        </body>
-      </html>
-    `;
-
-    printWindow.document.open();
-    printWindow.document.write(passHtml);
-    printWindow.document.close();
+    passWindow.document.open();
+    passWindow.document.write(buildPassWindowHtml(receipt));
+    passWindow.document.close();
+    passWindow.focus();
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -858,7 +958,7 @@ export const App: React.FC = () => {
       );
       setToastClosing(false);
       setToastMessage(`Registration submitted successfully for ${payload.eventName}.${notificationNote}`);
-      setSuccessReceipt({
+      const nextReceipt: RegistrationReceipt = {
         registrationCode: payload.registrationCode,
         eventName: payload.eventName,
         teamName:
@@ -876,7 +976,9 @@ export const App: React.FC = () => {
         status: payload.status,
         waitlistPosition: payload.waitlistPosition,
         qrValue: payload.qrValue,
-      });
+      };
+      setSuccessReceipt(nextReceipt);
+      setShowSuccessModal(true);
       setForm({
         teamName: '',
         collegeName: '',
@@ -1391,39 +1493,50 @@ export const App: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-[10px] uppercase tracking-[0.2em] text-emerald-200/75">Registration Successful</p>
-                  <h3 className="mt-2 text-xl font-semibold text-white">{successReceipt.eventName}</h3>
-                  <p className="mt-2 text-sm text-slate-300">Your pass is ready below. Save the code and use the tracker for status updates.</p>
+                  <h3 className="mt-2 text-xl font-semibold text-white">Download Your Pass</h3>
+                  <p className="mt-2 text-sm text-slate-300">Review the one-page pass below, then open the pass window to print or save it. A verified pass will also be emailed after approval.</p>
                 </div>
               </div>
               <button type="button" onClick={() => setShowSuccessModal(false)} className="rounded-xl border border-white/10 bg-white/[0.05] px-3 py-2 text-sm text-slate-200">
                 Close
               </button>
             </div>
-            <div className="mt-5 rounded-[1.5rem] border border-cyan-300/16 bg-[linear-gradient(145deg,rgba(6,13,25,0.96),rgba(16,23,38,0.92))] p-4 md:p-5">
-              <div className="grid gap-4 md:grid-cols-[0.95fr_1.05fr]">
-                <div className="rounded-[1.35rem] border border-white/10 bg-white/[0.05] p-4 text-center">
+            <div className="mt-5 rounded-[1.7rem] border-2 border-cyan-300/16 bg-[linear-gradient(145deg,rgba(6,13,25,0.98),rgba(16,23,38,0.96))] p-4 md:p-5">
+              <div className="flex items-center gap-3 border-b border-white/10 pb-4">
+                <div className="h-14 w-14 overflow-hidden rounded-[1rem] border border-white/10 bg-white/10 p-1.5">
+                  <img src="/images/ceasposter.jpeg" alt="CEAS COGNOTSAV logo" className="h-full w-full rounded-[0.8rem] object-cover" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[10px] uppercase tracking-[0.26em] text-cyan-200/80">CEAS Presents</p>
+                  <h3 className="mt-2 bg-gradient-to-r from-cyan-300 via-sky-400 via-fuchsia-400 to-amber-300 bg-clip-text font-orbitron text-lg font-black uppercase tracking-[0.16em] text-transparent sm:text-2xl">CEAS COGNOTSAV 2026</h3>
+                </div>
+              </div>
+
+              <div className="mt-5 grid gap-4 md:grid-cols-[1.05fr_0.95fr]">
+                <div>
                   <div className="inline-flex rounded-full border border-cyan-300/16 bg-cyan-400/10 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-cyan-100">
                     {getReceiptStatusLabel(successReceipt)}
                   </div>
-                  <div className="mx-auto mt-4 w-fit rounded-[1.3rem] bg-white p-3">
-                    <img
-                      src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(successReceipt.qrValue)}`}
-                      alt={`${successReceipt.registrationCode} QR`}
-                      className="h-44 w-44"
-                    />
-                  </div>
-                  <p className="mt-4 text-[10px] uppercase tracking-[0.2em] text-slate-400">Registration Code</p>
-                  <p className="mt-2 text-2xl font-semibold text-white">{successReceipt.registrationCode}</p>
-                </div>
-                <div className="space-y-3">
-                  <div className="grid gap-3 sm:grid-cols-2">
+                  <h4 className="mt-4 text-2xl font-black text-white">{successReceipt.eventName}</h4>
+                  <p className="mt-3 text-sm leading-7 text-slate-300">Official participant pass for event entry, verification, and tracker lookup. Keep this pass until the event is completed.</p>
+
+                  <div className="mt-5 grid gap-3 sm:grid-cols-2">
                     <div className="rounded-[1.2rem] border border-white/10 bg-white/[0.05] p-4">
-                      <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400">Team Name</p>
-                      <p className="mt-2 text-base font-semibold text-white">{successReceipt.teamName}</p>
+                      <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400">Registration Code</p>
+                      <div className="mt-2 flex items-center justify-between gap-3">
+                        <p className="text-lg font-semibold text-white">{successReceipt.registrationCode}</p>
+                        <button type="button" onClick={() => navigator.clipboard.writeText(successReceipt.registrationCode)} className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-200">
+                          Copy
+                        </button>
+                      </div>
                     </div>
                     <div className="rounded-[1.2rem] border border-white/10 bg-white/[0.05] p-4">
                       <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400">Amount Paid</p>
                       <p className="mt-2 text-base font-semibold text-white">INR {successReceipt.totalAmount}</p>
+                    </div>
+                    <div className="rounded-[1.2rem] border border-white/10 bg-white/[0.05] p-4">
+                      <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400">Team / Participant</p>
+                      <p className="mt-2 text-base font-semibold text-white">{successReceipt.teamName}</p>
                     </div>
                     <div className="rounded-[1.2rem] border border-white/10 bg-white/[0.05] p-4">
                       <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400">Lead Contact</p>
@@ -1433,28 +1546,49 @@ export const App: React.FC = () => {
                     <div className="rounded-[1.2rem] border border-white/10 bg-white/[0.05] p-4">
                       <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400">Schedule</p>
                       <p className="mt-2 text-base font-semibold text-white">{successReceipt.dateLabel}</p>
-                      <p className="mt-1 text-sm text-slate-300">{successReceipt.timeLabel} / {successReceipt.venue}</p>
+                      <p className="mt-1 text-sm text-slate-300">{successReceipt.timeLabel}</p>
                     </div>
+                    <div className="rounded-[1.2rem] border border-white/10 bg-white/[0.05] p-4">
+                      <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400">Venue</p>
+                      <p className="mt-2 text-base font-semibold text-white">{successReceipt.venue}</p>
+                    </div>
+                    <div className="rounded-[1.2rem] border border-white/10 bg-white/[0.05] p-4 sm:col-span-2">
+                      <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400">Payment Reference</p>
+                      <p className="mt-2 break-all text-base font-semibold text-white">{successReceipt.paymentReference || 'Pending manual entry'}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="rounded-[1.4rem] border border-white/10 bg-white/[0.05] p-4 text-center">
+                    <div className="mx-auto w-fit rounded-[1.3rem] bg-white p-3">
+                      <img
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(successReceipt.qrValue)}`}
+                        alt={`${successReceipt.registrationCode} QR`}
+                        className="h-44 w-44"
+                      />
+                    </div>
+                    <p className="mt-4 text-sm font-semibold text-white">Scan or show this QR at the desk</p>
                   </div>
                   <div className="rounded-[1.2rem] border border-emerald-300/16 bg-emerald-400/10 p-4">
                     <p className="text-[10px] uppercase tracking-[0.18em] text-emerald-100/80">Quick Instructions</p>
-                    <p className="mt-2 text-sm leading-7 text-emerald-50">1. Save or download this pass. 2. Keep your registration code ready. 3. Bring the QR code on event day and use tracker for approval status.</p>
+                    <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm leading-7 text-emerald-50">
+                      {getReceiptInstructions(successReceipt).map((instruction) => (
+                        <li key={instruction}>{instruction}</li>
+                      ))}
+                    </ol>
                   </div>
                 </div>
               </div>
             </div>
             <div className="mt-5 flex flex-col gap-3 sm:flex-row">
               <button type="button" onClick={() => downloadConfirmationPass(successReceipt)} className="animated-gradient-button inline-flex flex-1 items-center justify-center rounded-2xl px-5 py-3 font-bold text-slate-950">
-                Download Pass
+                Open Pass Window
                 <ArrowRight size={16} />
               </button>
-              <button type="button" onClick={() => navigator.clipboard.writeText(successReceipt.registrationCode)} className="magnetic-button inline-flex flex-1 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.05] px-5 py-3 font-semibold text-white">
-                <Copy size={16} />
-                Copy Code
+              <button type="button" onClick={() => setShowSuccessModal(false)} className="magnetic-button inline-flex flex-1 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] px-5 py-3 font-semibold text-white">
+                Close
               </button>
-              <a href="#tracker" onClick={() => setShowSuccessModal(false)} className="magnetic-button inline-flex flex-1 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] px-5 py-3 font-semibold text-white">
-                Open Tracker
-              </a>
             </div>
           </div>
         </div>
