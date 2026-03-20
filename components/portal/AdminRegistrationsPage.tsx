@@ -86,15 +86,15 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminKey, adminRows, e
   const lowSlotAlerts = events.filter((event) => event.max_slots !== null && Math.max(event.max_slots - event.registrations_count, 0) <= Math.max(3, Math.ceil(event.max_slots * 0.1)));
 
   return (
-    <main className={`${shellClassName} space-y-6 pb-16 md:space-y-8 md:pb-20`}>
-      <section className="portal-glow-card portal-glass rounded-[2rem] p-6 md:p-8">
+    <main className={`${shellClassName} space-y-4 pb-10 md:space-y-8 md:pb-20`}>
+      <section className="portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-8">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
             <a href="#overview" className="magnetic-button inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200"><ArrowLeft size={16} />Back to portal</a>
             <p className="mt-5 text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Admin workspace</p>
-            <h2 className="mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron text-3xl font-black uppercase text-transparent md:text-4xl">Operations dashboard</h2>
+            <h2 className="mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron text-2xl font-black uppercase text-transparent md:text-4xl">Operations dashboard</h2>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
             <a href="#admin-analytics" className="rounded-[1.4rem] border border-cyan-300/14 bg-cyan-400/10 p-4 transition hover:-translate-y-0.5 hover:border-cyan-300/24"><p className="text-xs uppercase tracking-[0.24em] text-cyan-100/80">Registrations</p><p className="mt-2 text-3xl font-black text-white">{counts.all}</p></a>
             <a href="#admin-analytics" className="rounded-[1.4rem] border border-fuchsia-300/14 bg-fuchsia-400/10 p-4 transition hover:-translate-y-0.5 hover:border-fuchsia-300/24"><p className="text-xs uppercase tracking-[0.24em] text-fuchsia-100/80">Participants</p><p className="mt-2 text-3xl font-black text-white">{totalParticipants}</p></a>
             <a href="#admin-verification" className="rounded-[1.4rem] border border-emerald-300/14 bg-emerald-400/10 p-4 transition hover:-translate-y-0.5 hover:border-emerald-300/24"><p className="text-xs uppercase tracking-[0.24em] text-emerald-100/80">Verified</p><p className="mt-2 text-3xl font-black text-white">{counts.verified}</p></a>
@@ -117,8 +117,8 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminKey, adminRows, e
         <a href="#admin-checkin" className="magnetic-button rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Check-in</a>
       </div>
 
-      <section id="admin-analytics" className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-        <div data-reveal="up" className="portal-glow-card portal-glass rounded-[2rem] p-6">
+      <section id="admin-analytics" className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
+        <div data-reveal="up" className="portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-6">
           <div className="flex items-center gap-3"><BarChart3 size={18} className="text-cyan-200" /><h3 className="text-xl font-bold text-white">Admin analytics</h3></div>
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
             <div className="rounded-[1.4rem] border border-amber-300/16 bg-amber-400/10 p-4"><p className="text-xs uppercase tracking-[0.2em] text-amber-100/80">Pending / waitlist</p><p className="mt-2 text-2xl font-bold text-white">{counts.pending} / {counts.waitlisted}</p></div>
@@ -141,8 +141,8 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminKey, adminRows, e
           </div>
         </div>
 
-        <div data-reveal="up" className="space-y-6">
-          <div id="admin-broadcast" className="portal-glow-card portal-glass rounded-[2rem] p-6">
+        <div data-reveal="up" className="space-y-4 md:space-y-6">
+          <div id="admin-broadcast" className="portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-6">
             <div className="flex items-center gap-3"><Megaphone size={18} className="text-fuchsia-200" /><h3 className="text-xl font-bold text-white">Broadcast center</h3></div>
             <div className="mt-5 grid gap-4">
               <label className="block rounded-[1.4rem] border border-white/10 bg-white/5 p-4">
@@ -159,7 +159,7 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminKey, adminRows, e
             </div>
           </div>
 
-          <div className="portal-glow-card portal-glass rounded-[2rem] p-6">
+          <div className="portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-6">
             <div className="flex items-center gap-3"><HardDriveDownload size={18} className="text-yellow-200" /><h3 className="text-xl font-bold text-white">Backups and archive</h3></div>
             <div className="mt-5 flex flex-wrap gap-3"><button type="button" onClick={onRunBackup} className="magnetic-button inline-flex items-center gap-2 rounded-2xl border border-yellow-300/18 bg-yellow-400/10 px-4 py-3 text-sm font-bold text-yellow-100"><HardDriveDownload size={16} />Run backup now</button></div>
             <div className="mt-5 space-y-3">
@@ -172,7 +172,7 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminKey, adminRows, e
         </div>
       </section>
 
-      <section id="admin-checkin" data-reveal="up" className="portal-glow-card portal-glass rounded-[2rem] p-6">
+      <section id="admin-checkin" data-reveal="up" className="portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Event-day check-in</p>
@@ -202,7 +202,7 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminKey, adminRows, e
         </div>
       </section>
 
-      <section id="admin-verification" data-reveal="up" className="portal-glow-card portal-glass rounded-[2rem] p-6 md:p-8">
+      <section id="admin-verification" data-reveal="up" className="portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-8">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
           <div>
             <p className="text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Registration operations</p>

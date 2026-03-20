@@ -3,7 +3,7 @@ import type { EventRecord, ParticipantDraft } from './types';
 export const inputClassName =
   'w-full rounded-2xl border border-white/10 bg-[#0f1824] px-4 py-3 text-white outline-none transition focus:border-cyan-400/60';
 
-export const shellClassName = 'mx-auto w-full max-w-[1320px] px-4 sm:px-6 lg:px-8';
+export const shellClassName = 'mx-auto w-full max-w-[1320px] px-3 sm:px-5 lg:px-8';
 
 export function formatCurrency(value: number) {
   return new Intl.NumberFormat('en-IN', {

@@ -1675,6 +1675,15 @@ select.floating-field-input option {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .portal-nav-shell {
+    padding: 0.78rem 0.75rem;
+  }
+
+  .portal-front-hero__content,
+  .portal-front-hero__panel {
+    padding: 0.9rem;
+  }
+
   .portal-countdown-modern__mini {
     gap: 0.5rem;
   }
