@@ -2,9 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ArrowRight, CheckCircle2, Menu, MoonStar, SunMedium, X } from 'lucide-react';
 import { AdminRegistrationsPage } from './components/portal/AdminRegistrationsPage.tsx';
 import { AnnouncementArchiveSection } from './components/portal/AnnouncementArchiveSection.tsx';
-import { AnnouncementBanner } from './components/portal/AnnouncementBanner.tsx';
 import { HeroSection } from './components/portal/HeroSection.tsx';
-import { SmartAlertsPanel } from './components/portal/SmartAlertsPanel.tsx';
 import { TimelinePage } from './components/portal/TimelinePage.tsx';
 import { CompetitionGridSection } from './components/portal/CompetitionGridSection.tsx';
 import { EventRegistrationPanel } from './components/portal/EventRegistrationPanel.tsx';
@@ -449,8 +447,6 @@ export const App: React.FC = () => {
   const isAdminPage = hashRoute.startsWith('#admin-registrations');
   const isTimelinePage = hashRoute === '#timeline';
   const isEventPage = Boolean(eventPageSlug);
-  const pinnedAnnouncement =
-    announcements.find((announcement) => announcement.is_pinned && isAnnouncementActive(announcement)) || null;
 
   useEffect(() => {
     if (isEventPage && eventPageSlug && events.some((event) => event.slug === eventPageSlug)) {
@@ -1244,10 +1240,6 @@ export const App: React.FC = () => {
           </div>
         ) : null}
       </header>
-
-      <AnnouncementBanner announcement={pinnedAnnouncement} />
-      <SmartAlertsPanel alerts={portalAlerts} loading={loadingAlerts} />
-
       {isAdminPage ? (
         <AdminRegistrationsPage
           adminKey={adminKey}

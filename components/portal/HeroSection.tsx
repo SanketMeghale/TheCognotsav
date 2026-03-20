@@ -54,10 +54,15 @@ export const HeroSection: React.FC<Props> = ({ totalEvents, totalRegistrations, 
             Official Festival Registration
           </div>
 
-          <div className="portal-legacy-headline mt-5">
-            <div className="portal-legacy-logo">
-              <img src="/images/ceasposter.jpeg" alt="CEAS COGNOTSAV logo" className="h-full w-full object-cover" />
+          <div className="portal-legacy-badge mt-5">
+            <img src="/images/ceasposter.jpeg" alt="CEAS COGNOTSAV logo" className="h-11 w-11 rounded-[0.95rem] object-cover" />
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.24em] text-cyan-200/70">CEAS COGNOTSAV 2026</p>
+              <p className="text-sm font-semibold text-white">Computer Engineering Association</p>
             </div>
+          </div>
+
+          <div className="portal-legacy-headline mt-5">
             <div className="min-w-0">
               <p className="portal-kicker">Our Legacy</p>
               <h2 className="portal-legacy-title">
