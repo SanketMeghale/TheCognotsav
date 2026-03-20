@@ -109,11 +109,15 @@ export const HeroSection: React.FC<Props> = ({ totalEvents, totalRegistrations, 
         </div>
 
         <div className="portal-front-hero__panel">
-          <div className="portal-front-hero__countdown portal-festival-counter">
+          <div className="portal-front-hero__visual-card">
+            <img src="/images/ceasposter.jpeg" alt="CEAS COGNOTSAV crest" className="portal-front-hero__visual-image" />
+          </div>
+
+          <div className="portal-front-hero__countdown portal-festival-counter portal-festival-counter--compact">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="portal-kicker">Festival Countdown</p>
-                <p className="mt-2 text-xl font-semibold text-white">07-08 April 2026</p>
+                <p className="mt-2 text-lg font-semibold text-white">07-08 April 2026</p>
               </div>
               <div className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-2 text-xs text-slate-200">
                 <CalendarDays size={14} className="mr-2 inline text-yellow-200" />

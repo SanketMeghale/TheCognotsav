@@ -94,10 +94,10 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminKey, adminRows, e
             <h2 className="mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron text-3xl font-black uppercase text-transparent md:text-4xl">Operations dashboard</h2>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <div className="rounded-[1.4rem] border border-cyan-300/14 bg-cyan-400/10 p-4"><p className="text-xs uppercase tracking-[0.24em] text-cyan-100/80">Registrations</p><p className="mt-2 text-3xl font-black text-white">{counts.all}</p></div>
-            <div className="rounded-[1.4rem] border border-fuchsia-300/14 bg-fuchsia-400/10 p-4"><p className="text-xs uppercase tracking-[0.24em] text-fuchsia-100/80">Participants</p><p className="mt-2 text-3xl font-black text-white">{totalParticipants}</p></div>
-            <div className="rounded-[1.4rem] border border-emerald-300/14 bg-emerald-400/10 p-4"><p className="text-xs uppercase tracking-[0.24em] text-emerald-100/80">Verified</p><p className="mt-2 text-3xl font-black text-white">{counts.verified}</p></div>
-            <div className="rounded-[1.4rem] border border-yellow-300/14 bg-yellow-400/10 p-4"><p className="text-xs uppercase tracking-[0.24em] text-yellow-100/80">Busiest event</p><p className="mt-2 text-sm font-semibold text-white">{busiestEvent ? `${busiestEvent[0]} (${busiestEvent[1]})` : 'Waiting to load'}</p></div>
+            <a href="#admin-analytics" className="rounded-[1.4rem] border border-cyan-300/14 bg-cyan-400/10 p-4 transition hover:-translate-y-0.5 hover:border-cyan-300/24"><p className="text-xs uppercase tracking-[0.24em] text-cyan-100/80">Registrations</p><p className="mt-2 text-3xl font-black text-white">{counts.all}</p></a>
+            <a href="#admin-analytics" className="rounded-[1.4rem] border border-fuchsia-300/14 bg-fuchsia-400/10 p-4 transition hover:-translate-y-0.5 hover:border-fuchsia-300/24"><p className="text-xs uppercase tracking-[0.24em] text-fuchsia-100/80">Participants</p><p className="mt-2 text-3xl font-black text-white">{totalParticipants}</p></a>
+            <a href="#admin-verification" className="rounded-[1.4rem] border border-emerald-300/14 bg-emerald-400/10 p-4 transition hover:-translate-y-0.5 hover:border-emerald-300/24"><p className="text-xs uppercase tracking-[0.24em] text-emerald-100/80">Verified</p><p className="mt-2 text-3xl font-black text-white">{counts.verified}</p></a>
+            <a href="#admin-analytics" className="rounded-[1.4rem] border border-yellow-300/14 bg-yellow-400/10 p-4 transition hover:-translate-y-0.5 hover:border-yellow-300/24"><p className="text-xs uppercase tracking-[0.24em] text-yellow-100/80">Busiest event</p><p className="mt-2 text-sm font-semibold text-white">{busiestEvent ? `${busiestEvent[0]} (${busiestEvent[1]})` : 'Waiting to load'}</p></a>
           </div>
         </div>
         <div className="mt-6 grid gap-4 xl:grid-cols-[1.2fr_auto_auto_auto]">
@@ -109,7 +109,14 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminKey, adminRows, e
         {adminError ? <div className="mt-5 rounded-2xl border border-rose-400/25 bg-gradient-to-r from-rose-500/14 to-orange-500/8 px-4 py-3 text-sm text-rose-100">{adminError}</div> : null}
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
+      <div className="flex flex-wrap gap-2">
+        <a href="#admin-analytics" className="magnetic-button rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Analytics</a>
+        <a href="#admin-verification" className="magnetic-button rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Verification</a>
+        <a href="#admin-broadcast" className="magnetic-button rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Broadcast</a>
+        <a href="#admin-checkin" className="magnetic-button rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Check-in</a>
+      </div>
+
+      <section id="admin-analytics" className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
         <div data-reveal="up" className="portal-glow-card portal-glass rounded-[2rem] p-6">
           <div className="flex items-center gap-3"><BarChart3 size={18} className="text-cyan-200" /><h3 className="text-xl font-bold text-white">Admin analytics</h3></div>
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
@@ -134,7 +141,7 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminKey, adminRows, e
         </div>
 
         <div data-reveal="up" className="space-y-6">
-          <div className="portal-glow-card portal-glass rounded-[2rem] p-6">
+          <div id="admin-broadcast" className="portal-glow-card portal-glass rounded-[2rem] p-6">
             <div className="flex items-center gap-3"><Megaphone size={18} className="text-fuchsia-200" /><h3 className="text-xl font-bold text-white">Broadcast center</h3></div>
             <div className="mt-5 grid gap-4">
               <label className="block rounded-[1.4rem] border border-white/10 bg-white/5 p-4">
@@ -164,7 +171,7 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminKey, adminRows, e
         </div>
       </section>
 
-      <section data-reveal="up" className="portal-glow-card portal-glass rounded-[2rem] p-6">
+      <section id="admin-checkin" data-reveal="up" className="portal-glow-card portal-glass rounded-[2rem] p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Event-day check-in</p>
@@ -194,7 +201,7 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminKey, adminRows, e
         </div>
       </section>
 
-      <section data-reveal="up" className="portal-glow-card portal-glass rounded-[2rem] p-6 md:p-8">
+      <section id="admin-verification" data-reveal="up" className="portal-glow-card portal-glass rounded-[2rem] p-6 md:p-8">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
           <div>
             <p className="text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Registration operations</p>

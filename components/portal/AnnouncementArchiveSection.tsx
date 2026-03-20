@@ -8,7 +8,7 @@ type Props = {
 };
 
 export const AnnouncementArchiveSection: React.FC<Props> = ({ announcements, loading }) => {
-  const featured = announcements.slice(0, 6);
+  const featured = announcements.slice(0, 4);
 
   return (
     <section id="announcement-archive" data-reveal="up" className="portal-glow-card portal-glass overflow-hidden rounded-[2rem] p-4 sm:p-5 md:p-6">
@@ -35,7 +35,7 @@ export const AnnouncementArchiveSection: React.FC<Props> = ({ announcements, loa
       ) : null}
 
       {!loading && featured.length > 0 ? (
-        <div className="mt-5 space-y-4">
+        <div className="mt-4 space-y-3">
           <div className="portal-live-strip">
             <div className="portal-live-strip__track">
               {[...featured, ...featured].map((announcement, index) => (
@@ -48,9 +48,9 @@ export const AnnouncementArchiveSection: React.FC<Props> = ({ announcements, loa
             </div>
           </div>
 
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-            {featured.slice(0, 6).map((announcement) => (
-              <article key={announcement.id} className="rounded-[1.45rem] border border-white/10 bg-[linear-gradient(145deg,rgba(12,20,35,0.92),rgba(18,27,45,0.82))] p-4">
+          <div className="grid gap-3 md:grid-cols-2">
+            {featured.slice(0, 4).map((announcement, index) => (
+              <article key={announcement.id} className={`portal-update-card ${index === 0 ? 'portal-update-card--featured' : ''}`}>
                 <div className="flex flex-wrap items-center gap-2">
                   {announcement.is_pinned ? (
                     <span className="inline-flex items-center gap-2 rounded-full border border-yellow-300/25 bg-yellow-400/12 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-yellow-100">
@@ -70,7 +70,7 @@ export const AnnouncementArchiveSection: React.FC<Props> = ({ announcements, loa
                   ) : null}
                 </div>
                 <h5 className="mt-3 text-base font-semibold text-white">{announcement.title}</h5>
-                <p className="mt-2 line-clamp-3 text-sm leading-6 text-slate-300">{announcement.message}</p>
+                <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-300">{announcement.message}</p>
                 <div className="mt-3 flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-slate-500">
                   <CalendarClock size={12} />
                   {new Date(announcement.created_at).toLocaleString()}
