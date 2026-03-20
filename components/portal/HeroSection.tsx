@@ -109,22 +109,6 @@ export const HeroSection: React.FC<Props> = ({ totalEvents, totalRegistrations, 
                 </div>
               ))}
             </div>
-
-            <div className="mt-4 rounded-[1.35rem] border border-white/10 bg-white/[0.04] px-4 py-4">
-              <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">What happens next</p>
-              <p className="mt-2 text-sm leading-6 text-slate-200">
-                Open any competition card to view details, rules, fee, and the registration form on its own page.
-              </p>
-            </div>
-          </div>
-
-          <div className="portal-front-hero__poster">
-            <img src="/images/ceasposter.jpeg" alt="CEAS COGNOTSAV 2026 poster" className="h-full w-full object-cover" />
-            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(8,12,22,0.04),rgba(8,12,22,0.78))]" />
-            <div className="absolute inset-x-0 bottom-0 p-5">
-              <p className="text-[11px] uppercase tracking-[0.22em] text-slate-200/70">Official Festival Poster</p>
-              <p className="mt-2 text-xl font-semibold text-white">Competitions, esports, expo, and stage events.</p>
-            </div>
           </div>
         </div>
       </div>

@@ -16,11 +16,11 @@ export const TimelinePage: React.FC = () => {
         </a>
         <div className="mt-5 max-w-3xl">
           <p className="text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Timeline page</p>
-          <h2 className="mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron text-3xl font-black uppercase text-transparent md:text-4xl">
-            Event flow and live alerts
+          <h2 className="mt-2 bg-gradient-to-r from-cyan-400 via-fuchsia-500 to-amber-300 bg-clip-text font-orbitron text-3xl font-black uppercase text-transparent md:text-4xl">
+            Fest roadmap and live alerts
           </h2>
           <p className="mt-4 text-sm leading-7 text-slate-200">
-            This page keeps the registration flow separate while giving participants a cleaner place to check reporting, verification, and event-day movement.
+            This page keeps the registration flow separate while giving participants a cleaner roadmap for reporting, verification, and event-day movement.
           </p>
         </div>
       </section>

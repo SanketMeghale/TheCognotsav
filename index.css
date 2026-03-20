@@ -531,6 +531,76 @@ select.floating-field-input option {
   min-height: 16rem;
 }
 
+.portal-live-strip {
+  overflow: hidden;
+  border-radius: 1.35rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(90deg, rgba(8, 13, 24, 0.88), rgba(18, 27, 45, 0.82));
+  padding: 0.9rem 0;
+}
+
+.portal-live-strip__track {
+  display: flex;
+  width: max-content;
+  gap: 0.85rem;
+  padding: 0 0.9rem;
+  animation: portalTicker 28s linear infinite;
+}
+
+.portal-live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.72rem 1rem;
+  white-space: nowrap;
+  color: rgba(226, 232, 240, 0.9);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.portal-live-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #22d3ee, #ec4899, #fbbf24);
+  box-shadow: 0 0 14px rgba(34, 211, 238, 0.5);
+  animation: portalPulse 1.4s ease-in-out infinite;
+}
+
+.roadmap-pulse-line {
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #22d3ee, #3b82f6, #a855f7, #ec4899, #fbbf24, #34d399);
+  background-size: 180% 100%;
+  animation: gradientShift 5s linear infinite;
+}
+
+.roadmap-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(145deg, rgba(12, 20, 35, 0.94), rgba(18, 27, 45, 0.86));
+  padding: 1.25rem;
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.roadmap-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 18px 44px rgba(2, 8, 23, 0.26);
+}
+
+.roadmap-card__glow {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+}
+
 .portal-brand-title {
   font-size: clamp(1.8rem, 6vw, 3.7rem);
   line-height: 1.02;
@@ -840,6 +910,27 @@ select.floating-field-input option {
   to {
     opacity: 0;
     transform: translateY(-10px) scale(0.98);
+  }
+}
+
+@keyframes portalTicker {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes portalPulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.68;
+    transform: scale(0.86);
   }
 }
 

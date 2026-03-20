@@ -157,8 +157,8 @@ export const EventRegistrationPanel: React.FC<Props> = ({ selectedEvent, teamSiz
             </h3>
             <p className="mt-2 text-sm leading-6 text-slate-300">
               {selectedEvent
-                ? 'Review the event handbook summary first, then continue to registration.'
-                : 'Tap any competition card to open its modern detail panel and registration form.'}
+                ? 'Quick event brief, handbook access, and registration in one place.'
+                : 'Tap any competition card to open the event brief and registration form.'}
             </p>
           </div>
           <div className="grid grid-cols-3 gap-2 text-center text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-300">
