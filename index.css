@@ -1252,6 +1252,8 @@ select.floating-field-input option {
 .portal-front-hero {
   position: relative;
   display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+  align-items: start;
   gap: 1rem;
 }
 
@@ -1579,6 +1581,10 @@ select.floating-field-input option {
   .hero-layout {
     grid-template-columns: minmax(0, 1fr);
     gap: 1.5rem;
+  }
+
+  .portal-front-hero {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .hero-spotlight-grid,
