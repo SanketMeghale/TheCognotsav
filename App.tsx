@@ -1418,7 +1418,6 @@ export const App: React.FC = () => {
           <main className={`${shellClassName} space-y-5 pb-28 md:space-y-8 md:pb-16`}>
             <HeroSection
               totalEvents={events.length}
-              totalRegistrations={totalRegistrations}
               totalRemainingSlots={totalRemainingSlots}
             />
 

@@ -558,6 +558,14 @@ img {
   padding: 1rem 1rem 1rem 1.1rem;
 }
 
+.portal-hero-stats-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.portal-hero-stat-card:last-child {
+  grid-column: 1 / -1;
+}
+
 .portal-update-card {
   position: relative;
   overflow: hidden;
@@ -1678,6 +1686,14 @@ select.floating-field-input option {
   .portal-update-lead,
   .portal-update-stack__card {
     border-radius: 1.1rem;
+  }
+
+  .portal-hero-stats-grid {
+    gap: 0.65rem;
+  }
+
+  .portal-hero-stat-card {
+    padding: 0.95rem 0.9rem;
   }
 
   .roadmap-pulse-line {

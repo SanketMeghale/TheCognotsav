@@ -4,13 +4,12 @@ import { shellClassName } from './utils';
 
 type Props = {
   totalEvents: number;
-  totalRegistrations: number;
   totalRemainingSlots: number;
 };
 
 const eventDate = new Date('2026-04-07T09:00:00');
 
-export const HeroSection: React.FC<Props> = ({ totalEvents, totalRegistrations, totalRemainingSlots }) => {
+export const HeroSection: React.FC<Props> = ({ totalEvents, totalRemainingSlots }) => {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
@@ -32,10 +31,10 @@ export const HeroSection: React.FC<Props> = ({ totalEvents, totalRegistrations, 
   const quickStats = useMemo(
     () => [
       { label: 'Events', value: totalEvents },
-      { label: 'Registrations', value: totalRegistrations },
+      { label: 'Fest Days', value: 2 },
       { label: 'Slots Left', value: totalRemainingSlots },
     ],
-    [totalEvents, totalRegistrations, totalRemainingSlots],
+    [totalEvents, totalRemainingSlots],
   );
 
   const countdownCards = [
@@ -102,9 +101,9 @@ export const HeroSection: React.FC<Props> = ({ totalEvents, totalRegistrations, 
             </a>
           </div>
 
-          <div className="mt-8 grid gap-3 sm:grid-cols-3">
+          <div className="portal-hero-stats-grid mt-8 grid gap-3">
             {quickStats.map((stat) => (
-              <div key={stat.label} className="rounded-[1.4rem] border border-white/10 bg-white/[0.05] px-4 py-4">
+              <div key={stat.label} className="portal-hero-stat-card rounded-[1.4rem] border border-white/10 bg-white/[0.05] px-4 py-4">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">{stat.label}</p>
                 <p className="mt-2 text-2xl font-semibold text-white">{stat.value}</p>
               </div>

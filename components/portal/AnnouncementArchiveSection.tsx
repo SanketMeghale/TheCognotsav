@@ -1,5 +1,5 @@
-import React from 'react';
-import { BellRing, CalendarClock, Pin, Radio } from 'lucide-react';
+import React, { useState } from 'react';
+import { BellRing, CalendarClock, Eye, EyeOff, Pin, Radio } from 'lucide-react';
 import type { PortalAnnouncement } from './types';
 
 type Props = {
@@ -8,6 +8,7 @@ type Props = {
 };
 
 export const AnnouncementArchiveSection: React.FC<Props> = ({ announcements, loading }) => {
+  const [collapsed, setCollapsed] = useState(false);
   const featured = announcements.slice(0, 4);
   const lead = featured[0] ?? null;
   const secondary = featured.slice(1, 4);
@@ -24,19 +25,30 @@ export const AnnouncementArchiveSection: React.FC<Props> = ({ announcements, loa
         </div>
       </div>
 
-      {loading ? (
+      <div className="mt-3 flex justify-end">
+        <button
+          type="button"
+          onClick={() => setCollapsed((current) => !current)}
+          className="magnetic-button inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-100"
+        >
+          {collapsed ? <Eye size={13} /> : <EyeOff size={13} />}
+          {collapsed ? 'Show Updates' : 'Hide Updates'}
+        </button>
+      </div>
+
+      {collapsed ? null : loading ? (
         <div className="mt-5 rounded-[1.5rem] border border-white/10 bg-black/10 p-5 text-sm text-slate-300">
           Loading announcements...
         </div>
       ) : null}
 
-      {!loading && announcements.length === 0 ? (
+      {!collapsed && !loading && announcements.length === 0 ? (
         <div className="mt-5 rounded-[1.5rem] border border-dashed border-white/10 bg-black/10 p-5 text-sm text-slate-400">
           No organizer announcements have been published yet.
         </div>
       ) : null}
 
-      {!loading && lead ? (
+      {!collapsed && !loading && lead ? (
         <div className="mt-5 space-y-4">
           <div className="portal-update-marquee">
             <div className="portal-update-marquee__track">
