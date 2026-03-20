@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowRight, CheckCircle2, Menu, X } from 'lucide-react';
 import { AdminRegistrationsPage } from './components/portal/AdminRegistrationsPage.tsx';
 import { AnnouncementArchiveSection } from './components/portal/AnnouncementArchiveSection.tsx';
@@ -43,6 +43,124 @@ type ApiReadResult<T> = {
 const DRAFT_STORAGE_KEY = 'cogno_registration_portal_draft_v1';
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phonePattern = /^\d{10}$/;
+
+const CANVAS_PARTICLE_COUNT = 56;
+
+function PortalBackgroundCanvas() {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const context = canvas.getContext('2d');
+    if (!context) return;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) return;
+
+    let width = 0;
+    let height = 0;
+    let animationFrame = 0;
+    const pointer = { x: -9999, y: -9999 };
+    const particleCount = Math.min(CANVAS_PARTICLE_COUNT, window.innerWidth < 640 ? 32 : CANVAS_PARTICLE_COUNT);
+
+    const particles = Array.from({ length: particleCount }, () => ({
+      x: Math.random(),
+      y: Math.random(),
+      vx: (Math.random() - 0.5) * 0.00045,
+      vy: (Math.random() - 0.5) * 0.00045,
+      radius: Math.random() * 1.8 + 1.1,
+      hue: [195, 220, 280, 320][Math.floor(Math.random() * 4)],
+    }));
+
+    const resize = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      context.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+
+    const draw = () => {
+      context.clearRect(0, 0, width, height);
+
+      for (const particle of particles) {
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+
+        if (particle.x < 0 || particle.x > 1) particle.vx *= -1;
+        if (particle.y < 0 || particle.y > 1) particle.vy *= -1;
+
+        const px = particle.x * width;
+        const py = particle.y * height;
+        const pointerDistance = Math.hypot(pointer.x - px, pointer.y - py);
+        const glowBoost = pointerDistance < 140 ? 0.22 : 0;
+
+        context.beginPath();
+        context.fillStyle = `hsla(${particle.hue}, 92%, 68%, ${0.18 + glowBoost})`;
+        context.shadowBlur = 12;
+        context.shadowColor = `hsla(${particle.hue}, 95%, 70%, 0.28)`;
+        context.arc(px, py, particle.radius + glowBoost * 7, 0, Math.PI * 2);
+        context.fill();
+      }
+
+      context.shadowBlur = 0;
+      for (let index = 0; index < particles.length; index += 1) {
+        const a = particles[index];
+        const ax = a.x * width;
+        const ay = a.y * height;
+
+        for (let next = index + 1; next < particles.length; next += 1) {
+          const b = particles[next];
+          const bx = b.x * width;
+          const by = b.y * height;
+          const distance = Math.hypot(ax - bx, ay - by);
+
+          if (distance < 150) {
+            const alpha = 1 - distance / 150;
+            context.beginPath();
+            context.strokeStyle = `rgba(103, 180, 255, ${alpha * 0.08})`;
+            context.lineWidth = 1;
+            context.moveTo(ax, ay);
+            context.lineTo(bx, by);
+            context.stroke();
+          }
+        }
+      }
+
+      animationFrame = window.requestAnimationFrame(draw);
+    };
+
+    const handleMove = (event: MouseEvent) => {
+      pointer.x = event.clientX;
+      pointer.y = event.clientY;
+    };
+
+    const handleLeave = () => {
+      pointer.x = -9999;
+      pointer.y = -9999;
+    };
+
+    resize();
+    draw();
+    window.addEventListener('resize', resize);
+    window.addEventListener('mousemove', handleMove, { passive: true });
+    window.addEventListener('mouseout', handleLeave);
+
+    return () => {
+      window.cancelAnimationFrame(animationFrame);
+      window.removeEventListener('resize', resize);
+      window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('mouseout', handleLeave);
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} className="portal-network-canvas" aria-hidden="true" />;
+}
 
 async function readApiBody<T>(response: Response): Promise<ApiReadResult<T>> {
   const rawText = await response.text();
@@ -252,6 +370,40 @@ export const App: React.FC = () => {
 
     loadEvents();
   }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) {
+      document.querySelectorAll<HTMLElement>('[data-reveal]').forEach((element) => {
+        element.classList.add('is-visible');
+      });
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+          }
+        });
+      },
+      {
+        threshold: 0.14,
+        rootMargin: '0px 0px -8% 0px',
+      },
+    );
+
+    const targets = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal]'));
+    targets.forEach((target, index) => {
+      target.style.transitionDelay = `${Math.min(index % 5, 4) * 70}ms`;
+      observer.observe(target);
+    });
+
+    return () => observer.disconnect();
+  }, [events.length, adminRows.length, hashRoute, lookupResults.length]);
 
   useEffect(() => {
     let disposed = false;
@@ -1090,6 +1242,7 @@ export const App: React.FC = () => {
 
   return (
     <div className="portal-shell portal-page-enter min-h-screen text-slate-100">
+      <PortalBackgroundCanvas />
       <div className="portal-orb portal-orb--violet" />
       <div className="portal-orb portal-orb--cyan" />
       <div className="portal-orb portal-orb--blue" />
@@ -1269,10 +1422,14 @@ export const App: React.FC = () => {
               totalRemainingSlots={totalRemainingSlots}
             />
 
+            <div className={`${shellClassName} portal-section-divider`} aria-hidden="true" />
+
             <AnnouncementArchiveSection
               announcements={visibleAnnouncements}
               loading={loadingAnnouncements}
             />
+
+            <div className={`${shellClassName} portal-section-divider portal-section-divider--angled`} aria-hidden="true" />
 
             <CompetitionGridSection
               events={events}
