@@ -33,9 +33,9 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
     <section id="registration-panel" className="rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(9,13,24,0.72))] p-4 sm:p-5 md:p-6">
       <div className="text-center">
         <p className="text-[11px] uppercase tracking-[0.22em] text-cyan-200/80">Competitions</p>
-        <h3 className="mt-3 text-2xl font-semibold text-white sm:text-3xl">Select an event and continue on its page.</h3>
+        <h3 className="mt-3 text-2xl font-semibold text-white sm:text-3xl">Choose a competition and continue.</h3>
         <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-slate-300">
-          Open any card to read the handbook, view event details, and complete registration on its dedicated page.
+          Open any card for a short event brief, handbook access, and the registration form.
         </p>
       </div>
 
@@ -59,11 +59,11 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
                   key={event.slug}
                   type="button"
                   onClick={() => onSelectEvent(event.slug)}
-                  className={`group tilt-card overflow-hidden rounded-[1.9rem] border bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(9,13,24,0.9))] text-left transition duration-200 ${
+                  className={`portal-competition-card group tilt-card h-full overflow-hidden rounded-[1.9rem] border bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(9,13,24,0.9))] text-left transition duration-200 ${
                     active ? 'border-cyan-300/36' : 'border-white/10 hover:border-white/18'
                   } ${theme.glow}`}
                 >
-                  <div className="relative h-56 overflow-hidden">
+                  <div className="portal-competition-card__media relative overflow-hidden">
                     <img src={event.poster_path} alt={event.name} className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.04]" />
                     <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,10,21,0.06),rgba(7,10,21,0.86))]" />
                     <div className="absolute left-4 top-4 flex flex-wrap gap-2">
@@ -78,7 +78,7 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
                     </div>
                   </div>
 
-                  <div className="p-5">
+                  <div className="portal-competition-card__body p-5">
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <p className="text-xs uppercase tracking-[0.16em] text-slate-400">{getTeamLabel(event)}</p>
@@ -94,7 +94,7 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
                       </span>
                     </div>
 
-                    <p className="mt-4 line-clamp-2 text-sm leading-7 text-slate-300">{event.description}</p>
+                    <p className="mt-4 line-clamp-2 text-sm leading-6 text-slate-300">{event.description}</p>
 
                     <div className="mt-5 flex items-center justify-between gap-3 text-sm text-slate-400">
                       <span>{event.date_label}</span>

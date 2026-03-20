@@ -75,10 +75,10 @@ export const HeroSection: React.FC<Props> = ({ totalEvents, totalRegistrations, 
 
           <div className="mt-5 space-y-5">
             <p className="max-w-3xl text-sm leading-7 text-slate-300 sm:text-base">
-              COGNOTSAV is the flagship technical festival of the Computer Engineering Department at Dr. Vithalrao Vikhe Patil College of Engineering, Ahilyanagar. It provides a platform for students to showcase innovation, technical skills, and problem-solving abilities beyond the classroom.
+              COGNOTSAV is the flagship technical festival of the Computer Engineering Department at Dr. Vithalrao Vikhe Patil College of Engineering, Ahilyanagar, built to showcase innovation, technical depth, and competitive spirit.
             </p>
             <p className="max-w-3xl text-sm leading-7 text-slate-300 sm:text-base">
-              Through exciting competitions, esports, project exhibitions, and UTOPIA, COGNOTSAV encourages students to explore technology, collaborate with peers, and push their creative boundaries.
+              Competitions, esports, project exhibitions, and UTOPIA bring students together to build, compete, and push ideas beyond the classroom.
             </p>
           </div>
 

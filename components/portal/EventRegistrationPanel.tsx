@@ -74,7 +74,7 @@ const handbookBySlug: Record<string, {
 }> = {
   'rang-manch': {
     theme: 'Art of Expression',
-    overview: 'Rangmanch is a performance competition built around acting, expression, confidence, and storytelling on stage. It welcomes solo and team entries.',
+    overview: 'Stage performance event focused on acting, expression, confidence, and storytelling.',
     highlights: ['Solo or group format', '5 minute stage slot', 'Rs 50 solo and Rs 200 up to 5 members', 'Performance-first judging'],
     rules: ['Express emotions and ideas clearly through acting', 'Report before the event start time', 'Maintain stage discipline and follow organizer instructions'],
     handbookUrl: '/handbooks/rangmanch.pdf',
@@ -82,7 +82,7 @@ const handbookBySlug: Record<string, {
   },
   'squid-game': {
     theme: 'Survival and Strategy',
-    overview: 'Squid Game is an elimination format event with multiple rounds testing speed, decision-making, teamwork under pressure, and survival instinct.',
+    overview: 'Elimination-format challenge testing speed, decision-making, teamwork, and survival instinct.',
     highlights: ['Individual competition', 'Mingle, Tug of War, Battleship, Dalgona, and Red Light Green Light', 'Rs 50 per participant', 'Judges decision is final'],
     rules: ['No cheating or unfair play', 'Eliminated players cannot re-enter', 'Players must be present before the event starts', 'Failure to follow instructions leads to elimination'],
     handbookUrl: '/handbooks/squid-game.pdf',
@@ -90,7 +90,7 @@ const handbookBySlug: Record<string, {
   },
   techxcelerate: {
     theme: 'Future Tech and Innovation',
-    overview: 'TechXcelerate combines poster presentation and project or paper presentation into a showcase for innovation, technical understanding, and communication quality.',
+    overview: 'Innovation showcase for posters, projects, and papers with strong technical presentation.',
     highlights: ['Poster competition at Rs 50 per participant', 'Project or paper presentation at Rs 200 per team', 'Project demo or PPT allowed', 'Presentation plus Q and A based judging'],
     rules: ['All submissions must be original', 'Bring laptop, model, or backup presentation as needed', 'Paper format should follow standard structure', 'Late entries will not be accepted'],
     handbookUrl: '/handbooks/techxcelerate.docx',
@@ -98,7 +98,7 @@ const handbookBySlug: Record<string, {
   },
   'bgmi-esports': {
     theme: 'Enter the Arena. Survive the Battle.',
-    overview: 'Runbhumi eSports for BGMI and Free Fire is a squad-based battle arena event focused on strategy, survival, kill points, and final-stage qualification.',
+    overview: 'Squad-based arena event driven by strategy, survival, kills, and final-stage qualification.',
     highlights: ['4 players per team', 'Qualifier plus final structure', 'Kill points and placement points both matter', 'Seminar Hall venue'],
     rules: ['No cheating, hacking, or unfair play', 'Same team must play throughout', 'No restart for network issues', 'Players must join rooms on time'],
     handbookUrl: '/handbooks/runbhumi-esports.pdf',
@@ -107,7 +107,7 @@ const handbookBySlug: Record<string, {
   },
   'ff-esports': {
     theme: 'Enter the Arena. Survive the Battle.',
-    overview: 'Runbhumi eSports for BGMI and Free Fire is a squad-based battle arena event focused on strategy, survival, kill points, and final-stage qualification.',
+    overview: 'Squad-based arena event driven by strategy, survival, kills, and final-stage qualification.',
     highlights: ['4 players per team', 'Qualifier plus final structure', 'Kill points and placement points both matter', 'Seminar Hall venue'],
     rules: ['No cheating, hacking, or unfair play', 'Same team must play throughout', 'No restart for network issues', 'Players must join rooms on time'],
     handbookUrl: '/handbooks/runbhumi-esports.pdf',

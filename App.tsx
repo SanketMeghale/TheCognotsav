@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ArrowRight, CheckCircle2, Menu, MoonStar, SunMedium, X } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Menu, X } from 'lucide-react';
 import { AdminRegistrationsPage } from './components/portal/AdminRegistrationsPage.tsx';
 import { AnnouncementArchiveSection } from './components/portal/AnnouncementArchiveSection.tsx';
 import { HeroSection } from './components/portal/HeroSection.tsx';
@@ -41,7 +41,6 @@ type ApiReadResult<T> = {
 };
 
 const DRAFT_STORAGE_KEY = 'cogno_registration_portal_draft_v1';
-const THEME_STORAGE_KEY = 'cogno_registration_portal_theme_v1';
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phonePattern = /^\d{10}$/;
 
@@ -217,10 +216,6 @@ export const App: React.FC = () => {
   const [toastClosing, setToastClosing] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
-    if (typeof window === 'undefined') return 'dark';
-    return window.localStorage.getItem(THEME_STORAGE_KEY) === 'light' ? 'light' : 'dark';
-  });
   const [form, setForm] = useState<FormState>({
     teamName: '',
     collegeName: '',
@@ -413,11 +408,6 @@ export const App: React.FC = () => {
       }),
     );
   }, [form, selectedEvent, selectedEventSlug, successReceipt, teamSize]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    window.localStorage.setItem(THEME_STORAGE_KEY, theme);
-  }, [theme]);
 
   useEffect(() => {
     if (!toastMessage) return;
@@ -1099,7 +1089,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div data-theme={theme} className="portal-shell portal-page-enter min-h-screen text-slate-100">
+    <div className="portal-shell portal-page-enter min-h-screen text-slate-100">
       <div className="portal-orb portal-orb--violet" />
       <div className="portal-orb portal-orb--cyan" />
       <div className="portal-orb portal-orb--blue" />
@@ -1193,15 +1183,6 @@ export const App: React.FC = () => {
           </nav>
 
           <div className="hidden items-center gap-3 lg:flex">
-            <button
-              type="button"
-              onClick={() => setTheme((current) => current === 'dark' ? 'light' : 'dark')}
-              className="portal-theme-toggle"
-              aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
-            >
-              {theme === 'dark' ? <SunMedium size={15} /> : <MoonStar size={15} />}
-              <span>{theme === 'dark' ? 'Light' : 'Dark'}</span>
-            </button>
             <a href="#registration-panel" className="animated-gradient-button inline-flex items-center justify-center rounded-2xl px-4 py-3 text-sm font-bold text-slate-950">
               Register
               <ArrowRight size={14} />
@@ -1222,14 +1203,6 @@ export const App: React.FC = () => {
         {mobileMenuOpen ? (
           <div className={`${shellClassName} mt-2 lg:hidden`}>
             <div className="portal-mobile-menu">
-              <button
-                type="button"
-                onClick={() => setTheme((current) => current === 'dark' ? 'light' : 'dark')}
-                className="portal-mobile-nav-pill portal-mobile-theme"
-              >
-                {theme === 'dark' ? <SunMedium size={15} /> : <MoonStar size={15} />}
-                <span>{theme === 'dark' ? 'Light Theme' : 'Dark Theme'}</span>
-              </button>
               <a href="#overview" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-nav-pill text-center">Home</a>
               <a href="#registration-panel" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-nav-pill text-center">Competitions</a>
               <a href="#tracker" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-nav-pill text-center">Tracker</a>

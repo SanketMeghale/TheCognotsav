@@ -9,6 +9,8 @@ type Props = {
 
 export const AnnouncementArchiveSection: React.FC<Props> = ({ announcements, loading }) => {
   const featured = announcements.slice(0, 4);
+  const lead = featured[0] ?? null;
+  const secondary = featured.slice(1, 4);
 
   return (
     <section id="announcement-archive" data-reveal="up" className="portal-glow-card portal-glass overflow-hidden rounded-[2rem] p-4 sm:p-5 md:p-6">
@@ -34,49 +36,60 @@ export const AnnouncementArchiveSection: React.FC<Props> = ({ announcements, loa
         </div>
       ) : null}
 
-      {!loading && featured.length > 0 ? (
-        <div className="mt-4 space-y-3">
-          <div className="portal-live-strip">
-            <div className="portal-live-strip__track">
+      {!loading && lead ? (
+        <div className="mt-5 space-y-4">
+          <div className="portal-update-marquee">
+            <div className="portal-update-marquee__track">
               {[...featured, ...featured].map((announcement, index) => (
-                <div key={`${announcement.id}-${index}`} className="portal-live-pill">
+                <div key={`${announcement.id}-${index}`} className="portal-update-marquee__pill">
                   <span className="portal-live-dot" />
-                  <span className="font-semibold text-white">{announcement.title}</span>
-                  {announcement.event_name ? <span className="text-cyan-200/85">{announcement.event_name}</span> : null}
+                  <span>{announcement.title}</span>
+                  {announcement.event_name ? <span className="text-cyan-200/80">{announcement.event_name}</span> : null}
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="grid gap-3 md:grid-cols-2">
-            {featured.slice(0, 4).map((announcement, index) => (
-              <article key={announcement.id} className={`portal-update-card ${index === 0 ? 'portal-update-card--featured' : ''}`}>
-                <div className="flex flex-wrap items-center gap-2">
-                  {announcement.is_pinned ? (
-                    <span className="inline-flex items-center gap-2 rounded-full border border-yellow-300/25 bg-yellow-400/12 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-yellow-100">
-                      <Pin size={12} />
-                      Priority
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-2 rounded-full border border-blue-300/20 bg-blue-400/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-blue-100">
-                      <BellRing size={12} />
-                      Update
-                    </span>
-                  )}
-                  {announcement.event_name ? (
-                    <span className="rounded-full border border-white/10 bg-white/6 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-white/80">
-                      {announcement.event_name}
-                    </span>
-                  ) : null}
-                </div>
-                <h5 className="mt-3 text-base font-semibold text-white">{announcement.title}</h5>
-                <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-300">{announcement.message}</p>
-                <div className="mt-3 flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-slate-500">
-                  <CalendarClock size={12} />
-                  {new Date(announcement.created_at).toLocaleString()}
-                </div>
-              </article>
-            ))}
+          <div className="portal-update-layout">
+            <article className="portal-update-lead">
+              <div className="flex flex-wrap items-center gap-2">
+                {lead.is_pinned ? (
+                  <span className="inline-flex items-center gap-2 rounded-full border border-yellow-300/25 bg-yellow-400/12 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-yellow-100">
+                    <Pin size={12} />
+                    Priority
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-2 rounded-full border border-blue-300/20 bg-blue-400/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-blue-100">
+                    <BellRing size={12} />
+                    Update
+                  </span>
+                )}
+                {lead.event_name ? (
+                  <span className="rounded-full border border-white/10 bg-white/6 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-white/80">
+                    {lead.event_name}
+                  </span>
+                ) : null}
+              </div>
+              <h4 className="mt-4 portal-title-lg font-bold text-white">{lead.title}</h4>
+              <p className="mt-3 text-sm leading-7 text-slate-300">{lead.message}</p>
+              <div className="mt-4 inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-slate-500">
+                <CalendarClock size={12} />
+                {new Date(lead.created_at).toLocaleString()}
+              </div>
+            </article>
+
+            <div className="portal-update-stack">
+              {secondary.map((announcement) => (
+                <article key={announcement.id} className="portal-update-stack__card">
+                  <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-cyan-200/85">
+                    <span className="portal-live-dot" />
+                    {announcement.event_name || 'General update'}
+                  </div>
+                  <h5 className="mt-3 text-sm font-semibold text-white">{announcement.title}</h5>
+                  <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-300">{announcement.message}</p>
+                </article>
+              ))}
+            </div>
           </div>
         </div>
       ) : null}

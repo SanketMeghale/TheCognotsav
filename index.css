@@ -401,6 +401,90 @@ img {
   margin-top: 1rem;
 }
 
+.portal-competition-card {
+  min-height: 100%;
+}
+
+.portal-competition-card__media {
+  min-height: 16rem;
+}
+
+.portal-competition-card__body {
+  display: flex;
+  min-height: 14rem;
+  flex-direction: column;
+}
+
+.portal-update-marquee {
+  overflow: hidden;
+  border-radius: 1.35rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(90deg, rgba(8, 13, 24, 0.94), rgba(18, 27, 45, 0.9));
+  padding: 0.85rem 0;
+}
+
+.portal-update-marquee__track {
+  display: flex;
+  width: max-content;
+  gap: 0.85rem;
+  padding: 0 0.9rem;
+  animation: portalTicker 24s linear infinite;
+}
+
+.portal-update-marquee__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.7rem 0.95rem;
+  white-space: nowrap;
+  color: rgba(226, 232, 240, 0.9);
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.portal-update-layout {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+}
+
+.portal-update-lead {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.55rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(145deg, rgba(10, 16, 30, 0.98), rgba(16, 24, 44, 0.9));
+  padding: 1.15rem 1.15rem 1.15rem 1.3rem;
+  box-shadow: 0 22px 48px rgba(2, 8, 23, 0.24);
+}
+
+.portal-update-lead::before,
+.portal-update-stack__card::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: linear-gradient(180deg, #22d3ee, #8b5cf6, #ec4899);
+}
+
+.portal-update-stack {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.portal-update-stack__card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(145deg, rgba(8, 14, 26, 0.92), rgba(16, 22, 40, 0.84));
+  padding: 1rem 1rem 1rem 1.1rem;
+}
+
 .portal-update-card {
   position: relative;
   overflow: hidden;
@@ -449,6 +533,24 @@ img {
 }
 
 @keyframes portalShimmer {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+@keyframes portalNavFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(1px);
+  }
+}
+
+@keyframes portalNavShimmer {
   0% {
     transform: translateX(-120%);
   }
@@ -507,6 +609,23 @@ img {
     min-height: 11.5rem;
   }
 
+  .portal-competition-card {
+    border-radius: 1.45rem;
+  }
+
+  .portal-competition-card__media {
+    min-height: 17rem;
+  }
+
+  .portal-competition-card__body {
+    min-height: auto;
+    padding: 1rem;
+  }
+
+  .portal-update-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .roadmap-vertical {
     gap: 1rem;
   }
@@ -517,18 +636,36 @@ img {
     left: 0.48rem;
   }
 
-  .roadmap-vertical__row {
+  .roadmap-vertical__row,
+  .roadmap-vertical__row.is-right {
     grid-template-columns: 1rem minmax(0, 1fr);
     gap: 0.8rem;
   }
 
+  .roadmap-vertical__side,
+  .roadmap-vertical__row.is-right .roadmap-vertical__side {
+    grid-column: 2;
+    padding: 0;
+  }
+
   .roadmap-vertical__node {
+    grid-column: 1;
     padding-top: 1rem;
   }
 
   .roadmap-vertical__dot {
     width: 0.82rem;
     height: 0.82rem;
+  }
+
+  .roadmap-vertical__side--ghost,
+  .roadmap-vertical__row.is-right .roadmap-vertical__side--ghost {
+    display: none !important;
+  }
+
+  .roadmap-card {
+    border-radius: 1.2rem;
+    padding: 1rem;
   }
 }
 
@@ -856,6 +993,8 @@ select.floating-field-input option {
 }
 
 .portal-nav-shell {
+  position: relative;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -867,6 +1006,17 @@ select.floating-field-input option {
   border-radius: 1.6rem;
   padding: 0.95rem 1rem;
   box-shadow: 0 20px 50px rgba(2, 8, 23, 0.28);
+  animation: portalNavFloat 6s ease-in-out infinite;
+}
+
+.portal-nav-shell::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 0%, rgba(255, 255, 255, 0.06) 46%, transparent 100%);
+  transform: translateX(-120%);
+  animation: portalNavShimmer 7s linear infinite;
+  pointer-events: none;
 }
 
 .portal-mobile-menu {
@@ -1316,6 +1466,65 @@ select.floating-field-input option {
 
   .portal-front-hero__poster {
     min-height: 13rem;
+  }
+
+  .portal-front-hero {
+    gap: 0.8rem;
+  }
+
+  .portal-legacy-badge {
+    gap: 0.65rem;
+    padding: 0.5rem 0.65rem;
+  }
+
+  .portal-legacy-title {
+    font-size: 1.56rem;
+    line-height: 1.04;
+    letter-spacing: 0.015em;
+  }
+
+  .portal-festival-counter__board {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+
+  .portal-festival-counter__card {
+    padding-top: 2.15rem;
+  }
+
+  .portal-festival-counter__balloon {
+    height: 1.8rem;
+    width: 1.8rem;
+  }
+
+  .portal-festival-counter__stick {
+    height: 1.5rem;
+  }
+
+  .portal-festival-counter__number {
+    font-size: 1.05rem;
+  }
+
+  .portal-festival-counter__label {
+    font-size: 0.48rem;
+  }
+
+  .portal-front-hero__visual-image {
+    min-height: 10rem;
+  }
+
+  .portal-update-marquee__pill {
+    padding: 0.58rem 0.8rem;
+    font-size: 0.68rem;
+  }
+
+  .portal-update-lead,
+  .portal-update-stack__card {
+    border-radius: 1.1rem;
+  }
+
+  .roadmap-pulse-line {
+    display: none;
   }
 }
 

@@ -6,25 +6,25 @@ const timelineItems = [
   {
     title: 'Registration Opens',
     time: 'Now',
-    detail: 'Browse the competition cards, check the short brief, and submit payment proof from the event page.',
+    detail: 'Open a competition, read the brief, and submit the registration with payment proof.',
     accent: 'from-cyan-400 via-sky-400 to-blue-500',
   },
   {
     title: 'Verification Wave',
     time: 'Before Event Day',
-    detail: 'Registrations move into pending review first, then organizers publish updates and verification results.',
+    detail: 'Every registration enters pending review before organizers approve and publish final updates.',
     accent: 'from-fuchsia-400 via-purple-400 to-indigo-500',
   },
   {
     title: 'Day 1 Launch',
     time: '07 Apr 2026',
-    detail: 'Gaming, quiz, hunt, and technical rounds begin with reporting checkpoints and live notices.',
+    detail: 'Gaming, quiz, hunt, and technical rounds begin with reporting checkpoints.',
     accent: 'from-amber-300 via-orange-400 to-rose-500',
   },
   {
     title: 'Day 2 Showcase',
     time: '08 Apr 2026',
-    detail: 'Expo, stage events, finals, and closing highlights continue with on-ground guidance and tracker support.',
+    detail: 'Expo, stage events, finals, and closing highlights continue with live guidance and tracker support.',
     accent: 'from-lime-300 via-emerald-400 to-cyan-500',
   },
 ];
@@ -81,9 +81,9 @@ export const TimelineSection: React.FC<{ standalone?: boolean }> = ({ standalone
               <p className="text-sm font-semibold">Live checkpoints</p>
             </div>
             <div className="mt-4 grid gap-3 md:grid-cols-3">
-              <div className="rounded-[1.2rem] border border-white/10 bg-black/15 p-4 text-sm text-slate-300">Updates above this section carry reporting-time changes first.</div>
-              <div className="rounded-[1.2rem] border border-white/10 bg-black/15 p-4 text-sm text-slate-300">Pending registrations receive mail confirmation before admin verification.</div>
-              <div className="rounded-[1.2rem] border border-white/10 bg-black/15 p-4 text-sm text-slate-300">Use tracker and handbook buttons to re-check instructions any time.</div>
+              <div className="rounded-[1.2rem] border border-white/10 bg-black/15 p-4 text-sm text-slate-300">Watch the updates section for reporting-time and venue changes.</div>
+              <div className="rounded-[1.2rem] border border-white/10 bg-black/15 p-4 text-sm text-slate-300">Every registration starts in pending review before verification.</div>
+              <div className="rounded-[1.2rem] border border-white/10 bg-black/15 p-4 text-sm text-slate-300">Use the tracker and handbook buttons to re-check instructions anytime.</div>
             </div>
           </div>
         </div>
