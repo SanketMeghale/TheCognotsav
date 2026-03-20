@@ -6,6 +6,7 @@ import { HeroSection } from './components/portal/HeroSection.tsx';
 import { TimelinePage } from './components/portal/TimelinePage.tsx';
 import { CompetitionGridSection } from './components/portal/CompetitionGridSection.tsx';
 import { EventRegistrationPanel } from './components/portal/EventRegistrationPanel.tsx';
+import { FAQSection } from './components/portal/FAQSection.tsx';
 import { TrackerAdminPanel } from './components/portal/TrackerAdminPanel.tsx';
 import { PortalFooter } from './components/portal/PortalFooter.tsx';
 import type {
@@ -1522,6 +1523,8 @@ export const App: React.FC = () => {
               onDownload={downloadAdminFile}
               showAdmin={false}
             />
+
+            <FAQSection />
           </main>
         </>
       )}
