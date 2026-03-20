@@ -87,6 +87,8 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
   const canSubmitAccess = adminAccessMode === 'global'
     ? Boolean(adminMainKey.trim())
     : Boolean(adminEventKeySlug && adminEventKey.trim());
+  const canShowBroadcastTools = hasResolvedAccess && adminScope?.can_manage_broadcasts !== false;
+  const canShowBackupTools = hasResolvedAccess && adminScope?.can_manage_backups !== false;
   const accessSummary = adminScope?.mode === 'event'
     ? `Scoped access active for ${scopedEventName || 'the selected event'}. Only that event's entries are visible below.`
     : 'Main key verified. All event content and organizer controls are available.';
@@ -172,23 +174,21 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
           {hasResolvedAccess ? (
             <div className="mt-4 flex flex-wrap items-center gap-3">
               <div className="flex-1 rounded-2xl border border-emerald-300/18 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-100">{accessSummary}</div>
-              <button type="button" onClick={() => onDownload('csv')} disabled={adminScope?.can_export === false} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-cyan-300/12 bg-white/5 px-4 py-3 text-sm font-bold text-white disabled:opacity-60"><Download size={16} />CSV</button>
-              <button type="button" onClick={() => onDownload('xlsx')} disabled={adminScope?.can_export === false} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-fuchsia-300/12 bg-white/5 px-4 py-3 text-sm font-bold text-white disabled:opacity-60"><FileSpreadsheet size={16} />Excel</button>
+              <button type="button" onClick={() => onDownload('csv')} disabled={!hasResolvedAccess || adminScope?.can_export === false} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-cyan-300/12 bg-white/5 px-4 py-3 text-sm font-bold text-white disabled:opacity-60"><Download size={16} />CSV</button>
+              <button type="button" onClick={() => onDownload('xlsx')} disabled={!hasResolvedAccess || adminScope?.can_export === false} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-fuchsia-300/12 bg-white/5 px-4 py-3 text-sm font-bold text-white disabled:opacity-60"><FileSpreadsheet size={16} />Excel</button>
             </div>
           ) : (
             <div className="mt-4 rounded-2xl border border-dashed border-white/10 bg-black/10 px-4 py-3 text-sm text-slate-400">
-              Dashboard content stays hidden until a valid key is verified.
+              Enter a valid key and load the records. Verification cards with Approve, Pending, Reject, and check-in actions will appear below.
             </div>
           )}
         </div>
         {adminError ? <div className="mt-5 rounded-2xl border border-rose-400/25 bg-gradient-to-r from-rose-500/14 to-orange-500/8 px-4 py-3 text-sm text-rose-100">{adminError}</div> : null}
       </section>
-      {hasResolvedAccess ? (
-        <>
       <div className="flex flex-wrap gap-2">
         <a href="#admin-analytics" className="magnetic-button rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Analytics</a>
         <a href="#admin-verification" className="magnetic-button rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Verification</a>
-        {adminScope?.can_manage_broadcasts === false ? null : <a href="#admin-broadcast" className="magnetic-button rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Broadcast</a>}
+        {canShowBroadcastTools ? <a href="#admin-broadcast" className="magnetic-button rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Broadcast</a> : null}
         <a href="#admin-checkin" className="magnetic-button rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Check-in</a>
       </div>
 
@@ -217,7 +217,7 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
         </div>
 
         <div data-reveal="up" className="space-y-4 md:space-y-6">
-          {adminScope?.can_manage_broadcasts === false ? null : <div id="admin-broadcast" className="portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-6">
+          {canShowBroadcastTools ? <div id="admin-broadcast" className="portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-6">
             <div className="flex items-center gap-3"><Megaphone size={18} className="text-fuchsia-200" /><h3 className="text-xl font-bold text-white">Broadcast center</h3></div>
             <div className="mt-5 grid gap-4">
               <label className="block rounded-[1.4rem] border border-white/10 bg-white/5 p-4">
@@ -232,9 +232,9 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
               <label className="inline-flex items-center gap-3 rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200"><input type="checkbox" checked={broadcastPinned} onChange={(event) => setBroadcastPinned(event.target.checked)} /> Pin this on the public portal</label>
               <button type="button" onClick={() => onSendBroadcast({ title: broadcastTitle, message: broadcastMessage, eventSlug: broadcastEventSlug, isPinned: broadcastPinned })} className="animated-gradient-button inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 font-bold text-slate-950"><Send size={16} />Publish and send</button>
             </div>
-          </div>}
+          </div> : null}
 
-          {adminScope?.can_manage_backups === false ? null : <div className="portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-6">
+          {canShowBackupTools ? <div className="portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-6">
             <div className="flex items-center gap-3"><HardDriveDownload size={18} className="text-yellow-200" /><h3 className="text-xl font-bold text-white">Backups and archive</h3></div>
             <div className="mt-5 flex flex-wrap gap-3"><button type="button" onClick={onRunBackup} className="magnetic-button inline-flex items-center gap-2 rounded-2xl border border-yellow-300/18 bg-yellow-400/10 px-4 py-3 text-sm font-bold text-yellow-100"><HardDriveDownload size={16} />Run backup now</button></div>
             <div className="mt-5 space-y-3">
@@ -243,7 +243,7 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
             <div className="mt-5 space-y-3">
               {announcements.slice(0, 3).map((announcement) => <div key={announcement.id} className="rounded-[1.4rem] border border-white/10 bg-black/20 p-4"><div className="flex flex-wrap items-start justify-between gap-3"><div className="flex flex-wrap items-center gap-2">{announcement.is_pinned ? <span className="rounded-full border border-yellow-300/20 bg-yellow-400/10 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-yellow-100">Pinned</span> : null}{announcement.event_name ? <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-slate-200">{announcement.event_name}</span> : null}</div><button type="button" onClick={() => onDeleteAnnouncement(announcement.id)} className="magnetic-button inline-flex items-center gap-2 rounded-xl border border-rose-300/18 bg-rose-400/10 px-3 py-2 text-xs font-bold uppercase tracking-[0.16em] text-rose-100"><Trash2 size={14} />Delete</button></div><p className="mt-3 font-semibold text-white">{announcement.title}</p><p className="mt-2 text-sm text-slate-300">{announcement.message}</p></div>)}
             </div>
-          </div>}
+          </div> : null}
         </div>
       </section>
 
@@ -352,18 +352,7 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
           {adminRows.length > 0 && filteredRows.length === 0 && !adminLoading ? <div className="rounded-[1.5rem] border border-dashed border-white/10 bg-black/10 p-5 text-sm text-slate-400">No registrations match the current search or status filter.</div> : null}
         </div>
       </section>
-
       {proofModal ? <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(5,8,16,0.88)] px-4 py-6 backdrop-blur-md"><div className="max-h-[92vh] w-full max-w-5xl overflow-auto rounded-[2rem] border border-white/10 bg-[linear-gradient(145deg,rgba(12,20,35,0.98),rgba(18,27,45,0.96))] p-5 md:p-6"><div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-[11px] uppercase tracking-[0.3em] text-cyan-200/80">Payment proof zoom</p><h4 className="mt-2 text-xl font-bold text-white">{proofModal.team_name}</h4></div><button type="button" onClick={() => setProofModal(null)} className="magnetic-button rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white">Close</button></div><div className="mt-5 grid gap-5 lg:grid-cols-[1.1fr_0.9fr]"><div className="overflow-hidden rounded-[1.6rem] border border-white/10 bg-black/20 p-3"><img src={proofModal.payment_screenshot_path || ''} alt={`${proofModal.team_name} payment proof`} className="w-full rounded-[1.2rem] object-contain" /></div><div className="space-y-4"><div className="rounded-[1.4rem] border border-white/10 bg-black/20 p-4"><p className="text-xs uppercase tracking-[0.2em] text-slate-400">Reference</p><p className="mt-2 break-all font-semibold text-white">{proofModal.payment_reference || 'No payment reference'}</p></div><div className="rounded-[1.4rem] border border-white/10 bg-black/20 p-4"><p className="text-xs uppercase tracking-[0.2em] text-slate-400">Contact</p><p className="mt-2 text-white">{proofModal.contact_name}</p><p className="mt-1 text-slate-300">{proofModal.contact_email}</p><p className="mt-1 text-slate-300">{proofModal.contact_phone}</p></div></div></div></div></div> : null}
-        </>
-      ) : (
-        <section className="portal-glow-card portal-glass rounded-[1.5rem] p-5 md:rounded-[2rem] md:p-8">
-          <p className="text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Access required</p>
-          <h3 className="mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron text-3xl font-black uppercase text-transparent">Dashboard hidden until key verification</h3>
-          <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-200">
-            Enter the main key to show all admin content, or select a competition and use its particular event key to open only that event&apos;s entries.
-          </p>
-        </section>
-      )}
       </main>
   );
 };
