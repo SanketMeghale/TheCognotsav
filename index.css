@@ -579,6 +579,50 @@ select.floating-field-input option {
   animation: gradientShift 5s linear infinite;
 }
 
+.roadmap-vertical {
+  position: relative;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.roadmap-vertical__line {
+  position: absolute;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  left: 0.82rem;
+  width: 3px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #22d3ee, #3b82f6, #a855f7, #ec4899, #fbbf24, #34d399);
+}
+
+.roadmap-vertical__row {
+  display: grid;
+  grid-template-columns: 1.65rem minmax(0, 1fr);
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.roadmap-vertical__node {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 1.2rem;
+}
+
+.roadmap-vertical__dot {
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 999px;
+  box-shadow: 0 0 16px rgba(34, 211, 238, 0.4);
+}
+
+.roadmap-vertical__side--ghost {
+  display: none;
+}
+
 .roadmap-card {
   position: relative;
   overflow: hidden;
@@ -750,6 +794,42 @@ select.floating-field-input option {
   .hero-stat-grid,
   .hero-highlight-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1025px) {
+  .roadmap-vertical__line {
+    left: calc(50% - 1.5px);
+  }
+
+  .roadmap-vertical__row {
+    grid-template-columns: minmax(0, 1fr) 4rem minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .roadmap-vertical__side {
+    grid-column: 1;
+    padding-right: 2rem;
+  }
+
+  .roadmap-vertical__node {
+    grid-column: 2;
+    padding-top: 1.35rem;
+  }
+
+  .roadmap-vertical__side--ghost {
+    display: block;
+    grid-column: 3;
+  }
+
+  .roadmap-vertical__row.is-right .roadmap-vertical__side {
+    grid-column: 3;
+    padding-right: 0;
+    padding-left: 2rem;
+  }
+
+  .roadmap-vertical__row.is-right .roadmap-vertical__side--ghost {
+    grid-column: 1;
   }
 }
 

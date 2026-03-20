@@ -44,25 +44,34 @@ export const TimelineSection: React.FC<{ standalone?: boolean }> = ({ standalone
           </div>
         </div>
 
-        <div className="mt-6 space-y-5">
+        <div className="mt-6 space-y-6">
           <div className="roadmap-pulse-line" />
 
-          <div className="grid gap-4 lg:grid-cols-4">
+          <div className="roadmap-vertical">
+            <div className="roadmap-vertical__line" />
             {timelineItems.map((item, index) => (
-              <article key={item.title} className="roadmap-card">
-                <div className={`roadmap-card__glow bg-gradient-to-r ${item.accent}`} />
-                <div className="relative z-10">
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-200">
-                      {item.time}
-                    </span>
-                    {index === 0 ? <Sparkles size={18} className="text-cyan-200" /> : <CircleCheckBig size={18} className="text-white/80" />}
-                  </div>
-                  <div className={`mt-4 h-1.5 w-20 rounded-full bg-gradient-to-r ${item.accent}`} />
-                  <h4 className="mt-4 text-lg font-semibold text-white">{item.title}</h4>
-                  <p className="mt-3 text-sm leading-7 text-slate-300">{item.detail}</p>
+              <div key={item.title} className={`roadmap-vertical__row ${index % 2 === 0 ? 'is-left' : 'is-right'}`}>
+                <div className="roadmap-vertical__side">
+                  <article className="roadmap-card">
+                    <div className={`roadmap-card__glow bg-gradient-to-r ${item.accent}`} />
+                    <div className="relative z-10">
+                      <div className="flex items-center justify-between gap-3">
+                        <span className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-200">
+                          {item.time}
+                        </span>
+                        {index === 0 ? <Sparkles size={18} className="text-cyan-200" /> : <CircleCheckBig size={18} className="text-white/80" />}
+                      </div>
+                      <div className={`mt-4 h-1.5 w-20 rounded-full bg-gradient-to-r ${item.accent}`} />
+                      <h4 className="mt-4 text-lg font-semibold text-white">{item.title}</h4>
+                      <p className="mt-3 text-sm leading-7 text-slate-300">{item.detail}</p>
+                    </div>
+                  </article>
                 </div>
-              </article>
+                <div className="roadmap-vertical__node">
+                  <span className={`roadmap-vertical__dot bg-gradient-to-r ${item.accent}`} />
+                </div>
+                <div className="roadmap-vertical__side roadmap-vertical__side--ghost" />
+              </div>
             ))}
           </div>
 

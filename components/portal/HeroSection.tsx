@@ -51,19 +51,34 @@ export const HeroSection: React.FC<Props> = ({ totalEvents, totalRegistrations, 
               <img src="/images/ceasposter.jpeg" alt="CEAS COGNOTSAV logo" className="h-full w-full rounded-[1rem] object-cover" />
             </div>
             <div>
-              <p className="text-[10px] uppercase tracking-[0.3em] text-slate-400">CEAS Presents</p>
+              <p className="text-[10px] uppercase tracking-[0.3em] text-cyan-300/80">Our Legacy</p>
               <h2 className="portal-brand-title mt-2 text-white">
-                CEAS COGNOTSAV 2026
+                Where Engineering
+                <br />
+                Meets Excellence
               </h2>
             </div>
           </div>
 
-          <h3 className="mt-5 text-3xl font-semibold tracking-tight text-white sm:text-4xl md:text-5xl">
-            Explore competitions, open the handbook, and register in minutes.
-          </h3>
-          <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
-            The front page is built as a quick event hub: live updates first, competition cards next, and a dedicated mobile-friendly registration page for each event.
-          </p>
+          <div className="mt-5 space-y-5">
+            <p className="max-w-3xl text-sm leading-7 text-slate-300 sm:text-base">
+              COGNOTSAV is the flagship technical festival of the Computer Engineering Department at Dr. Vithalrao Vikhe Patil College of Engineering, Ahilyanagar. It provides a platform for students to showcase innovation, technical skills, and problem-solving abilities beyond the classroom.
+            </p>
+            <p className="max-w-3xl text-sm leading-7 text-slate-300 sm:text-base">
+              Through exciting competitions, esports, project exhibitions, and UTOPIA, COGNOTSAV encourages students to explore technology, collaborate with peers, and push their creative boundaries.
+            </p>
+          </div>
+
+          <div className="mt-6 grid gap-3 md:grid-cols-2">
+            <div className="rounded-[1.35rem] border border-cyan-300/14 bg-cyan-400/8 p-4">
+              <p className="text-[10px] uppercase tracking-[0.22em] text-cyan-200/80">Our Vision</p>
+              <p className="mt-2 text-lg font-semibold text-white">Innovate. Compete. Excel.</p>
+            </div>
+            <div className="rounded-[1.35rem] border border-fuchsia-300/14 bg-fuchsia-400/8 p-4">
+              <p className="text-[10px] uppercase tracking-[0.22em] text-fuchsia-200/80">Our Mission</p>
+              <p className="mt-2 text-lg font-semibold text-white">Code, Compete, and Conquer.</p>
+            </div>
+          </div>
 
           <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
             <a href="#registration-panel" className="animated-gradient-button inline-flex items-center justify-center rounded-2xl px-6 py-3 text-sm font-bold text-slate-950">
