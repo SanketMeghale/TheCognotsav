@@ -614,6 +614,23 @@ export const App: React.FC = () => {
     }
   }, [successReceipt]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return undefined;
+    if (!showSuccessModal) return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const frame = window.requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    });
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.cancelAnimationFrame(frame);
+    };
+  }, [showSuccessModal]);
+
   const markFieldTouched = (field: string) => {
     setTouchedFields((current) => (current[field] ? current : { ...current, [field]: true }));
   };
