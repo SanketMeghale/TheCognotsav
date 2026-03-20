@@ -601,6 +601,22 @@ img {
     width: 1.7rem;
   }
 
+  .portal-festival-counter__face {
+    grid-template-columns: repeat(2, 0.24rem);
+    gap: 0.32rem;
+  }
+
+  .portal-festival-counter__face span {
+    width: 0.24rem;
+    height: 0.24rem;
+  }
+
+  .portal-festival-counter__balloon::after {
+    bottom: 0.35rem;
+    width: 0.75rem;
+    height: 0.4rem;
+  }
+
   .portal-festival-counter__stick {
     height: 1.32rem;
   }
@@ -1537,6 +1553,23 @@ select.floating-field-input option {
   .portal-festival-counter__balloon {
     height: 1.55rem;
     width: 1.55rem;
+  }
+
+  .portal-festival-counter__face {
+    grid-template-columns: repeat(2, 0.22rem);
+    gap: 0.28rem;
+  }
+
+  .portal-festival-counter__face span {
+    width: 0.22rem;
+    height: 0.22rem;
+  }
+
+  .portal-festival-counter__balloon::after {
+    bottom: 0.3rem;
+    width: 0.68rem;
+    height: 0.34rem;
+    border-bottom-width: 1.5px;
   }
 
   .portal-festival-counter__stick {
