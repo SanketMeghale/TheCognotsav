@@ -1440,7 +1440,7 @@ export const App: React.FC = () => {
       ) : isTimelinePage ? (
         <TimelinePage />
       ) : isEventPage && selectedEvent ? (
-        <main className={`${shellClassName} space-y-5 pb-28 pt-4 md:space-y-8 md:pb-16`}>
+        <main className={`${shellClassName} space-y-5 pb-8 pt-4 md:space-y-8 md:pb-12`}>
           <EventRegistrationPanel
             selectedEvent={selectedEvent}
             teamSize={teamSize}
@@ -1466,7 +1466,7 @@ export const App: React.FC = () => {
         </main>
       ) : (
         <>
-          <main className={`${shellClassName} space-y-5 pb-28 md:space-y-8 md:pb-16`}>
+          <main className={`${shellClassName} space-y-5 pb-8 md:space-y-8 md:pb-12`}>
             <HeroSection
               totalEvents={events.length}
               totalRemainingSlots={totalRemainingSlots}
@@ -1511,26 +1511,6 @@ export const App: React.FC = () => {
 
       <PortalFooter />
 
-      {!isAdminPage && !isTimelinePage ? (
-        <div className="fixed inset-x-0 bottom-0 z-40 px-3 pb-[calc(0.8rem+env(safe-area-inset-bottom,0px))] md:hidden">
-          <div className="rounded-[1.8rem] border border-white/10 bg-[rgba(8,12,22,0.92)] p-2 shadow-[0_18px_60px_rgba(2,8,23,0.35)] backdrop-blur-2xl">
-            <div className="grid grid-cols-4 gap-2">
-            <a href="#overview" className="rounded-2xl border border-white/10 bg-white/[0.05] px-3 py-3 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-100">
-              Home
-            </a>
-            <a href="#registration-panel" className="animated-gradient-button inline-flex items-center justify-center rounded-2xl px-3 py-3 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-950">
-              Register
-            </a>
-            <a href="#tracker" className="rounded-2xl border border-purple-400/20 bg-purple-500/14 px-3 py-3 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-purple-100">
-              Track
-            </a>
-            <a href="#admin-registrations" className="rounded-2xl border border-cyan-400/20 bg-cyan-500/14 px-3 py-3 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-cyan-100">
-              Admin
-            </a>
-          </div>
-          </div>
-        </div>
-      ) : null}
     </div>
   );
 };
