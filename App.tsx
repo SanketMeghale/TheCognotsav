@@ -1318,10 +1318,15 @@ export const App: React.FC = () => {
     }
   };
 
-  const downloadAdminFile = async (format: 'csv' | 'xlsx') => {
+  const downloadAdminFile = async (format: 'csv' | 'xlsx', eventSlug?: string) => {
     try {
       const endpoint = format === 'csv' ? '/api/admin/export.csv' : '/api/admin/export.xlsx';
-      const response = await fetch(endpoint, {
+      const requestUrl = new URL(endpoint, window.location.origin);
+      if (eventSlug) {
+        requestUrl.searchParams.set('eventSlug', eventSlug);
+      }
+
+      const response = await fetch(requestUrl.toString(), {
         headers: { 'x-admin-key': adminKey },
       });
 
@@ -1334,8 +1339,9 @@ export const App: React.FC = () => {
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement('a');
       anchor.href = url;
+      const suffix = eventSlug ? `-${eventSlug}` : '';
       anchor.download =
-        format === 'csv' ? 'participant-registrations.csv' : 'participant-registrations.xlsx';
+        format === 'csv' ? `participant-registrations${suffix}.csv` : `participant-registrations${suffix}.xlsx`;
       document.body.appendChild(anchor);
       anchor.click();
       anchor.remove();

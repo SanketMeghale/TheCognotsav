@@ -19,6 +19,9 @@ const rawEventAdminKeys = String(process.env.EVENT_ADMIN_KEYS_JSON || process.en
 const storageRoot = path.resolve(
   process.env.RAILWAY_VOLUME_MOUNT_PATH || process.env.STORAGE_ROOT || process.cwd(),
 );
+const usesExplicitPersistentStorage = Boolean(
+  String(process.env.RAILWAY_VOLUME_MOUNT_PATH || process.env.STORAGE_ROOT || '').trim(),
+);
 const uploadsDir = path.join(storageRoot, 'uploads', 'payment-proofs');
 const backupsDir = path.join(storageRoot, 'backups');
 const smtpProvider = String(process.env.SMTP_PROVIDER || '').trim().toLowerCase();
@@ -351,6 +354,38 @@ function hasScopedEventAccess(req, eventSlug) {
   }
 
   return req.adminAccess.eventSlug === eventSlug;
+}
+
+function resolveAdminExportScope(req) {
+  const requestedEventSlug = String(req.query?.eventSlug || '').trim();
+
+  if (req.adminAccess?.mode === 'event') {
+    return {
+      scopeClause: 'WHERE r.event_slug = $1',
+      scopeParams: [req.adminAccess.eventSlug],
+      eventSlug: req.adminAccess.eventSlug,
+    };
+  }
+
+  if (requestedEventSlug) {
+    return {
+      scopeClause: 'WHERE r.event_slug = $1',
+      scopeParams: [requestedEventSlug],
+      eventSlug: requestedEventSlug,
+    };
+  }
+
+  return {
+    scopeClause: '',
+    scopeParams: [],
+    eventSlug: null,
+  };
+}
+
+function buildAdminExportFileName(extension, eventSlug) {
+  return eventSlug
+    ? `participant-registrations-${String(eventSlug).trim()}.${extension}`
+    : `participant-registrations.${extension}`;
 }
 
 function getPaymentStatusLabel(status) {
@@ -2218,8 +2253,7 @@ app.get('/api/admin/backups/:fileName', requireAdmin, async (req, res) => {
 });
 
 app.get('/api/admin/export.csv', requireAdmin, async (req, res) => {
-  const scopeClause = req.adminAccess?.mode === 'event' ? 'WHERE r.event_slug = $1' : '';
-  const scopeParams = req.adminAccess?.mode === 'event' ? [req.adminAccess.eventSlug] : [];
+  const { scopeClause, scopeParams, eventSlug } = resolveAdminExportScope(req);
   const result = await pool.query(
     `
       SELECT
@@ -2304,13 +2338,12 @@ app.get('/api/admin/export.csv', requireAdmin, async (req, res) => {
   ];
 
   res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-  res.setHeader('Content-Disposition', 'attachment; filename="participant-registrations.csv"');
+  res.setHeader('Content-Disposition', `attachment; filename="${buildAdminExportFileName('csv', eventSlug)}"`);
   res.send(csvRows.join('\n'));
 });
 
 app.get('/api/admin/export.xlsx', requireAdmin, async (req, res) => {
-  const scopeClause = req.adminAccess?.mode === 'event' ? 'WHERE r.event_slug = $1' : '';
-  const scopeParams = req.adminAccess?.mode === 'event' ? [req.adminAccess.eventSlug] : [];
+  const { scopeClause, scopeParams, eventSlug } = resolveAdminExportScope(req);
   const result = await pool.query(
     `
       SELECT
@@ -2357,7 +2390,7 @@ app.get('/api/admin/export.xlsx', requireAdmin, async (req, res) => {
 
   res.setHeader(
     'Content-Disposition',
-    'attachment; filename="participant-registrations.xlsx"',
+    `attachment; filename="${buildAdminExportFileName('xlsx', eventSlug)}"`,
   );
   res.setHeader(
     'Content-Type',
@@ -2377,6 +2410,9 @@ startBackupWorker();
 
 app.listen(port, () => {
   console.log(`Portal API running on http://localhost:${port}`);
+  if (!usesExplicitPersistentStorage) {
+    console.warn('Uploads and backups are using the app working directory. On ephemeral hosting, attach persistent storage or uploaded payment screenshots may disappear after restart or redeploy.');
+  }
   if (resendConfigured) {
     console.log('Transactional emails enabled via Resend API.');
   } else if (brevoConfigured) {

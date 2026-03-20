@@ -26,7 +26,7 @@ type Props = {
   onAdminEventKeyChange: (value: string) => void;
   onAdminEventKeySlugChange: (value: string) => void;
   onLoadAdminRows: () => void;
-  onDownload: (format: 'csv' | 'xlsx') => void;
+  onDownload: (format: 'csv' | 'xlsx', eventSlug?: string) => void;
   onStatusChange: (registrationId: string, status: 'verified' | 'rejected' | 'pending') => void;
   onAttendanceChange: (registrationId: string, attendanceStatus: 'registered' | 'arrived' | 'checked-in' | 'absent' | 'completed') => void;
   onSaveReviewNote: (registrationId: string, reviewNote: string) => void;
@@ -73,12 +73,14 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [eventFilter, setEventFilter] = useState('all');
   const [proofModal, setProofModal] = useState<AdminRegistration | null>(null);
+  const [brokenProofs, setBrokenProofs] = useState<Record<string, boolean>>({});
   const [reviewDrafts, setReviewDrafts] = useState<Record<string, string>>({});
   const [broadcastTitle, setBroadcastTitle] = useState('');
   const [broadcastMessage, setBroadcastMessage] = useState('');
   const [broadcastEventSlug, setBroadcastEventSlug] = useState('');
   const [broadcastPinned, setBroadcastPinned] = useState(true);
   const [checkInQuery, setCheckInQuery] = useState('');
+  const [exportEventSlug, setExportEventSlug] = useState('all');
   const scopedEventSlug = adminScope?.mode === 'event' ? adminScope.event_slug : null;
   const scopedEventName = adminScope?.mode === 'event' ? adminScope.event_name : null;
   const hasResolvedAccess = Boolean(adminScope);
@@ -95,6 +97,10 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
 
   useEffect(() => {
     setEventFilter(scopedEventSlug || 'all');
+  }, [scopedEventSlug]);
+
+  useEffect(() => {
+    setExportEventSlug(scopedEventSlug || 'all');
   }, [scopedEventSlug]);
 
   const counts = useMemo(() => ({ all: adminRows.length, pending: adminRows.filter((row) => row.status === 'pending').length, verified: adminRows.filter((row) => row.status === 'verified').length, waitlisted: adminRows.filter((row) => row.status === 'waitlisted').length, rejected: adminRows.filter((row) => row.status === 'rejected').length }), [adminRows]);
@@ -174,8 +180,15 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
           {hasResolvedAccess ? (
             <div className="mt-4 flex flex-wrap items-center gap-3">
               <div className="flex-1 rounded-2xl border border-emerald-300/18 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-100">{accessSummary}</div>
-              <button type="button" onClick={() => onDownload('csv')} disabled={!hasResolvedAccess || adminScope?.can_export === false} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-cyan-300/12 bg-white/5 px-4 py-3 text-sm font-bold text-white disabled:opacity-60"><Download size={16} />CSV</button>
-              <button type="button" onClick={() => onDownload('xlsx')} disabled={!hasResolvedAccess || adminScope?.can_export === false} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-fuchsia-300/12 bg-white/5 px-4 py-3 text-sm font-bold text-white disabled:opacity-60"><FileSpreadsheet size={16} />Excel</button>
+              <label className="block min-w-[240px] rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200">
+                <span className="mb-2 block text-xs uppercase tracking-[0.2em] text-slate-400">Download scope</span>
+                <select value={exportEventSlug} onChange={(event) => setExportEventSlug(event.target.value)} disabled={Boolean(scopedEventSlug)} className="floating-field-input disabled:opacity-70">
+                  <option value="all">All competitions</option>
+                  {events.map((event) => <option key={`export-${event.slug}`} value={event.slug}>{event.name}</option>)}
+                </select>
+              </label>
+              <button type="button" onClick={() => onDownload('csv', exportEventSlug === 'all' ? undefined : exportEventSlug)} disabled={!hasResolvedAccess || adminScope?.can_export === false} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-cyan-300/12 bg-white/5 px-4 py-3 text-sm font-bold text-white disabled:opacity-60"><Download size={16} />CSV</button>
+              <button type="button" onClick={() => onDownload('xlsx', exportEventSlug === 'all' ? undefined : exportEventSlug)} disabled={!hasResolvedAccess || adminScope?.can_export === false} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-fuchsia-300/12 bg-white/5 px-4 py-3 text-sm font-bold text-white disabled:opacity-60"><FileSpreadsheet size={16} />Excel</button>
             </div>
           ) : (
             <div className="mt-4 rounded-2xl border border-dashed border-white/10 bg-black/10 px-4 py-3 text-sm text-slate-400">
@@ -336,7 +349,7 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
                 </div>
                 <div className="space-y-4">
                   <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5 text-center"><div className="inline-flex rounded-2xl border border-blue-300/20 bg-blue-400/10 p-3 text-blue-100"><QrCode size={18} /></div><div className="mt-4 rounded-[1.5rem] bg-white p-4"><img src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(row.qr_value)}`} alt={`${row.registration_code} QR`} className="mx-auto h-44 w-44" /></div><p className="mt-4 font-orbitron text-xl font-black text-white">{row.registration_code}</p></div>
-                  {row.payment_screenshot_path ? <button type="button" onClick={() => setProofModal(row)} className="group block w-full overflow-hidden rounded-[1.5rem] border border-cyan-300/12 bg-white/5 text-left"><img src={row.payment_screenshot_path} alt={`${row.team_name} payment proof`} className="h-56 w-full object-cover transition duration-500 group-hover:scale-105" /><div className="flex items-center justify-between px-4 py-3 text-sm text-cyan-100"><span>Zoom payment proof</span><Eye size={16} /></div></button> : <div className="rounded-[1.5rem] border border-dashed border-white/10 bg-black/10 p-5 text-sm text-slate-400">No payment screenshot uploaded for this registration.</div>}
+                  {row.payment_screenshot_path && !brokenProofs[row.id] ? <button type="button" onClick={() => setProofModal(row)} className="group block w-full overflow-hidden rounded-[1.5rem] border border-cyan-300/12 bg-white/5 text-left"><img src={row.payment_screenshot_path} alt={`${row.team_name} payment proof`} onError={() => setBrokenProofs((current) => ({ ...current, [row.id]: true }))} className="h-56 w-full object-cover transition duration-500 group-hover:scale-105" /><div className="flex items-center justify-between px-4 py-3 text-sm text-cyan-100"><span>Zoom payment proof</span><Eye size={16} /></div></button> : <div className="rounded-[1.5rem] border border-dashed border-white/10 bg-black/10 p-5 text-sm text-slate-400">{row.payment_screenshot_path ? 'Payment screenshot is missing from storage. On Railway, attach persistent storage or older uploads can disappear after restart/redeploy.' : 'No payment screenshot uploaded for this registration.'}</div>}
                   <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
                     <button type="button" onClick={() => onResendStatusEmail(row.id)} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-blue-300/20 bg-blue-500/10 px-4 py-3 text-sm font-bold text-blue-100"><RotateCcw size={16} />Resend email</button>
                     <button type="button" onClick={() => onStatusChange(row.id, 'verified')} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-emerald-300/20 bg-emerald-400/10 px-4 py-3 text-sm font-bold text-emerald-100"><CheckCircle2 size={16} />Approve</button>
