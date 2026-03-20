@@ -32,7 +32,9 @@ const smtpPass = String(process.env.SMTP_PASS || '').trim();
 const smtpFromEmail = String(process.env.SMTP_FROM_EMAIL || smtpUser || '').trim();
 const smtpFromName = String(process.env.SMTP_FROM_NAME || 'CEAS COGNOTSAV').trim();
 const resendApiKey = String(process.env.RESEND_API_KEY || '').trim();
+const brevoApiKey = String(process.env.BREVO_API_KEY || '').trim();
 const resendConfigured = Boolean(resendApiKey && smtpFromEmail);
+const brevoConfigured = Boolean(brevoApiKey && smtpFromEmail);
 const smtpConfigured = Boolean(smtpHost && smtpPort && smtpFromEmail);
 const IST_OFFSET_MINUTES = 330;
 const EVENT_START_REMINDER_WINDOW_MS = 60 * 60 * 1000;
@@ -119,6 +121,7 @@ const mailTransports = smtpTransportDefinitions.map((definition) => ({
   label: definition.label,
   transport: nodemailer.createTransport(definition.options),
 }));
+const emailConfigured = Boolean(resendConfigured || brevoConfigured || mailTransports.length !== 0);
 
 async function sendPortalMail(message) {
   if (resendConfigured) {
@@ -149,6 +152,68 @@ async function sendPortalMail(message) {
     return {
       messageId: payload?.id || null,
       provider: 'resend',
+    };
+  }
+
+  if (brevoConfigured) {
+    const toRecipients = (Array.isArray(message.to) ? message.to : [message.to])
+      .map((recipient) => {
+        if (typeof recipient === 'string') {
+          return { email: recipient };
+        }
+
+        if (recipient && typeof recipient === 'object' && recipient.email) {
+          return {
+            email: recipient.email,
+            ...(recipient.name ? { name: recipient.name } : {}),
+          };
+        }
+
+        return null;
+      })
+      .filter(Boolean);
+
+    const sender = {
+      email: smtpFromEmail,
+      ...(smtpFromName ? { name: smtpFromName } : {}),
+    };
+
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+        'api-key': brevoApiKey,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        sender,
+        to: toRecipients,
+        subject: message.subject,
+        htmlContent: message.html,
+        textContent: message.text,
+        ...(message.replyTo
+          ? {
+              replyTo:
+                typeof message.replyTo === 'string'
+                  ? { email: message.replyTo }
+                  : message.replyTo,
+            }
+          : {}),
+      }),
+    });
+
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(
+        typeof payload?.message === 'string'
+          ? `Brevo API error: ${payload.message}`
+          : `Brevo API error (HTTP ${response.status})`,
+      );
+    }
+
+    return {
+      messageId: payload?.messageId || null,
+      provider: 'brevo',
     };
   }
 
@@ -554,7 +619,7 @@ async function sendStatusNotification(registration) {
 
   const email = buildStatusEmail(registration);
 
-  if (!smtpConfigured || mailTransports.length === 0) {
+  if (!emailConfigured) {
     return logRegistrationNotification({
       registrationId: registration.id,
       notificationType: 'status-update',
@@ -563,7 +628,7 @@ async function sendStatusNotification(registration) {
       messagePreview: email.preview,
       relatedStatus: registration.status,
       deliveryStatus: 'skipped',
-      errorMessage: 'SMTP email is not configured yet.',
+      errorMessage: 'Transactional email is not configured yet.',
     });
   }
 
@@ -669,7 +734,7 @@ async function sendEventStartReminderNotification(registration, eventStart) {
 
   const email = buildEventStartReminderEmail(registration, eventStart);
 
-  if (!smtpConfigured || mailTransports.length === 0) {
+  if (!emailConfigured) {
     return logRegistrationNotification({
       registrationId: registration.id,
       notificationType: 'event-reminder',
@@ -678,7 +743,7 @@ async function sendEventStartReminderNotification(registration, eventStart) {
       messagePreview: email.preview,
       relatedStatus: reminderKey,
       deliveryStatus: 'skipped',
-      errorMessage: 'SMTP email is not configured yet.',
+      errorMessage: 'Transactional email is not configured yet.',
     });
   }
 
@@ -1145,8 +1210,8 @@ async function sendBroadcastAnnouncement({
 
   for (const registration of result.rows) {
     const email = buildBroadcastEmail(registration, announcement);
-    if (!smtpConfigured || mailTransports.length === 0) {
-      console.log('SMTP not configured, skipping email to:', registration.contact_email);
+    if (!emailConfigured) {
+      console.log('Transactional email not configured, skipping email to:', registration.contact_email);
       await logRegistrationNotification({
         registrationId: registration.id,
         notificationType: 'broadcast',
@@ -1155,7 +1220,7 @@ async function sendBroadcastAnnouncement({
         messagePreview: email.preview,
         relatedStatus: announcement.id,
         deliveryStatus: 'skipped',
-        errorMessage: 'SMTP email is not configured yet.',
+        errorMessage: 'Transactional email is not configured yet.',
       });
       stats.skipped += 1;
       continue;
@@ -2064,6 +2129,8 @@ app.listen(port, () => {
   console.log(`Portal API running on http://localhost:${port}`);
   if (resendConfigured) {
     console.log('Transactional emails enabled via Resend API.');
+  } else if (brevoConfigured) {
+    console.log('Transactional emails enabled via Brevo API.');
   } else if (smtpConfigured) {
     console.log(`Status emails enabled via ${smtpProvider || smtpHost}.`);
     Promise.all(
@@ -2077,6 +2144,6 @@ app.listen(port, () => {
       }),
     ).catch(() => {});
   } else {
-    console.log('Status emails are not configured yet. Add SMTP settings to enable Gmail notifications.');
+    console.log('Transactional emails are not configured yet. Add Brevo, Resend, or SMTP settings to enable notifications.');
   }
 });

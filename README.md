@@ -48,18 +48,20 @@ Required variables:
 
 - `DATABASE_URL`
 - `ADMIN_ACCESS_KEY`
-- `SMTP_PROVIDER`
-- `SMTP_HOST`
-- `SMTP_PORT`
-- `SMTP_SECURE`
-- `SMTP_USER`
-- `SMTP_PASS`
 - `SMTP_FROM_EMAIL`
 - `SMTP_FROM_NAME`
 
 Optional variable:
 
 - `STORAGE_ROOT` if you want uploads and backups stored somewhere custom outside Railway
+- `BREVO_API_KEY` for transactional emails via Brevo API
+- SMTP variables if you want to use SMTP instead of Brevo:
+  - `SMTP_PROVIDER`
+  - `SMTP_HOST`
+  - `SMTP_PORT`
+  - `SMTP_SECURE`
+  - `SMTP_USER`
+  - `SMTP_PASS`
 
 Recommended on Railway:
 
