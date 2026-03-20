@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@500;600;700;800&display=swap');
+
 :root {
   color-scheme: dark;
   --portal-cyan: #22d3ee;
@@ -57,6 +59,13 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.portal-brand-mark,
+.portal-brand-title,
+.portal-card-title {
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  letter-spacing: 0.04em;
 }
 
 #root {
@@ -459,13 +468,13 @@ select.floating-field-input option {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(9, 13, 24, 0.76);
+  border: 1px solid rgba(96, 165, 250, 0.14);
+  background: linear-gradient(145deg, rgba(6, 10, 18, 0.86), rgba(9, 13, 24, 0.78));
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: 1.6rem;
   padding: 0.95rem 1rem;
-  box-shadow: 0 20px 50px rgba(2, 8, 23, 0.2);
+  box-shadow: 0 20px 50px rgba(2, 8, 23, 0.28);
 }
 
 .portal-mobile-menu {
@@ -494,13 +503,13 @@ select.floating-field-input option {
 .portal-front-hero__content,
 .portal-front-hero__panel {
   border-radius: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(9, 13, 24, 0.76));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(9, 13, 24, 0.82));
   padding: 1.25rem;
 }
 
 .portal-front-hero__content {
-  text-align: center;
+  text-align: left;
 }
 
 .portal-front-hero__panel {
@@ -520,6 +529,16 @@ select.floating-field-input option {
   overflow: hidden;
   border-radius: 1.6rem;
   min-height: 16rem;
+}
+
+.portal-brand-title {
+  font-size: clamp(1.8rem, 6vw, 3.7rem);
+  line-height: 1.02;
+}
+
+.portal-card-title {
+  font-size: 1rem;
+  line-height: 1.25;
 }
 
 .portal-countdown-card {

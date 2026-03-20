@@ -1765,6 +1765,21 @@ app.post('/api/registrations', async (req, res) => {
     }
 
     await client.query('COMMIT');
+    const notification = await sendStatusNotification({
+      id: registrationId,
+      registration_code: registrationCode,
+      team_name: String(teamName).trim(),
+      contact_name: String(contactName).trim(),
+      contact_email: normalizeEmail(contactEmail),
+      contact_phone: String(contactPhone).trim(),
+      status: initialStatus,
+      review_note: null,
+      event_name: event.name,
+      date_label: event.date_label,
+      time_label: event.time_label,
+      venue: event.venue,
+    });
+
     return res.status(201).json({
       success: true,
       registrationCode,
@@ -1775,6 +1790,7 @@ app.post('/api/registrations', async (req, res) => {
       waitlistPosition,
       qrValue: buildQrValue(registrationCode),
       inviteLink: event.is_team_event ? `#join-team/${inviteToken}` : null,
+      notification,
     });
   } catch (error) {
     await client.query('ROLLBACK');

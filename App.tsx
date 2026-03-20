@@ -665,6 +665,7 @@ export const App: React.FC = () => {
         status: string;
         waitlistPosition: number | null;
         qrValue: string;
+        notification?: AdminNotificationSummary | null;
       }>(response);
 
       if (!response.ok) {
@@ -675,9 +676,20 @@ export const App: React.FC = () => {
         throw new Error('Registration failed. The server returned an empty response.');
       }
 
-      setSuccessMessage(`Registration saved for ${payload.eventName}. Reference code: ${payload.registrationCode}`);
+      const notificationNote =
+        payload.notification?.delivery_status === 'sent'
+          ? ' Pending review email sent.'
+          : payload.notification?.delivery_status === 'failed'
+            ? ` Pending review email failed: ${payload.notification.error_message || 'delivery error.'}`
+            : payload.notification?.delivery_status === 'skipped'
+              ? ` Pending review email skipped: ${payload.notification.error_message || 'email not configured.'}`
+              : '';
+
+      setSuccessMessage(
+        `Registration saved for ${payload.eventName}. Reference code: ${payload.registrationCode}.${notificationNote}`,
+      );
       setToastClosing(false);
-      setToastMessage(`Registration submitted successfully for ${payload.eventName}.`);
+      setToastMessage(`Registration submitted successfully for ${payload.eventName}.${notificationNote}`);
       setSuccessReceipt({
         registrationCode: payload.registrationCode,
         eventName: payload.eventName,
@@ -1155,9 +1167,14 @@ export const App: React.FC = () => {
 
       <header className="sticky top-0 z-30 px-3 pt-3 sm:px-4 md:px-0">
         <div className={`${shellClassName} portal-nav-shell`}>
-          <a href="#overview" className="min-w-0">
-            <p className="text-[10px] uppercase tracking-[0.22em] text-cyan-200/80 sm:text-[11px]">Registration Portal</p>
-            <h1 className="truncate text-base font-semibold text-white sm:text-lg">CEAS COGNOTSAV</h1>
+          <a href="#overview" className="flex min-w-0 items-center gap-3 rounded-[1.2rem] border border-white/10 bg-white/[0.04] px-3 py-2 transition hover:border-cyan-300/28 hover:bg-white/[0.08]">
+            <div className="h-11 w-11 overflow-hidden rounded-[0.95rem] border border-cyan-300/20 bg-white/10 p-1">
+              <img src="/images/ceasposter.jpeg" alt="CEAS COGNOTSAV logo" className="h-full w-full rounded-[0.75rem] object-cover" />
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-[10px] uppercase tracking-[0.24em] text-cyan-200/80 sm:text-[11px]">Computer Engineering Association</p>
+              <h1 className="portal-brand-mark truncate text-sm text-white sm:text-base">CEAS COGNOTSAV 2026</h1>
+            </div>
           </a>
 
           <nav className="hidden items-center gap-5 text-sm lg:flex">
@@ -1268,15 +1285,15 @@ export const App: React.FC = () => {
       ) : (
         <>
           <main className={`${shellClassName} space-y-5 pb-28 md:space-y-8 md:pb-16`}>
-            <AnnouncementArchiveSection
-              announcements={visibleAnnouncements}
-              loading={loadingAnnouncements}
-            />
-
             <HeroSection
               totalEvents={events.length}
               totalRegistrations={totalRegistrations}
               totalRemainingSlots={totalRemainingSlots}
+            />
+
+            <AnnouncementArchiveSection
+              announcements={visibleAnnouncements}
+              loading={loadingAnnouncements}
             />
 
             <CompetitionGridSection
