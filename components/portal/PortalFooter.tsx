@@ -3,7 +3,7 @@ import { shellClassName } from './utils';
 
 export const PortalFooter: React.FC = () => {
   return (
-    <footer className="pb-24 pt-5 md:pb-8 md:pt-6">
+    <footer className="pb-3 pt-5 md:pb-6 md:pt-6">
       <div className={shellClassName}>
         <div className="rounded-[1.8rem] border border-white/10 bg-[linear-gradient(145deg,rgba(12,20,35,0.94),rgba(18,27,45,0.86))] px-4 py-5 sm:px-5 sm:py-6">
           <div className="flex flex-col items-center justify-between gap-4 text-center sm:flex-row sm:text-left">

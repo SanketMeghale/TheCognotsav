@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ArrowRight, CalendarDays, Sparkles } from 'lucide-react';
 import { shellClassName } from './utils';
 
@@ -9,7 +9,7 @@ type Props = {
 
 const eventDate = new Date('2026-04-07T09:00:00');
 
-export const HeroSection: React.FC<Props> = ({ totalEvents, totalRemainingSlots }) => {
+export const HeroSection: React.FC<Props> = ({ totalEvents: _totalEvents, totalRemainingSlots: _totalRemainingSlots }) => {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
@@ -27,15 +27,6 @@ export const HeroSection: React.FC<Props> = ({ totalEvents, totalRemainingSlots 
     const timer = window.setInterval(update, 1000);
     return () => window.clearInterval(timer);
   }, []);
-
-  const quickStats = useMemo(
-    () => [
-      { label: 'Events', value: totalEvents },
-      { label: 'Fest Days', value: 2 },
-      { label: 'Slots Left', value: totalRemainingSlots },
-    ],
-    [totalEvents, totalRemainingSlots],
-  );
 
   const countdownCards = [
     { label: 'Days', value: timeLeft.days, color: 'is-red', face: 'happy' },
@@ -101,13 +92,17 @@ export const HeroSection: React.FC<Props> = ({ totalEvents, totalRemainingSlots 
             </a>
           </div>
 
-          <div className="portal-hero-stats-grid mt-8 grid gap-3">
-            {quickStats.map((stat) => (
-              <div key={stat.label} className="portal-hero-stat-card rounded-[1.4rem] border border-white/10 bg-white/[0.05] px-4 py-4">
-                <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">{stat.label}</p>
-                <p className="mt-2 text-2xl font-semibold text-white">{stat.value}</p>
-              </div>
-            ))}
+          <div className="portal-prize-pool-card mt-8">
+            <div className="portal-prize-pool-card__badge">🏆</div>
+            <p className="portal-prize-pool-card__kicker">Total Prize Pool Distributed</p>
+            <h3 className="portal-prize-pool-card__value">
+              Over <span>₹1,00,000</span>
+            </h3>
+            <p className="portal-prize-pool-card__meta">
+              Cash Rewards
+              <span />
+              Participation Certificates
+            </p>
           </div>
         </div>
 

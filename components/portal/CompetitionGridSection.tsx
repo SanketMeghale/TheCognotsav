@@ -30,7 +30,7 @@ const categoryThemes: Record<string, { button: string; glow: string; badge: stri
 
 export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents, selectedEventSlug, onSelectEvent }) => {
   return (
-    <section id="registration-panel" className="rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(9,13,24,0.72))] p-4 sm:p-5 md:p-6">
+    <section id="registration-panel" className="rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(5,8,18,0.9))] p-3 sm:p-5 md:p-6">
       <div className="text-center">
         <p className="text-[11px] uppercase tracking-[0.22em] text-cyan-200/80">Competitions</p>
         <h3 className="mt-3 text-2xl font-semibold text-white sm:text-3xl">Choose a competition and continue.</h3>

@@ -593,6 +593,9 @@ export const App: React.FC = () => {
   useEffect(() => {
     if (isEventPage && eventPageSlug && events.some((event) => event.slug === eventPageSlug)) {
       setSelectedEventSlug(eventPageSlug);
+      if (typeof window !== 'undefined') {
+        window.scrollTo({ top: 0, behavior: 'auto' });
+      }
     }
   }, [eventPageSlug, events, isEventPage]);
 
@@ -632,6 +635,7 @@ export const App: React.FC = () => {
     setPaymentScreenshotName('');
     if (typeof window !== 'undefined') {
       window.location.hash = `#events/${slug}`;
+      window.scrollTo({ top: 0, behavior: 'auto' });
     }
     setMobileMenuOpen(false);
   };

@@ -35,7 +35,7 @@
 }
 
 html {
-  background: #0f111a;
+  background: #05070d;
   overflow-x: clip;
 }
 
@@ -44,14 +44,14 @@ body {
   margin: 0;
   overflow-x: clip;
   background:
-    radial-gradient(circle at top left, rgba(59, 130, 246, 0.18), transparent 28%),
-    radial-gradient(circle at 82% 18%, rgba(168, 85, 247, 0.18), transparent 28%),
-    radial-gradient(circle at 72% 82%, rgba(236, 72, 153, 0.12), transparent 26%),
-    radial-gradient(circle at 20% 60%, rgba(56, 189, 248, 0.15), transparent 25%),
-    radial-gradient(circle at 90% 40%, rgba(251, 191, 36, 0.14), transparent 24%),
-    radial-gradient(circle at 40% 90%, rgba(52, 211, 153, 0.13), transparent 23%),
-    radial-gradient(circle at 60% 10%, rgba(251, 146, 60, 0.16), transparent 27%),
-    #0f111a;
+    radial-gradient(circle at top left, rgba(59, 130, 246, 0.14), transparent 28%),
+    radial-gradient(circle at 82% 18%, rgba(168, 85, 247, 0.16), transparent 28%),
+    radial-gradient(circle at 72% 82%, rgba(236, 72, 153, 0.1), transparent 26%),
+    radial-gradient(circle at 20% 60%, rgba(56, 189, 248, 0.12), transparent 25%),
+    radial-gradient(circle at 90% 40%, rgba(251, 191, 36, 0.1), transparent 24%),
+    radial-gradient(circle at 40% 90%, rgba(52, 211, 153, 0.09), transparent 23%),
+    radial-gradient(circle at 60% 10%, rgba(251, 146, 60, 0.11), transparent 27%),
+    #05070d;
   color: #e2e8f0;
   font-family: 'Inter', sans-serif;
   line-height: 1.6;
@@ -130,7 +130,7 @@ img {
     radial-gradient(circle at 90% 70%, rgba(52, 211, 153, 0.19), transparent 21%),
     radial-gradient(circle at 25% 85%, rgba(217, 70, 239, 0.16), transparent 23%),
     radial-gradient(circle at 75% 35%, rgba(99, 102, 241, 0.21), transparent 25%),
-    linear-gradient(135deg, #0b0f18 0%, #111827 38%, #16182a 72%, #0f111a 100%);
+    linear-gradient(135deg, #03050b 0%, #070b15 34%, #0c1020 66%, #05070d 100%);
   background-size: 140% 140%;
   filter: saturate(1.08);
   animation: portalBackgroundShift 18s ease-in-out infinite;
@@ -458,12 +458,86 @@ img {
 
 .portal-front-hero__visual-image {
   width: 100%;
-  min-height: 17rem;
+  min-height: 15rem;
+  max-height: 24rem;
   object-fit: cover;
 }
 
 .portal-festival-counter--compact {
   margin-top: 1rem;
+}
+
+.portal-prize-pool-card {
+  position: relative;
+  overflow: visible;
+  border-radius: 1.9rem;
+  border: 1px solid rgba(250, 204, 21, 0.38);
+  background: linear-gradient(145deg, rgba(24, 19, 14, 0.98), rgba(20, 18, 26, 0.96));
+  padding: 1.4rem 1.2rem 1.15rem;
+  box-shadow:
+    0 0 0 1px rgba(250, 204, 21, 0.08),
+    0 0 34px rgba(250, 204, 21, 0.18),
+    0 30px 60px rgba(0, 0, 0, 0.36);
+  text-align: center;
+}
+
+.portal-prize-pool-card__badge {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  display: grid;
+  height: 4.15rem;
+  width: 4.15rem;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  border: 3px solid rgba(250, 204, 21, 0.92);
+  background: #11141d;
+  box-shadow: 0 0 28px rgba(250, 204, 21, 0.3);
+  font-size: 1.5rem;
+}
+
+.portal-prize-pool-card__kicker {
+  margin: 1.3rem 0 0;
+  color: rgba(250, 204, 21, 0.92);
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.portal-prize-pool-card__value {
+  margin: 0.55rem 0 0;
+  color: #ffffff;
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  font-size: clamp(2rem, 5vw, 4.2rem);
+  font-weight: 900;
+  line-height: 0.95;
+  text-transform: uppercase;
+}
+
+.portal-prize-pool-card__value span {
+  background: linear-gradient(90deg, #fde047 0%, #fb923c 42%, #facc15 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.portal-prize-pool-card__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.9rem 0 0;
+  color: rgba(203, 213, 225, 0.86);
+  font-size: 0.9rem;
+}
+
+.portal-prize-pool-card__meta span {
+  display: inline-block;
+  width: 1px;
+  height: 1rem;
+  background: rgba(148, 163, 184, 0.42);
 }
 
 .portal-competition-card {
@@ -1182,7 +1256,7 @@ select.floating-field-input option {
   z-index: 1;
   border-radius: 2rem;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(9, 13, 24, 0.82));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(5, 8, 18, 0.94));
   padding: 1.25rem;
 }
 
@@ -1199,7 +1273,7 @@ select.floating-field-input option {
 .portal-front-hero__countdown {
   border-radius: 1.6rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  background: linear-gradient(145deg, rgba(12, 20, 35, 0.96), rgba(18, 27, 45, 0.86));
+  background: linear-gradient(145deg, rgba(8, 12, 22, 0.98), rgba(14, 20, 36, 0.92));
   padding: 1rem;
 }
 
@@ -1672,6 +1746,7 @@ select.floating-field-input option {
 
   .portal-front-hero__visual-image {
     min-height: 10rem;
+    max-height: 14rem;
   }
 
   .portal-competition-card__media {
@@ -1688,12 +1763,34 @@ select.floating-field-input option {
     border-radius: 1.1rem;
   }
 
-  .portal-hero-stats-grid {
-    gap: 0.65rem;
+  .portal-prize-pool-card {
+    padding: 1rem 0.85rem 0.85rem;
+    border-radius: 1.45rem;
   }
 
-  .portal-hero-stat-card {
-    padding: 0.95rem 0.9rem;
+  .portal-prize-pool-card__badge {
+    height: 3.3rem;
+    width: 3.3rem;
+    font-size: 1.2rem;
+  }
+
+  .portal-prize-pool-card__kicker {
+    margin-top: 1.1rem;
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+  }
+
+  .portal-prize-pool-card__value {
+    font-size: 1.65rem;
+  }
+
+  .portal-prize-pool-card__meta {
+    gap: 0.5rem;
+    font-size: 0.68rem;
+  }
+
+  .portal-prize-pool-card__meta span {
+    height: 0.78rem;
   }
 
   .roadmap-pulse-line {
