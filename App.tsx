@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ArrowRight, CheckCircle2, Menu, X } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Menu, MoonStar, SunMedium, X } from 'lucide-react';
 import { AdminRegistrationsPage } from './components/portal/AdminRegistrationsPage.tsx';
 import { AnnouncementArchiveSection } from './components/portal/AnnouncementArchiveSection.tsx';
 import { AnnouncementBanner } from './components/portal/AnnouncementBanner.tsx';
@@ -43,6 +43,7 @@ type ApiReadResult<T> = {
 };
 
 const DRAFT_STORAGE_KEY = 'cogno_registration_portal_draft_v1';
+const THEME_STORAGE_KEY = 'cogno_registration_portal_theme_v1';
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phonePattern = /^\d{10}$/;
 
@@ -218,6 +219,10 @@ export const App: React.FC = () => {
   const [toastClosing, setToastClosing] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    if (typeof window === 'undefined') return 'dark';
+    return window.localStorage.getItem(THEME_STORAGE_KEY) === 'light' ? 'light' : 'dark';
+  });
   const [form, setForm] = useState<FormState>({
     teamName: '',
     collegeName: '',
@@ -410,6 +415,11 @@ export const App: React.FC = () => {
       }),
     );
   }, [form, selectedEvent, selectedEventSlug, successReceipt, teamSize]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+  }, [theme]);
 
   useEffect(() => {
     if (!toastMessage) return;
@@ -1093,7 +1103,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="portal-shell portal-page-enter min-h-screen text-slate-100">
+    <div data-theme={theme} className="portal-shell portal-page-enter min-h-screen text-slate-100">
       <div className="portal-orb portal-orb--violet" />
       <div className="portal-orb portal-orb--cyan" />
       <div className="portal-orb portal-orb--blue" />
@@ -1187,6 +1197,15 @@ export const App: React.FC = () => {
           </nav>
 
           <div className="hidden items-center gap-3 lg:flex">
+            <button
+              type="button"
+              onClick={() => setTheme((current) => current === 'dark' ? 'light' : 'dark')}
+              className="portal-theme-toggle"
+              aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+            >
+              {theme === 'dark' ? <SunMedium size={15} /> : <MoonStar size={15} />}
+              <span>{theme === 'dark' ? 'Light' : 'Dark'}</span>
+            </button>
             <a href="#registration-panel" className="animated-gradient-button inline-flex items-center justify-center rounded-2xl px-4 py-3 text-sm font-bold text-slate-950">
               Register
               <ArrowRight size={14} />
@@ -1207,6 +1226,14 @@ export const App: React.FC = () => {
         {mobileMenuOpen ? (
           <div className={`${shellClassName} mt-2 lg:hidden`}>
             <div className="portal-mobile-menu">
+              <button
+                type="button"
+                onClick={() => setTheme((current) => current === 'dark' ? 'light' : 'dark')}
+                className="portal-mobile-nav-pill portal-mobile-theme"
+              >
+                {theme === 'dark' ? <SunMedium size={15} /> : <MoonStar size={15} />}
+                <span>{theme === 'dark' ? 'Light Theme' : 'Dark Theme'}</span>
+              </button>
               <a href="#overview" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-nav-pill text-center">Home</a>
               <a href="#registration-panel" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-nav-pill text-center">Competitions</a>
               <a href="#tracker" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-nav-pill text-center">Tracker</a>
@@ -1245,20 +1272,6 @@ export const App: React.FC = () => {
         <TimelinePage />
       ) : isEventPage && selectedEvent ? (
         <main className={`${shellClassName} space-y-5 pb-28 pt-4 md:space-y-8 md:pb-16`}>
-          <section className="portal-glow-card portal-glass rounded-[1.8rem] p-4 sm:p-5 md:p-6">
-            <a href="#overview" className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-sm text-slate-100 transition hover:border-white/20 hover:text-white">
-              <ArrowRight size={16} className="rotate-180" />
-              Back to competitions
-            </a>
-            <div className="mt-4 max-w-3xl">
-              <p className="text-[10px] uppercase tracking-[0.22em] text-cyan-200/80 sm:text-[11px]">Event Page</p>
-              <h2 className="mt-2 text-2xl font-semibold text-white sm:text-3xl">{selectedEvent.name}</h2>
-              <p className="mt-2 text-sm leading-7 text-slate-300">
-                Review the event details, rules, and payment instructions below, then complete the registration form for this competition.
-              </p>
-            </div>
-          </section>
-
           <EventRegistrationPanel
             selectedEvent={selectedEvent}
             teamSize={teamSize}

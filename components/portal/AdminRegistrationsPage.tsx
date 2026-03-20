@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import {
   Activity, AlertTriangle, ArrowLeft, BarChart3, CheckCircle2, Clock3, Download,
-  Eye, FileSpreadsheet, HardDriveDownload, Mail, Megaphone, MessageCircle, QrCode,
+  Eye, FileSpreadsheet, HardDriveDownload, Mail, Megaphone, QrCode,
   RotateCcw, Save, Search, Send, ShieldCheck, Users, XCircle,
 } from 'lucide-react';
 import type { AdminNotificationSummary, AdminRegistration, BackupSnapshot, EventRecord, PortalAnnouncement } from './types';
@@ -48,12 +48,6 @@ function prettyStatus(value: string) {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
-function buildWhatsappLink(row: AdminRegistration) {
-  const digits = row.contact_phone.replace(/\D/g, '');
-  const phone = digits.length === 10 ? `91${digits}` : digits;
-  return `https://wa.me/${phone}?text=${encodeURIComponent(`Hello ${row.contact_name},\n\nYour registration ${row.registration_code} for ${row.event_name} is currently ${prettyStatus(row.status).toLowerCase()}.`)}`;
-}
-
 function NotificationPanel({ notification }: { notification: AdminNotificationSummary | null | undefined }) {
   if (!notification) return <div className="rounded-[1.2rem] border border-dashed border-white/10 bg-black/10 p-4 text-sm text-slate-400">No status email logged yet.</div>;
   const tone = notification.delivery_status === 'sent' ? 'border-emerald-300/25 bg-emerald-400/10 text-emerald-100' : notification.delivery_status === 'failed' ? 'border-rose-300/25 bg-rose-400/10 text-rose-100' : 'border-amber-300/25 bg-amber-400/10 text-amber-100';
@@ -67,6 +61,7 @@ function FloatingField({ label, icon, value, type = 'text', onChange }: { label:
 export const AdminRegistrationsPage: React.FC<Props> = ({ adminKey, adminRows, events, announcements, backups, adminLoading, adminError, onAdminKeyChange, onLoadAdminRows, onDownload, onStatusChange, onAttendanceChange, onSaveReviewNote, onResendStatusEmail, onSendBroadcast, onRunBackup, onDownloadBackup }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const [eventFilter, setEventFilter] = useState('all');
   const [proofModal, setProofModal] = useState<AdminRegistration | null>(null);
   const [reviewDrafts, setReviewDrafts] = useState<Record<string, string>>({});
   const [broadcastTitle, setBroadcastTitle] = useState('');
@@ -76,7 +71,14 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminKey, adminRows, e
   const [checkInQuery, setCheckInQuery] = useState('');
 
   const counts = useMemo(() => ({ all: adminRows.length, pending: adminRows.filter((row) => row.status === 'pending').length, verified: adminRows.filter((row) => row.status === 'verified').length, waitlisted: adminRows.filter((row) => row.status === 'waitlisted').length, rejected: adminRows.filter((row) => row.status === 'rejected').length }), [adminRows]);
-  const filteredRows = useMemo(() => adminRows.filter((row) => (statusFilter === 'all' || row.status === statusFilter) && [row.registration_code, row.team_name, row.contact_name, row.contact_email, row.event_name, row.review_note ?? '', row.payment_reference ?? ''].some((value) => value.toLowerCase().includes(searchQuery.trim().toLowerCase()))), [adminRows, searchQuery, statusFilter]);
+  const eventBuckets = useMemo(() => events.map((event) => ({
+    slug: event.slug,
+    name: event.name,
+    total: adminRows.filter((row) => row.event_slug === event.slug).length,
+    pending: adminRows.filter((row) => row.event_slug === event.slug && row.status === 'pending').length,
+    verified: adminRows.filter((row) => row.event_slug === event.slug && row.status === 'verified').length,
+  })).filter((event) => event.total > 0), [adminRows, events]);
+  const filteredRows = useMemo(() => adminRows.filter((row) => (statusFilter === 'all' || row.status === statusFilter) && (eventFilter === 'all' || row.event_slug === eventFilter) && [row.registration_code, row.team_name, row.contact_name, row.contact_email, row.event_name, row.review_note ?? '', row.payment_reference ?? ''].some((value) => value.toLowerCase().includes(searchQuery.trim().toLowerCase()))), [adminRows, eventFilter, searchQuery, statusFilter]);
   const totalParticipants = adminRows.reduce((sum, row) => sum + row.participants.length, 0);
   const checkInRows = adminRows.filter((row) => row.status === 'verified' || row.attendance_status !== 'registered').filter((row) => [row.registration_code, row.team_name, row.contact_name, row.contact_email].some((value) => value.toLowerCase().includes(checkInQuery.trim().toLowerCase()))).slice(0, 6);
   const busiestEvent = useMemo(() => Object.entries(adminRows.reduce<Record<string, number>>((collection, row) => ({ ...collection, [row.event_name]: (collection[row.event_name] || 0) + 1 }), {})).sort((left, right) => right[1] - left[1])[0] || null, [adminRows]);
@@ -207,6 +209,21 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminKey, adminRows, e
             </button>
           ))}
         </div>
+        <div className="mt-4">
+          <p className="text-[11px] uppercase tracking-[0.24em] text-cyan-200/80">Competition-wise verification</p>
+          <div className="mt-3 flex flex-wrap gap-3">
+            <button type="button" onClick={() => setEventFilter('all')} className={`rounded-[1.2rem] border px-4 py-3 text-left text-sm transition ${eventFilter === 'all' ? 'border-cyan-300/24 bg-cyan-400/10 text-white' : 'border-white/10 bg-white/5 text-slate-200'}`}>
+              <span className="block font-semibold">All competitions</span>
+              <span className="mt-1 block text-xs uppercase tracking-[0.16em] text-slate-400">{counts.all} registrations</span>
+            </button>
+            {eventBuckets.map((event) => (
+              <button key={event.slug} type="button" onClick={() => setEventFilter(event.slug)} className={`rounded-[1.2rem] border px-4 py-3 text-left text-sm transition ${eventFilter === event.slug ? 'border-fuchsia-300/24 bg-fuchsia-400/10 text-white' : 'border-white/10 bg-white/5 text-slate-200'}`}>
+                <span className="block font-semibold">{event.name}</span>
+                <span className="mt-1 block text-xs uppercase tracking-[0.16em] text-slate-400">{event.total} total / {event.pending} pending / {event.verified} verified</span>
+              </button>
+            ))}
+          </div>
+        </div>
         <div className="mt-6 space-y-4">
           {filteredRows.map((row) => (
             <article key={row.id} className="rounded-[1.8rem] border border-white/10 bg-[linear-gradient(145deg,rgba(12,20,35,0.92),rgba(18,27,45,0.82))] p-5 md:p-6">
@@ -239,7 +256,6 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminKey, adminRows, e
                   {row.payment_screenshot_path ? <button type="button" onClick={() => setProofModal(row)} className="group block w-full overflow-hidden rounded-[1.5rem] border border-cyan-300/12 bg-white/5 text-left"><img src={row.payment_screenshot_path} alt={`${row.team_name} payment proof`} className="h-56 w-full object-cover transition duration-500 group-hover:scale-105" /><div className="flex items-center justify-between px-4 py-3 text-sm text-cyan-100"><span>Zoom payment proof</span><Eye size={16} /></div></button> : <div className="rounded-[1.5rem] border border-dashed border-white/10 bg-black/10 p-5 text-sm text-slate-400">No payment screenshot uploaded for this registration.</div>}
                   <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
                     <button type="button" onClick={() => onResendStatusEmail(row.id)} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-blue-300/20 bg-blue-500/10 px-4 py-3 text-sm font-bold text-blue-100"><RotateCcw size={16} />Resend email</button>
-                    <a href={buildWhatsappLink(row)} target="_blank" rel="noreferrer" className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-fuchsia-300/20 bg-fuchsia-500/10 px-4 py-3 text-sm font-bold text-fuchsia-100"><MessageCircle size={16} />WhatsApp</a>
                     <button type="button" onClick={() => onStatusChange(row.id, 'verified')} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-emerald-300/20 bg-emerald-400/10 px-4 py-3 text-sm font-bold text-emerald-100"><CheckCircle2 size={16} />Approve</button>
                     <button type="button" onClick={() => onStatusChange(row.id, 'pending')} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-amber-300/20 bg-amber-400/10 px-4 py-3 text-sm font-bold text-amber-100"><Clock3 size={16} />Pending</button>
                     <button type="button" onClick={() => onStatusChange(row.id, 'rejected')} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-rose-300/20 bg-rose-400/10 px-4 py-3 text-sm font-bold text-rose-100"><XCircle size={16} />Reject</button>

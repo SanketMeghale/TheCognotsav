@@ -11,7 +11,7 @@ type Props = {
 const eventDate = new Date('2026-04-07T09:00:00');
 
 export const HeroSection: React.FC<Props> = ({ totalEvents, totalRegistrations, totalRemainingSlots }) => {
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0 });
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
     const update = () => {
@@ -20,6 +20,7 @@ export const HeroSection: React.FC<Props> = ({ totalEvents, totalRegistrations, 
         days: Math.floor(diff / (1000 * 60 * 60 * 24)),
         hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
         minutes: Math.floor((diff / (1000 * 60)) % 60),
+        seconds: Math.floor((diff / 1000) % 60),
       });
     };
 
@@ -37,6 +38,13 @@ export const HeroSection: React.FC<Props> = ({ totalEvents, totalRegistrations, 
     [totalEvents, totalRegistrations, totalRemainingSlots],
   );
 
+  const countdownCards = [
+    { label: 'Days', value: timeLeft.days, color: 'is-red', face: 'happy' },
+    { label: 'Hours', value: timeLeft.hours, color: 'is-cream', face: 'calm' },
+    { label: 'Minutes', value: timeLeft.minutes, color: 'is-blue', face: 'happy' },
+    { label: 'Seconds', value: timeLeft.seconds, color: 'is-yellow', face: 'spark' },
+  ];
+
   return (
     <section id="overview" className={`${shellClassName} pt-3 pb-2 md:pt-5 md:pb-4`}>
       <div className="portal-front-hero">
@@ -46,13 +54,13 @@ export const HeroSection: React.FC<Props> = ({ totalEvents, totalRegistrations, 
             Official Festival Registration
           </div>
 
-          <div className="mt-5 flex items-center gap-4">
-            <div className="hidden h-16 w-16 overflow-hidden rounded-[1.3rem] border border-white/10 bg-white/10 p-2 sm:block">
-              <img src="/images/ceasposter.jpeg" alt="CEAS COGNOTSAV logo" className="h-full w-full rounded-[1rem] object-cover" />
+          <div className="portal-legacy-headline mt-5">
+            <div className="portal-legacy-logo">
+              <img src="/images/ceasposter.jpeg" alt="CEAS COGNOTSAV logo" className="h-full w-full object-cover" />
             </div>
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.3em] text-cyan-300/80">Our Legacy</p>
-              <h2 className="portal-brand-title mt-2 text-white">
+            <div className="min-w-0">
+              <p className="portal-kicker">Our Legacy</p>
+              <h2 className="portal-legacy-title">
                 Where Engineering
                 <br />
                 Meets Excellence
@@ -70,12 +78,12 @@ export const HeroSection: React.FC<Props> = ({ totalEvents, totalRegistrations, 
           </div>
 
           <div className="mt-6 grid gap-3 md:grid-cols-2">
-            <div className="rounded-[1.35rem] border border-cyan-300/14 bg-cyan-400/8 p-4">
-              <p className="text-[10px] uppercase tracking-[0.22em] text-cyan-200/80">Our Vision</p>
+            <div className="portal-legacy-card portal-legacy-card--vision">
+              <p className="portal-kicker">Our Vision</p>
               <p className="mt-2 text-lg font-semibold text-white">Innovate. Compete. Excel.</p>
             </div>
-            <div className="rounded-[1.35rem] border border-fuchsia-300/14 bg-fuchsia-400/8 p-4">
-              <p className="text-[10px] uppercase tracking-[0.22em] text-fuchsia-200/80">Our Mission</p>
+            <div className="portal-legacy-card portal-legacy-card--mission">
+              <p className="portal-kicker">Our Mission</p>
               <p className="mt-2 text-lg font-semibold text-white">Code, Compete, and Conquer.</p>
             </div>
           </div>
@@ -101,10 +109,10 @@ export const HeroSection: React.FC<Props> = ({ totalEvents, totalRegistrations, 
         </div>
 
         <div className="portal-front-hero__panel">
-          <div className="portal-front-hero__countdown">
+          <div className="portal-front-hero__countdown portal-festival-counter">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-[11px] uppercase tracking-[0.22em] text-cyan-200/80">Festival Countdown</p>
+                <p className="portal-kicker">Festival Countdown</p>
                 <p className="mt-2 text-xl font-semibold text-white">07-08 April 2026</p>
               </div>
               <div className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-2 text-xs text-slate-200">
@@ -113,14 +121,18 @@ export const HeroSection: React.FC<Props> = ({ totalEvents, totalRegistrations, 
               </div>
             </div>
 
-            <div className="mt-5 grid grid-cols-3 gap-3">
-              {[{ label: 'Days', value: timeLeft.days }, { label: 'Hours', value: timeLeft.hours }, { label: 'Minutes', value: timeLeft.minutes }].map((item, index) => (
-                <div
-                  key={item.label}
-                  className={`rounded-[1.25rem] px-4 py-4 text-center ${index === 0 ? 'bg-white text-slate-950' : 'border border-white/10 bg-white/[0.05]'}`}
-                >
-                  <p className={`text-[10px] uppercase tracking-[0.18em] ${index === 0 ? 'text-slate-500' : 'text-slate-400'}`}>{item.label}</p>
-                  <p className={`mt-2 ${index === 0 ? 'text-3xl text-slate-950' : 'text-2xl text-white'} font-semibold`}>{item.value}</p>
+            <div className="portal-festival-counter__board mt-6">
+              {countdownCards.map((item) => (
+                <div key={item.label} className={`portal-festival-counter__card ${item.color}`}>
+                  <div className={`portal-festival-counter__balloon ${item.face}`}>
+                    <span className="portal-festival-counter__face">
+                      <span />
+                      <span />
+                    </span>
+                  </div>
+                  <div className="portal-festival-counter__stick" />
+                  <div className="portal-festival-counter__number">{String(item.value).padStart(2, '0')}</div>
+                  <div className="portal-festival-counter__label">{item.label}</div>
                 </div>
               ))}
             </div>
