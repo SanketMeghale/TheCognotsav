@@ -54,6 +54,8 @@ Required variables:
 Optional variable:
 
 - `STORAGE_ROOT` if you want uploads and backups stored somewhere custom outside Railway
+- `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, and `TWILIO_WHATSAPP_FROM` if you want WhatsApp notifications via Twilio
+- `TWILIO_WHATSAPP_TO_OVERRIDE` if you want all WhatsApp notifications routed to one test number
 - `BREVO_API_KEY` for transactional emails via Brevo API
 - SMTP variables if you want to use SMTP instead of Brevo:
   - `SMTP_PROVIDER`
@@ -67,6 +69,7 @@ Recommended on Railway:
 
 - Add a PostgreSQL service and reference its `DATABASE_URL` into the app service
 - Attach a volume to the app service so uploads and backups persist across redeploys
+- Twilio WhatsApp takes priority over email notifications when `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, and `TWILIO_WHATSAPP_FROM` are configured
 
 If a Railway volume is attached, the app will automatically use `RAILWAY_VOLUME_MOUNT_PATH` for uploads and backups.
 

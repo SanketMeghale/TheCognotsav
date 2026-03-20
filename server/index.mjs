@@ -33,9 +33,14 @@ const smtpFromEmail = String(process.env.SMTP_FROM_EMAIL || smtpUser || '').trim
 const smtpFromName = String(process.env.SMTP_FROM_NAME || 'CEAS COGNOTSAV').trim();
 const resendApiKey = String(process.env.RESEND_API_KEY || '').trim();
 const brevoApiKey = String(process.env.BREVO_API_KEY || '').trim();
+const twilioAccountSid = String(process.env.TWILIO_ACCOUNT_SID || '').trim();
+const twilioAuthToken = String(process.env.TWILIO_AUTH_TOKEN || '').trim();
+const twilioWhatsappFrom = String(process.env.TWILIO_WHATSAPP_FROM || '').trim();
+const twilioWhatsappToOverride = String(process.env.TWILIO_WHATSAPP_TO_OVERRIDE || '').trim();
 const resendConfigured = Boolean(resendApiKey && smtpFromEmail);
 const brevoConfigured = Boolean(brevoApiKey && smtpFromEmail);
 const smtpConfigured = Boolean(smtpHost && smtpPort && smtpFromEmail);
+const whatsappConfigured = Boolean(twilioAccountSid && twilioAuthToken && twilioWhatsappFrom);
 const IST_OFFSET_MINUTES = 330;
 const EVENT_START_REMINDER_WINDOW_MS = 60 * 60 * 1000;
 const REGISTRATION_CLOSING_WINDOW_MS = 24 * 60 * 60 * 1000;
@@ -122,6 +127,69 @@ const mailTransports = smtpTransportDefinitions.map((definition) => ({
   transport: nodemailer.createTransport(definition.options),
 }));
 const emailConfigured = Boolean(resendConfigured || brevoConfigured || mailTransports.length !== 0);
+const notificationConfigured = Boolean(whatsappConfigured || emailConfigured);
+
+function normalizeWhatsappAddress(value) {
+  const raw = String(value || '').trim();
+  if (!raw) return '';
+  if (raw.startsWith('whatsapp:+')) return raw;
+
+  const digits = raw.replace(/\D/g, '');
+  if (!digits) return '';
+
+  if (digits.length === 10) {
+    return `whatsapp:+91${digits}`;
+  }
+
+  if (digits.length === 12 && digits.startsWith('91')) {
+    return `whatsapp:+${digits}`;
+  }
+
+  if (raw.startsWith('+')) {
+    return `whatsapp:${raw}`;
+  }
+
+  return digits.startsWith('+') ? `whatsapp:${digits}` : `whatsapp:+${digits}`;
+}
+
+async function sendPortalWhatsapp({ to, body }) {
+  const recipient = normalizeWhatsappAddress(twilioWhatsappToOverride || to);
+  if (!recipient) {
+    throw new Error('WhatsApp recipient phone number is invalid.');
+  }
+
+  const response = await fetch(
+    `https://api.twilio.com/2010-04-01/Accounts/${twilioAccountSid}/Messages.json`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Basic ${Buffer.from(`${twilioAccountSid}:${twilioAuthToken}`).toString('base64')}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        From: twilioWhatsappFrom,
+        To: recipient,
+        Body: body,
+      }),
+    },
+  );
+
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(
+      typeof payload?.message === 'string'
+        ? `Twilio WhatsApp error: ${payload.message}`
+        : `Twilio WhatsApp error (HTTP ${response.status})`,
+    );
+  }
+
+  return {
+    messageId: payload?.sid || null,
+    provider: 'twilio-whatsapp',
+    channel: 'whatsapp',
+    recipient,
+  };
+}
 
 async function sendPortalMail(message) {
   if (resendConfigured) {
@@ -229,6 +297,31 @@ async function sendPortalMail(message) {
   }
 
   throw lastError || new Error('SMTP transport is not configured.');
+}
+
+async function sendPortalNotification({ registration, subject, text, html }) {
+  if (whatsappConfigured) {
+    const info = await sendPortalWhatsapp({
+      to: registration.contact_phone,
+      body: `${subject}\n\n${text}`,
+    });
+
+    return info;
+  }
+
+  const info = await sendPortalMail({
+    from: smtpFromName ? `"${smtpFromName}" <${smtpFromEmail}>` : smtpFromEmail,
+    to: registration.contact_email,
+    subject,
+    text,
+    html,
+  });
+
+  return {
+    ...info,
+    channel: 'email',
+    recipient: registration.contact_email,
+  };
 }
 
 app.use(cors());
@@ -537,6 +630,7 @@ function buildStatusEmail(registration) {
 async function logRegistrationNotification({
   registrationId,
   notificationType = 'status-update',
+  channel = 'email',
   recipient,
   subject,
   messagePreview,
@@ -551,13 +645,14 @@ async function logRegistrationNotification({
         id, registration_id, notification_type, channel, recipient, subject,
         message_preview, related_status, delivery_status, provider_message_id, error_message
       )
-      VALUES ($1, $2, $3, 'email', $4, $5, $6, $7, $8, $9, $10)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
       RETURNING notification_type, channel, recipient, related_status, delivery_status, provider_message_id, error_message, created_at
     `,
     [
       randomUUID(),
       registrationId,
       notificationType,
+      channel,
       recipient,
       subject,
       messagePreview,
@@ -619,23 +714,23 @@ async function sendStatusNotification(registration) {
 
   const email = buildStatusEmail(registration);
 
-  if (!emailConfigured) {
+  if (!notificationConfigured) {
     return logRegistrationNotification({
       registrationId: registration.id,
       notificationType: 'status-update',
-      recipient: registration.contact_email,
+      channel: whatsappConfigured ? 'whatsapp' : 'email',
+      recipient: whatsappConfigured ? registration.contact_phone : registration.contact_email,
       subject: email.subject,
       messagePreview: email.preview,
       relatedStatus: registration.status,
       deliveryStatus: 'skipped',
-      errorMessage: 'Transactional email is not configured yet.',
+      errorMessage: 'Transactional notification is not configured yet.',
     });
   }
 
   try {
-    const info = await sendPortalMail({
-      from: smtpFromName ? `"${smtpFromName}" <${smtpFromEmail}>` : smtpFromEmail,
-      to: registration.contact_email,
+    const info = await sendPortalNotification({
+      registration,
       subject: email.subject,
       text: email.text,
       html: email.html,
@@ -644,7 +739,8 @@ async function sendStatusNotification(registration) {
     return logRegistrationNotification({
       registrationId: registration.id,
       notificationType: 'status-update',
-      recipient: registration.contact_email,
+      channel: info.channel || 'email',
+      recipient: info.recipient || registration.contact_email,
       subject: email.subject,
       messagePreview: email.preview,
       relatedStatus: registration.status,
@@ -655,7 +751,8 @@ async function sendStatusNotification(registration) {
     return logRegistrationNotification({
       registrationId: registration.id,
       notificationType: 'status-update',
-      recipient: registration.contact_email,
+      channel: whatsappConfigured ? 'whatsapp' : 'email',
+      recipient: whatsappConfigured ? registration.contact_phone : registration.contact_email,
       subject: email.subject,
       messagePreview: email.preview,
       relatedStatus: registration.status,
@@ -734,23 +831,23 @@ async function sendEventStartReminderNotification(registration, eventStart) {
 
   const email = buildEventStartReminderEmail(registration, eventStart);
 
-  if (!emailConfigured) {
+  if (!notificationConfigured) {
     return logRegistrationNotification({
       registrationId: registration.id,
       notificationType: 'event-reminder',
-      recipient: registration.contact_email,
+      channel: whatsappConfigured ? 'whatsapp' : 'email',
+      recipient: whatsappConfigured ? registration.contact_phone : registration.contact_email,
       subject: email.subject,
       messagePreview: email.preview,
       relatedStatus: reminderKey,
       deliveryStatus: 'skipped',
-      errorMessage: 'Transactional email is not configured yet.',
+      errorMessage: 'Transactional notification is not configured yet.',
     });
   }
 
   try {
-    const info = await sendPortalMail({
-      from: smtpFromName ? `"${smtpFromName}" <${smtpFromEmail}>` : smtpFromEmail,
-      to: registration.contact_email,
+    const info = await sendPortalNotification({
+      registration,
       subject: email.subject,
       text: email.text,
       html: email.html,
@@ -759,7 +856,8 @@ async function sendEventStartReminderNotification(registration, eventStart) {
     return logRegistrationNotification({
       registrationId: registration.id,
       notificationType: 'event-reminder',
-      recipient: registration.contact_email,
+      channel: info.channel || 'email',
+      recipient: info.recipient || registration.contact_email,
       subject: email.subject,
       messagePreview: email.preview,
       relatedStatus: reminderKey,
@@ -770,7 +868,8 @@ async function sendEventStartReminderNotification(registration, eventStart) {
     return logRegistrationNotification({
       registrationId: registration.id,
       notificationType: 'event-reminder',
-      recipient: registration.contact_email,
+      channel: whatsappConfigured ? 'whatsapp' : 'email',
+      recipient: whatsappConfigured ? registration.contact_phone : registration.contact_email,
       subject: email.subject,
       messagePreview: email.preview,
       relatedStatus: reminderKey,
@@ -1210,27 +1309,30 @@ async function sendBroadcastAnnouncement({
 
   for (const registration of result.rows) {
     const email = buildBroadcastEmail(registration, announcement);
-    if (!emailConfigured) {
-      console.log('Transactional email not configured, skipping email to:', registration.contact_email);
+    if (!notificationConfigured) {
+      console.log(
+        'Transactional notification not configured, skipping notification to:',
+        whatsappConfigured ? registration.contact_phone : registration.contact_email,
+      );
       await logRegistrationNotification({
         registrationId: registration.id,
         notificationType: 'broadcast',
-        recipient: registration.contact_email,
+        channel: whatsappConfigured ? 'whatsapp' : 'email',
+        recipient: whatsappConfigured ? registration.contact_phone : registration.contact_email,
         subject: email.subject,
         messagePreview: email.preview,
         relatedStatus: announcement.id,
         deliveryStatus: 'skipped',
-        errorMessage: 'Transactional email is not configured yet.',
+        errorMessage: 'Transactional notification is not configured yet.',
       });
       stats.skipped += 1;
       continue;
     }
 
     try {
-      console.log('Sending email to:', registration.contact_email);
-      const info = await sendPortalMail({
-        from: smtpFromName ? `"${smtpFromName}" <${smtpFromEmail}>` : smtpFromEmail,
-        to: registration.contact_email,
+      console.log('Sending notification to:', registration.contact_email);
+      const info = await sendPortalNotification({
+        registration,
         subject: email.subject,
         text: email.text,
         html: email.html,
@@ -1239,7 +1341,8 @@ async function sendBroadcastAnnouncement({
       await logRegistrationNotification({
         registrationId: registration.id,
         notificationType: 'broadcast',
-        recipient: registration.contact_email,
+        channel: info.channel || 'email',
+        recipient: info.recipient || registration.contact_email,
         subject: email.subject,
         messagePreview: email.preview,
         relatedStatus: announcement.id,
@@ -1253,7 +1356,8 @@ async function sendBroadcastAnnouncement({
       await logRegistrationNotification({
         registrationId: registration.id,
         notificationType: 'broadcast',
-        recipient: registration.contact_email,
+        channel: whatsappConfigured ? 'whatsapp' : 'email',
+        recipient: whatsappConfigured ? registration.contact_phone : registration.contact_email,
         subject: email.subject,
         messagePreview: email.preview,
         relatedStatus: announcement.id,
@@ -2127,7 +2231,9 @@ startBackupWorker();
 
 app.listen(port, () => {
   console.log(`Portal API running on http://localhost:${port}`);
-  if (resendConfigured) {
+  if (whatsappConfigured) {
+    console.log(`WhatsApp notifications enabled via Twilio from ${twilioWhatsappFrom}.`);
+  } else if (resendConfigured) {
     console.log('Transactional emails enabled via Resend API.');
   } else if (brevoConfigured) {
     console.log('Transactional emails enabled via Brevo API.');
@@ -2144,6 +2250,6 @@ app.listen(port, () => {
       }),
     ).catch(() => {});
   } else {
-    console.log('Transactional emails are not configured yet. Add Brevo, Resend, or SMTP settings to enable notifications.');
+    console.log('Notifications are not configured yet. Add Twilio WhatsApp, Brevo, Resend, or SMTP settings to enable notifications.');
   }
 });
