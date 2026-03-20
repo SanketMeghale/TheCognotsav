@@ -1100,6 +1100,19 @@ async function createAnnouncement({
   return result.rows[0] || null;
 }
 
+async function deleteAnnouncement(announcementId) {
+  const result = await pool.query(
+    `
+      DELETE FROM portal_announcements
+      WHERE id = $1
+      RETURNING id
+    `,
+    [String(announcementId || '').trim()],
+  );
+
+  return result.rows[0] || null;
+}
+
 function buildBroadcastEmail(registration, announcement) {
   const eventLine = `${registration.event_name} / ${registration.date_label} / ${registration.time_label}`;
   const salutation = registration.contact_name || registration.team_name || 'Participant';
@@ -1926,6 +1939,26 @@ app.get('/api/admin/registrations', requireAdmin, async (_req, res) => {
 app.get('/api/admin/announcements', requireAdmin, async (_req, res) => {
   const rows = await fetchAnnouncements({ includeExpired: true, limit: 30 });
   res.json(rows);
+});
+
+app.delete('/api/admin/announcements/:id', requireAdmin, async (req, res) => {
+  try {
+    const announcementId = String(req.params.id || '').trim();
+
+    if (!announcementId) {
+      return res.status(400).json({ error: 'Announcement id is required.' });
+    }
+
+    const deletedAnnouncement = await deleteAnnouncement(announcementId);
+    if (!deletedAnnouncement) {
+      return res.status(404).json({ error: 'Announcement not found.' });
+    }
+
+    return res.json({ success: true, id: deletedAnnouncement.id });
+  } catch (error) {
+    console.error('Failed to delete announcement', error);
+    return res.status(500).json({ error: 'Failed to delete announcement.' });
+  }
 });
 
 app.post('/api/admin/broadcasts', requireAdmin, async (req, res) => {

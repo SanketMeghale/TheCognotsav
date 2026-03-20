@@ -1156,6 +1156,35 @@ export const App: React.FC = () => {
     }
   };
 
+  const deleteAdminAnnouncement = async (announcementId: string) => {
+    setAdminError('');
+    try {
+      const response = await fetch(`/api/admin/announcements/${announcementId}`, {
+        method: 'DELETE',
+        headers: {
+          'x-admin-key': adminKey,
+        },
+      });
+
+      const { data, rawText } = await readApiBody<{
+        error?: string;
+        success?: boolean;
+        id?: string;
+      }>(response);
+
+      if (!response.ok) {
+        throw new Error(getApiErrorMessage(response, data, rawText, 'Failed to delete update.'));
+      }
+
+      setAdminAnnouncements((current) => current.filter((announcement) => announcement.id !== announcementId));
+      setAnnouncements((current) => current.filter((announcement) => announcement.id !== announcementId));
+      setToastClosing(false);
+      setToastMessage('Update deleted.');
+    } catch (error) {
+      setAdminError(error instanceof Error ? error.message : 'Failed to delete update.');
+    }
+  };
+
   const runBackup = async () => {
     setAdminError('');
     try {
@@ -1383,6 +1412,7 @@ export const App: React.FC = () => {
           onSaveReviewNote={saveReviewNote}
           onResendStatusEmail={resendAdminStatusEmail}
           onSendBroadcast={sendBroadcast}
+          onDeleteAnnouncement={deleteAdminAnnouncement}
           onRunBackup={runBackup}
           onDownloadBackup={downloadBackupFile}
         />

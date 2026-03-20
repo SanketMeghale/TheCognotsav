@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import {
   Activity, AlertTriangle, ArrowLeft, BarChart3, CheckCircle2, Clock3, Download,
   Eye, FileSpreadsheet, HardDriveDownload, Mail, Megaphone, QrCode,
-  RotateCcw, Save, Search, Send, ShieldCheck, Users, XCircle,
+  RotateCcw, Save, Search, Send, ShieldCheck, Trash2, Users, XCircle,
 } from 'lucide-react';
 import type { AdminNotificationSummary, AdminRegistration, BackupSnapshot, EventRecord, PortalAnnouncement } from './types';
 import { formatBytes, formatCurrency, shellClassName } from './utils';
@@ -23,6 +23,7 @@ type Props = {
   onSaveReviewNote: (registrationId: string, reviewNote: string) => void;
   onResendStatusEmail: (registrationId: string) => void;
   onSendBroadcast: (payload: { title: string; message: string; eventSlug: string; isPinned: boolean }) => void;
+  onDeleteAnnouncement: (announcementId: string) => void;
   onRunBackup: () => void;
   onDownloadBackup: (fileName: string) => void;
 };
@@ -58,7 +59,7 @@ function FloatingField({ label, icon, value, type = 'text', onChange }: { label:
   return <label className="floating-field block"><span className="pointer-events-none absolute left-4 top-[1.15rem] text-cyan-200/70">{icon}</span><input type={type} value={value} onChange={(event) => onChange(event.target.value)} placeholder=" " className="floating-field-input pl-11" /><span className="floating-field-label left-11">{label}</span></label>;
 }
 
-export const AdminRegistrationsPage: React.FC<Props> = ({ adminKey, adminRows, events, announcements, backups, adminLoading, adminError, onAdminKeyChange, onLoadAdminRows, onDownload, onStatusChange, onAttendanceChange, onSaveReviewNote, onResendStatusEmail, onSendBroadcast, onRunBackup, onDownloadBackup }) => {
+export const AdminRegistrationsPage: React.FC<Props> = ({ adminKey, adminRows, events, announcements, backups, adminLoading, adminError, onAdminKeyChange, onLoadAdminRows, onDownload, onStatusChange, onAttendanceChange, onSaveReviewNote, onResendStatusEmail, onSendBroadcast, onDeleteAnnouncement, onRunBackup, onDownloadBackup }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [eventFilter, setEventFilter] = useState('all');
@@ -165,7 +166,7 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminKey, adminRows, e
               {backups.slice(0, 4).map((backup) => <div key={backup.file_name} className="rounded-[1.4rem] border border-white/10 bg-black/20 p-4"><div className="flex flex-wrap items-center justify-between gap-3"><div><p className="font-semibold text-white">{backup.file_name}</p><p className="mt-1 text-sm text-slate-400">{new Date(backup.created_at).toLocaleString()} / {formatBytes(backup.size_bytes)} / {backup.trigger}</p></div><button type="button" onClick={() => onDownloadBackup(backup.file_name)} className="magnetic-button rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white">Download</button></div></div>)}
             </div>
             <div className="mt-5 space-y-3">
-              {announcements.slice(0, 3).map((announcement) => <div key={announcement.id} className="rounded-[1.4rem] border border-white/10 bg-black/20 p-4"><div className="flex flex-wrap items-center gap-2">{announcement.is_pinned ? <span className="rounded-full border border-yellow-300/20 bg-yellow-400/10 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-yellow-100">Pinned</span> : null}{announcement.event_name ? <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-slate-200">{announcement.event_name}</span> : null}</div><p className="mt-3 font-semibold text-white">{announcement.title}</p><p className="mt-2 text-sm text-slate-300">{announcement.message}</p></div>)}
+              {announcements.slice(0, 3).map((announcement) => <div key={announcement.id} className="rounded-[1.4rem] border border-white/10 bg-black/20 p-4"><div className="flex flex-wrap items-start justify-between gap-3"><div className="flex flex-wrap items-center gap-2">{announcement.is_pinned ? <span className="rounded-full border border-yellow-300/20 bg-yellow-400/10 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-yellow-100">Pinned</span> : null}{announcement.event_name ? <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-slate-200">{announcement.event_name}</span> : null}</div><button type="button" onClick={() => onDeleteAnnouncement(announcement.id)} className="magnetic-button inline-flex items-center gap-2 rounded-xl border border-rose-300/18 bg-rose-400/10 px-3 py-2 text-xs font-bold uppercase tracking-[0.16em] text-rose-100"><Trash2 size={14} />Delete</button></div><p className="mt-3 font-semibold text-white">{announcement.title}</p><p className="mt-2 text-sm text-slate-300">{announcement.message}</p></div>)}
             </div>
           </div>
         </div>
