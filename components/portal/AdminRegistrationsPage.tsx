@@ -7,8 +7,13 @@ import {
 import type { AdminAccessScope, AdminNotificationSummary, AdminRegistration, BackupSnapshot, EventRecord, PortalAnnouncement } from './types';
 import { formatBytes, formatCurrency, shellClassName } from './utils';
 
+type AdminAccessMode = 'global' | 'event';
+
 type Props = {
-  adminKey: string;
+  adminAccessMode: AdminAccessMode;
+  adminMainKey: string;
+  adminEventKey: string;
+  adminEventKeySlug: string;
   adminScope: AdminAccessScope | null;
   adminRows: AdminRegistration[];
   events: EventRecord[];
@@ -16,7 +21,10 @@ type Props = {
   backups: BackupSnapshot[];
   adminLoading: boolean;
   adminError: string;
-  onAdminKeyChange: (value: string) => void;
+  onAdminAccessModeChange: (value: AdminAccessMode) => void;
+  onAdminMainKeyChange: (value: string) => void;
+  onAdminEventKeyChange: (value: string) => void;
+  onAdminEventKeySlugChange: (value: string) => void;
   onLoadAdminRows: () => void;
   onDownload: (format: 'csv' | 'xlsx') => void;
   onStatusChange: (registrationId: string, status: 'verified' | 'rejected' | 'pending') => void;
@@ -60,7 +68,7 @@ function FloatingField({ label, icon, value, type = 'text', onChange }: { label:
   return <label className="floating-field block"><span className="pointer-events-none absolute left-4 top-[1.15rem] text-cyan-200/70">{icon}</span><input type={type} value={value} onChange={(event) => onChange(event.target.value)} placeholder=" " className="floating-field-input pl-11" /><span className="floating-field-label left-11">{label}</span></label>;
 }
 
-export const AdminRegistrationsPage: React.FC<Props> = ({ adminKey, adminScope, adminRows, events, announcements, backups, adminLoading, adminError, onAdminKeyChange, onLoadAdminRows, onDownload, onStatusChange, onAttendanceChange, onSaveReviewNote, onResendStatusEmail, onSendBroadcast, onDeleteAnnouncement, onRunBackup, onDownloadBackup }) => {
+export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, adminMainKey, adminEventKey, adminEventKeySlug, adminScope, adminRows, events, announcements, backups, adminLoading, adminError, onAdminAccessModeChange, onAdminMainKeyChange, onAdminEventKeyChange, onAdminEventKeySlugChange, onLoadAdminRows, onDownload, onStatusChange, onAttendanceChange, onSaveReviewNote, onResendStatusEmail, onSendBroadcast, onDeleteAnnouncement, onRunBackup, onDownloadBackup }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [eventFilter, setEventFilter] = useState('all');
@@ -73,11 +81,18 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminKey, adminScope, 
   const [checkInQuery, setCheckInQuery] = useState('');
   const scopedEventSlug = adminScope?.mode === 'event' ? adminScope.event_slug : null;
   const scopedEventName = adminScope?.mode === 'event' ? adminScope.event_name : null;
+  const hasResolvedAccess = Boolean(adminScope);
+  const activeDraftKey = adminAccessMode === 'global' ? adminMainKey : adminEventKey;
+  const selectedDraftEventName = events.find((event) => event.slug === adminEventKeySlug)?.name || '';
+  const canSubmitAccess = adminAccessMode === 'global'
+    ? Boolean(adminMainKey.trim())
+    : Boolean(adminEventKeySlug && adminEventKey.trim());
+  const accessSummary = adminScope?.mode === 'event'
+    ? `Scoped access active for ${scopedEventName || 'the selected event'}. Only that event's entries are visible below.`
+    : 'Main key verified. All event content and organizer controls are available.';
 
   useEffect(() => {
-    if (scopedEventSlug) {
-      setEventFilter(scopedEventSlug);
-    }
+    setEventFilter(scopedEventSlug || 'all');
   }, [scopedEventSlug]);
 
   const counts = useMemo(() => ({ all: adminRows.length, pending: adminRows.filter((row) => row.status === 'pending').length, verified: adminRows.filter((row) => row.status === 'verified').length, waitlisted: adminRows.filter((row) => row.status === 'waitlisted').length, rejected: adminRows.filter((row) => row.status === 'rejected').length }), [adminRows]);
@@ -102,30 +117,74 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminKey, adminScope, 
             <a href="#overview" className="magnetic-button inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200"><ArrowLeft size={16} />Back to portal</a>
             <p className="mt-5 text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Admin workspace</p>
             <h2 className="mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron text-2xl font-black uppercase text-transparent md:text-4xl">Operations dashboard</h2>
-            {adminScope ? (
-              <p className="mt-3 text-sm text-slate-300">
-                {adminScope.mode === 'event'
-                  ? `Scoped access: ${scopedEventName || 'Assigned event'} verification only.`
-                  : 'Global access: all events and organizer controls are available.'}
-              </p>
-            ) : null}
+            <p className="mt-3 text-sm text-slate-300">
+              Use the main key to show all content, or choose a competition and enter its event key to view only that event&apos;s entries.
+            </p>
           </div>
-          <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
-            <a href="#admin-analytics" className="rounded-[1.4rem] border border-cyan-300/14 bg-cyan-400/10 p-4 transition hover:-translate-y-0.5 hover:border-cyan-300/24"><p className="text-xs uppercase tracking-[0.24em] text-cyan-100/80">Registrations</p><p className="mt-2 text-3xl font-black text-white">{counts.all}</p></a>
-            <a href="#admin-analytics" className="rounded-[1.4rem] border border-fuchsia-300/14 bg-fuchsia-400/10 p-4 transition hover:-translate-y-0.5 hover:border-fuchsia-300/24"><p className="text-xs uppercase tracking-[0.24em] text-fuchsia-100/80">Participants</p><p className="mt-2 text-3xl font-black text-white">{totalParticipants}</p></a>
-            <a href="#admin-verification" className="rounded-[1.4rem] border border-emerald-300/14 bg-emerald-400/10 p-4 transition hover:-translate-y-0.5 hover:border-emerald-300/24"><p className="text-xs uppercase tracking-[0.24em] text-emerald-100/80">Verified</p><p className="mt-2 text-3xl font-black text-white">{counts.verified}</p></a>
-            <a href="#admin-analytics" className="rounded-[1.4rem] border border-yellow-300/14 bg-yellow-400/10 p-4 transition hover:-translate-y-0.5 hover:border-yellow-300/24"><p className="text-xs uppercase tracking-[0.24em] text-yellow-100/80">Busiest event</p><p className="mt-2 text-sm font-semibold text-white">{busiestEvent ? `${busiestEvent[0]} (${busiestEvent[1]})` : 'Waiting to load'}</p></a>
-          </div>
+          {hasResolvedAccess ? (
+            <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
+              <a href="#admin-analytics" className="rounded-[1.4rem] border border-cyan-300/14 bg-cyan-400/10 p-4 transition hover:-translate-y-0.5 hover:border-cyan-300/24"><p className="text-xs uppercase tracking-[0.24em] text-cyan-100/80">Registrations</p><p className="mt-2 text-3xl font-black text-white">{counts.all}</p></a>
+              <a href="#admin-analytics" className="rounded-[1.4rem] border border-fuchsia-300/14 bg-fuchsia-400/10 p-4 transition hover:-translate-y-0.5 hover:border-fuchsia-300/24"><p className="text-xs uppercase tracking-[0.24em] text-fuchsia-100/80">Participants</p><p className="mt-2 text-3xl font-black text-white">{totalParticipants}</p></a>
+              <a href="#admin-verification" className="rounded-[1.4rem] border border-emerald-300/14 bg-emerald-400/10 p-4 transition hover:-translate-y-0.5 hover:border-emerald-300/24"><p className="text-xs uppercase tracking-[0.24em] text-emerald-100/80">Verified</p><p className="mt-2 text-3xl font-black text-white">{counts.verified}</p></a>
+              <a href="#admin-analytics" className="rounded-[1.4rem] border border-yellow-300/14 bg-yellow-400/10 p-4 transition hover:-translate-y-0.5 hover:border-yellow-300/24"><p className="text-xs uppercase tracking-[0.24em] text-yellow-100/80">Busiest event</p><p className="mt-2 text-sm font-semibold text-white">{busiestEvent ? `${busiestEvent[0]} (${busiestEvent[1]})` : 'Waiting to load'}</p></a>
+            </div>
+          ) : (
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="rounded-[1.4rem] border border-cyan-300/14 bg-cyan-400/10 p-4">
+                <p className="text-xs uppercase tracking-[0.24em] text-cyan-100/80">Main key</p>
+                <p className="mt-2 text-sm font-semibold text-white">Shows all competitions, backups, broadcast tools, and export controls.</p>
+              </div>
+              <div className="rounded-[1.4rem] border border-fuchsia-300/14 bg-fuchsia-400/10 p-4">
+                <p className="text-xs uppercase tracking-[0.24em] text-fuchsia-100/80">Particular event key</p>
+                <p className="mt-2 text-sm font-semibold text-white">Locks verification access to the selected competition so other event entries stay hidden.</p>
+              </div>
+            </div>
+          )}
         </div>
-        <div className="mt-6 grid gap-4 xl:grid-cols-[1.2fr_auto_auto_auto]">
-          <FloatingField label="Enter admin access key" icon={<ShieldCheck size={18} />} type="password" value={adminKey} onChange={onAdminKeyChange} />
-          <button type="button" onClick={onLoadAdminRows} disabled={adminLoading || !adminKey.trim()} className="animated-gradient-button rounded-2xl px-5 py-3 font-bold text-slate-950 disabled:opacity-60">{adminLoading ? 'Loading...' : 'Load dashboard'}</button>
-          <button type="button" onClick={() => onDownload('csv')} disabled={!adminKey.trim() || adminScope?.can_export === false} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-cyan-300/12 bg-white/5 px-4 py-3 text-sm font-bold text-white disabled:opacity-60"><Download size={16} />CSV</button>
-          <button type="button" onClick={() => onDownload('xlsx')} disabled={!adminKey.trim() || adminScope?.can_export === false} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-fuchsia-300/12 bg-white/5 px-4 py-3 text-sm font-bold text-white disabled:opacity-60"><FileSpreadsheet size={16} />Excel</button>
+        <div className="mt-6 rounded-[1.6rem] border border-white/10 bg-black/20 p-4 md:p-5">
+          <div className="grid gap-3 md:grid-cols-2">
+            <button type="button" onClick={() => onAdminAccessModeChange('global')} className={`rounded-[1.35rem] border px-4 py-4 text-left transition ${adminAccessMode === 'global' ? 'border-cyan-300/28 bg-cyan-400/12 text-white' : 'border-white/10 bg-white/5 text-slate-200'}`}>
+              <p className="text-xs uppercase tracking-[0.22em] text-cyan-100/80">Option 1</p>
+              <p className="mt-2 text-lg font-bold text-white">Main key</p>
+              <p className="mt-2 text-sm text-slate-300">Use the organizer&apos;s main key to unlock all admin content.</p>
+            </button>
+            <button type="button" onClick={() => onAdminAccessModeChange('event')} className={`rounded-[1.35rem] border px-4 py-4 text-left transition ${adminAccessMode === 'event' ? 'border-fuchsia-300/28 bg-fuchsia-400/12 text-white' : 'border-white/10 bg-white/5 text-slate-200'}`}>
+              <p className="text-xs uppercase tracking-[0.22em] text-fuchsia-100/80">Option 2</p>
+              <p className="mt-2 text-lg font-bold text-white">Particular event key</p>
+              <p className="mt-2 text-sm text-slate-300">Pick one competition and open only that event&apos;s verification entries.</p>
+            </button>
+          </div>
+
+          <div className={`mt-4 grid gap-4 ${adminAccessMode === 'event' ? 'xl:grid-cols-[0.9fr_1.1fr_auto]' : 'xl:grid-cols-[1.1fr_auto]'}`}>
+            {adminAccessMode === 'event' ? (
+              <label className="block rounded-[1.4rem] border border-white/10 bg-white/5 p-4">
+                <span className="mb-2 block text-sm text-slate-200">Select competition</span>
+                <select value={adminEventKeySlug} onChange={(event) => onAdminEventKeySlugChange(event.target.value)} className="floating-field-input">
+                  <option value="">Choose an event</option>
+                  {events.map((event) => <option key={event.slug} value={event.slug}>{event.name}</option>)}
+                </select>
+                <p className="mt-3 text-xs text-slate-400">{selectedDraftEventName ? `Key will be matched against ${selectedDraftEventName}.` : 'Each competition can have its own verification key.'}</p>
+              </label>
+            ) : null}
+            <FloatingField label={adminAccessMode === 'global' ? 'Enter main admin key' : 'Enter selected event key'} icon={<ShieldCheck size={18} />} type="password" value={activeDraftKey} onChange={adminAccessMode === 'global' ? onAdminMainKeyChange : onAdminEventKeyChange} />
+            <button type="button" onClick={onLoadAdminRows} disabled={adminLoading || !canSubmitAccess} className="animated-gradient-button rounded-2xl px-5 py-3 font-bold text-slate-950 disabled:opacity-60">{adminLoading ? 'Verifying...' : adminAccessMode === 'global' ? 'Show all content' : 'Open event verification'}</button>
+          </div>
+          {hasResolvedAccess ? (
+            <div className="mt-4 flex flex-wrap items-center gap-3">
+              <div className="flex-1 rounded-2xl border border-emerald-300/18 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-100">{accessSummary}</div>
+              <button type="button" onClick={() => onDownload('csv')} disabled={adminScope?.can_export === false} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-cyan-300/12 bg-white/5 px-4 py-3 text-sm font-bold text-white disabled:opacity-60"><Download size={16} />CSV</button>
+              <button type="button" onClick={() => onDownload('xlsx')} disabled={adminScope?.can_export === false} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-fuchsia-300/12 bg-white/5 px-4 py-3 text-sm font-bold text-white disabled:opacity-60"><FileSpreadsheet size={16} />Excel</button>
+            </div>
+          ) : (
+            <div className="mt-4 rounded-2xl border border-dashed border-white/10 bg-black/10 px-4 py-3 text-sm text-slate-400">
+              Dashboard content stays hidden until a valid key is verified.
+            </div>
+          )}
         </div>
         {adminError ? <div className="mt-5 rounded-2xl border border-rose-400/25 bg-gradient-to-r from-rose-500/14 to-orange-500/8 px-4 py-3 text-sm text-rose-100">{adminError}</div> : null}
       </section>
-
+      {hasResolvedAccess ? (
+        <>
       <div className="flex flex-wrap gap-2">
         <a href="#admin-analytics" className="magnetic-button rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Analytics</a>
         <a href="#admin-verification" className="magnetic-button rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Verification</a>
@@ -295,6 +354,16 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminKey, adminScope, 
       </section>
 
       {proofModal ? <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(5,8,16,0.88)] px-4 py-6 backdrop-blur-md"><div className="max-h-[92vh] w-full max-w-5xl overflow-auto rounded-[2rem] border border-white/10 bg-[linear-gradient(145deg,rgba(12,20,35,0.98),rgba(18,27,45,0.96))] p-5 md:p-6"><div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-[11px] uppercase tracking-[0.3em] text-cyan-200/80">Payment proof zoom</p><h4 className="mt-2 text-xl font-bold text-white">{proofModal.team_name}</h4></div><button type="button" onClick={() => setProofModal(null)} className="magnetic-button rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white">Close</button></div><div className="mt-5 grid gap-5 lg:grid-cols-[1.1fr_0.9fr]"><div className="overflow-hidden rounded-[1.6rem] border border-white/10 bg-black/20 p-3"><img src={proofModal.payment_screenshot_path || ''} alt={`${proofModal.team_name} payment proof`} className="w-full rounded-[1.2rem] object-contain" /></div><div className="space-y-4"><div className="rounded-[1.4rem] border border-white/10 bg-black/20 p-4"><p className="text-xs uppercase tracking-[0.2em] text-slate-400">Reference</p><p className="mt-2 break-all font-semibold text-white">{proofModal.payment_reference || 'No payment reference'}</p></div><div className="rounded-[1.4rem] border border-white/10 bg-black/20 p-4"><p className="text-xs uppercase tracking-[0.2em] text-slate-400">Contact</p><p className="mt-2 text-white">{proofModal.contact_name}</p><p className="mt-1 text-slate-300">{proofModal.contact_email}</p><p className="mt-1 text-slate-300">{proofModal.contact_phone}</p></div></div></div></div></div> : null}
+        </>
+      ) : (
+        <section className="portal-glow-card portal-glass rounded-[1.5rem] p-5 md:rounded-[2rem] md:p-8">
+          <p className="text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Access required</p>
+          <h3 className="mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron text-3xl font-black uppercase text-transparent">Dashboard hidden until key verification</h3>
+          <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-200">
+            Enter the main key to show all admin content, or select a competition and use its particular event key to open only that event&apos;s entries.
+          </p>
+        </section>
+      )}
       </main>
   );
 };

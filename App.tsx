@@ -303,6 +303,8 @@ function buildValidationErrors(
 }
 
 export const App: React.FC = () => {
+  type AdminAccessMode = 'global' | 'event';
+
   const [events, setEvents] = useState<EventRecord[]>([]);
   const [portalAlerts, setPortalAlerts] = useState<PortalAlert[]>([]);
   const [announcements, setAnnouncements] = useState<PortalAnnouncement[]>([]);
@@ -321,6 +323,10 @@ export const App: React.FC = () => {
   const [successReceipt, setSuccessReceipt] = useState<RegistrationReceipt | null>(null);
   const [draftRecovered, setDraftRecovered] = useState(false);
   const [adminKey, setAdminKey] = useState('');
+  const [adminAccessMode, setAdminAccessMode] = useState<AdminAccessMode>('global');
+  const [adminMainKeyDraft, setAdminMainKeyDraft] = useState('');
+  const [adminEventKeyDraft, setAdminEventKeyDraft] = useState('');
+  const [adminEventKeySlug, setAdminEventKeySlug] = useState('');
   const [adminRows, setAdminRows] = useState<AdminRegistration[]>([]);
   const [backupSnapshots, setBackupSnapshots] = useState<BackupSnapshot[]>([]);
   const [adminAnnouncements, setAdminAnnouncements] = useState<PortalAnnouncement[]>([]);
@@ -947,18 +953,39 @@ export const App: React.FC = () => {
   };
 
   const loadAdminRows = async () => {
+    const requestedKey =
+      adminAccessMode === 'global' ? adminMainKeyDraft.trim() : adminEventKeyDraft.trim();
+
+    if (!requestedKey) {
+      setAdminError(
+        adminAccessMode === 'global'
+          ? 'Enter the main admin key to open the full dashboard.'
+          : 'Enter the selected event key to open scoped verification access.',
+      );
+      return;
+    }
+
+    if (adminAccessMode === 'event' && !adminEventKeySlug) {
+      setAdminError('Select the competition before entering the event verification key.');
+      return;
+    }
+
     setAdminLoading(true);
     setAdminError('');
+    setAdminRows([]);
+    setAdminAnnouncements([]);
+    setBackupSnapshots([]);
+    setAdminScope(null);
     try {
       const [rowsResponse, announcementsResponse, backupsResponse] = await Promise.all([
         fetch('/api/admin/registrations', {
-          headers: { 'x-admin-key': adminKey },
+          headers: { 'x-admin-key': requestedKey },
         }),
         fetch('/api/admin/announcements', {
-          headers: { 'x-admin-key': adminKey },
+          headers: { 'x-admin-key': requestedKey },
         }),
         fetch('/api/admin/backups', {
-          headers: { 'x-admin-key': adminKey },
+          headers: { 'x-admin-key': requestedKey },
         }),
       ]);
 
@@ -981,6 +1008,30 @@ export const App: React.FC = () => {
         throw new Error('Failed to load registrations. The server returned an invalid response.');
       }
 
+      const access = Array.isArray(rowsPayload) ? null : rowsPayload?.access || null;
+
+      if (!access) {
+        throw new Error('The admin access scope was missing from the server response.');
+      }
+
+      if (adminAccessMode === 'global' && access.mode !== 'global') {
+        throw new Error('This is not the main admin key. Use the main key to show all content.');
+      }
+
+      if (adminAccessMode === 'event') {
+        if (access.mode !== 'event') {
+          throw new Error('This key has full-dashboard access. Switch to the main key option to use it.');
+        }
+
+        if (access.event_slug !== adminEventKeySlug) {
+          const selectedEventName =
+            events.find((event) => event.slug === adminEventKeySlug)?.name || 'the selected event';
+          throw new Error(
+            `This event key belongs to ${access.event_name || 'another event'}, not ${selectedEventName}.`,
+          );
+        }
+      }
+
       if (!announcementsResponse.ok) {
         throw new Error(getApiErrorMessage(announcementsResponse, announcementsPayload, announcementsText, 'Failed to load announcements.'));
       }
@@ -989,11 +1040,13 @@ export const App: React.FC = () => {
         throw new Error(getApiErrorMessage(backupsResponse, backupsPayload, backupsText, 'Failed to load backups.'));
       }
 
+      setAdminKey(requestedKey);
       setAdminRows(rows);
       setAdminAnnouncements(Array.isArray(announcementsPayload) ? announcementsPayload : []);
       setBackupSnapshots(Array.isArray(backupsPayload) ? backupsPayload : []);
-      setAdminScope(Array.isArray(rowsPayload) ? null : rowsPayload?.access || null);
+      setAdminScope(access);
     } catch (error) {
+      setAdminKey('');
       setAdminRows([]);
       setAdminAnnouncements([]);
       setBackupSnapshots([]);
@@ -1445,7 +1498,10 @@ export const App: React.FC = () => {
       </header>
       {isAdminPage ? (
         <AdminRegistrationsPage
-          adminKey={adminKey}
+          adminAccessMode={adminAccessMode}
+          adminMainKey={adminMainKeyDraft}
+          adminEventKey={adminEventKeyDraft}
+          adminEventKeySlug={adminEventKeySlug}
           adminScope={adminScope}
           adminRows={adminRows}
           events={events}
@@ -1453,9 +1509,21 @@ export const App: React.FC = () => {
           backups={backupSnapshots}
           adminLoading={adminLoading}
           adminError={adminError}
-          onAdminKeyChange={(value) => {
-            setAdminKey(value);
-            setAdminScope(null);
+          onAdminAccessModeChange={(value) => {
+            setAdminAccessMode(value);
+            setAdminError('');
+          }}
+          onAdminMainKeyChange={(value) => {
+            setAdminMainKeyDraft(value);
+            setAdminError('');
+          }}
+          onAdminEventKeyChange={(value) => {
+            setAdminEventKeyDraft(value);
+            setAdminError('');
+          }}
+          onAdminEventKeySlugChange={(value) => {
+            setAdminEventKeySlug(value);
+            setAdminError('');
           }}
           onLoadAdminRows={loadAdminRows}
           onDownload={downloadAdminFile}

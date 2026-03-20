@@ -77,7 +77,7 @@ You can optionally define separate event verification passwords using `EVENT_ADM
 
 Example:
 
-`{"techxcelerate":"techx-verify-2026","runbhumi-bgmi":"bgmi-verify-2026"}`
+`{"tech-kbc":"tech-kbc-verify-2026","bgmi-esports":"bgmi-esports-verify-2026","ff-esports":"ff-esports-verify-2026","squid-game":"squid-game-verify-2026","rang-manch":"rang-manch-verify-2026","googler-hunt":"googler-hunt-verify-2026","techxcelerate":"techxcelerate-verify-2026","utopia":"utopia-verify-2026"}`
 
 Behavior:
 
