@@ -79,7 +79,6 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
   const [broadcastMessage, setBroadcastMessage] = useState('');
   const [broadcastEventSlug, setBroadcastEventSlug] = useState('');
   const [broadcastPinned, setBroadcastPinned] = useState(true);
-  const [checkInQuery, setCheckInQuery] = useState('');
   const [exportEventSlug, setExportEventSlug] = useState('all');
   const scopedEventSlug = adminScope?.mode === 'event' ? adminScope.event_slug : null;
   const scopedEventName = adminScope?.mode === 'event' ? adminScope.event_name : null;
@@ -113,7 +112,6 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
   })).filter((event) => event.total > 0), [adminRows, events]);
   const filteredRows = useMemo(() => adminRows.filter((row) => (statusFilter === 'all' || row.status === statusFilter) && (eventFilter === 'all' || row.event_slug === eventFilter) && [row.registration_code, row.team_name, row.contact_name, row.contact_email, row.event_name, row.review_note ?? '', row.payment_reference ?? ''].some((value) => value.toLowerCase().includes(searchQuery.trim().toLowerCase()))), [adminRows, eventFilter, searchQuery, statusFilter]);
   const totalParticipants = adminRows.reduce((sum, row) => sum + row.participants.length, 0);
-  const checkInRows = adminRows.filter((row) => row.status === 'verified' || row.attendance_status !== 'registered').filter((row) => [row.registration_code, row.team_name, row.contact_name, row.contact_email].some((value) => value.toLowerCase().includes(checkInQuery.trim().toLowerCase()))).slice(0, 6);
   const busiestEvent = useMemo(() => Object.entries(adminRows.reduce<Record<string, number>>((collection, row) => ({ ...collection, [row.event_name]: (collection[row.event_name] || 0) + 1 }), {})).sort((left, right) => right[1] - left[1])[0] || null, [adminRows]);
   const approvalRate = counts.all ? Math.round((counts.verified / counts.all) * 100) : 0;
   const topTrackedEvents = useMemo(() => [...eventBuckets].sort((left, right) => right.total - left.total).slice(0, 4), [eventBuckets]);
@@ -203,7 +201,6 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
         <a href="#admin-analytics" className="magnetic-button rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Analytics</a>
         <a href="#admin-verification" className="magnetic-button rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Verification</a>
         {canShowBroadcastTools ? <a href="#admin-broadcast" className="magnetic-button rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Broadcast</a> : null}
-        <a href="#admin-checkin" className="magnetic-button rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Check-in</a>
       </div>
 
       <section id="admin-analytics" className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
@@ -265,36 +262,6 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
               {announcements.slice(0, 3).map((announcement) => <div key={announcement.id} className="rounded-[1.4rem] border border-white/10 bg-black/20 p-4"><div className="flex flex-wrap items-start justify-between gap-3"><div className="flex flex-wrap items-center gap-2">{announcement.is_pinned ? <span className="rounded-full border border-yellow-300/20 bg-yellow-400/10 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-yellow-100">Pinned</span> : null}{announcement.event_name ? <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-slate-200">{announcement.event_name}</span> : null}</div><button type="button" onClick={() => onDeleteAnnouncement(announcement.id)} className="magnetic-button inline-flex items-center gap-2 rounded-xl border border-rose-300/18 bg-rose-400/10 px-3 py-2 text-xs font-bold uppercase tracking-[0.16em] text-rose-100"><Trash2 size={14} />Delete</button></div><p className="mt-3 font-semibold text-white">{announcement.title}</p><p className="mt-2 text-sm text-slate-300">{announcement.message}</p></div>)}
             </div>
           </div> : null}
-        </div>
-      </section>
-
-      <section id="admin-checkin" data-reveal="up" className="portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-6">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <p className="text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Event-day check-in</p>
-            <h3 className="mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron text-3xl font-black uppercase text-transparent">QR / code desk</h3>
-            <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-200">Paste a scanned QR value or search the registration code to mark attendance instantly.</p>
-          </div>
-          <div className="w-full max-w-xl"><FloatingField label="Search code, team, or email" icon={<Search size={18} />} value={checkInQuery} onChange={setCheckInQuery} /></div>
-        </div>
-        <div className="mt-6 grid gap-4 xl:grid-cols-2">
-          {checkInRows.map((row) => (
-            <article key={`checkin-${row.id}`} className="rounded-[1.5rem] border border-white/10 bg-black/20 p-5">
-              <div className="flex flex-wrap items-center gap-3">
-                <p className="text-lg font-bold text-white">{row.team_name}</p>
-                <span className={`rounded-full border px-3 py-1 text-xs uppercase tracking-[0.2em] ${statusStyles[row.status] || 'border-white/10 bg-white/5 text-white'}`}>{prettyStatus(row.status)}</span>
-                <span className={`rounded-full border px-3 py-1 text-xs uppercase tracking-[0.2em] ${attendanceStyles[row.attendance_status] || 'border-white/10 bg-white/5 text-white'}`}>{prettyStatus(row.attendance_status)}</span>
-              </div>
-              <p className="mt-2 text-sm text-slate-300">{row.registration_code} / {row.event_name}</p>
-              <div className="mt-4 grid gap-2 sm:grid-cols-4">
-                {(['arrived', 'checked-in', 'completed', 'absent'] as const).map((value) => (
-                  <button key={`${row.id}-${value}`} type="button" onClick={() => onAttendanceChange(row.id, value)} className="magnetic-button rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white">
-                    {prettyStatus(value)}
-                  </button>
-                ))}
-              </div>
-            </article>
-          ))}
         </div>
       </section>
 
