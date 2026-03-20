@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
-  ArrowLeft, ArrowRight, Clock3, Copy, CreditCard, ExternalLink,
+  ArrowLeft, ArrowRight, CheckCircle2, Clock3, Copy, CreditCard, Download, ExternalLink,
   MapPin, Phone, QrCode, Save, ShieldCheck, Sparkles, Trophy, Upload, Users,
 } from 'lucide-react';
 import type { EventRecord, ParticipantDraft, RegistrationReceipt } from './types';
@@ -146,11 +146,37 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   onDismissDraftRecovered, onFieldBlur, onPaymentScreenshotChange, onTeamSizeChange,
   onFormFieldChange, onParticipantChange, onSubmit,
 }) => {
+  const passCardRef = useRef<HTMLDivElement | null>(null);
+  const [codeCopied, setCodeCopied] = useState(false);
   const showError = (field: string) => (touchedFields[field] ? validationErrors[field] : '');
   const selectedTheme = selectedEvent ? categoryThemes[selectedEvent.category] || categoryThemes.Technical : categoryThemes.Technical;
   const selectedHandbook = selectedEvent ? handbookBySlug[selectedEvent.slug] : null;
   const upiLink = selectedEvent?.payment_upi ? `upi://pay?pa=${selectedEvent.payment_upi}&pn=${encodeURIComponent(selectedEvent.payment_payee || selectedEvent.name)}&am=${selectedEvent.registration_fee}&cu=INR&tn=${encodeURIComponent(selectedEvent.name)}` : '';
   const qrUrl = upiLink ? `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(upiLink)}` : '';
+
+  useEffect(() => {
+    setCodeCopied(false);
+  }, [successReceipt?.registrationCode]);
+
+  useEffect(() => {
+    if (!successReceipt || !passCardRef.current || typeof window === 'undefined') return;
+
+    const animationFrame = window.requestAnimationFrame(() => {
+      passCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      passCardRef.current?.focus({ preventScroll: true });
+    });
+
+    return () => window.cancelAnimationFrame(animationFrame);
+  }, [successReceipt]);
+
+  const handleCopyCode = async (code: string) => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCodeCopied(true);
+    } catch {
+      setCodeCopied(false);
+    }
+  };
 
   if (!selectedEvent) {
     return (
@@ -418,6 +444,86 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                 {submitting ? 'Submitting registration...' : 'Submit registration'}
                 <ArrowRight size={18} />
               </button>
+
+              {successReceipt ? (
+                <div
+                  ref={passCardRef}
+                  tabIndex={-1}
+                  className="rounded-[1.55rem] border border-emerald-300/20 bg-[linear-gradient(145deg,rgba(4,28,38,0.92),rgba(14,23,39,0.96))] p-4 text-slate-100 shadow-[0_24px_70px_rgba(16,185,129,0.14)] outline-none"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="rounded-2xl bg-emerald-400/15 p-3 text-emerald-200">
+                      <CheckCircle2 size={20} />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[10px] uppercase tracking-[0.22em] text-emerald-200/80">Registration Successful</p>
+                      <h3 className="mt-2 text-lg font-black text-white">Pass Ready Below The Register Button</h3>
+                      <p className="mt-2 text-sm leading-6 text-slate-300">
+                        Download the pass now and keep the registration code ready for event-day verification.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 rounded-[1.2rem] border border-cyan-300/16 bg-cyan-400/10 p-4">
+                    <p className="text-[10px] uppercase tracking-[0.18em] text-cyan-100/80">Registration Code</p>
+                    <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <p className="break-all text-lg font-black tracking-[0.08em] text-white">{successReceipt.registrationCode}</p>
+                      <button
+                        type="button"
+                        onClick={() => handleCopyCode(successReceipt.registrationCode)}
+                        className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.08] px-4 py-2 text-sm font-semibold text-white"
+                      >
+                        <Copy size={15} />
+                        {codeCopied ? 'Code copied' : 'Copy code'}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                    <div className="rounded-[1.15rem] border border-white/10 bg-white/[0.05] p-4">
+                      <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400">Competition</p>
+                      <p className="mt-2 text-sm font-semibold text-white">{successReceipt.eventName}</p>
+                    </div>
+                    <div className="rounded-[1.15rem] border border-white/10 bg-white/[0.05] p-4">
+                      <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400">Team / Participant</p>
+                      <p className="mt-2 text-sm font-semibold text-white">{successReceipt.teamName}</p>
+                    </div>
+                    <div className="rounded-[1.15rem] border border-white/10 bg-white/[0.05] p-4">
+                      <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400">Schedule</p>
+                      <p className="mt-2 text-sm font-semibold text-white">{successReceipt.dateLabel}</p>
+                      <p className="mt-1 text-sm text-slate-300">{successReceipt.timeLabel}</p>
+                    </div>
+                    <div className="rounded-[1.15rem] border border-white/10 bg-white/[0.05] p-4">
+                      <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400">Venue</p>
+                      <p className="mt-2 text-sm font-semibold text-white">{successReceipt.venue}</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 rounded-[1.15rem] border border-white/10 bg-black/20 p-4 text-sm leading-7 text-slate-300">
+                    <p className="font-semibold text-white">Short instructions</p>
+                    <p className="mt-2">Download the pass, keep the code safe, and also check your email after admin verification for the final pass copy.</p>
+                  </div>
+
+                  <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+                    <button
+                      type="button"
+                      onClick={() => onDownloadPass(successReceipt)}
+                      className="animated-gradient-button inline-flex flex-1 items-center justify-center gap-2 rounded-2xl px-5 py-3 font-bold text-slate-950"
+                    >
+                      <Download size={16} />
+                      Download Pass
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleCopyCode(successReceipt.registrationCode)}
+                      className="magnetic-button inline-flex flex-1 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.05] px-5 py-3 font-semibold text-white"
+                    >
+                      <Copy size={16} />
+                      {codeCopied ? 'Code copied' : 'Copy Registration Code'}
+                    </button>
+                  </div>
+                </div>
+              ) : null}
 
               <div className="rounded-[1.35rem] border border-white/10 bg-black/20 p-4 text-sm text-slate-300">
                 <div className="flex items-center gap-2 text-white">
