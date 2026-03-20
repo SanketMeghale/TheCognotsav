@@ -384,11 +384,22 @@ img {
 }
 
 .portal-front-hero__visual-card {
+  position: relative;
   overflow: hidden;
   border-radius: 2rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(8, 12, 20, 0.9));
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28);
+}
+
+.portal-front-hero__visual-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.14), transparent 34%),
+    linear-gradient(180deg, transparent 0%, rgba(5, 10, 20, 0.72) 100%);
+  pointer-events: none;
 }
 
 .portal-front-hero__visual-image {
@@ -576,33 +587,33 @@ img {
   }
 
   .portal-festival-counter__board {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.55rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.4rem;
   }
 
   .portal-festival-counter__card {
-    padding-top: 2.3rem;
-    border-radius: 1rem;
+    padding-top: 1.95rem;
+    border-radius: 0.9rem;
   }
 
   .portal-festival-counter__balloon {
-    height: 2rem;
-    width: 2rem;
+    height: 1.7rem;
+    width: 1.7rem;
   }
 
   .portal-festival-counter__stick {
-    height: 1.65rem;
+    height: 1.32rem;
   }
 
   .portal-festival-counter__number {
-    padding: 0.8rem 0.35rem 0.05rem;
-    font-size: 1.18rem;
+    padding: 0.68rem 0.18rem 0.02rem;
+    font-size: 0.95rem;
   }
 
   .portal-festival-counter__label {
-    padding-bottom: 0.65rem;
-    font-size: 0.5rem;
-    letter-spacing: 0.14em;
+    padding-bottom: 0.5rem;
+    font-size: 0.42rem;
+    letter-spacing: 0.08em;
   }
 
   .portal-front-hero__visual-image {
@@ -614,7 +625,7 @@ img {
   }
 
   .portal-competition-card__media {
-    min-height: 17rem;
+    min-height: 18rem;
   }
 
   .portal-competition-card__body {
@@ -1038,12 +1049,42 @@ select.floating-field-input option {
 }
 
 .portal-front-hero {
+  position: relative;
   display: grid;
   gap: 1rem;
 }
 
+.portal-front-hero::before,
+.portal-front-hero::after {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  border-radius: 999px;
+  filter: blur(32px);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.portal-front-hero::before {
+  top: -1rem;
+  right: 8%;
+  width: 7rem;
+  height: 7rem;
+  background: rgba(59, 130, 246, 0.34);
+}
+
+.portal-front-hero::after {
+  bottom: 1rem;
+  left: 5%;
+  width: 6rem;
+  height: 6rem;
+  background: rgba(168, 85, 247, 0.3);
+}
+
 .portal-front-hero__content,
 .portal-front-hero__panel {
+  position: relative;
+  z-index: 1;
   border-radius: 2rem;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(9, 13, 24, 0.82));
@@ -1051,6 +1092,7 @@ select.floating-field-input option {
 }
 
 .portal-front-hero__content {
+  min-width: 0;
   text-align: left;
 }
 
@@ -1484,33 +1526,40 @@ select.floating-field-input option {
   }
 
   .portal-festival-counter__board {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.5rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.32rem;
   }
 
   .portal-festival-counter__card {
-    padding-top: 2.15rem;
+    padding-top: 1.85rem;
   }
 
   .portal-festival-counter__balloon {
-    height: 1.8rem;
-    width: 1.8rem;
+    height: 1.55rem;
+    width: 1.55rem;
   }
 
   .portal-festival-counter__stick {
-    height: 1.5rem;
+    height: 1.2rem;
   }
 
   .portal-festival-counter__number {
-    font-size: 1.05rem;
+    padding: 0.6rem 0.12rem 0.02rem;
+    font-size: 0.84rem;
   }
 
   .portal-festival-counter__label {
-    font-size: 0.48rem;
+    padding-bottom: 0.42rem;
+    font-size: 0.38rem;
+    letter-spacing: 0.04em;
   }
 
   .portal-front-hero__visual-image {
     min-height: 10rem;
+  }
+
+  .portal-competition-card__media {
+    min-height: 16rem;
   }
 
   .portal-update-marquee__pill {
