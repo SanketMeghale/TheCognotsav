@@ -212,6 +212,13 @@ img {
   color: rgba(125, 211, 252, 0.84);
 }
 
+.portal-hero-topbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.85rem;
+}
+
 .portal-section-divider {
   position: relative;
   height: 1.5rem;
@@ -387,10 +394,10 @@ img {
   position: absolute;
   left: 50%;
   top: -0.2rem;
-  width: 2px;
+  width: 0;
   height: 2.35rem;
   transform: translateX(-50%);
-  background: rgba(255, 255, 255, 0.65);
+  background: transparent;
 }
 
 .portal-festival-counter__number {
@@ -633,6 +640,10 @@ img {
   .portal-legacy-badge {
     width: 100%;
     justify-content: flex-start;
+  }
+
+  .portal-hero-topbar {
+    align-items: flex-start;
   }
 
   .portal-legacy-title {
@@ -1593,6 +1604,10 @@ select.floating-field-input option {
   .portal-legacy-badge {
     gap: 0.65rem;
     padding: 0.5rem 0.65rem;
+  }
+
+  .portal-hero-topbar {
+    gap: 0.65rem;
   }
 
   .portal-legacy-title {

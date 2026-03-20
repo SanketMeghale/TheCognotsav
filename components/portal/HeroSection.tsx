@@ -49,16 +49,18 @@ export const HeroSection: React.FC<Props> = ({ totalEvents, totalRegistrations, 
     <section id="overview" className={`${shellClassName} pt-3 pb-2 md:pt-5 md:pb-4`}>
       <div className="portal-front-hero">
         <div className="portal-front-hero__content">
-          <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/18 bg-cyan-400/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-cyan-100">
-            <Sparkles size={14} />
-            Official Festival Registration
-          </div>
+          <div className="portal-hero-topbar">
+            <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/18 bg-cyan-400/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-cyan-100">
+              <Sparkles size={14} />
+              Official Festival Registration
+            </div>
 
-          <div className="portal-legacy-badge mt-5">
-            <img src="/images/ceasposter.jpeg" alt="CEAS COGNOTSAV logo" className="h-11 w-11 rounded-[0.95rem] object-cover" />
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.24em] text-cyan-200/70">CEAS COGNOTSAV 2026</p>
-              <p className="text-sm font-semibold text-white">Computer Engineering Association</p>
+            <div className="portal-legacy-badge">
+              <img src="/images/ceasposter.jpeg" alt="CEAS COGNOTSAV logo" className="h-11 w-11 rounded-[0.95rem] object-cover" />
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.24em] text-cyan-200/70">CEAS COGNOTSAV 2026</p>
+                <p className="text-sm font-semibold text-white">Computer Engineering Association</p>
+              </div>
             </div>
           </div>
 
@@ -75,10 +77,7 @@ export const HeroSection: React.FC<Props> = ({ totalEvents, totalRegistrations, 
 
           <div className="mt-5 space-y-5">
             <p className="max-w-3xl text-sm leading-7 text-slate-300 sm:text-base">
-              COGNOTSAV is the flagship tech fest of the Computer Engineering Department at Dr. Vithalrao Vikhe Patil College of Engineering, Ahilyanagar, celebrating innovation, skills, and competitive spirit.
-            </p>
-            <p className="max-w-3xl text-sm leading-7 text-slate-300 sm:text-base">
-              From competitions and esports to project exhibitions and UTOPIA, it brings students together to create, compete, and go beyond the classroom.
+              COGNOTSAV is the flagship tech fest of the Computer Engineering Department at Dr. Vithalrao Vikhe Patil College of Engineering, Ahilyanagar, bringing students together to innovate, compete, and go beyond the classroom through competitions, esports, exhibitions, and UTOPIA.
             </p>
           </div>
 
