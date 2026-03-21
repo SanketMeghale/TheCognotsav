@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowRight, Bell, CheckCircle2, House, Menu, Search, Trophy, X } from 'lucide-react';
+import { ArrowRight, Bell, CheckCircle2, Clock3, House, Search, ShieldCheck, Trophy } from 'lucide-react';
 import { AdminRegistrationsPage } from './components/portal/AdminRegistrationsPage.tsx';
 import { AnnouncementArchiveSection } from './components/portal/AnnouncementArchiveSection.tsx';
 import { HeroSection } from './components/portal/HeroSection.tsx';
@@ -742,12 +742,14 @@ export const App: React.FC = () => {
   const isAdminPage = hashRoute.startsWith('#admin-registrations');
   const isTimelinePage = hashRoute === '#timeline';
   const isEventPage = Boolean(eventPageSlug);
-  const showFrontBottomDock = !isAdminPage && !isTimelinePage && !isEventPage;
+  const showFrontBottomDock = !isAdminPage && !isEventPage;
   const activeBottomDock =
     !hashRoute || hashRoute === '#overview'
       ? 'home'
       : hashRoute.startsWith('#registration-panel')
         ? 'events'
+        : hashRoute === '#timeline'
+          ? 'timeline'
         : hashRoute.startsWith('#tracker')
           ? 'tracker'
           : hashRoute.startsWith('#announcement-archive')
@@ -1492,11 +1494,16 @@ export const App: React.FC = () => {
           <button
             type="button"
             onClick={() => setMobileMenuOpen((current) => !current)}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.06] text-slate-100 lg:hidden"
+            className="portal-mobile-admin-trigger lg:hidden"
             aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
             aria-expanded={mobileMenuOpen}
           >
-            {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+            <span className="portal-mobile-admin-trigger__image-frame">
+              <img src="/images/ceasposter.jpeg" alt="Admin access" className="portal-mobile-admin-trigger__image" />
+            </span>
+            <span className="portal-mobile-admin-trigger__badge">
+              <ShieldCheck size={11} />
+            </span>
           </button>
         </div>
 
@@ -1626,8 +1633,6 @@ export const App: React.FC = () => {
         </>
       )}
 
-      <PortalFooter />
-
       {showFrontBottomDock ? (
         <>
           <div className="portal-bottom-dock-spacer" aria-hidden="true" />
@@ -1648,6 +1653,14 @@ export const App: React.FC = () => {
               >
                 <Trophy size={18} />
                 <span>Events</span>
+              </a>
+              <a
+                href="#timeline"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`portal-bottom-dock__item ${activeBottomDock === 'timeline' ? 'is-active' : ''}`}
+              >
+                <Clock3 size={18} />
+                <span>Timeline</span>
               </a>
 
               <div className="portal-bottom-dock__logo-slot" aria-hidden="true">
@@ -1678,6 +1691,8 @@ export const App: React.FC = () => {
           </div>
         </>
       ) : null}
+
+      <PortalFooter />
 
     </div>
   );
