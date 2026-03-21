@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowRight, Bell, CheckCircle2, Clock3, House, Search, ShieldCheck, Trophy } from 'lucide-react';
+import { ArrowRight, Bell, CheckCircle2, Clock3, House, Menu, Search, ShieldCheck, Trophy, X } from 'lucide-react';
 import { AdminRegistrationsPage } from './components/portal/AdminRegistrationsPage.tsx';
 import { AnnouncementArchiveSection } from './components/portal/AnnouncementArchiveSection.tsx';
 import { HeroSection } from './components/portal/HeroSection.tsx';
@@ -511,6 +511,8 @@ export const App: React.FC = () => {
   const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>({});
   const [toastMessage, setToastMessage] = useState('');
   const [toastClosing, setToastClosing] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [navScrolled, setNavScrolled] = useState(false);
   const [form, setForm] = useState<FormState>({
     teamName: '',
     collegeName: '',
@@ -523,6 +525,20 @@ export const App: React.FC = () => {
     notes: '',
     participants: makeParticipants(1),
   });
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setNavScrolled(window.scrollY > 18);
+    };
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    setMobileNavOpen(false);
+  }, [hashRoute]);
 
   useEffect(() => {
     const loadEvents = async () => {
@@ -742,6 +758,14 @@ export const App: React.FC = () => {
   const isTimelinePage = hashRoute === '#timeline';
   const isEventPage = Boolean(eventPageSlug);
   const showFrontBottomDock = !isAdminPage && !isEventPage;
+  const navLinks = [
+    { href: '#overview', label: 'Home' },
+    { href: '#registration-panel', label: 'Competitions' },
+    { href: '#tracker', label: 'Tracker' },
+    { href: '#announcement-archive', label: 'Updates' },
+    { href: '#timeline', label: 'Timeline' },
+    { href: '#admin-registrations', label: 'Admin' },
+  ];
   const activeBottomDock =
     !hashRoute || hashRoute === '#overview'
       ? 'home'
@@ -1462,7 +1486,7 @@ export const App: React.FC = () => {
       ) : null}
 
       <header className="sticky top-0 z-30 px-3 pt-3 sm:px-4 md:px-0">
-        <div className={`${shellClassName} portal-nav-shell`}>
+        <div className={`${shellClassName} portal-nav-shell ${navScrolled ? 'is-scrolled' : ''}`}>
           <a href="#overview" className="portal-brand-card flex min-w-0 items-center gap-3 rounded-[1.4rem] px-3 py-2 transition hover:border-slate-200/18 hover:bg-white/[0.06]">
             <div className="portal-brand-logo-frame">
               <img src="/images/ceasposter.jpeg" alt="CEAS COGNOTSAV logo" className="portal-brand-logo-image" />
@@ -1473,34 +1497,66 @@ export const App: React.FC = () => {
             </div>
           </a>
 
-          <nav className="hidden items-center gap-5 text-sm lg:flex">
-            <a href="#overview" className="portal-nav-link">Home</a>
-            <a href="#registration-panel" className="portal-nav-link">Competitions</a>
-            <a href="#tracker" className="portal-nav-link">Tracker</a>
-            <a href="#announcement-archive" className="portal-nav-link">Updates</a>
-            <a href="#timeline" className="portal-nav-link">Timeline</a>
-            <a href="#admin-registrations" className="portal-nav-link">Admin</a>
+          <nav className="portal-nav-links hidden lg:flex">
+            {navLinks.map((link) => (
+              <a key={link.href} href={link.href} className={`portal-nav-link ${hashRoute === link.href ? 'is-active' : ''}`}>
+                {link.label}
+              </a>
+            ))}
           </nav>
 
           <div className="hidden items-center gap-3 lg:flex">
-            <a href="#registration-panel" className="animated-gradient-button inline-flex items-center justify-center rounded-2xl px-4 py-3 text-sm font-bold text-slate-950">
+            <a href="#registration-panel" className="portal-premium-button portal-premium-button--primary portal-nav-cta">
               Register
               <ArrowRight size={14} />
             </a>
           </div>
 
-          <a
-            href="#admin-registrations"
-            className="portal-mobile-admin-trigger lg:hidden"
-            aria-label="Open admin panel"
-          >
-            <span className="portal-mobile-admin-trigger__core">
-              <ShieldCheck size={16} />
-            </span>
-            <span className="portal-mobile-admin-trigger__badge">
-              ADM
-            </span>
-          </a>
+          <div className="flex items-center gap-2 lg:hidden">
+            <a
+              href="#admin-registrations"
+              className="portal-mobile-admin-trigger"
+              aria-label="Open admin panel"
+            >
+              <span className="portal-mobile-admin-trigger__core">
+                <ShieldCheck size={16} />
+              </span>
+              <span className="portal-mobile-admin-trigger__badge">
+                ADM
+              </span>
+            </a>
+
+            <button
+              type="button"
+              className="portal-mobile-menu-toggle"
+              aria-label={mobileNavOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={mobileNavOpen}
+              onClick={() => setMobileNavOpen((value) => !value)}
+            >
+              {mobileNavOpen ? <X size={18} /> : <Menu size={18} />}
+            </button>
+          </div>
+        </div>
+
+        <div className={`${shellClassName} portal-mobile-drawer-wrap lg:hidden ${mobileNavOpen ? 'is-open' : ''}`}>
+          <div className="portal-mobile-drawer">
+            <nav className="portal-mobile-menu" aria-label="Mobile navigation">
+              {navLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className={`portal-mobile-menu__link ${hashRoute === link.href ? 'is-active' : ''}`}
+                  onClick={() => setMobileNavOpen(false)}
+                >
+                  {link.label}
+                </a>
+              ))}
+            </nav>
+            <a href="#registration-panel" className="portal-premium-button portal-premium-button--primary w-full justify-center" onClick={() => setMobileNavOpen(false)}>
+              Register Now
+              <ArrowRight size={16} />
+            </a>
+          </div>
         </div>
       </header>
       {isAdminPage ? (
