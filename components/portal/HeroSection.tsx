@@ -38,7 +38,7 @@ export const HeroSection: React.FC<Props> = () => {
 
   return (
     <section id="overview" className="mx-auto w-full max-w-[1320px] px-1 sm:px-5 lg:px-8 pt-3 pb-2 md:pt-5 md:pb-4">
-      <div className="portal-front-hero portal-front-hero--premium">
+      <div className="portal-front-hero portal-front-hero--premium portal-front-hero--welcome">
         <div className="portal-front-hero__particles" aria-hidden="true">
           {particles.map((particle) => (
             <span
@@ -66,9 +66,10 @@ export const HeroSection: React.FC<Props> = () => {
 
           <div className="portal-front-hero__copy" data-reveal="fade-up">
             <h1 className="portal-front-hero__headline">
-              Where Engineering
-              <br />
-              Meets <span>Excellence</span>
+              <span className="portal-front-hero__headline-line">Where Engineering</span>
+              <span className="portal-front-hero__headline-line">
+                Meets <span>Excellence</span>
+              </span>
             </h1>
             <p className="portal-front-hero__description">
               A premium campus tech experience where competitions, innovation, and CEAS culture come together in one
