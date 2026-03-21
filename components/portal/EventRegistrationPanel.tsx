@@ -72,6 +72,14 @@ const handbookBySlug: Record<string, {
   contact?: string[];
   quickDetails?: string[];
 }> = {
+  'tech-kbc': {
+    theme: 'Digital Minds: The Tech Quiz Challenge',
+    overview: 'Fast team quiz built around speed, smart decisions, and hot-seat performance across core and modern technology topics.',
+    highlights: ['2 participants per team', 'Up to 10 cycles with Fastest Finger First and Hot Seat rounds', 'Each team starts with 40 points', 'Bonus points available for clearing all hot-seat questions without lifelines'],
+    rules: ['Teams must not use personal mobile phones during gameplay', 'No discussion with other teams is allowed', 'Only the submitted answer will be accepted in the FFF stage', 'Any unfair practice can lead to disqualification'],
+    handbookUrl: '/handbooks/tech-kbc.pdf',
+    quickDetails: ['Format: Team quiz (2 participants)', 'Fee: Rs 100 per team', 'Flow: FFF + Hot Seat + lifelines'],
+  },
   'rang-manch': {
     theme: 'Art of Expression',
     overview: 'Stage performance event focused on acting, expression, confidence, and storytelling.',
@@ -113,6 +121,22 @@ const handbookBySlug: Record<string, {
     handbookUrl: '/handbooks/runbhumi-esports.pdf',
     contact: ['Harshad Dike - 9322665964', 'Rutvik Shinde - 9168277048', 'Sanket Meghale - 9356776307'],
     quickDetails: ['Format: Squad of 4', 'Mode: Qualifier + Final', 'Scoring: Kill + placement'],
+  },
+  'googler-hunt': {
+    theme: 'Innovate. Think. Conquer.',
+    overview: 'A fast-paced tech treasure hunt where teams solve MCQs, unlock chained questions, and race through knowledge, logic, and clue-based rounds on the event platform.',
+    highlights: ['1 to 4 members per team', 'Round 1: Rapid Resolve with 15 MCQs in 30 minutes', 'Round 2: The Chain for the top 5 teams with 11 unlock-based questions', 'Clue system reduces points but helps progress in both rounds'],
+    rules: ['The event is hosted entirely on the platform with no internet shortcuts', 'Only the top 5 teams from Round 1 advance to Round 2', 'Wildcard questions can appear and have no clue option', 'Wrong attempts in Round 2 start penalty deductions from the 6th wrong attempt onward'],
+    handbookUrl: '/handbooks/googler-hunt.pdf',
+    quickDetails: ['Format: Team quiz / treasure hunt', 'Fee: Rs 200 per team', 'Rounds: Rapid Resolve + The Chain'],
+  },
+  utopia: {
+    theme: 'Concept. Code. Conquer.',
+    overview: 'A flagship state-level hackathon designed as a high-intensity tech sprint where teams build and present a working MVP under strict time pressure.',
+    highlights: ['1 to 5 members per team', '3 hour build phase followed by 2 hour showdown and jury evaluation', 'Cross-institutional teams are allowed', 'AI tools and open-source resources may be used with proper disclosure'],
+    rules: ['All development must happen only within the official 3 hour build window', 'Only one registration per team is allowed and no mid-event team switching is permitted', 'Teams must carry valid college ID cards and registration confirmation', 'Misuse of AI tools or professional misconduct is grounds for disqualification'],
+    handbookUrl: '/handbooks/utopia.pdf',
+    quickDetails: ['Format: Hackathon / MVP sprint', 'Fee: Rs 250 per team', 'Duration: 3 hr build + 2 hr showdown'],
   },
 };
 
@@ -224,7 +248,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                 </a>
                 {selectedHandbook?.handbookUrl ? (
                   <a href={selectedHandbook.handbookUrl} target="_blank" rel="noreferrer" className="magnetic-button inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-sm font-semibold text-white">
-                    Handbook
+                    For details click on this
                     <ExternalLink size={14} />
                   </a>
                 ) : null}
