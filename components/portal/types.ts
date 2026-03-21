@@ -15,6 +15,7 @@ export type EventRecord = {
   max_slots: number | null;
   is_team_event: boolean;
   poster_path: string;
+  intro_video_url?: string | null;
   payment_upi: string | null;
   payment_payee: string | null;
   registrations_count: number;

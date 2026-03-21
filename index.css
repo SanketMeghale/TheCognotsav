@@ -1042,6 +1042,20 @@ img {
   min-height: 16.75rem;
 }
 
+.portal-competition-card__video-shell {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.portal-competition-card__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  background: #040712;
+}
+
 .portal-competition-card__body {
   display: flex;
   flex: 1 1 auto;

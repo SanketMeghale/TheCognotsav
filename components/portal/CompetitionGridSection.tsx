@@ -116,18 +116,44 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
                   } ${theme.glow}`}
                 >
                   <div className="portal-competition-card__media relative overflow-hidden">
-                    <img src={event.poster_path} alt={event.name} loading="lazy" decoding="async" className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.04]" />
-                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,10,21,0.02),rgba(7,10,21,0.44)_52%,rgba(7,10,21,0.9))]" />
+                    {event.intro_video_url ? (
+                      <div
+                        className="portal-competition-card__video-shell"
+                        onClick={(clickEvent) => clickEvent.stopPropagation()}
+                        onKeyDown={(keyEvent) => keyEvent.stopPropagation()}
+                      >
+                        <video
+                          className="portal-competition-card__video"
+                          controls
+                          preload="metadata"
+                          playsInline
+                          poster={event.poster_path}
+                        >
+                          <source src={event.intro_video_url} type="video/mp4" />
+                          Your browser does not support the event intro video.
+                        </video>
+                      </div>
+                    ) : (
+                      <img src={event.poster_path} alt={event.name} loading="lazy" decoding="async" className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.04]" />
+                    )}
+                    <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(7,10,21,0.02),rgba(7,10,21,0.44)_52%,rgba(7,10,21,0.9))]" />
                     <div className="portal-competition-card__noise" aria-hidden="true" />
                     <div className="absolute right-4 top-4 flex flex-wrap justify-end gap-2">
                       <span className={`rounded-full px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] shadow-[0_10px_24px_rgba(2,8,23,0.24)] ${theme.badge}`}>{displayCategory}</span>
+                      {event.intro_video_url ? (
+                        <span className="rounded-full border border-white/12 bg-black/45 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-white/88 shadow-[0_10px_24px_rgba(2,8,23,0.24)]">
+                          Intro Video
+                        </span>
+                      ) : null}
                     </div>
-                    <div className="absolute inset-x-4 bottom-4">
-                      <div className="portal-competition-card__hero-caption">
-                        <p className="portal-card-title portal-competition-card__hero-title text-white">{event.name}</p>
-                        <p className="mt-1 text-[11px] uppercase tracking-[0.18em] text-slate-200/88">{event.date_label} / {event.time_label}</p>
+                    {!event.intro_video_url ? (
+                      <div className="absolute inset-x-4 bottom-4">
+                        <div className="portal-competition-card__hero-caption">
+                          <p className="portal-card-title portal-competition-card__hero-title text-white">{event.name}</p>
+                          <p className="mt-1 text-[11px] uppercase tracking-[0.18em] text-slate-200/88">{event.date_label} / {event.time_label}</p>
+                        </div>
                       </div>
-                    </div>
+                    ) : null}
                   </div>
 
                   <div className="portal-competition-card__body p-5">
