@@ -3399,6 +3399,27 @@ select.floating-field-input option {
   color: #fbbf24;
 }
 
+.portal-front-hero__wordmark {
+  margin: 0 0 1rem;
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  font-size: clamp(2.2rem, 5vw, 4.1rem);
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  line-height: 0.95;
+  text-transform: uppercase;
+  color: #fbbf24;
+  text-shadow: 0 0 22px rgba(251, 191, 36, 0.18);
+}
+
+.portal-front-hero__kicker {
+  margin: 0 0 0.85rem;
+  color: #7dd3fc;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+}
+
 .portal-front-hero__headline {
   margin: 0;
   max-width: 12ch;
@@ -3916,6 +3937,10 @@ footer {
     font-size: clamp(2.15rem, 5.4vw, 3.7rem);
   }
 
+  .portal-front-hero__wordmark {
+    font-size: clamp(2rem, 4.9vw, 3.6rem);
+  }
+
   .portal-front-hero__panel--premium {
     padding-top: 0;
   }
@@ -3998,6 +4023,17 @@ footer {
     font-size: clamp(1.95rem, 9.6vw, 2.8rem);
     letter-spacing: 0.03em;
     line-height: 1.06;
+  }
+
+  .portal-front-hero__wordmark {
+    font-size: clamp(1.8rem, 8vw, 2.8rem);
+    letter-spacing: 0.14em;
+    margin-bottom: 0.8rem;
+  }
+
+  .portal-front-hero__kicker {
+    font-size: 0.62rem;
+    letter-spacing: 0.24em;
   }
 
   .portal-front-hero__description {

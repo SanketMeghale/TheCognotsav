@@ -16,7 +16,8 @@ export const HeroSection: React.FC<Props> = () => {
           </div>
 
           <div className="portal-front-hero__copy" data-reveal="fade-up">
-            <p className="portal-front-hero__visual-overline">COGNOTSAV 2026</p>
+            <p className="portal-front-hero__wordmark">COGNOTSAV</p>
+            <p className="portal-front-hero__kicker">Our Legacy</p>
             <h1 className="portal-front-hero__headline">
               <span className="portal-front-hero__headline-line">Where</span>
               <span className="portal-front-hero__headline-line">Engineering</span>
