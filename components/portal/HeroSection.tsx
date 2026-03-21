@@ -32,9 +32,9 @@ export const HeroSection: React.FC<Props> = () => {
   ];
 
   return (
-    <section id="overview" className="mx-auto w-full max-w-[1320px] px-2 pt-3 pb-2 sm:px-5 lg:px-8 md:pt-5 md:pb-4">
+    <section id="overview" className="mx-auto w-full max-w-[1320px] px-2 sm:px-5 lg:px-8 pt-3 pb-2 md:pt-5 md:pb-4">
       <div className="portal-front-hero">
-        <div data-reveal="left" className="portal-front-hero__content">
+        <div className="portal-front-hero__content">
           <div className="portal-hero-topbar">
             <div className="portal-cognotsav-heading-wrap">
               <div className="portal-cognotsav-heading-kicker-row">
@@ -43,24 +43,24 @@ export const HeroSection: React.FC<Props> = () => {
                 </span>
                 <p className="portal-cognotsav-heading-kicker">CEAS Presents</p>
               </div>
-              <h1 className="portal-cognotsav-heading">COGNOTSAV 2026</h1>
+              <h1 className="portal-cognotsav-heading">COGNOTSAV</h1>
             </div>
           </div>
 
           <div className="portal-legacy-headline mt-5">
             <div className="min-w-0">
-              <p className="portal-kicker">Midnight Tech Experience</p>
+              <p className="portal-kicker">Our Legacy</p>
               <h2 className="portal-legacy-title">
-                Premium College Fest
+                Where Engineering
                 <br />
-                Registration Portal
+                Meets Excellence
               </h2>
             </div>
           </div>
 
           <div className="mt-5 space-y-5">
             <p className="max-w-3xl text-sm leading-7 text-slate-300 sm:text-base">
-              COGNOTSAV is the flagship tech fest of the Computer Engineering Department at Dr. Vithalrao Vikhe Patil College of Engineering, Ahilyanagar, bringing students together to innovate, compete, and showcase talent through premium competitions, esports, exhibitions, and UTOPIA.
+              COGNOTSAV is the flagship tech fest of the Computer Engineering Department at Dr. Vithalrao Vikhe Patil College of Engineering, Ahilyanagar, bringing students together to innovate, compete, and go beyond the classroom through competitions, esports, exhibitions, and UTOPIA.
             </p>
           </div>
 
@@ -86,10 +86,10 @@ export const HeroSection: React.FC<Props> = () => {
           </div>
 
           <div className="portal-prize-pool-card mt-8">
-            <div className="portal-prize-pool-card__badge">T</div>
+            <div className="portal-prize-pool-card__badge">🏆</div>
             <p className="portal-prize-pool-card__kicker">Total Prize Pool Distributed</p>
             <h3 className="portal-prize-pool-card__value">
-              Over <span>Rs 1,00,000</span>
+              Over <span>₹1,00,000</span>
             </h3>
             <p className="portal-prize-pool-card__meta">
               Cash Rewards
@@ -99,7 +99,7 @@ export const HeroSection: React.FC<Props> = () => {
           </div>
         </div>
 
-        <div data-reveal="right" className="portal-front-hero__panel">
+        <div className="portal-front-hero__panel">
           <div className="portal-front-hero__visual-card">
             <img src="/images/ceasposter.jpeg" alt="CEAS COGNOTSAV crest" className="portal-front-hero__visual-image" />
           </div>
@@ -145,13 +145,6 @@ export const HeroSection: React.FC<Props> = () => {
             </div>
           </div>
         </div>
-      </div>
-
-      <div className="portal-mobile-sticky-cta sm:hidden">
-        <a href="#registration-panel" className="animated-gradient-button portal-mobile-sticky-cta__button">
-          Register Now
-          <ArrowRight size={16} />
-        </a>
       </div>
     </section>
   );
