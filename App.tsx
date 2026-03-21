@@ -1630,8 +1630,8 @@ export const App: React.FC = () => {
 
       {showFrontBottomDock ? (
         <>
-          <div className="portal-bottom-dock-spacer lg:hidden" aria-hidden="true" />
-          <div className="portal-bottom-dock-wrap lg:hidden">
+          <div className="portal-bottom-dock-spacer" aria-hidden="true" />
+          <div className="portal-bottom-dock-wrap">
             <nav className="portal-bottom-dock" aria-label="Front navigation">
               <a
                 href="#overview"
