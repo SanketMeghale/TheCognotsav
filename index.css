@@ -1742,38 +1742,38 @@ select.floating-field-input option {
 
 @media (min-width: 1024px) {
   .portal-bottom-dock-spacer {
-    height: 7.6rem;
+    height: 7rem;
   }
 
   .portal-bottom-dock-wrap {
-    width: min(calc(100vw - 2rem), 38rem);
-    bottom: 1.1rem;
+    width: min(calc(100vw - 2rem), 33rem);
+    bottom: 0.95rem;
   }
 
   .portal-bottom-dock {
-    padding: 1rem 0.8rem 0.78rem;
-    gap: 0.35rem;
+    padding: 0.88rem 0.68rem 0.62rem;
+    gap: 0.28rem;
   }
 
   .portal-bottom-dock__item {
-    min-height: 3.8rem;
-    padding-bottom: 0.24rem;
+    min-height: 3.35rem;
+    padding-bottom: 0.18rem;
   }
 
   .portal-bottom-dock__item span {
-    font-size: 0.68rem;
-    letter-spacing: 0.1em;
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
   }
 
   .portal-bottom-dock__logo {
-    top: -2.85rem;
-    height: 4.45rem;
-    width: 4.45rem;
+    top: -2.55rem;
+    height: 4rem;
+    width: 4rem;
   }
 
   .portal-bottom-dock__logo-core {
-    height: 3.45rem;
-    width: 3.45rem;
+    height: 3.08rem;
+    width: 3.08rem;
   }
 }
 
