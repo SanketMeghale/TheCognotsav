@@ -1,7 +1,7 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import {
   ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Clock3, Copy, CreditCard, Download, ExternalLink,
-  Info, MapPin, QrCode, Save, Sparkles, Trophy, Upload, Users,
+  Info, MapPin, QrCode, Save, Smartphone, Sparkles, Trophy, Upload, Users,
 } from 'lucide-react';
 import type { EventRecord, ParticipantDraft, RegistrationReceipt } from './types';
 import { formatCurrency, getTeamLabel } from './utils';
@@ -83,10 +83,10 @@ const handbookBySlug: Record<string, {
   'rang-manch': {
     theme: 'Art of Expression',
     overview: 'Stage performance event focused on acting, expression, confidence, and storytelling.',
-    highlights: ['Solo or group format', '5 minute stage slot', 'Rs 50 solo and Rs 200 up to 5 members', 'Performance-first judging'],
+    highlights: ['Solo or group format', '5 minute stage slot', 'Rs 50 per participant', 'Performance-first judging'],
     rules: ['Express emotions and ideas clearly through acting', 'Report before the event start time', 'Maintain stage discipline and follow organizer instructions'],
     handbookUrl: '/handbooks/rangmanch.pdf',
-    quickDetails: ['Format: Solo / Team', 'Fee: Rs 50 / Rs 200', 'Stage Time: 5 minutes'],
+    quickDetails: ['Format: Solo / Team', 'Fee: Rs 50 per participant', 'Stage Time: 5 minutes'],
   },
   'squid-game': {
     theme: 'Survival and Strategy',
@@ -164,6 +164,14 @@ function SectionCard({ title, subtitle, children }: { title: string; subtitle: s
   );
 }
 
+function resolveEventAmount(event: EventRecord, participantCount: number) {
+  if (event.slug === 'rang-manch') {
+    return Math.max(1, participantCount) * 50;
+  }
+
+  return Number(event.registration_fee || 0);
+}
+
 export const EventRegistrationPanel: React.FC<Props> = ({
   selectedEvent, teamSize, form, submitting, successMessage, errorMessage, successReceipt, draftRecovered,
   validationErrors, touchedFields, paymentScreenshotName, paymentScreenshotReady, onDownloadPass,
@@ -173,11 +181,14 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const passCardRef = useRef<HTMLDivElement | null>(null);
   const eventTopRef = useRef<HTMLDivElement | null>(null);
   const [codeCopied, setCodeCopied] = useState(false);
+  const [paymentCopyState, setPaymentCopyState] = useState<'upi' | 'amount' | 'link' | null>(null);
   const showError = (field: string) => (touchedFields[field] ? validationErrors[field] : '');
   const selectedTheme = selectedEvent ? categoryThemes[selectedEvent.category] || categoryThemes.Technical : categoryThemes.Technical;
   const selectedHandbook = selectedEvent ? handbookBySlug[selectedEvent.slug] : null;
-  const upiLink = selectedEvent?.payment_upi ? `upi://pay?pa=${selectedEvent.payment_upi}&pn=${encodeURIComponent(selectedEvent.payment_payee || selectedEvent.name)}&am=${selectedEvent.registration_fee}&cu=INR&tn=${encodeURIComponent(selectedEvent.name)}` : '';
+  const payableAmount = selectedEvent ? resolveEventAmount(selectedEvent, teamSize) : 0;
+  const upiLink = selectedEvent?.payment_upi ? `upi://pay?pa=${selectedEvent.payment_upi}&pn=${encodeURIComponent(selectedEvent.payment_payee || selectedEvent.name)}&am=${payableAmount}&cu=INR&tn=${encodeURIComponent(selectedEvent.name)}` : '';
   const qrUrl = upiLink ? `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(upiLink)}` : '';
+  const canOpenPaymentApp = typeof window !== 'undefined' && /Android|iPhone|iPad|iPod/i.test(window.navigator.userAgent);
   const scrollToRegistrationForm = () => {
     if (typeof window === 'undefined') return;
 
@@ -191,6 +202,13 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   useEffect(() => {
     setCodeCopied(false);
   }, [successReceipt?.registrationCode]);
+
+  useEffect(() => {
+    if (!paymentCopyState || typeof window === 'undefined') return undefined;
+
+    const timer = window.setTimeout(() => setPaymentCopyState(null), 1800);
+    return () => window.clearTimeout(timer);
+  }, [paymentCopyState]);
 
   useEffect(() => {
     if (!successReceipt || !passCardRef.current || typeof window === 'undefined') return;
@@ -214,6 +232,15 @@ export const EventRegistrationPanel: React.FC<Props> = ({
       setCodeCopied(true);
     } catch {
       setCodeCopied(false);
+    }
+  };
+
+  const handleCopyPaymentValue = async (value: string, type: 'upi' | 'amount' | 'link') => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setPaymentCopyState(type);
+    } catch {
+      setPaymentCopyState(null);
     }
   };
 
@@ -269,7 +296,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                 <div className="portal-event-inline-info__item">
                   <CreditCard size={15} className="text-amber-200" />
                   <span className="portal-event-inline-info__label">Fee</span>
-                  <span className="portal-event-inline-info__value">{formatCurrency(selectedEvent.registration_fee)}</span>
+                  <span className="portal-event-inline-info__value">{formatCurrency(payableAmount)}</span>
                 </div>
                 <div className="portal-event-inline-info__item">
                   <MapPin size={15} className="text-amber-200" />
@@ -408,6 +435,57 @@ export const EventRegistrationPanel: React.FC<Props> = ({
 
               <SectionCard title="Pay and upload proof" subtitle="Payment">
                 <div className="grid gap-4">
+                  <div className="rounded-[1.35rem] border border-white/10 bg-white/[0.05] p-4">
+                    <div className="flex items-center gap-2">
+                      <Smartphone size={16} className="text-cyan-200" />
+                      <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">Payment Methods</p>
+                    </div>
+                    <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                      <a
+                        href={upiLink || '#'}
+                        className={`magnetic-button flex items-center justify-center gap-2 rounded-[1.15rem] border px-4 py-3 text-sm font-semibold ${upiLink ? 'border-emerald-300/18 bg-emerald-400/10 text-emerald-100' : 'pointer-events-none border-white/10 bg-white/5 text-slate-400 opacity-70'}`}
+                      >
+                        <Smartphone size={16} />
+                        {canOpenPaymentApp ? 'Open UPI App' : 'UPI App on Mobile'}
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => handleCopyPaymentValue(String(payableAmount), 'amount')}
+                        className="magnetic-button flex items-center justify-center gap-2 rounded-[1.15rem] border border-blue-300/18 bg-blue-400/10 px-4 py-3 text-sm font-semibold text-blue-100"
+                      >
+                        <Copy size={16} />
+                        {paymentCopyState === 'amount' ? 'Amount Copied' : 'Copy Amount'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleCopyPaymentValue(selectedEvent.payment_upi || '', 'upi')}
+                        disabled={!selectedEvent.payment_upi}
+                        className="magnetic-button flex items-center justify-center gap-2 rounded-[1.15rem] border border-white/10 bg-black/20 px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
+                      >
+                        <Copy size={16} />
+                        {paymentCopyState === 'upi' ? 'UPI Copied' : 'Copy UPI ID'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleCopyPaymentValue(upiLink, 'link')}
+                        disabled={!upiLink}
+                        className="magnetic-button flex items-center justify-center gap-2 rounded-[1.15rem] border border-white/10 bg-black/20 px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
+                      >
+                        <Copy size={16} />
+                        {paymentCopyState === 'link' ? 'Link Copied' : 'Copy Payment Link'}
+                      </button>
+                    </div>
+                    <div className="mt-3 flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.18em] text-slate-400">
+                      <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1">Google Pay</span>
+                      <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1">PhonePe</span>
+                      <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1">Paytm</span>
+                      <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1">Any UPI App</span>
+                    </div>
+                    <p className="mt-3 text-xs leading-6 text-slate-300">
+                      On mobile, use <span className="font-semibold text-white">Open UPI App</span>. On laptop, scan the QR below using any UPI app on your phone, then submit the transaction ID and screenshot.
+                    </p>
+                  </div>
+
                   <div className={`rounded-[1.35rem] border border-white/10 bg-gradient-to-br p-4 ${selectedTheme.surface}`}>
                     <div className="flex items-center gap-2 text-white">
                       <QrCode size={18} />
@@ -422,6 +500,11 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                     <div className="flex items-center gap-2">
                       <CreditCard size={16} className="text-cyan-200" />
                       <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">UPI Details</p>
+                    </div>
+                    <div className="mt-3 rounded-[1.15rem] border border-amber-300/16 bg-amber-400/10 p-4">
+                      <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Payable Amount</p>
+                      <p className="mt-2 text-lg font-semibold text-white">{formatCurrency(payableAmount)}</p>
+                      {selectedEvent.slug === 'rang-manch' ? <p className="mt-1 text-xs text-slate-300">Calculated at Rs 50 per participant.</p> : null}
                     </div>
                     <div className="mt-3 rounded-[1.15rem] border border-white/10 bg-black/20 p-4">
                       <p className="text-xs uppercase tracking-[0.16em] text-slate-500">UPI ID</p>

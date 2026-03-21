@@ -453,6 +453,14 @@ function getEventSlotSnapshot(event, registrationsCount) {
   };
 }
 
+function resolveRegistrationAmount(event, participantCount) {
+  if (event?.slug === 'rang-manch') {
+    return Math.max(1, Number(participantCount) || 1) * 50;
+  }
+
+  return Number(event?.registration_fee || 0);
+}
+
 async function savePaymentScreenshot(dataUrl, registrationCode) {
   if (!dataUrl) return null;
 
@@ -1837,7 +1845,7 @@ app.post('/api/registrations', async (req, res) => {
   const registrationId = randomUUID();
   const registrationCode = buildRegistrationCode();
   const inviteToken = buildInviteToken();
-  const totalAmount = Number(event.registration_fee || 0);
+  const totalAmount = resolveRegistrationAmount(event, participants.length);
 
   const client = await pool.connect();
   try {

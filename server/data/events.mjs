@@ -94,7 +94,7 @@ export const eventSeed = [
       'Performance event with flexible team size, ideal for a participant portal that handles solo to group entries cleanly.',
     prize: 'INR 8,000',
     registration_fee: 50,
-    registration_fee_label: 'INR 50 - INR 200',
+    registration_fee_label: 'INR 50 per participant',
     min_members: 1,
     max_members: 5,
     max_slots: 35,
