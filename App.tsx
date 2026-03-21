@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowRight, Bell, CheckCircle2, Clock3, House, Search, ShieldCheck, Trophy } from 'lucide-react';
+import { ArrowRight, Bell, Building2, CheckCircle2, Clock3, GraduationCap, House, Search, ShieldCheck, Sparkles, Trophy, X } from 'lucide-react';
 import { AdminRegistrationsPage } from './components/portal/AdminRegistrationsPage.tsx';
 import { AnnouncementArchiveSection } from './components/portal/AnnouncementArchiveSection.tsx';
 import { HeroSection } from './components/portal/HeroSection.tsx';
@@ -164,6 +164,40 @@ function PortalBackgroundCanvas() {
   }, []);
 
   return <canvas ref={canvasRef} className="portal-network-canvas" aria-hidden="true" />;
+}
+
+function DepartmentIntroStrip({ onOpen }: { onOpen: () => void }) {
+  return (
+    <section className="portal-department-strip rounded-[1.8rem] border border-white/10 p-4 md:rounded-[2rem] md:p-6">
+      <div className="portal-department-strip__layout">
+        <div className="portal-department-strip__brand">
+          <div className="portal-department-strip__logo-frame">
+            <img src="/images/ceasposter.jpeg" alt="CEAS logo" loading="lazy" decoding="async" className="portal-department-strip__logo" />
+          </div>
+          <div>
+            <p className="portal-department-strip__kicker">About CEAS / Department</p>
+            <h3 className="portal-department-strip__title">Computer Engineering Association of Students</h3>
+          </div>
+        </div>
+
+        <p className="portal-department-strip__copy">
+          CEAS drives the department’s flagship student culture through technical initiatives, collaborative learning,
+          and platforms like Cognotsav that connect innovation with real campus energy.
+        </p>
+
+        <div className="portal-department-strip__chips">
+          <span className="portal-department-strip__chip"><Building2 size={14} />Department-led culture</span>
+          <span className="portal-department-strip__chip"><GraduationCap size={14} />Student-first ecosystem</span>
+          <span className="portal-department-strip__chip"><Sparkles size={14} />Flagship CEAS events</span>
+        </div>
+
+        <button type="button" onClick={onOpen} className="portal-premium-button portal-premium-button--secondary portal-department-strip__button">
+          Know More
+          <ArrowRight size={15} />
+        </button>
+      </div>
+    </section>
+  );
 }
 
 async function readApiBody<T>(response: Response): Promise<ApiReadResult<T>> {
@@ -514,6 +548,7 @@ export const App: React.FC = () => {
   const [toastMessage, setToastMessage] = useState('');
   const [toastClosing, setToastClosing] = useState(false);
   const [navScrolled, setNavScrolled] = useState(false);
+  const [departmentIntroOpen, setDepartmentIntroOpen] = useState(false);
   const [form, setForm] = useState<FormState>({
     teamName: '',
     collegeName: '',
@@ -796,6 +831,21 @@ export const App: React.FC = () => {
 
     window.scrollTo({ top: 0, behavior: 'auto' });
   }, [isAdminPage, hashRoute]);
+
+  useEffect(() => {
+    if (typeof document === 'undefined') {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    if (departmentIntroOpen) {
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [departmentIntroOpen]);
 
   const totalRegistrations = events.reduce((sum, event) => sum + event.registrations_count, 0);
   const visibleAnnouncements = announcements
@@ -1604,6 +1654,8 @@ export const App: React.FC = () => {
           <main className={`${shellClassName} space-y-5 pb-8 md:space-y-8 md:pb-12`}>
             <HeroSection />
 
+            <DepartmentIntroStrip onOpen={() => setDepartmentIntroOpen(true)} />
+
             <div className={`${shellClassName} portal-section-divider`} aria-hidden="true" />
 
             <AnnouncementArchiveSection
@@ -1698,6 +1750,76 @@ export const App: React.FC = () => {
             </nav>
           </div>
         </>
+      ) : null}
+
+      {departmentIntroOpen ? (
+        <div className="portal-department-modal">
+          <div className="portal-department-modal__backdrop" onClick={() => setDepartmentIntroOpen(false)} />
+          <div className="portal-department-modal__dialog">
+            <button
+              type="button"
+              onClick={() => setDepartmentIntroOpen(false)}
+              className="portal-department-modal__close"
+              aria-label="Close department introduction"
+            >
+              <X size={18} />
+            </button>
+
+            <div className="portal-department-modal__hero">
+              <div className="portal-department-modal__logo-shell">
+                <img src="/images/ceasposter.jpeg" alt="CEAS logo" loading="eager" decoding="async" className="portal-department-modal__logo" />
+              </div>
+              <div>
+                <p className="portal-department-modal__kicker">Department Introduction</p>
+                <h3 className="portal-department-modal__title">Computer Engineering Association of Students</h3>
+                <p className="portal-department-modal__lead">
+                  CEAS is the student-driven force behind the department’s strongest technical culture, creating spaces
+                  where ideas, execution, and leadership come together through events, projects, and flagship platforms
+                  like Cognotsav.
+                </p>
+              </div>
+            </div>
+
+            <div className="portal-department-modal__grid">
+              <article className="portal-department-modal__card">
+                <p className="portal-department-modal__card-kicker">Who We Are</p>
+                <p className="portal-department-modal__card-copy">
+                  A collaborative student association working with the Computer Engineering Department to build a more
+                  active, skilled, and industry-ready academic environment.
+                </p>
+              </article>
+              <article className="portal-department-modal__card">
+                <p className="portal-department-modal__card-kicker">What We Build</p>
+                <p className="portal-department-modal__card-copy">
+                  Technical competitions, project showcases, esports experiences, teamwork-driven initiatives, and
+                  student opportunities that turn classroom learning into visible outcomes.
+                </p>
+              </article>
+              <article className="portal-department-modal__card">
+                <p className="portal-department-modal__card-kicker">Why Cognotsav Matters</p>
+                <p className="portal-department-modal__card-copy">
+                  Cognotsav is our flagship expression of CEAS culture, designed to celebrate engineering excellence,
+                  participation, creativity, and student-led execution at scale.
+                </p>
+              </article>
+            </div>
+
+            <div className="portal-department-modal__footer">
+              <div className="portal-department-modal__note">
+                The department introduction stays compact on the landing page, while this modal gives participants the
+                complete CEAS context without making the registration experience longer.
+              </div>
+              <a
+                href="#registration-panel"
+                onClick={() => setDepartmentIntroOpen(false)}
+                className="portal-premium-button portal-premium-button--primary"
+              >
+                Go To Registration
+                <ArrowRight size={15} />
+              </a>
+            </div>
+          </div>
+        </div>
       ) : null}
 
       <PortalFooter />
