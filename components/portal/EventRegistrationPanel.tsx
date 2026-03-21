@@ -581,14 +581,6 @@ export const EventRegistrationPanel: React.FC<Props> = ({
         </div>
       </div>
 
-      {!successReceipt ? (
-        <div className="portal-event-mobile-cta lg:hidden">
-          <button type="button" onClick={scrollToRegistrationForm} className="animated-gradient-button portal-event-mobile-cta__button">
-            Register Now
-            <ArrowRight size={16} />
-          </button>
-        </div>
-      ) : null}
     </section>
   );
 };
