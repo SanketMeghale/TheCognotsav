@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { CalendarDays, CreditCard, ExternalLink, MapPin, Trophy, Users } from 'lucide-react';
 import type { EventRecord } from './types';
 import { formatCurrency, getTeamLabel } from './utils';
 
@@ -96,51 +96,101 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
               const active = event.slug === selectedEventSlug;
               const displayCategory = getDisplayCategory(event);
               const theme = categoryThemes[displayCategory] || categoryThemes.Technical;
+              const teamLabel = getTeamLabel(event);
+              const handleOpenEvent = () => onSelectEvent(event.slug);
 
               return (
                 <article
                   key={event.slug}
-                  className={`portal-competition-card group tilt-card h-full overflow-hidden rounded-[1.9rem] border bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(9,13,24,0.9))] text-left transition duration-200 ${
+                  role="link"
+                  tabIndex={0}
+                  onClick={handleOpenEvent}
+                  onKeyDown={(eventKey) => {
+                    if (eventKey.key === 'Enter' || eventKey.key === ' ') {
+                      eventKey.preventDefault();
+                      handleOpenEvent();
+                    }
+                  }}
+                  className={`portal-competition-card group tilt-card h-full cursor-pointer overflow-hidden rounded-[1.9rem] border bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(9,13,24,0.9))] text-left transition duration-200 ${
                     active ? 'border-cyan-300/36' : 'border-white/10 hover:border-white/18'
                   } ${theme.glow}`}
                 >
                   <div className="portal-competition-card__media relative overflow-hidden">
                     <img src={event.poster_path} alt={event.name} className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.04]" />
-                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,10,21,0.06),rgba(7,10,21,0.86))]" />
-                    <div className="absolute left-4 top-4 flex flex-wrap gap-2">
-                      <span className={`rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] ${theme.badge}`}>{displayCategory}</span>
-                      <span className="rounded-full bg-black/35 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-white/86">{formatCurrency(event.registration_fee)}</span>
+                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,10,21,0.02),rgba(7,10,21,0.44)_52%,rgba(7,10,21,0.9))]" />
+                    <div className="portal-competition-card__noise" aria-hidden="true" />
+                    <div className="absolute right-4 top-4 flex flex-wrap justify-end gap-2">
+                      <span className={`rounded-full px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] shadow-[0_10px_24px_rgba(2,8,23,0.24)] ${theme.badge}`}>{displayCategory}</span>
                     </div>
                     <div className="absolute inset-x-4 bottom-4">
-                      <div className="rounded-[1.15rem] border border-white/12 bg-black/35 px-4 py-3 backdrop-blur-md">
-                        <p className="portal-card-title text-white">{event.name}</p>
-                        <p className="mt-1 text-[11px] uppercase tracking-[0.16em] text-slate-300">{event.date_label} / {event.time_label}</p>
+                      <div className="portal-competition-card__hero-caption">
+                        <p className="portal-card-title portal-competition-card__hero-title text-white">{event.name}</p>
+                        <p className="mt-1 text-[11px] uppercase tracking-[0.18em] text-slate-200/88">{event.date_label} / {event.time_label}</p>
                       </div>
                     </div>
                   </div>
 
                   <div className="portal-competition-card__body p-5">
                     <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="text-xs uppercase tracking-[0.16em] text-slate-400">{getTeamLabel(event)}</p>
-                        <p className="mt-3 text-sm text-slate-300">{event.venue}</p>
+                      <div className="min-w-0">
+                        <h4 className="portal-competition-card__title">{event.name}</h4>
+                        <p className="portal-competition-card__meta-row">
+                          <CalendarDays size={13} />
+                          <span>{event.date_label}</span>
+                          <span className="portal-competition-card__meta-dot" />
+                          <span>{event.time_label}</span>
+                          <span className="portal-competition-card__meta-dot" />
+                          <span>{event.venue}</span>
+                        </p>
                       </div>
-                      <span className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-300">
-                        Open registration
+                      <span className="portal-competition-card__status">
+                        Open
                       </span>
                     </div>
 
-                    <p className="mt-4 line-clamp-2 text-sm leading-6 text-slate-300">{event.description}</p>
+                    <p className="portal-competition-card__description mt-4 line-clamp-3 text-sm leading-7 text-slate-300">{event.description}</p>
 
-                    <div className="mt-5 flex items-center justify-between gap-3 text-sm text-slate-400">
-                      <span>{event.date_label}</span>
-                      <span>{event.time_label}</span>
+                    <div className="portal-competition-card__team-row mt-4">
+                      <Users size={16} />
+                      <span>{teamLabel}</span>
                     </div>
 
-                    <button type="button" onClick={() => onSelectEvent(event.slug)} className="portal-register-cta mt-5 w-full">
-                      Register Now
-                      <ArrowRight size={16} />
-                    </button>
+                    <div className="portal-competition-card__stats mt-5">
+                      <div className="portal-competition-card__stat-card">
+                        <div className="portal-competition-card__stat-label">
+                          <Trophy size={13} />
+                          <span>Prize Pool</span>
+                        </div>
+                        <div className="portal-competition-card__stat-value">{event.prize}</div>
+                      </div>
+                      <div className="portal-competition-card__stat-card">
+                        <div className="portal-competition-card__stat-label">
+                          <CreditCard size={13} />
+                          <span>Reg. Fee</span>
+                        </div>
+                        <div className="portal-competition-card__stat-value portal-competition-card__stat-value--accent">
+                          {event.registration_fee_label || formatCurrency(event.registration_fee)}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="portal-competition-card__footer mt-5">
+                      <div className="portal-competition-card__venue">
+                        <MapPin size={15} />
+                        <span>{event.venue}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={(clickEvent) => {
+                          clickEvent.stopPropagation();
+                          handleOpenEvent();
+                        }}
+                        className="portal-register-cta portal-register-cta--compact w-full"
+                      >
+                        Register Now
+                        <ExternalLink size={16} />
+                      </button>
+                    </div>
                   </div>
                 </article>
               );
