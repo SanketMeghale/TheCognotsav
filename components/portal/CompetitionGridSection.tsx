@@ -50,6 +50,8 @@ function getDisplayCategory(event: EventRecord) {
 export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents, selectedEventSlug, onSelectEvent }) => {
   const [activeFilter, setActiveFilter] = useState<(typeof filterOrder)[number]>('All');
   const [hoveredVideoSlug, setHoveredVideoSlug] = useState<string | null>(null);
+  const [interactiveVideoSlug, setInteractiveVideoSlug] = useState<string | null>(null);
+  const [supportsHoverPreview, setSupportsHoverPreview] = useState(false);
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
 
   const visibleEvents = useMemo(
@@ -58,12 +60,38 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
   );
 
   useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const mediaQuery = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const syncHoverCapability = () => setSupportsHoverPreview(mediaQuery.matches);
+
+    syncHoverCapability();
+    mediaQuery.addEventListener('change', syncHoverCapability);
+
+    return () => mediaQuery.removeEventListener('change', syncHoverCapability);
+  }, []);
+
+  useEffect(() => {
+    if (supportsHoverPreview) {
+      setInteractiveVideoSlug(null);
+    }
+  }, [supportsHoverPreview]);
+
+  useEffect(() => {
     Object.entries(videoRefs.current).forEach(([slug, video]) => {
       if (!video) {
         return;
       }
 
-      if (slug === hoveredVideoSlug) {
+      const shouldHoverPreview = supportsHoverPreview && slug === hoveredVideoSlug;
+      const shouldPlayInteractively = slug === interactiveVideoSlug;
+
+      if (shouldHoverPreview || shouldPlayInteractively) {
+        video.muted = !shouldPlayInteractively;
+        video.controls = shouldPlayInteractively;
+        video.loop = !shouldPlayInteractively;
         const playPromise = video.play();
         if (playPromise && typeof playPromise.catch === 'function') {
           playPromise.catch(() => {});
@@ -71,10 +99,17 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
         return;
       }
 
+      video.controls = false;
+      video.muted = true;
+      video.loop = true;
       video.pause();
       video.currentTime = 0;
     });
-  }, [hoveredVideoSlug]);
+  }, [hoveredVideoSlug, interactiveVideoSlug, supportsHoverPreview]);
+
+  const toggleInteractiveVideo = (slug: string) => {
+    setInteractiveVideoSlug((current) => (current === slug ? null : slug));
+  };
 
   return (
     <section id="registration-panel" className="rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(5,8,18,0.9))] p-3 sm:p-5 md:p-6">
@@ -127,22 +162,22 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
                   role="link"
                   tabIndex={0}
                   onMouseEnter={() => {
-                    if (hasIntroVideo) {
+                    if (hasIntroVideo && supportsHoverPreview) {
                       setHoveredVideoSlug(event.slug);
                     }
                   }}
                   onMouseLeave={() => {
-                    if (hoveredVideoSlug === event.slug) {
+                    if (supportsHoverPreview && hoveredVideoSlug === event.slug) {
                       setHoveredVideoSlug(null);
                     }
                   }}
                   onFocus={() => {
-                    if (hasIntroVideo) {
+                    if (hasIntroVideo && supportsHoverPreview) {
                       setHoveredVideoSlug(event.slug);
                     }
                   }}
                   onBlur={() => {
-                    if (hoveredVideoSlug === event.slug) {
+                    if (supportsHoverPreview && hoveredVideoSlug === event.slug) {
                       setHoveredVideoSlug(null);
                     }
                   }}
@@ -159,13 +194,29 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
                 >
                   <div className="portal-competition-card__media relative overflow-hidden">
                     {hasIntroVideo ? (
-                      <div className="portal-competition-card__video-shell">
+                      <div
+                        className="portal-competition-card__video-shell"
+                        onClick={(clickEvent) => {
+                          clickEvent.stopPropagation();
+                          toggleInteractiveVideo(event.slug);
+                        }}
+                        onKeyDown={(keyEvent) => {
+                          if (keyEvent.key === 'Enter' || keyEvent.key === ' ') {
+                            keyEvent.preventDefault();
+                            keyEvent.stopPropagation();
+                            toggleInteractiveVideo(event.slug);
+                          }
+                        }}
+                        role="button"
+                        tabIndex={0}
+                        aria-label={interactiveVideoSlug === event.slug ? `Pause ${event.name} intro video` : `Play ${event.name} intro video with sound`}
+                      >
                         <video
                           ref={(node) => {
                             videoRefs.current[event.slug] = node;
                           }}
                           className="portal-competition-card__video"
-                          preload="metadata"
+                          preload="auto"
                           playsInline
                           muted
                           loop
@@ -174,6 +225,13 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
                           <source src={event.intro_video_url} type="video/mp4" />
                           Your browser does not support the event intro video.
                         </video>
+                        <div className="portal-competition-card__video-hint">
+                          {interactiveVideoSlug === event.slug
+                            ? 'Tap to pause'
+                            : supportsHoverPreview
+                              ? 'Hover preview, tap for sound'
+                              : 'Tap to play with sound'}
+                        </div>
                       </div>
                     ) : (
                       <img src={event.poster_path} alt={event.name} loading="lazy" decoding="async" className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.04]" />

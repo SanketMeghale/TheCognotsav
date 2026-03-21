@@ -1046,6 +1046,7 @@ img {
   position: absolute;
   inset: 0;
   z-index: 0;
+  cursor: pointer;
 }
 
 .portal-competition-card__video {
@@ -1054,6 +1055,27 @@ img {
   object-fit: cover;
   display: block;
   background: #040712;
+}
+
+.portal-competition-card__video-hint {
+  position: absolute;
+  left: 1rem;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 2;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  background: rgba(3, 7, 18, 0.62);
+  padding: 0.55rem 0.9rem;
+  color: rgba(248, 250, 252, 0.94);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-align: center;
+  text-transform: uppercase;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  pointer-events: none;
 }
 
 .portal-competition-card__body {
@@ -3331,12 +3353,12 @@ select.floating-field-input option {
 
 .portal-front-hero__headline {
   margin: 0;
-  max-width: 11ch;
+  max-width: 12ch;
   font-family: 'Orbitron', 'Inter', sans-serif;
-  font-size: clamp(2.3rem, 5.6vw, 4.35rem);
+  font-size: clamp(2.15rem, 5vw, 4.05rem);
   font-weight: 800;
-  line-height: 1.02;
-  letter-spacing: 0.04em;
+  line-height: 0.98;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
   color: #f8fafc;
   text-shadow:
@@ -3910,7 +3932,7 @@ footer {
 
   .portal-front-hero__headline {
     max-width: 12ch;
-    font-size: clamp(2.3rem, 5.8vw, 4rem);
+    font-size: clamp(2.15rem, 5.4vw, 3.7rem);
   }
 
   .portal-front-hero__panel--premium {
