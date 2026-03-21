@@ -282,64 +282,73 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                 </div>
               </div>
 
-              {selectedHandbook?.quickDetails?.length ? (
-                <div className="mt-5">
-                  <p className="portal-kicker">Competition Snapshot</p>
-                  <div className="mt-3 grid gap-3 sm:grid-cols-3">
-                    {selectedHandbook.quickDetails.map((item) => (
-                      <div key={item} className="portal-event-detail-pill">
-                        {item}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ) : null}
-
-              <div className="mt-5 grid gap-4 xl:grid-cols-2">
+              <div className="mt-5 grid gap-4 xl:grid-cols-[0.95fr_1.05fr]">
                 <div className="portal-event-detail-panel">
                   <div className="flex items-center gap-2">
-                    <Trophy size={16} className="text-yellow-200" />
-                    <p className="text-sm font-semibold text-white">Highlights</p>
+                    <ExternalLink size={16} className="text-yellow-200" />
+                    <p className="text-sm font-semibold text-white">Handbook Focus</p>
                   </div>
-                  <div className="mt-3 space-y-2">
-                    {(selectedHandbook?.highlights || []).map((item) => (
-                      <div key={item} className="portal-event-detail-line">
-                        {item}
-                      </div>
-                    ))}
-                  </div>
+                  <p className="mt-3 text-sm leading-6 text-slate-300">
+                    Keep the on-screen details short and use the handbook for full rules, round flow, judging, and coordinator instructions.
+                  </p>
+                  {selectedHandbook?.handbookUrl ? (
+                    <a
+                      href={selectedHandbook.handbookUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="portal-event-detail-line mt-4 inline-flex w-full items-center justify-between gap-3 text-white"
+                    >
+                      <span className="inline-flex items-center gap-2">
+                        <Sparkles size={15} className="text-yellow-200" />
+                        For details click on this handbook
+                      </span>
+                      <ExternalLink size={15} className="text-yellow-200" />
+                    </a>
+                  ) : (
+                    <div className="portal-event-detail-line mt-4 inline-flex items-center gap-2">
+                      <Sparkles size={15} className="text-yellow-200" />
+                      Event details are shown on this page.
+                    </div>
+                  )}
+                  {selectedHandbook?.quickDetails?.length ? (
+                    <div className="mt-4 grid gap-2">
+                      {selectedHandbook.quickDetails.slice(0, 3).map((item) => (
+                        <div key={item} className="portal-event-detail-line inline-flex items-center gap-2">
+                          <Trophy size={14} className="text-cyan-200" />
+                          <span>{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
                 </div>
 
                 <div className="portal-event-detail-panel">
                   <div className="flex items-center gap-2">
                     <ShieldCheck size={16} className="text-cyan-200" />
-                    <p className="text-sm font-semibold text-white">Rules & Notes</p>
+                    <p className="text-sm font-semibold text-white">Short Event Notes</p>
                   </div>
-                  <div className="mt-3 space-y-2">
-                    {(selectedHandbook?.rules || []).map((item) => (
-                      <div key={item} className="portal-event-detail-line">
-                        {item}
+                  <div className="mt-3 grid gap-2">
+                    {(selectedHandbook?.highlights || []).slice(0, 2).map((item) => (
+                      <div key={`highlight-${item}`} className="portal-event-detail-line inline-flex items-start gap-2">
+                        <Sparkles size={14} className="mt-0.5 shrink-0 text-yellow-200" />
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                    {(selectedHandbook?.rules || []).slice(0, 2).map((item) => (
+                      <div key={`rule-${item}`} className="portal-event-detail-line inline-flex items-start gap-2">
+                        <ShieldCheck size={14} className="mt-0.5 shrink-0 text-cyan-200" />
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                    {selectedHandbook?.contact?.slice(0, 2).map((item) => (
+                      <div key={`contact-${item}`} className="portal-event-detail-line inline-flex items-start gap-2">
+                        <Phone size={14} className="mt-0.5 shrink-0 text-emerald-200" />
+                        <span>{item}</span>
                       </div>
                     ))}
                   </div>
                 </div>
               </div>
-
-              {selectedHandbook?.contact?.length ? (
-                <div className="portal-event-detail-panel mt-5">
-                  <div className="flex items-center gap-2">
-                    <Phone size={16} className="text-emerald-200" />
-                    <p className="text-sm font-semibold text-white">Contact Coordinators</p>
-                  </div>
-                  <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                    {selectedHandbook.contact.map((item) => (
-                      <div key={item} className="portal-event-detail-line">
-                        {item}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ) : null}
             </div>
           </div>
         </section>
