@@ -149,7 +149,6 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
       video.loop = true;
       video.pause();
       video.currentTime = 0;
-      video.load();
     });
   }, [hoveredVideoSlug, soundEnabledSlug, supportsHoverPreview, mobileVisibleVideoSlug]);
 
@@ -160,7 +159,6 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
     setSoundEnabledSlug(nextSoundEnabled ? slug : null);
 
     if (video) {
-      video.currentTime = 0;
       video.muted = !nextSoundEnabled;
       const playPromise = video.play();
       if (playPromise && typeof playPromise.catch === 'function') {
