@@ -3143,8 +3143,8 @@ select.floating-field-input option {
   align-items: center;
   gap: 0.65rem;
   border-radius: 1rem;
-  padding: 1rem 1.45rem;
-  font-size: 0.92rem;
+  padding: 0.88rem 1.22rem;
+  font-size: 0.84rem;
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -3546,10 +3546,20 @@ select.floating-field-input option {
 
   .portal-front-hero__headline {
     max-width: 12ch;
+    font-size: clamp(2.3rem, 5.8vw, 4rem);
   }
 
   .portal-front-hero__panel--premium {
     padding-top: 0;
+  }
+
+  .portal-front-hero__description {
+    font-size: 0.98rem;
+    line-height: 1.72;
+  }
+
+  .portal-hero-badge {
+    font-size: 0.74rem;
   }
 }
 
