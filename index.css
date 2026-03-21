@@ -3495,12 +3495,15 @@ select.floating-field-input option {
   }
 
   .portal-front-hero--premium {
-    padding: 0.7rem;
+    width: calc(100% + 0.55rem);
+    margin-left: -0.275rem;
+    padding: 0.6rem;
+    border-radius: 1.7rem;
   }
 
   .portal-front-hero__content--premium,
   .portal-front-hero__panel--premium {
-    padding: 1rem;
+    padding: 0.95rem;
   }
 
   .portal-front-hero__content--premium {

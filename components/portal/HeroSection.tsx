@@ -33,7 +33,7 @@ export const HeroSection: React.FC<Props> = () => {
   };
 
   return (
-    <section id="overview" className="mx-auto w-full max-w-[1320px] px-2 sm:px-5 lg:px-8 pt-3 pb-2 md:pt-5 md:pb-4">
+    <section id="overview" className="mx-auto w-full max-w-[1320px] px-1 sm:px-5 lg:px-8 pt-3 pb-2 md:pt-5 md:pb-4">
       <div className="portal-front-hero portal-front-hero--premium">
         <div className="portal-front-hero__particles" aria-hidden="true">
           {particles.map((particle) => (
