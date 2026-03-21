@@ -49,6 +49,14 @@ function prettyStatus(value: string) {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
+function normalizeEventToken(value: string | null | undefined) {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 function NotificationPanel({ notification }: { notification: AdminNotificationSummary | null | undefined }) {
   if (!notification) return <div className="rounded-[1.2rem] border border-dashed border-white/10 bg-black/10 p-4 text-sm text-slate-400">No status email logged yet.</div>;
   const tone = notification.delivery_status === 'sent' ? 'border-emerald-300/25 bg-emerald-400/10 text-emerald-100' : notification.delivery_status === 'failed' ? 'border-rose-300/25 bg-rose-400/10 text-rose-100' : 'border-amber-300/25 bg-amber-400/10 text-amber-100';
@@ -95,22 +103,33 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
   }, [scopedEventSlug]);
 
   const counts = useMemo(() => ({ all: adminRows.length, pending: adminRows.filter((row) => row.status === 'pending').length, verified: adminRows.filter((row) => row.status === 'verified').length, waitlisted: adminRows.filter((row) => row.status === 'waitlisted').length, rejected: adminRows.filter((row) => row.status === 'rejected').length }), [adminRows]);
-  const eventBuckets = useMemo(() => events.map((event) => ({
-    slug: event.slug,
-    name: event.name,
-    total: adminRows.filter((row) => row.event_slug === event.slug).length,
-    pending: adminRows.filter((row) => row.event_slug === event.slug && row.status === 'pending').length,
-    verified: adminRows.filter((row) => row.event_slug === event.slug && row.status === 'verified').length,
-  })).filter((event) => event.total > 0), [adminRows, events]);
+  const eventBuckets = useMemo(() => events.map((event) => {
+    const normalizedSlug = normalizeEventToken(event.slug);
+    const normalizedName = normalizeEventToken(event.name);
+    const rowsForEvent = adminRows.filter((row) => {
+      const rowSlug = normalizeEventToken(row.event_slug);
+      const rowName = normalizeEventToken(row.event_name);
+      return rowSlug === normalizedSlug || rowName === normalizedName;
+    });
+
+    return {
+      slug: event.slug,
+      name: event.name,
+      total: rowsForEvent.length,
+      pending: rowsForEvent.filter((row) => row.status === 'pending').length,
+      verified: rowsForEvent.filter((row) => row.status === 'verified').length,
+    };
+  }).filter((event) => event.total > 0), [adminRows, events]);
   const filteredRows = useMemo(() => {
     const normalizedSearch = searchQuery.trim().toLowerCase();
-    const normalizedEventFilter = eventFilter.trim().toLowerCase();
-    const activeEventName = events.find((event) => event.slug === eventFilter)?.name.trim().toLowerCase() || '';
+    const normalizedEventFilter = normalizeEventToken(eventFilter);
+    const activeEvent = events.find((event) => normalizeEventToken(event.slug) === normalizedEventFilter) || null;
+    const activeEventName = normalizeEventToken(activeEvent?.name);
 
     return adminRows.filter((row) => {
       const matchesStatus = statusFilter === 'all' || row.status === statusFilter;
-      const rowSlug = String(row.event_slug || '').trim().toLowerCase();
-      const rowEventName = String(row.event_name || '').trim().toLowerCase();
+      const rowSlug = normalizeEventToken(row.event_slug);
+      const rowEventName = normalizeEventToken(row.event_name);
       const matchesEvent = eventFilter === 'all'
         || rowSlug === normalizedEventFilter
         || (activeEventName && rowEventName === activeEventName);
