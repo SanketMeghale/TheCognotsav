@@ -1078,6 +1078,34 @@ img {
   pointer-events: none;
 }
 
+.portal-competition-card__sound-toggle {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(3, 7, 18, 0.68);
+  padding: 0.52rem 0.82rem;
+  color: rgba(248, 250, 252, 0.96);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.portal-competition-card__sound-toggle:hover {
+  background: rgba(8, 15, 32, 0.86);
+  border-color: rgba(255, 255, 255, 0.24);
+  transform: translateY(-1px);
+}
+
 .portal-competition-card__body {
   display: flex;
   flex: 1 1 auto;

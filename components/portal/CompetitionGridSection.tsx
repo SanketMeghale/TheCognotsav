@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { CalendarDays, CreditCard, ExternalLink, MapPin, Trophy, Users } from 'lucide-react';
+import { CalendarDays, CreditCard, ExternalLink, MapPin, Volume2, VolumeX, Trophy, Users } from 'lucide-react';
 import type { EventRecord } from './types';
 import { formatCurrency, getTeamLabel } from './utils';
 
@@ -50,9 +50,11 @@ function getDisplayCategory(event: EventRecord) {
 export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents, selectedEventSlug, onSelectEvent }) => {
   const [activeFilter, setActiveFilter] = useState<(typeof filterOrder)[number]>('All');
   const [hoveredVideoSlug, setHoveredVideoSlug] = useState<string | null>(null);
-  const [interactiveVideoSlug, setInteractiveVideoSlug] = useState<string | null>(null);
+  const [soundEnabledSlug, setSoundEnabledSlug] = useState<string | null>(null);
   const [supportsHoverPreview, setSupportsHoverPreview] = useState(false);
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
+  const observerRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const [mobileVisibleVideoSlugs, setMobileVisibleVideoSlugs] = useState<string[]>([]);
 
   const visibleEvents = useMemo(
     () => (activeFilter === 'All' ? events : events.filter((event) => getDisplayCategory(event) === activeFilter)),
@@ -74,10 +76,42 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
   }, []);
 
   useEffect(() => {
-    if (supportsHoverPreview) {
-      setInteractiveVideoSlug(null);
+    if (typeof window === 'undefined' || supportsHoverPreview) {
+      setMobileVisibleVideoSlugs([]);
+      return;
     }
-  }, [supportsHoverPreview]);
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        setMobileVisibleVideoSlugs((current) => {
+          const next = new Set(current);
+          entries.forEach((entry) => {
+            const slug = entry.target.getAttribute('data-video-slug');
+            if (!slug) {
+              return;
+            }
+
+            if (entry.isIntersecting) {
+              next.add(slug);
+            } else {
+              next.delete(slug);
+            }
+          });
+
+          return Array.from(next);
+        });
+      },
+      { threshold: 0.6 },
+    );
+
+    Object.entries(observerRefs.current).forEach(([slug, node]) => {
+      if (node && visibleEvents.some((event) => event.slug === slug && event.intro_video_url)) {
+        observer.observe(node);
+      }
+    });
+
+    return () => observer.disconnect();
+  }, [supportsHoverPreview, visibleEvents]);
 
   useEffect(() => {
     Object.entries(videoRefs.current).forEach(([slug, video]) => {
@@ -86,12 +120,14 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
       }
 
       const shouldHoverPreview = supportsHoverPreview && slug === hoveredVideoSlug;
-      const shouldPlayInteractively = slug === interactiveVideoSlug;
+      const shouldPlayOnTouch = !supportsHoverPreview && mobileVisibleVideoSlugs.includes(slug);
+      const shouldPlay = shouldHoverPreview || shouldPlayOnTouch;
+      const hasSoundEnabled = slug === soundEnabledSlug;
 
-      if (shouldHoverPreview || shouldPlayInteractively) {
-        video.muted = !shouldPlayInteractively;
-        video.controls = shouldPlayInteractively;
-        video.loop = !shouldPlayInteractively;
+      if (shouldPlay) {
+        video.muted = !hasSoundEnabled;
+        video.controls = false;
+        video.loop = true;
         const playPromise = video.play();
         if (playPromise && typeof playPromise.catch === 'function') {
           playPromise.catch(() => {});
@@ -105,10 +141,10 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
       video.pause();
       video.currentTime = 0;
     });
-  }, [hoveredVideoSlug, interactiveVideoSlug, supportsHoverPreview]);
+  }, [hoveredVideoSlug, soundEnabledSlug, supportsHoverPreview, mobileVisibleVideoSlugs]);
 
-  const toggleInteractiveVideo = (slug: string) => {
-    setInteractiveVideoSlug((current) => (current === slug ? null : slug));
+  const toggleSound = (slug: string) => {
+    setSoundEnabledSlug((current) => (current === slug ? null : slug));
   };
 
   return (
@@ -195,21 +231,23 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
                   <div className="portal-competition-card__media relative overflow-hidden">
                     {hasIntroVideo ? (
                       <div
+                        ref={(node) => {
+                          observerRefs.current[event.slug] = node;
+                        }}
+                        data-video-slug={event.slug}
                         className="portal-competition-card__video-shell"
                         onClick={(clickEvent) => {
                           clickEvent.stopPropagation();
-                          toggleInteractiveVideo(event.slug);
                         }}
                         onKeyDown={(keyEvent) => {
                           if (keyEvent.key === 'Enter' || keyEvent.key === ' ') {
                             keyEvent.preventDefault();
                             keyEvent.stopPropagation();
-                            toggleInteractiveVideo(event.slug);
                           }
                         }}
                         role="button"
                         tabIndex={0}
-                        aria-label={interactiveVideoSlug === event.slug ? `Pause ${event.name} intro video` : `Play ${event.name} intro video with sound`}
+                        aria-label={!supportsHoverPreview ? `${event.name} intro video autoplay preview` : `${event.name} intro video preview`}
                       >
                         <video
                           ref={(node) => {
@@ -225,12 +263,27 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
                           <source src={event.intro_video_url} type="video/mp4" />
                           Your browser does not support the event intro video.
                         </video>
+                        <button
+                          type="button"
+                          className="portal-competition-card__sound-toggle"
+                          onClick={(clickEvent) => {
+                            clickEvent.stopPropagation();
+                            if (!supportsHoverPreview) {
+                              setHoveredVideoSlug(event.slug);
+                            }
+                            toggleSound(event.slug);
+                          }}
+                          aria-label={soundEnabledSlug === event.slug ? `Mute ${event.name} intro video` : `Unmute ${event.name} intro video`}
+                        >
+                          {soundEnabledSlug === event.slug ? <Volume2 size={16} /> : <VolumeX size={16} />}
+                          <span>{soundEnabledSlug === event.slug ? 'Sound On' : 'Sound Off'}</span>
+                        </button>
                         <div className="portal-competition-card__video-hint">
-                          {interactiveVideoSlug === event.slug
-                            ? 'Tap to pause'
+                          {!supportsHoverPreview
+                            ? 'Autoplay on mobile'
                             : supportsHoverPreview
-                              ? 'Hover preview, tap for sound'
-                              : 'Tap to play with sound'}
+                              ? 'Hover preview'
+                              : 'Tap video to play'}
                         </div>
                       </div>
                     ) : (
