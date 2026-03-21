@@ -1,14 +1,7 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowRight, ArrowLeft, Bell, Building2, CheckCircle2, Clock3, GraduationCap, House, Search, ShieldCheck, Sparkles, Trophy } from 'lucide-react';
-import { AdminRegistrationsPage } from './components/portal/AdminRegistrationsPage.tsx';
-import { AnnouncementArchiveSection } from './components/portal/AnnouncementArchiveSection.tsx';
 import { HeroSection } from './components/portal/HeroSection.tsx';
-import { TimelinePage } from './components/portal/TimelinePage.tsx';
 import { CompetitionGridSection } from './components/portal/CompetitionGridSection.tsx';
-import { EventRegistrationPanel } from './components/portal/EventRegistrationPanel.tsx';
-import { FAQSection } from './components/portal/FAQSection.tsx';
-import { TrackerAdminPanel } from './components/portal/TrackerAdminPanel.tsx';
-import { PortalFooter } from './components/portal/PortalFooter.tsx';
 import type {
   AdminAccessScope,
   AdminNotificationSummary,
@@ -22,6 +15,14 @@ import type {
   RegistrationReceipt,
 } from './components/portal/types.ts';
 import { makeParticipants, shellClassName } from './components/portal/utils.ts';
+
+const AdminRegistrationsPage = lazy(() => import('./components/portal/AdminRegistrationsPage.tsx').then((module) => ({ default: module.AdminRegistrationsPage })));
+const AnnouncementArchiveSection = lazy(() => import('./components/portal/AnnouncementArchiveSection.tsx').then((module) => ({ default: module.AnnouncementArchiveSection })));
+const TimelinePage = lazy(() => import('./components/portal/TimelinePage.tsx').then((module) => ({ default: module.TimelinePage })));
+const EventRegistrationPanel = lazy(() => import('./components/portal/EventRegistrationPanel.tsx').then((module) => ({ default: module.EventRegistrationPanel })));
+const FAQSection = lazy(() => import('./components/portal/FAQSection.tsx').then((module) => ({ default: module.FAQSection })));
+const TrackerAdminPanel = lazy(() => import('./components/portal/TrackerAdminPanel.tsx').then((module) => ({ default: module.TrackerAdminPanel })));
+const PortalFooter = lazy(() => import('./components/portal/PortalFooter.tsx').then((module) => ({ default: module.PortalFooter })));
 
 type FormState = {
   teamName: string;
@@ -296,6 +297,14 @@ function DepartmentPage() {
         </div>
       </section>
     </main>
+  );
+}
+
+function PortalSectionFallback({ label = 'Loading section...' }: { label?: string }) {
+  return (
+    <div className="portal-glow-card portal-glass rounded-[1.7rem] p-5 text-sm text-slate-300">
+      {label}
+    </div>
   );
 }
 
@@ -917,9 +926,6 @@ export const App: React.FC = () => {
 
     if (selectedEventSlug !== eventPageSlug) {
       setSelectedEventSlug(eventPageSlug);
-      if (typeof window !== 'undefined') {
-        window.scrollTo({ top: 0, behavior: 'auto' });
-      }
     }
   }, [eventPageSlug, events, isEventPage, selectedEventSlug]);
 
@@ -964,7 +970,6 @@ export const App: React.FC = () => {
     setPaymentScreenshotName('');
     if (typeof window !== 'undefined') {
       window.location.hash = `#events/${slug}`;
-      window.scrollTo({ top: 0, behavior: 'auto' });
     }
   };
 
@@ -1676,72 +1681,78 @@ export const App: React.FC = () => {
         </div>
       </header>
       {isAdminPage ? (
-        <AdminRegistrationsPage
-          adminAccessMode={adminAccessMode}
-          adminMainKey={adminMainKeyDraft}
-          adminEventKey={adminEventKeyDraft}
-          adminEventKeySlug={adminEventKeySlug}
-          adminScope={adminScope}
-          adminRows={adminRows}
-          events={events}
-          announcements={adminAnnouncements}
-          backups={backupSnapshots}
-          adminLoading={adminLoading}
-          adminError={adminError}
-          onAdminAccessModeChange={(value) => {
-            setAdminAccessMode(value);
-            setAdminError('');
-          }}
-          onAdminMainKeyChange={(value) => {
-            setAdminMainKeyDraft(value);
-            setAdminError('');
-          }}
-          onAdminEventKeyChange={(value) => {
-            setAdminEventKeyDraft(value);
-            setAdminError('');
-          }}
-          onAdminEventKeySlugChange={(value) => {
-            setAdminEventKeySlug(value);
-            setAdminError('');
-          }}
-          onLoadAdminRows={loadAdminRows}
-          onDownload={downloadAdminFile}
-          onStatusChange={updateAdminStatus}
-          onSaveReviewNote={saveReviewNote}
-          onResendStatusEmail={resendAdminStatusEmail}
-          onSendBroadcast={sendBroadcast}
-          onDeleteAnnouncement={deleteAdminAnnouncement}
-          onRunBackup={runBackup}
-          onDownloadBackup={downloadBackupFile}
-        />
+        <Suspense fallback={<PortalSectionFallback label="Loading admin panel..." />}>
+          <AdminRegistrationsPage
+            adminAccessMode={adminAccessMode}
+            adminMainKey={adminMainKeyDraft}
+            adminEventKey={adminEventKeyDraft}
+            adminEventKeySlug={adminEventKeySlug}
+            adminScope={adminScope}
+            adminRows={adminRows}
+            events={events}
+            announcements={adminAnnouncements}
+            backups={backupSnapshots}
+            adminLoading={adminLoading}
+            adminError={adminError}
+            onAdminAccessModeChange={(value) => {
+              setAdminAccessMode(value);
+              setAdminError('');
+            }}
+            onAdminMainKeyChange={(value) => {
+              setAdminMainKeyDraft(value);
+              setAdminError('');
+            }}
+            onAdminEventKeyChange={(value) => {
+              setAdminEventKeyDraft(value);
+              setAdminError('');
+            }}
+            onAdminEventKeySlugChange={(value) => {
+              setAdminEventKeySlug(value);
+              setAdminError('');
+            }}
+            onLoadAdminRows={loadAdminRows}
+            onDownload={downloadAdminFile}
+            onStatusChange={updateAdminStatus}
+            onSaveReviewNote={saveReviewNote}
+            onResendStatusEmail={resendAdminStatusEmail}
+            onSendBroadcast={sendBroadcast}
+            onDeleteAnnouncement={deleteAdminAnnouncement}
+            onRunBackup={runBackup}
+            onDownloadBackup={downloadBackupFile}
+          />
+        </Suspense>
       ) : isTimelinePage ? (
-        <TimelinePage />
+        <Suspense fallback={<PortalSectionFallback label="Loading timeline..." />}>
+          <TimelinePage />
+        </Suspense>
       ) : isDepartmentPage ? (
         <DepartmentPage />
       ) : isEventPage && selectedEvent ? (
         <main className={`${shellClassName} space-y-5 pb-8 pt-4 md:space-y-8 md:pb-12`}>
-          <EventRegistrationPanel
-            selectedEvent={selectedEvent}
-            teamSize={teamSize}
-            form={form}
-            submitting={submitting}
-            successMessage={successMessage}
-            errorMessage={errorMessage}
-            successReceipt={successReceipt}
-            draftRecovered={draftRecovered}
-            validationErrors={validationErrors}
-            touchedFields={touchedFields}
-            onFieldBlur={markFieldTouched}
-            onDownloadPass={downloadConfirmationPass}
-            onDismissDraftRecovered={() => setDraftRecovered(false)}
-            paymentScreenshotName={paymentScreenshotName}
-            paymentScreenshotReady={Boolean(paymentScreenshotDataUrl)}
-            onPaymentScreenshotChange={handlePaymentScreenshotChange}
-            onTeamSizeChange={handleTeamSizeChange}
-            onFormFieldChange={updateFormField}
-            onParticipantChange={handleParticipantChange}
-            onSubmit={handleSubmit}
-          />
+          <Suspense fallback={<PortalSectionFallback label="Loading event details..." />}>
+            <EventRegistrationPanel
+              selectedEvent={selectedEvent}
+              teamSize={teamSize}
+              form={form}
+              submitting={submitting}
+              successMessage={successMessage}
+              errorMessage={errorMessage}
+              successReceipt={successReceipt}
+              draftRecovered={draftRecovered}
+              validationErrors={validationErrors}
+              touchedFields={touchedFields}
+              onFieldBlur={markFieldTouched}
+              onDownloadPass={downloadConfirmationPass}
+              onDismissDraftRecovered={() => setDraftRecovered(false)}
+              paymentScreenshotName={paymentScreenshotName}
+              paymentScreenshotReady={Boolean(paymentScreenshotDataUrl)}
+              onPaymentScreenshotChange={handlePaymentScreenshotChange}
+              onTeamSizeChange={handleTeamSizeChange}
+              onFormFieldChange={updateFormField}
+              onParticipantChange={handleParticipantChange}
+              onSubmit={handleSubmit}
+            />
+          </Suspense>
         </main>
       ) : (
         <>
@@ -1752,10 +1763,12 @@ export const App: React.FC = () => {
 
             <div className={`${shellClassName} portal-section-divider`} aria-hidden="true" />
 
-            <AnnouncementArchiveSection
-              announcements={visibleAnnouncements}
-              loading={loadingAnnouncements}
-            />
+            <Suspense fallback={<PortalSectionFallback label="Loading updates..." />}>
+              <AnnouncementArchiveSection
+                announcements={visibleAnnouncements}
+                loading={loadingAnnouncements}
+              />
+            </Suspense>
 
             <div className={`${shellClassName} portal-section-divider portal-section-divider--angled`} aria-hidden="true" />
 
@@ -1766,28 +1779,32 @@ export const App: React.FC = () => {
               onSelectEvent={handleSelectEvent}
             />
 
-            <TrackerAdminPanel
-              lookupQuery={lookupQuery}
-              lookupLoading={lookupLoading}
-              lookupTouched={lookupTouched}
-              lookupResults={lookupResults}
-              adminKey={adminKey}
-              adminRows={adminRows}
-              adminLoading={adminLoading}
-              adminError={adminError}
-              onStatusChange={updateAdminStatus}
-              onLookupQueryChange={setLookupQuery}
-              onLookup={handleLookup}
-              onAdminKeyChange={(value) => {
-                setAdminKey(value);
-                setAdminScope(null);
-              }}
-              onLoadAdminRows={loadAdminRows}
-              onDownload={downloadAdminFile}
-              showAdmin={false}
-            />
+            <Suspense fallback={<PortalSectionFallback label="Loading tracker..." />}>
+              <TrackerAdminPanel
+                lookupQuery={lookupQuery}
+                lookupLoading={lookupLoading}
+                lookupTouched={lookupTouched}
+                lookupResults={lookupResults}
+                adminKey={adminKey}
+                adminRows={adminRows}
+                adminLoading={adminLoading}
+                adminError={adminError}
+                onStatusChange={updateAdminStatus}
+                onLookupQueryChange={setLookupQuery}
+                onLookup={handleLookup}
+                onAdminKeyChange={(value) => {
+                  setAdminKey(value);
+                  setAdminScope(null);
+                }}
+                onLoadAdminRows={loadAdminRows}
+                onDownload={downloadAdminFile}
+                showAdmin={false}
+              />
+            </Suspense>
 
-            <FAQSection />
+            <Suspense fallback={<PortalSectionFallback label="Loading FAQs..." />}>
+              <FAQSection />
+            </Suspense>
           </main>
         </>
       )}
@@ -1846,7 +1863,9 @@ export const App: React.FC = () => {
         </>
       ) : null}
 
-      <PortalFooter />
+      <Suspense fallback={<PortalSectionFallback label="Loading footer..." />}>
+        <PortalFooter />
+      </Suspense>
 
     </div>
   );
