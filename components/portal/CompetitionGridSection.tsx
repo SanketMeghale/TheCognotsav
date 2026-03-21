@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { CalendarDays, CreditCard, ExternalLink, MapPin, Trophy, Users } from 'lucide-react';
 import type { EventRecord } from './types';
 import { formatCurrency, getTeamLabel } from './utils';
@@ -49,11 +49,32 @@ function getDisplayCategory(event: EventRecord) {
 
 export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents, selectedEventSlug, onSelectEvent }) => {
   const [activeFilter, setActiveFilter] = useState<(typeof filterOrder)[number]>('All');
+  const [hoveredVideoSlug, setHoveredVideoSlug] = useState<string | null>(null);
+  const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
 
   const visibleEvents = useMemo(
     () => (activeFilter === 'All' ? events : events.filter((event) => getDisplayCategory(event) === activeFilter)),
     [activeFilter, events],
   );
+
+  useEffect(() => {
+    Object.entries(videoRefs.current).forEach(([slug, video]) => {
+      if (!video) {
+        return;
+      }
+
+      if (slug === hoveredVideoSlug) {
+        const playPromise = video.play();
+        if (playPromise && typeof playPromise.catch === 'function') {
+          playPromise.catch(() => {});
+        }
+        return;
+      }
+
+      video.pause();
+      video.currentTime = 0;
+    });
+  }, [hoveredVideoSlug]);
 
   return (
     <section id="registration-panel" className="rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(5,8,18,0.9))] p-3 sm:p-5 md:p-6">
@@ -98,12 +119,33 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
               const theme = categoryThemes[displayCategory] || categoryThemes.Technical;
               const teamLabel = getTeamLabel(event);
               const handleOpenEvent = () => onSelectEvent(event.slug);
+              const hasIntroVideo = Boolean(event.intro_video_url);
 
               return (
                 <article
                   key={event.slug}
                   role="link"
                   tabIndex={0}
+                  onMouseEnter={() => {
+                    if (hasIntroVideo) {
+                      setHoveredVideoSlug(event.slug);
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    if (hoveredVideoSlug === event.slug) {
+                      setHoveredVideoSlug(null);
+                    }
+                  }}
+                  onFocus={() => {
+                    if (hasIntroVideo) {
+                      setHoveredVideoSlug(event.slug);
+                    }
+                  }}
+                  onBlur={() => {
+                    if (hoveredVideoSlug === event.slug) {
+                      setHoveredVideoSlug(null);
+                    }
+                  }}
                   onClick={handleOpenEvent}
                   onKeyDown={(eventKey) => {
                     if (eventKey.key === 'Enter' || eventKey.key === ' ') {
@@ -116,17 +158,17 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
                   } ${theme.glow}`}
                 >
                   <div className="portal-competition-card__media relative overflow-hidden">
-                    {event.intro_video_url ? (
-                      <div
-                        className="portal-competition-card__video-shell"
-                        onClick={(clickEvent) => clickEvent.stopPropagation()}
-                        onKeyDown={(keyEvent) => keyEvent.stopPropagation()}
-                      >
+                    {hasIntroVideo ? (
+                      <div className="portal-competition-card__video-shell">
                         <video
+                          ref={(node) => {
+                            videoRefs.current[event.slug] = node;
+                          }}
                           className="portal-competition-card__video"
-                          controls
                           preload="metadata"
                           playsInline
+                          muted
+                          loop
                           poster={event.poster_path}
                         >
                           <source src={event.intro_video_url} type="video/mp4" />
@@ -140,13 +182,13 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
                     <div className="portal-competition-card__noise" aria-hidden="true" />
                     <div className="absolute right-4 top-4 flex flex-wrap justify-end gap-2">
                       <span className={`rounded-full px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] shadow-[0_10px_24px_rgba(2,8,23,0.24)] ${theme.badge}`}>{displayCategory}</span>
-                      {event.intro_video_url ? (
+                      {hasIntroVideo ? (
                         <span className="rounded-full border border-white/12 bg-black/45 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-white/88 shadow-[0_10px_24px_rgba(2,8,23,0.24)]">
                           Intro Video
                         </span>
                       ) : null}
                     </div>
-                    {!event.intro_video_url ? (
+                    {!hasIntroVideo ? (
                       <div className="absolute inset-x-4 bottom-4">
                         <div className="portal-competition-card__hero-caption">
                           <p className="portal-card-title portal-competition-card__hero-title text-white">{event.name}</p>
