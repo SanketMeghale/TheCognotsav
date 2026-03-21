@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowRight, Bell, Building2, CheckCircle2, Clock3, GraduationCap, House, Search, ShieldCheck, Sparkles, Trophy, X } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Bell, Building2, CheckCircle2, Clock3, GraduationCap, House, Search, ShieldCheck, Sparkles, Trophy } from 'lucide-react';
 import { AdminRegistrationsPage } from './components/portal/AdminRegistrationsPage.tsx';
 import { AnnouncementArchiveSection } from './components/portal/AnnouncementArchiveSection.tsx';
 import { HeroSection } from './components/portal/HeroSection.tsx';
@@ -166,7 +166,7 @@ function PortalBackgroundCanvas() {
   return <canvas ref={canvasRef} className="portal-network-canvas" aria-hidden="true" />;
 }
 
-function DepartmentIntroStrip({ onOpen }: { onOpen: () => void }) {
+function DepartmentIntroStrip() {
   return (
     <section className="portal-department-strip rounded-[1.8rem] border border-white/10 p-4 md:rounded-[2rem] md:p-6">
       <div className="portal-department-strip__layout">
@@ -191,12 +191,111 @@ function DepartmentIntroStrip({ onOpen }: { onOpen: () => void }) {
           <span className="portal-department-strip__chip"><Sparkles size={14} />Flagship CEAS events</span>
         </div>
 
-        <button type="button" onClick={onOpen} className="portal-premium-button portal-premium-button--secondary portal-department-strip__button">
+        <a href="#department" className="portal-premium-button portal-premium-button--secondary portal-department-strip__button">
           Know More
           <ArrowRight size={15} />
-        </button>
+        </a>
       </div>
     </section>
+  );
+}
+
+function DepartmentPage() {
+  return (
+    <main className={`${shellClassName} space-y-5 pb-10 pt-4 md:space-y-8 md:pb-14`}>
+      <section className="portal-department-page portal-glow-card portal-glass rounded-[1.7rem] p-4 md:rounded-[2rem] md:p-8">
+        <div className="portal-department-page__hero">
+          <div className="portal-department-page__copy">
+            <a href="#overview" className="magnetic-button inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200">
+              <ArrowLeft size={16} />
+              Back to portal
+            </a>
+            <p className="portal-department-page__kicker">Department / CEAS</p>
+            <h2 className="portal-department-page__title">Computer Engineering Association of Students</h2>
+            <p className="portal-department-page__lead">
+              A premium introduction page for the Computer Engineering Department and CEAS, designed to present the
+              department story, student culture, and flagship event legacy without affecting the core registration
+              experience.
+            </p>
+            <div className="portal-department-page__actions">
+              <a href="#registration-panel" className="portal-premium-button portal-premium-button--primary">
+                Go To Registration
+                <ArrowRight size={15} />
+              </a>
+              <a href="#timeline" className="portal-premium-button portal-premium-button--secondary">
+                View Timeline
+              </a>
+            </div>
+          </div>
+
+          <div className="portal-department-page__hero-card">
+            <div className="portal-department-page__hero-logo-frame">
+              <img src="/images/ceasposter.jpeg" alt="CEAS logo" loading="eager" decoding="async" className="portal-department-page__hero-logo" />
+            </div>
+            <div className="portal-department-page__hero-meta">
+              <p>Department profile, CEAS identity, and event legacy space.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="portal-department-page__grid">
+        <article className="portal-department-page__section portal-glow-card portal-glass rounded-[1.7rem] p-4 md:rounded-[2rem] md:p-6">
+          <p className="portal-department-page__section-kicker">Department</p>
+          <h3 className="portal-department-page__section-title">Computer Engineering Department</h3>
+          <p className="portal-department-page__section-copy">
+            Use this space for department vision, academic environment, labs, student opportunities, innovation
+            culture, and what makes the CE department distinctive.
+          </p>
+          <div className="portal-department-page__points">
+            <div className="portal-department-page__point">Academic excellence and practical learning</div>
+            <div className="portal-department-page__point">Labs, projects, and technical exposure</div>
+            <div className="portal-department-page__point">Industry readiness and student development</div>
+          </div>
+        </article>
+
+        <article className="portal-department-page__section portal-glow-card portal-glass rounded-[1.7rem] p-4 md:rounded-[2rem] md:p-6">
+          <p className="portal-department-page__section-kicker">CEAS</p>
+          <h3 className="portal-department-page__section-title">Student Leadership and Culture</h3>
+          <p className="portal-department-page__section-copy">
+            Use this section for CEAS goals, student coordination, technical clubs, yearly activities, and how CEAS
+            creates a strong student-led ecosystem inside the department.
+          </p>
+          <div className="portal-department-page__points">
+            <div className="portal-department-page__point">Student-driven technical initiatives</div>
+            <div className="portal-department-page__point">Flagship event planning and execution</div>
+            <div className="portal-department-page__point">Collaboration, leadership, and participation</div>
+          </div>
+        </article>
+      </section>
+
+      <section className="portal-department-page__section portal-glow-card portal-glass rounded-[1.7rem] p-4 md:rounded-[2rem] md:p-6">
+        <div className="portal-department-page__section-head">
+          <div>
+            <p className="portal-department-page__section-kicker">Past Events</p>
+            <h3 className="portal-department-page__section-title">Gallery and Event Legacy</h3>
+          </div>
+          <p className="portal-department-page__section-copy portal-department-page__section-copy--compact">
+            Empty placeholders are ready here. You can later upload previous event photos, posters, captions, and short
+            highlight notes.
+          </p>
+        </div>
+
+        <div className="portal-department-page__gallery">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div key={index} className="portal-department-page__gallery-card">
+              <div className="portal-department-page__gallery-placeholder">
+                <span>Upload photo {index + 1}</span>
+              </div>
+              <div className="portal-department-page__gallery-copy">
+                <p className="portal-department-page__gallery-title">Past Event Highlight</p>
+                <p className="portal-department-page__gallery-text">Add event name, year, and 1-line description here.</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </main>
   );
 }
 
@@ -548,7 +647,6 @@ export const App: React.FC = () => {
   const [toastMessage, setToastMessage] = useState('');
   const [toastClosing, setToastClosing] = useState(false);
   const [navScrolled, setNavScrolled] = useState(false);
-  const [departmentIntroOpen, setDepartmentIntroOpen] = useState(false);
   const [form, setForm] = useState<FormState>({
     teamName: '',
     collegeName: '',
@@ -788,8 +886,9 @@ export const App: React.FC = () => {
   const eventPageSlug = hashRoute.startsWith('#events/') ? hashRoute.slice('#events/'.length) : '';
   const isAdminPage = hashRoute.startsWith('#admin-registrations');
   const isTimelinePage = hashRoute === '#timeline';
+  const isDepartmentPage = hashRoute === '#department';
   const isEventPage = Boolean(eventPageSlug);
-  const showFrontBottomDock = !isAdminPage && !isEventPage;
+  const showFrontBottomDock = !isAdminPage && !isEventPage && !isDepartmentPage;
   const navLinks = [
     { href: '#overview', label: 'Home' },
     { href: '#registration-panel', label: 'Competitions' },
@@ -833,19 +932,12 @@ export const App: React.FC = () => {
   }, [isAdminPage, hashRoute]);
 
   useEffect(() => {
-    if (typeof document === 'undefined') {
+    if (typeof window === 'undefined' || !isDepartmentPage) {
       return;
     }
 
-    const previousOverflow = document.body.style.overflow;
-    if (departmentIntroOpen) {
-      document.body.style.overflow = 'hidden';
-    }
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-    };
-  }, [departmentIntroOpen]);
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }, [isDepartmentPage, hashRoute]);
 
   const totalRegistrations = events.reduce((sum, event) => sum + event.registrations_count, 0);
   const visibleAnnouncements = announcements
@@ -1624,6 +1716,8 @@ export const App: React.FC = () => {
         />
       ) : isTimelinePage ? (
         <TimelinePage />
+      ) : isDepartmentPage ? (
+        <DepartmentPage />
       ) : isEventPage && selectedEvent ? (
         <main className={`${shellClassName} space-y-5 pb-8 pt-4 md:space-y-8 md:pb-12`}>
           <EventRegistrationPanel
@@ -1654,7 +1748,7 @@ export const App: React.FC = () => {
           <main className={`${shellClassName} space-y-5 pb-8 md:space-y-8 md:pb-12`}>
             <HeroSection />
 
-            <DepartmentIntroStrip onOpen={() => setDepartmentIntroOpen(true)} />
+            <DepartmentIntroStrip />
 
             <div className={`${shellClassName} portal-section-divider`} aria-hidden="true" />
 
@@ -1750,76 +1844,6 @@ export const App: React.FC = () => {
             </nav>
           </div>
         </>
-      ) : null}
-
-      {departmentIntroOpen ? (
-        <div className="portal-department-modal">
-          <div className="portal-department-modal__backdrop" onClick={() => setDepartmentIntroOpen(false)} />
-          <div className="portal-department-modal__dialog">
-            <button
-              type="button"
-              onClick={() => setDepartmentIntroOpen(false)}
-              className="portal-department-modal__close"
-              aria-label="Close department introduction"
-            >
-              <X size={18} />
-            </button>
-
-            <div className="portal-department-modal__hero">
-              <div className="portal-department-modal__logo-shell">
-                <img src="/images/ceasposter.jpeg" alt="CEAS logo" loading="eager" decoding="async" className="portal-department-modal__logo" />
-              </div>
-              <div>
-                <p className="portal-department-modal__kicker">Department Introduction</p>
-                <h3 className="portal-department-modal__title">Computer Engineering Association of Students</h3>
-                <p className="portal-department-modal__lead">
-                  CEAS is the student-driven force behind the department’s strongest technical culture, creating spaces
-                  where ideas, execution, and leadership come together through events, projects, and flagship platforms
-                  like Cognotsav.
-                </p>
-              </div>
-            </div>
-
-            <div className="portal-department-modal__grid">
-              <article className="portal-department-modal__card">
-                <p className="portal-department-modal__card-kicker">Who We Are</p>
-                <p className="portal-department-modal__card-copy">
-                  A collaborative student association working with the Computer Engineering Department to build a more
-                  active, skilled, and industry-ready academic environment.
-                </p>
-              </article>
-              <article className="portal-department-modal__card">
-                <p className="portal-department-modal__card-kicker">What We Build</p>
-                <p className="portal-department-modal__card-copy">
-                  Technical competitions, project showcases, esports experiences, teamwork-driven initiatives, and
-                  student opportunities that turn classroom learning into visible outcomes.
-                </p>
-              </article>
-              <article className="portal-department-modal__card">
-                <p className="portal-department-modal__card-kicker">Why Cognotsav Matters</p>
-                <p className="portal-department-modal__card-copy">
-                  Cognotsav is our flagship expression of CEAS culture, designed to celebrate engineering excellence,
-                  participation, creativity, and student-led execution at scale.
-                </p>
-              </article>
-            </div>
-
-            <div className="portal-department-modal__footer">
-              <div className="portal-department-modal__note">
-                The department introduction stays compact on the landing page, while this modal gives participants the
-                complete CEAS context without making the registration experience longer.
-              </div>
-              <a
-                href="#registration-panel"
-                onClick={() => setDepartmentIntroOpen(false)}
-                className="portal-premium-button portal-premium-button--primary"
-              >
-                Go To Registration
-                <ArrowRight size={15} />
-              </a>
-            </div>
-          </div>
-        </div>
       ) : null}
 
       <PortalFooter />

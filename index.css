@@ -3590,82 +3590,24 @@ footer {
   min-width: 11rem;
 }
 
-.portal-department-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 70;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-}
-
-.portal-department-modal__backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(2, 6, 23, 0.74);
-  backdrop-filter: blur(14px);
-}
-
-.portal-department-modal__dialog {
-  position: relative;
-  z-index: 1;
-  width: min(100%, 70rem);
-  max-height: min(90vh, 48rem);
-  overflow: auto;
-  border-radius: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+.portal-department-page {
+  overflow: hidden;
   background:
-    radial-gradient(circle at top right, rgba(251, 191, 36, 0.12), transparent 20%),
+    radial-gradient(circle at top right, rgba(251, 191, 36, 0.12), transparent 18%),
+    radial-gradient(circle at 14% 18%, rgba(59, 130, 246, 0.14), transparent 24%),
     linear-gradient(145deg, rgba(9, 14, 27, 0.98), rgba(14, 23, 42, 0.95));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 30px 90px rgba(2, 8, 23, 0.42);
-  padding: 1.4rem;
 }
 
-.portal-department-modal__close {
-  position: sticky;
-  top: 0;
-  margin-left: auto;
-  display: inline-flex;
-  height: 2.8rem;
-  width: 2.8rem;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.05);
-  color: #f8fafc;
-  backdrop-filter: blur(14px);
-}
-
-.portal-department-modal__hero {
+.portal-department-page__hero {
   display: grid;
   gap: 1.4rem;
-  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.95fr);
   align-items: center;
 }
 
-.portal-department-modal__logo-shell {
-  display: inline-flex;
-  height: 6.6rem;
-  width: 6.6rem;
-  padding: 0.35rem;
-  border-radius: 1.7rem;
-  border: 1px solid rgba(251, 191, 36, 0.22);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(17, 24, 39, 0.68));
-}
-
-.portal-department-modal__logo {
-  width: 100%;
-  height: 100%;
-  border-radius: 1.35rem;
-  object-fit: cover;
-}
-
-.portal-department-modal__kicker {
-  margin: 0 0 0.5rem;
+.portal-department-page__kicker,
+.portal-department-page__section-kicker {
+  margin: 1rem 0 0.5rem;
   color: rgba(251, 191, 36, 0.84);
   font-size: 0.74rem;
   font-weight: 700;
@@ -3673,70 +3615,161 @@ footer {
   text-transform: uppercase;
 }
 
-.portal-department-modal__title {
+.portal-department-page__title {
   margin: 0;
+  max-width: 14ch;
   font-family: 'Orbitron', 'Inter', sans-serif;
-  font-size: clamp(1.45rem, 2.8vw, 2.3rem);
-  line-height: 1.2;
+  font-size: clamp(2rem, 4.6vw, 3.8rem);
+  line-height: 1.05;
   color: #f8fafc;
 }
 
-.portal-department-modal__lead {
-  margin: 0.9rem 0 0;
-  max-width: 52rem;
+.portal-department-page__lead {
+  max-width: 41rem;
+  margin: 1rem 0 0;
   color: rgba(226, 232, 240, 0.78);
   font-size: 1rem;
   line-height: 1.8;
 }
 
-.portal-department-modal__grid {
+.portal-department-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  margin-top: 1.3rem;
+}
+
+.portal-department-page__hero-card {
+  display: grid;
+  gap: 1.1rem;
+  justify-items: center;
+  border-radius: 1.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 1.4rem;
+}
+
+.portal-department-page__hero-logo-frame {
+  display: inline-flex;
+  height: min(22rem, 58vw);
+  width: min(22rem, 58vw);
+  max-width: 100%;
+  padding: 0.55rem;
+  border-radius: 1.8rem;
+  border: 1px solid rgba(251, 191, 36, 0.22);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(17, 24, 39, 0.72));
+}
+
+.portal-department-page__hero-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 1.35rem;
+}
+
+.portal-department-page__hero-meta {
+  color: rgba(203, 213, 225, 0.72);
+  font-size: 0.92rem;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.portal-department-page__grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.portal-department-page__section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.portal-department-page__section-title {
+  margin: 0;
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  font-size: clamp(1.2rem, 2.2vw, 1.8rem);
+  color: #f8fafc;
+}
+
+.portal-department-page__section-copy {
+  max-width: 44rem;
+  margin: 0.9rem 0 0;
+  color: rgba(203, 213, 225, 0.8);
+  font-size: 0.96rem;
+  line-height: 1.75;
+}
+
+.portal-department-page__section-copy--compact {
+  margin: 0;
+  max-width: 28rem;
+}
+
+.portal-department-page__points {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 1.25rem;
+}
+
+.portal-department-page__point {
+  border-radius: 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.95rem 1rem;
+  color: rgba(226, 232, 240, 0.88);
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
+.portal-department-page__gallery {
   display: grid;
   gap: 1rem;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   margin-top: 1.4rem;
 }
 
-.portal-department-modal__card {
+.portal-department-page__gallery-card {
+  overflow: hidden;
   border-radius: 1.4rem;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.04);
-  padding: 1.15rem;
 }
 
-.portal-department-modal__card-kicker {
-  margin: 0;
-  color: #f8fafc;
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.18em;
+.portal-department-page__gallery-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 13rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(135deg, rgba(14, 23, 42, 0.96), rgba(17, 24, 39, 0.9)),
+    linear-gradient(90deg, transparent 0 49%, rgba(251, 191, 36, 0.08) 49% 51%, transparent 51% 100%);
+  color: rgba(203, 213, 225, 0.58);
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  font-size: 0.88rem;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
-.portal-department-modal__card-copy {
-  margin: 0.9rem 0 0;
-  color: rgba(203, 213, 225, 0.8);
+.portal-department-page__gallery-copy {
+  padding: 1rem;
+}
+
+.portal-department-page__gallery-title {
+  margin: 0;
+  color: #f8fafc;
   font-size: 0.95rem;
-  line-height: 1.72;
+  font-weight: 700;
 }
 
-.portal-department-modal__footer {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-top: 1.4rem;
-}
-
-.portal-department-modal__note {
-  flex: 1 1 22rem;
-  border-radius: 1.3rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.04);
-  padding: 1rem 1.1rem;
-  color: rgba(203, 213, 225, 0.78);
-  font-size: 0.92rem;
-  line-height: 1.7;
+.portal-department-page__gallery-text {
+  margin: 0.55rem 0 0;
+  color: rgba(203, 213, 225, 0.76);
+  font-size: 0.88rem;
+  line-height: 1.65;
 }
 
 [data-reveal='fade-up'] {
@@ -3826,8 +3859,14 @@ footer {
     grid-column: auto;
   }
 
-  .portal-department-modal__grid {
+  .portal-department-page__hero,
+  .portal-department-page__grid,
+  .portal-department-page__gallery {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .portal-department-page__title {
+    max-width: 16ch;
   }
 }
 
@@ -3935,29 +3974,25 @@ footer {
     width: 100%;
   }
 
-  .portal-department-modal {
-    padding: 0.7rem;
+  .portal-department-page__title {
+    font-size: clamp(1.65rem, 9vw, 2.4rem);
   }
 
-  .portal-department-modal__dialog {
-    max-height: 92vh;
-    border-radius: 1.6rem;
-    padding: 1rem;
-  }
-
-  .portal-department-modal__hero {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .portal-department-modal__logo-shell {
-    height: 5.1rem;
-    width: 5.1rem;
-  }
-
-  .portal-department-modal__lead,
-  .portal-department-modal__card-copy,
-  .portal-department-modal__note {
+  .portal-department-page__lead,
+  .portal-department-page__section-copy,
+  .portal-department-page__point,
+  .portal-department-page__gallery-text {
     font-size: 0.9rem;
     line-height: 1.65;
+  }
+
+  .portal-department-page__hero-logo-frame {
+    height: min(16rem, 68vw);
+    width: min(16rem, 68vw);
+  }
+
+  .portal-department-page__actions .portal-premium-button {
+    width: 100%;
+    justify-content: center;
   }
 }
