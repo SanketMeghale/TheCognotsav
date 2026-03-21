@@ -1663,7 +1663,7 @@ export const App: React.FC = () => {
                 <span>Timeline</span>
               </a>
 
-              <div className="portal-bottom-dock__logo-slot" aria-hidden="true">
+              <div className="portal-bottom-dock__logo-slot">
                 <a href="#overview" onClick={() => setMobileMenuOpen(false)} className="portal-bottom-dock__logo">
                   <span className="portal-bottom-dock__logo-core">
                     <img src="/images/ceasposter.jpeg" alt="CEAS logo" className="portal-bottom-dock__logo-image" />
