@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowRight, Bell, CheckCircle2, Clock3, House, Menu, Search, ShieldCheck, Trophy, X } from 'lucide-react';
+import { ArrowRight, Bell, CheckCircle2, Clock3, House, Search, ShieldCheck, Trophy } from 'lucide-react';
 import { AdminRegistrationsPage } from './components/portal/AdminRegistrationsPage.tsx';
 import { AnnouncementArchiveSection } from './components/portal/AnnouncementArchiveSection.tsx';
 import { HeroSection } from './components/portal/HeroSection.tsx';
@@ -511,7 +511,6 @@ export const App: React.FC = () => {
   const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>({});
   const [toastMessage, setToastMessage] = useState('');
   const [toastClosing, setToastClosing] = useState(false);
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [navScrolled, setNavScrolled] = useState(false);
   const [form, setForm] = useState<FormState>({
     teamName: '',
@@ -535,10 +534,6 @@ export const App: React.FC = () => {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  useEffect(() => {
-    setMobileNavOpen(false);
-  }, [hashRoute]);
 
   useEffect(() => {
     const loadEvents = async () => {
@@ -1524,37 +1519,6 @@ export const App: React.FC = () => {
               <span className="portal-mobile-admin-trigger__badge">
                 ADM
               </span>
-            </a>
-
-            <button
-              type="button"
-              className="portal-mobile-menu-toggle"
-              aria-label={mobileNavOpen ? 'Close menu' : 'Open menu'}
-              aria-expanded={mobileNavOpen}
-              onClick={() => setMobileNavOpen((value) => !value)}
-            >
-              {mobileNavOpen ? <X size={18} /> : <Menu size={18} />}
-            </button>
-          </div>
-        </div>
-
-        <div className={`${shellClassName} portal-mobile-drawer-wrap lg:hidden ${mobileNavOpen ? 'is-open' : ''}`}>
-          <div className="portal-mobile-drawer">
-            <nav className="portal-mobile-menu" aria-label="Mobile navigation">
-              {navLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  className={`portal-mobile-menu__link ${hashRoute === link.href ? 'is-active' : ''}`}
-                  onClick={() => setMobileNavOpen(false)}
-                >
-                  {link.label}
-                </a>
-              ))}
-            </nav>
-            <a href="#registration-panel" className="portal-premium-button portal-premium-button--primary w-full justify-center" onClick={() => setMobileNavOpen(false)}>
-              Register Now
-              <ArrowRight size={16} />
             </a>
           </div>
         </div>
