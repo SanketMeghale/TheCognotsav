@@ -913,6 +913,11 @@ img {
   font-size: 1.18rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  line-height: 1.2;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .portal-competition-card__body {
@@ -924,11 +929,16 @@ img {
 .portal-competition-card__title {
   margin: 0;
   font-family: 'Orbitron', 'Inter', sans-serif;
-  font-size: clamp(1.35rem, 3vw, 2rem);
+  font-size: clamp(1.2rem, 2.2vw, 1.72rem);
   font-weight: 800;
   letter-spacing: 0.05em;
   color: #31d7ff;
   text-shadow: 0 0 18px rgba(34, 211, 238, 0.16);
+  line-height: 1.16;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .portal-competition-card__meta-row {
@@ -940,8 +950,9 @@ img {
   color: #8fd4eb;
   font-size: 0.78rem;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
+  line-height: 1.5;
 }
 
 .portal-competition-card__meta-dot {
@@ -962,10 +973,12 @@ img {
   font-weight: 800;
   letter-spacing: 0.18em;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .portal-competition-card__description {
   color: rgba(203, 213, 225, 0.92);
+  min-height: 5.25rem;
 }
 
 .portal-competition-card__team-row {
@@ -973,8 +986,9 @@ img {
   align-items: center;
   gap: 0.72rem;
   color: #8fe7f9;
-  font-size: 1.02rem;
+  font-size: 0.94rem;
   font-weight: 500;
+  line-height: 1.45;
 }
 
 .portal-competition-card__team-row svg {
@@ -1016,9 +1030,10 @@ img {
   margin-top: 0.65rem;
   color: #ffffff;
   font-family: 'Orbitron', 'Inter', sans-serif;
-  font-size: 1.05rem;
+  font-size: 0.96rem;
   font-weight: 800;
   line-height: 1.25;
+  word-break: break-word;
 }
 
 .portal-competition-card__stat-value--accent {
@@ -1038,6 +1053,7 @@ img {
   color: rgba(203, 213, 225, 0.88);
   font-size: 0.88rem;
   font-weight: 600;
+  line-height: 1.4;
 }
 
 .portal-competition-card__venue svg {
@@ -1297,7 +1313,20 @@ img {
   }
 
   .portal-competition-card__title {
-    font-size: 1.72rem;
+    font-size: 1.4rem;
+  }
+
+  .portal-competition-card__hero-title {
+    font-size: 1.04rem;
+  }
+
+  .portal-competition-card__description {
+    min-height: 0;
+  }
+
+  .portal-competition-card__status {
+    padding: 0.42rem 0.68rem;
+    font-size: 0.6rem;
   }
 
   .portal-update-layout {

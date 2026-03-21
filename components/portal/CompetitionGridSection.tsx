@@ -139,8 +139,6 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
                           <span>{event.date_label}</span>
                           <span className="portal-competition-card__meta-dot" />
                           <span>{event.time_label}</span>
-                          <span className="portal-competition-card__meta-dot" />
-                          <span>{event.venue}</span>
                         </p>
                       </div>
                       <span className="portal-competition-card__status">
