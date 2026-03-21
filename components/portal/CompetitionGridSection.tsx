@@ -317,11 +317,6 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
                     <div className="portal-competition-card__noise" aria-hidden="true" />
                     <div className="absolute right-4 top-4 flex flex-wrap justify-end gap-2">
                       <span className={`rounded-full px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] shadow-[0_10px_24px_rgba(2,8,23,0.24)] ${theme.badge}`}>{displayCategory}</span>
-                      {hasIntroVideo ? (
-                        <span className="rounded-full border border-white/12 bg-black/45 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-white/88 shadow-[0_10px_24px_rgba(2,8,23,0.24)]">
-                          Intro Video
-                        </span>
-                      ) : null}
                     </div>
                     {!hasIntroVideo ? (
                       <div className="absolute inset-x-4 bottom-4">
