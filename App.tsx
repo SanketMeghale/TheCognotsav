@@ -274,7 +274,7 @@ function getReceiptInstructions(receipt: RegistrationReceipt) {
 
 function buildPassWindowHtml(receipt: RegistrationReceipt) {
   const statusLabel = getReceiptStatusLabel(receipt);
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(receipt.qrValue)}`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(receipt.qrValue)}`;
   const logoUrl = `${window.location.origin}/images/ceasposter.jpeg`;
   const instructions = getReceiptInstructions(receipt);
 
@@ -287,6 +287,7 @@ function buildPassWindowHtml(receipt: RegistrationReceipt) {
         <title>CEAS COGNOTSAV Registration Pass</title>
         <style>
           * { box-sizing: border-box; }
+          @page { size: A4; margin: 12mm; }
           body { margin: 0; font-family: Inter, Arial, sans-serif; background: linear-gradient(180deg, #07111d 0%, #0f172a 100%); color: #e2e8f0; }
           .toolbar { position: sticky; top: 0; z-index: 2; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; padding: 16px 18px; border-bottom: 1px solid rgba(255,255,255,0.08); background: rgba(7, 17, 29, 0.92); backdrop-filter: blur(12px); }
           .toolbar-copy { max-width: 620px; }
@@ -296,37 +297,37 @@ function buildPassWindowHtml(receipt: RegistrationReceipt) {
           .toolbar-actions button { border: 1px solid rgba(255,255,255,0.12); border-radius: 999px; padding: 10px 16px; font-size: 13px; font-weight: 700; cursor: pointer; }
           .toolbar-actions .primary { background: linear-gradient(90deg, #67e8f9, #fbbf24); color: #041018; }
           .toolbar-actions .secondary { background: rgba(255,255,255,0.05); color: #e2e8f0; }
-          .wrap { padding: 24px 18px 36px; }
-          .sheet { max-width: 920px; margin: 0 auto; border-radius: 30px; border: 2px solid rgba(125,211,252,0.22); background: linear-gradient(145deg, rgba(7,12,24,0.98), rgba(15,23,42,0.96)); box-shadow: 0 30px 80px rgba(2,8,23,0.42); padding: 28px; }
-          .brand { display: flex; align-items: center; gap: 14px; padding: 16px 18px; border: 1px solid rgba(148,163,184,0.18); border-radius: 24px; background: linear-gradient(180deg, rgba(27,35,52,0.96), rgba(13,19,31,0.98)); box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.04), 0 18px 34px rgba(2,8,23,0.24); }
-          .brand-logo { width: 70px; height: 70px; border-radius: 22px; padding: 6px; background: linear-gradient(180deg, rgba(255,255,255,0.24), rgba(203,213,225,0.1)); border: 1px solid rgba(255,255,255,0.16); box-shadow: inset 0 1px 0 rgba(255,255,255,0.48), 0 12px 24px rgba(2,8,23,0.2); }
+          .wrap { padding: 18px 14px 24px; }
+          .sheet { width: min(100%, 794px); min-height: calc(297mm - 24mm); margin: 0 auto; border-radius: 28px; border: 2px solid rgba(125,211,252,0.22); background: linear-gradient(145deg, rgba(7,12,24,0.98), rgba(15,23,42,0.96)); box-shadow: 0 30px 80px rgba(2,8,23,0.42); padding: 22px; page-break-inside: avoid; }
+          .brand { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: 1px solid rgba(148,163,184,0.18); border-radius: 22px; background: linear-gradient(180deg, rgba(27,35,52,0.96), rgba(13,19,31,0.98)); box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.04), 0 18px 34px rgba(2,8,23,0.24); }
+          .brand-logo { width: 62px; height: 62px; border-radius: 20px; padding: 5px; background: linear-gradient(180deg, rgba(255,255,255,0.24), rgba(203,213,225,0.1)); border: 1px solid rgba(255,255,255,0.16); box-shadow: inset 0 1px 0 rgba(255,255,255,0.48), 0 12px 24px rgba(2,8,23,0.2); }
           .brand-logo img { width: 100%; height: 100%; object-fit: cover; border-radius: 18px; }
           .brand-kicker { margin: 0 0 6px; font-size: 10px; letter-spacing: 0.38em; text-transform: uppercase; color: #9bd5ea; font-weight: 700; }
-          .brand-title { margin: 0; font-family: Orbitron, Inter, Arial, sans-serif; font-size: 30px; line-height: 1.05; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: #eef6ff; text-shadow: 0 1px 0 rgba(255,255,255,0.24), 0 0 18px rgba(125,211,252,0.12); }
-          .hero { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(260px, 0.85fr); gap: 18px; margin-top: 22px; }
-          .event-title { margin: 0; font-size: 28px; color: #fff; }
-          .event-copy { margin: 10px 0 0; font-size: 14px; line-height: 1.7; color: #cbd5e1; }
-          .status { display: inline-flex; margin-top: 14px; border-radius: 999px; border: 1px solid rgba(103,232,249,0.18); background: rgba(34,211,238,0.1); padding: 8px 14px; font-size: 12px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: #cffafe; }
-          .qr-card { border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); padding: 18px; text-align: center; }
-          .qr-frame { display: inline-flex; border-radius: 20px; background: #fff; padding: 12px; }
-          .qr-frame img { width: 200px; height: 200px; }
-          .qr-card p { margin: 14px 0 0; color: #cbd5e1; font-size: 13px; }
-          .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }
-          .cell { border-radius: 18px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.04); padding: 16px; }
+          .brand-title { margin: 0; font-family: Orbitron, Inter, Arial, sans-serif; font-size: 26px; line-height: 1.05; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: #eef6ff; text-shadow: 0 1px 0 rgba(255,255,255,0.24), 0 0 18px rgba(125,211,252,0.12); }
+          .hero { display: grid; grid-template-columns: minmax(0, 1.22fr) minmax(180px, 0.78fr); align-items: start; gap: 14px; margin-top: 18px; }
+          .event-title { margin: 0; font-size: 25px; color: #fff; }
+          .event-copy { margin: 8px 0 0; font-size: 13px; line-height: 1.6; color: #cbd5e1; }
+          .status { display: inline-flex; margin-top: 12px; border-radius: 999px; border: 1px solid rgba(103,232,249,0.18); background: rgba(34,211,238,0.1); padding: 7px 12px; font-size: 11px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: #cffafe; }
+          .qr-card { border-radius: 22px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); padding: 14px; text-align: center; }
+          .qr-frame { display: inline-flex; border-radius: 18px; background: #fff; padding: 10px; }
+          .qr-frame img { width: 160px; height: 160px; }
+          .qr-card p { margin: 12px 0 0; color: #cbd5e1; font-size: 12px; line-height: 1.5; }
+          .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
+          .cell { border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.04); padding: 13px; }
           .label { font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase; color: #94a3b8; font-weight: 700; }
-          .value { margin-top: 8px; font-size: 18px; font-weight: 700; color: #fff; word-break: break-word; }
-          .value--small { font-size: 14px; line-height: 1.6; }
-          .instructions { margin-top: 18px; border-radius: 20px; border: 1px solid rgba(52,211,153,0.16); background: rgba(16,185,129,0.1); padding: 18px; }
+          .value { margin-top: 6px; font-size: 16px; font-weight: 700; color: #fff; word-break: break-word; }
+          .value--small { font-size: 13px; line-height: 1.5; }
+          .instructions { margin-top: 14px; border-radius: 18px; border: 1px solid rgba(52,211,153,0.16); background: rgba(16,185,129,0.1); padding: 14px; }
           .instructions h2 { margin: 0; font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: #a7f3d0; }
-          .instructions ol { margin: 12px 0 0; padding-left: 18px; color: #ecfdf5; }
-          .instructions li { margin-bottom: 8px; line-height: 1.6; }
-          .footer { margin-top: 18px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.08); background: rgba(59,130,246,0.08); padding: 16px; font-size: 13px; line-height: 1.7; color: #dbeafe; }
-          @media (max-width: 820px) { .hero, .grid { grid-template-columns: 1fr; } .sheet { padding: 20px; } .brand-title { font-size: 22px; } .event-title { font-size: 24px; } }
+          .instructions ol { margin: 10px 0 0; padding-left: 16px; color: #ecfdf5; }
+          .instructions li { margin-bottom: 6px; line-height: 1.5; }
+          .footer { margin-top: 14px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); background: rgba(59,130,246,0.08); padding: 14px; font-size: 12px; line-height: 1.6; color: #dbeafe; }
+          @media (max-width: 820px) { .hero, .grid { grid-template-columns: 1fr; } .sheet { padding: 18px; min-height: auto; } .brand-title { font-size: 20px; } .event-title { font-size: 22px; } .qr-frame img { width: 148px; height: 148px; } }
           @media print {
             body { background: #fff; }
             .toolbar { display: none; }
             .wrap { padding: 0; }
-            .sheet { box-shadow: none; border-color: #cbd5e1; background: #fff; color: #0f172a; min-height: 100vh; }
+            .sheet { width: 100%; min-height: calc(297mm - 24mm); box-shadow: none; border-color: #cbd5e1; background: #fff; color: #0f172a; padding: 14mm 12mm 12mm; }
             .event-title, .value { color: #0f172a; }
             .event-copy, .qr-card p, .footer { color: #334155; }
             .qr-card, .cell, .instructions, .footer { border-color: #dbeafe; background: #f8fafc; }
@@ -743,13 +744,17 @@ export const App: React.FC = () => {
   const isEventPage = Boolean(eventPageSlug);
 
   useEffect(() => {
-    if (isEventPage && eventPageSlug && events.some((event) => event.slug === eventPageSlug)) {
+    if (!isEventPage || !eventPageSlug || !events.some((event) => event.slug === eventPageSlug)) {
+      return;
+    }
+
+    if (selectedEventSlug !== eventPageSlug) {
       setSelectedEventSlug(eventPageSlug);
       if (typeof window !== 'undefined') {
         window.scrollTo({ top: 0, behavior: 'auto' });
       }
     }
-  }, [eventPageSlug, events, isEventPage]);
+  }, [eventPageSlug, events, isEventPage, selectedEventSlug]);
 
   const totalRegistrations = events.reduce((sum, event) => sum + event.registrations_count, 0);
   const visibleAnnouncements = announcements
@@ -1453,7 +1458,7 @@ export const App: React.FC = () => {
             </div>
             <div className="min-w-0">
               <p className="portal-brand-overline truncate">Computer Engineering Association</p>
-              <h1 className="portal-brand-mark truncate">CEAS COGNOTSAV 2026</h1>
+              <h1 className="portal-brand-mark portal-brand-mark--nav truncate">CEAS COGNOTSAV 2026</h1>
             </div>
           </a>
 
@@ -1529,7 +1534,6 @@ export const App: React.FC = () => {
           onLoadAdminRows={loadAdminRows}
           onDownload={downloadAdminFile}
           onStatusChange={updateAdminStatus}
-          onAttendanceChange={updateAttendance}
           onSaveReviewNote={saveReviewNote}
           onResendStatusEmail={resendAdminStatusEmail}
           onSendBroadcast={sendBroadcast}

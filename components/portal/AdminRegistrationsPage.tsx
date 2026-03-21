@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-  Activity, AlertTriangle, ArrowLeft, BarChart3, CheckCircle2, Clock3, Download,
+  AlertTriangle, ArrowLeft, BarChart3, CheckCircle2, Clock3, Download,
   Eye, FileSpreadsheet, HardDriveDownload, Mail, Megaphone, QrCode,
   RotateCcw, Save, Search, Send, ShieldCheck, Trash2, Users, XCircle,
 } from 'lucide-react';
@@ -28,7 +28,6 @@ type Props = {
   onLoadAdminRows: () => void;
   onDownload: (format: 'csv' | 'xlsx', eventSlug?: string) => void;
   onStatusChange: (registrationId: string, status: 'verified' | 'rejected' | 'pending') => void;
-  onAttendanceChange: (registrationId: string, attendanceStatus: 'registered' | 'arrived' | 'checked-in' | 'absent' | 'completed') => void;
   onSaveReviewNote: (registrationId: string, reviewNote: string) => void;
   onResendStatusEmail: (registrationId: string) => void;
   onSendBroadcast: (payload: { title: string; message: string; eventSlug: string; isPinned: boolean }) => void;
@@ -46,14 +45,6 @@ const statusStyles: Record<string, string> = {
   rejected: 'border-rose-300/25 bg-rose-400/10 text-rose-100',
 };
 
-const attendanceStyles: Record<string, string> = {
-  registered: 'border-slate-300/16 bg-slate-400/10 text-slate-100',
-  arrived: 'border-blue-300/20 bg-blue-400/10 text-blue-100',
-  'checked-in': 'border-cyan-300/20 bg-cyan-400/10 text-cyan-100',
-  absent: 'border-rose-300/20 bg-rose-400/10 text-rose-100',
-  completed: 'border-emerald-300/20 bg-emerald-400/10 text-emerald-100',
-};
-
 function prettyStatus(value: string) {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
@@ -68,13 +59,14 @@ function FloatingField({ label, icon, value, type = 'text', onChange }: { label:
   return <label className="floating-field block"><span className="pointer-events-none absolute left-4 top-[1.15rem] text-cyan-200/70">{icon}</span><input type={type} value={value} onChange={(event) => onChange(event.target.value)} placeholder=" " className="floating-field-input pl-11" /><span className="floating-field-label left-11">{label}</span></label>;
 }
 
-export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, adminMainKey, adminEventKey, adminEventKeySlug, adminScope, adminRows, events, announcements, backups, adminLoading, adminError, onAdminAccessModeChange, onAdminMainKeyChange, onAdminEventKeyChange, onAdminEventKeySlugChange, onLoadAdminRows, onDownload, onStatusChange, onAttendanceChange, onSaveReviewNote, onResendStatusEmail, onSendBroadcast, onDeleteAnnouncement, onRunBackup, onDownloadBackup }) => {
+export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, adminMainKey, adminEventKey, adminEventKeySlug, adminScope, adminRows, events, announcements, backups, adminLoading, adminError, onAdminAccessModeChange, onAdminMainKeyChange, onAdminEventKeyChange, onAdminEventKeySlugChange, onLoadAdminRows, onDownload, onStatusChange, onSaveReviewNote, onResendStatusEmail, onSendBroadcast, onDeleteAnnouncement, onRunBackup, onDownloadBackup }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [eventFilter, setEventFilter] = useState('all');
   const [proofModal, setProofModal] = useState<AdminRegistration | null>(null);
   const [brokenProofs, setBrokenProofs] = useState<Record<string, boolean>>({});
   const [reviewDrafts, setReviewDrafts] = useState<Record<string, string>>({});
+  const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
   const [broadcastTitle, setBroadcastTitle] = useState('');
   const [broadcastMessage, setBroadcastMessage] = useState('');
   const [broadcastEventSlug, setBroadcastEventSlug] = useState('');
@@ -110,11 +102,34 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
     pending: adminRows.filter((row) => row.event_slug === event.slug && row.status === 'pending').length,
     verified: adminRows.filter((row) => row.event_slug === event.slug && row.status === 'verified').length,
   })).filter((event) => event.total > 0), [adminRows, events]);
-  const filteredRows = useMemo(() => adminRows.filter((row) => (statusFilter === 'all' || row.status === statusFilter) && (eventFilter === 'all' || row.event_slug === eventFilter) && [row.registration_code, row.team_name, row.contact_name, row.contact_email, row.event_name, row.review_note ?? '', row.payment_reference ?? ''].some((value) => value.toLowerCase().includes(searchQuery.trim().toLowerCase()))), [adminRows, eventFilter, searchQuery, statusFilter]);
+  const filteredRows = useMemo(() => {
+    const normalizedSearch = searchQuery.trim().toLowerCase();
+    const normalizedEventFilter = eventFilter.trim().toLowerCase();
+    const activeEventName = events.find((event) => event.slug === eventFilter)?.name.trim().toLowerCase() || '';
+
+    return adminRows.filter((row) => {
+      const matchesStatus = statusFilter === 'all' || row.status === statusFilter;
+      const rowSlug = String(row.event_slug || '').trim().toLowerCase();
+      const rowEventName = String(row.event_name || '').trim().toLowerCase();
+      const matchesEvent = eventFilter === 'all'
+        || rowSlug === normalizedEventFilter
+        || (activeEventName && rowEventName === activeEventName);
+      const matchesSearch = [row.registration_code, row.team_name, row.contact_name, row.contact_email, row.event_name, row.review_note ?? '', row.payment_reference ?? '']
+        .some((value) => value.toLowerCase().includes(normalizedSearch));
+
+      return matchesStatus && matchesEvent && matchesSearch;
+    });
+  }, [adminRows, eventFilter, events, searchQuery, statusFilter]);
   const totalParticipants = adminRows.reduce((sum, row) => sum + row.participants.length, 0);
   const busiestEvent = useMemo(() => Object.entries(adminRows.reduce<Record<string, number>>((collection, row) => ({ ...collection, [row.event_name]: (collection[row.event_name] || 0) + 1 }), {})).sort((left, right) => right[1] - left[1])[0] || null, [adminRows]);
   const approvalRate = counts.all ? Math.round((counts.verified / counts.all) * 100) : 0;
   const topTrackedEvents = useMemo(() => [...eventBuckets].sort((left, right) => right.total - left.total).slice(0, 4), [eventBuckets]);
+
+  useEffect(() => {
+    if (expandedRowId && !filteredRows.some((row) => row.id === expandedRowId)) {
+      setExpandedRowId(null);
+    }
+  }, [expandedRowId, filteredRows]);
 
   return (
     <main className={`${shellClassName} space-y-4 pb-10 md:space-y-8 md:pb-20`}>
@@ -124,9 +139,6 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
             <a href="#overview" className="magnetic-button inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200"><ArrowLeft size={16} />Back to portal</a>
             <p className="mt-5 text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Admin workspace</p>
             <h2 className="mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron text-2xl font-black uppercase text-transparent md:text-4xl">Operations dashboard</h2>
-            <p className="mt-3 text-sm text-slate-300">
-              Use the main key to show all content, or choose a competition and enter its event key to view only that event&apos;s entries.
-            </p>
           </div>
           {hasResolvedAccess ? (
             <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
@@ -191,7 +203,7 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
             </div>
           ) : (
             <div className="mt-4 rounded-2xl border border-dashed border-white/10 bg-black/10 px-4 py-3 text-sm text-slate-400">
-              Enter a valid key and load the records. Verification cards with Approve, Pending, Reject, and check-in actions will appear below.
+              Enter a valid key and load the records. Compact verification cards will appear below.
             </div>
           )}
         </div>
@@ -283,12 +295,12 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
         <div className="mt-4">
           <p className="text-[11px] uppercase tracking-[0.24em] text-cyan-200/80">Competition-wise verification</p>
           <div className="mt-3 flex flex-wrap gap-3">
-            <button type="button" onClick={() => setEventFilter(scopedEventSlug || 'all')} disabled={Boolean(scopedEventSlug)} className={`rounded-[1.2rem] border px-4 py-3 text-left text-sm transition disabled:opacity-70 ${eventFilter === (scopedEventSlug || 'all') ? 'border-cyan-300/24 bg-cyan-400/10 text-white' : 'border-white/10 bg-white/5 text-slate-200'}`}>
+            <button type="button" onClick={() => { setExpandedRowId(null); setEventFilter(scopedEventSlug || 'all'); }} disabled={Boolean(scopedEventSlug)} className={`rounded-[1.2rem] border px-4 py-3 text-left text-sm transition disabled:opacity-70 ${eventFilter === (scopedEventSlug || 'all') ? 'border-cyan-300/24 bg-cyan-400/10 text-white' : 'border-white/10 bg-white/5 text-slate-200'}`}>
               <span className="block font-semibold">All competitions</span>
               <span className="mt-1 block text-xs uppercase tracking-[0.16em] text-slate-400">{scopedEventSlug ? `Locked to ${scopedEventName || 'assigned event'}` : `${counts.all} registrations`}</span>
             </button>
             {eventBuckets.map((event) => (
-              <button key={event.slug} type="button" onClick={() => setEventFilter(event.slug)} disabled={Boolean(scopedEventSlug && scopedEventSlug !== event.slug)} className={`rounded-[1.2rem] border px-4 py-3 text-left text-sm transition disabled:opacity-50 ${eventFilter === event.slug ? 'border-fuchsia-300/24 bg-fuchsia-400/10 text-white' : 'border-white/10 bg-white/5 text-slate-200'}`}>
+              <button key={event.slug} type="button" onClick={() => { setExpandedRowId(null); setEventFilter(event.slug); }} disabled={Boolean(scopedEventSlug && scopedEventSlug !== event.slug)} className={`rounded-[1.2rem] border px-4 py-3 text-left text-sm transition disabled:opacity-50 ${eventFilter === event.slug ? 'border-fuchsia-300/24 bg-fuchsia-400/10 text-white' : 'border-white/10 bg-white/5 text-slate-200'}`}>
                 <span className="block font-semibold">{event.name}</span>
                 <span className="mt-1 block text-xs uppercase tracking-[0.16em] text-slate-400">{event.total} total / {event.pending} pending / {event.verified} verified</span>
               </button>
@@ -297,43 +309,110 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
         </div>
         <div className="mt-6 space-y-4">
           {filteredRows.map((row) => (
-            <article key={row.id} className="rounded-[1.8rem] border border-white/10 bg-[linear-gradient(145deg,rgba(12,20,35,0.92),rgba(18,27,45,0.82))] p-5 md:p-6">
-              <div className="grid gap-5 xl:grid-cols-[1.12fr_0.88fr]">
-                <div>
-                  <div className="flex flex-wrap items-center gap-3">
-                    <p className="text-xl font-bold text-white">{row.team_name}</p>
-                    <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.2em] text-slate-200">{row.registration_code}</span>
-                    <span className={`rounded-full border px-3 py-1 text-xs uppercase tracking-[0.2em] ${statusStyles[row.status] || 'border-white/10 bg-white/5 text-white'}`}>{prettyStatus(row.status)}</span>
-                    <span className={`rounded-full border px-3 py-1 text-xs uppercase tracking-[0.2em] ${attendanceStyles[row.attendance_status] || 'border-white/10 bg-white/5 text-white'}`}>{prettyStatus(row.attendance_status)}</span>
+            <article key={row.id} className="rounded-[1.7rem] border border-white/10 bg-[linear-gradient(145deg,rgba(12,20,35,0.92),rgba(18,27,45,0.82))] p-4 md:p-5">
+              <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-start gap-3">
+                    <div className="min-w-0 flex-1">
+                      <button type="button" onClick={() => setExpandedRowId((current) => current === row.id ? null : row.id)} className="min-w-0 text-left">
+                        <p className="truncate text-lg font-semibold text-white">{row.team_name}</p>
+                        <span className="mt-2 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.2em] text-slate-200">
+                          {row.registration_code}
+                          <Eye size={12} className="text-cyan-200" />
+                        </span>
+                      </button>
+                      <p className="mt-2 text-sm text-slate-300">{row.event_name}</p>
+                      <p className="mt-1 text-xs uppercase tracking-[0.16em] text-slate-500">{row.date_label} / {row.time_label}</p>
+                      <p className="mt-2 text-xs text-cyan-100/80">Click the team name or code to {expandedRowId === row.id ? 'hide' : 'show'} verification details.</p>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <span className={`rounded-full border px-3 py-1 text-xs uppercase tracking-[0.2em] ${statusStyles[row.status] || 'border-white/10 bg-white/5 text-white'}`}>{prettyStatus(row.status)}</span>
+                      <span className="rounded-full border border-blue-300/18 bg-blue-400/10 px-3 py-1 text-xs uppercase tracking-[0.18em] text-blue-100">{row.participants.length} participants</span>
+                      {row.duplicate_email_count > 0 ? <span className="inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-400/10 px-3 py-1 text-xs uppercase tracking-[0.18em] text-amber-100"><AlertTriangle size={12} />Email x{row.duplicate_email_count}</span> : null}
+                      {row.duplicate_phone_count > 0 ? <span className="inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-400/10 px-3 py-1 text-xs uppercase tracking-[0.18em] text-amber-100"><AlertTriangle size={12} />Phone x{row.duplicate_phone_count}</span> : null}
+                      {row.duplicate_payment_count > 0 ? <span className="inline-flex items-center gap-2 rounded-full border border-rose-300/20 bg-rose-400/10 px-3 py-1 text-xs uppercase tracking-[0.18em] text-rose-100"><AlertTriangle size={12} />Payment x{row.duplicate_payment_count}</span> : null}
+                    </div>
                   </div>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {row.duplicate_email_count > 0 ? <span className="inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-400/10 px-3 py-1 text-xs uppercase tracking-[0.18em] text-amber-100"><AlertTriangle size={12} />Email duplicate x{row.duplicate_email_count}</span> : null}
-                    {row.duplicate_phone_count > 0 ? <span className="inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-400/10 px-3 py-1 text-xs uppercase tracking-[0.18em] text-amber-100"><AlertTriangle size={12} />Phone duplicate x{row.duplicate_phone_count}</span> : null}
-                    {row.duplicate_payment_count > 0 ? <span className="inline-flex items-center gap-2 rounded-full border border-rose-300/20 bg-rose-400/10 px-3 py-1 text-xs uppercase tracking-[0.18em] text-rose-100"><AlertTriangle size={12} />Payment duplicate x{row.duplicate_payment_count}</span> : null}
-                  </div>
+
                   <div className="mt-4 grid gap-3 md:grid-cols-3">
-                    <div className="rounded-[1.4rem] border border-white/10 bg-black/20 p-4"><p className="text-xs uppercase tracking-[0.22em] text-slate-400">Lead contact</p><p className="mt-2 font-semibold text-white">{row.contact_name}</p><p className="mt-1 text-sm text-slate-300">{row.contact_email}</p><p className="mt-1 text-sm text-slate-300">{row.contact_phone}</p></div>
-                    <div className="rounded-[1.4rem] border border-white/10 bg-black/20 p-4"><p className="text-xs uppercase tracking-[0.22em] text-slate-400">Event</p><p className="mt-2 font-semibold text-white">{row.event_name}</p><p className="mt-1 text-sm text-slate-300">{row.date_label} / {row.time_label}</p><p className="mt-1 text-sm text-slate-300">{row.venue}</p></div>
-                    <div className="rounded-[1.4rem] border border-white/10 bg-black/20 p-4"><p className="text-xs uppercase tracking-[0.22em] text-slate-400">Payment</p><p className="mt-2 font-semibold text-white">{formatCurrency(row.total_amount)}</p><p className="mt-1 break-all text-sm text-slate-300">{row.payment_reference || 'No payment reference'}</p></div>
-                  </div>
-                  <div className="mt-4 rounded-[1.4rem] border border-white/10 bg-white/[0.04] p-4"><div className="flex items-center gap-2 text-sm font-semibold text-white"><Users size={16} className="text-blue-300" />Participants ({row.participants.length})</div><div className="mt-4 grid gap-3 md:grid-cols-2">{row.participants.map((participant) => <div key={`${row.id}-${participant.email}`} className="rounded-[1.2rem] border border-white/10 bg-black/20 p-4"><p className="font-semibold text-white">{participant.fullName}</p><p className="mt-2 text-sm text-slate-300">{participant.email}</p><p className="mt-1 text-sm text-slate-300">{participant.phone}</p></div>)}</div></div>
-                  <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_0.9fr]">
-                    <div className="rounded-[1.4rem] border border-white/10 bg-black/20 p-4"><div className="flex items-center gap-2"><Save size={16} className="text-amber-200" /><p className="text-sm font-semibold text-white">Review notes</p></div><textarea value={reviewDrafts[row.id] ?? row.review_note ?? ''} onChange={(event) => setReviewDrafts((current) => ({ ...current, [row.id]: event.target.value }))} rows={4} className="floating-field-input mt-4 min-h-[124px] resize-none" placeholder="Add a reason like unclear screenshot, wrong transaction ID, or duplicate payment..." /><button type="button" onClick={() => onSaveReviewNote(row.id, reviewDrafts[row.id] ?? row.review_note ?? '')} className="magnetic-button mt-4 inline-flex items-center gap-2 rounded-2xl border border-amber-300/18 bg-amber-400/10 px-4 py-3 text-sm font-bold text-amber-100"><Save size={16} />Save note</button></div>
-                    <div className="rounded-[1.4rem] border border-white/10 bg-black/20 p-4"><div className="flex items-center gap-2"><Mail size={16} className="text-fuchsia-300" /><p className="text-sm font-semibold text-white">Notification center</p></div><div className="mt-4"><NotificationPanel notification={row.latest_notification} /></div></div>
+                    <div className="rounded-[1.2rem] border border-white/10 bg-black/20 p-3">
+                      <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400">Lead contact</p>
+                      <p className="mt-2 text-sm font-semibold text-white">{row.contact_name}</p>
+                      <p className="mt-1 truncate text-sm text-slate-300">{row.contact_email}</p>
+                    </div>
+                    <div className="rounded-[1.2rem] border border-white/10 bg-black/20 p-3">
+                      <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400">Venue</p>
+                      <p className="mt-2 text-sm font-semibold text-white">{row.venue}</p>
+                      <p className="mt-1 text-sm text-slate-300">{row.contact_phone}</p>
+                    </div>
+                    <div className="rounded-[1.2rem] border border-white/10 bg-black/20 p-3">
+                      <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400">Payment</p>
+                      <p className="mt-2 text-sm font-semibold text-white">{formatCurrency(row.total_amount)}</p>
+                      <p className="mt-1 truncate text-sm text-slate-300">{row.payment_reference || 'No payment reference'}</p>
+                    </div>
                   </div>
                 </div>
-                <div className="space-y-4">
-                  <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5 text-center"><div className="inline-flex rounded-2xl border border-blue-300/20 bg-blue-400/10 p-3 text-blue-100"><QrCode size={18} /></div><div className="mt-4 rounded-[1.5rem] bg-white p-4"><img src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(row.qr_value)}`} alt={`${row.registration_code} QR`} className="mx-auto h-44 w-44" /></div><p className="mt-4 font-orbitron text-xl font-black text-white">{row.registration_code}</p></div>
-                  {row.payment_screenshot_path && !brokenProofs[row.id] ? <button type="button" onClick={() => setProofModal(row)} className="group block w-full overflow-hidden rounded-[1.5rem] border border-cyan-300/12 bg-white/5 text-left"><img src={row.payment_screenshot_path} alt={`${row.team_name} payment proof`} onError={() => setBrokenProofs((current) => ({ ...current, [row.id]: true }))} className="h-56 w-full object-cover transition duration-500 group-hover:scale-105" /><div className="flex items-center justify-between px-4 py-3 text-sm text-cyan-100"><span>Zoom payment proof</span><Eye size={16} /></div></button> : <div className="rounded-[1.5rem] border border-dashed border-white/10 bg-black/10 p-5 text-sm text-slate-400">{row.payment_screenshot_path ? 'Payment screenshot is missing from storage. On Railway, attach persistent storage or older uploads can disappear after restart/redeploy.' : 'No payment screenshot uploaded for this registration.'}</div>}
-                  <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
-                    <button type="button" onClick={() => onResendStatusEmail(row.id)} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-blue-300/20 bg-blue-500/10 px-4 py-3 text-sm font-bold text-blue-100"><RotateCcw size={16} />Resend email</button>
-                    <button type="button" onClick={() => onStatusChange(row.id, 'verified')} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-emerald-300/20 bg-emerald-400/10 px-4 py-3 text-sm font-bold text-emerald-100"><CheckCircle2 size={16} />Approve</button>
-                    <button type="button" onClick={() => onStatusChange(row.id, 'pending')} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-amber-300/20 bg-amber-400/10 px-4 py-3 text-sm font-bold text-amber-100"><Clock3 size={16} />Pending</button>
-                    <button type="button" onClick={() => onStatusChange(row.id, 'rejected')} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-rose-300/20 bg-rose-400/10 px-4 py-3 text-sm font-bold text-rose-100"><XCircle size={16} />Reject</button>
-                    <button type="button" onClick={() => onAttendanceChange(row.id, 'checked-in')} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-cyan-300/20 bg-cyan-400/10 px-4 py-3 text-sm font-bold text-cyan-100"><Activity size={16} />Quick check-in</button>
-                  </div>
+
+                <div className="grid gap-2 sm:grid-cols-2 xl:min-w-[220px] xl:grid-cols-1">
+                  <button type="button" onClick={() => onResendStatusEmail(row.id)} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-blue-300/20 bg-blue-500/10 px-4 py-3 text-sm font-bold text-blue-100"><RotateCcw size={16} />Resend email</button>
+                  <button type="button" onClick={() => onStatusChange(row.id, 'verified')} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-emerald-300/20 bg-emerald-400/10 px-4 py-3 text-sm font-bold text-emerald-100"><CheckCircle2 size={16} />Approve</button>
+                  <button type="button" onClick={() => onStatusChange(row.id, 'pending')} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-amber-300/20 bg-amber-400/10 px-4 py-3 text-sm font-bold text-amber-100"><Clock3 size={16} />Pending</button>
+                  <button type="button" onClick={() => onStatusChange(row.id, 'rejected')} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-rose-300/20 bg-rose-400/10 px-4 py-3 text-sm font-bold text-rose-100"><XCircle size={16} />Reject</button>
                 </div>
               </div>
+
+              {expandedRowId === row.id ? (
+                <div className="mt-5 border-t border-white/10 pt-5">
+                  <div className="grid gap-4 xl:grid-cols-[1.04fr_0.96fr]">
+                    <div className="space-y-4">
+                      <div className="rounded-[1.35rem] border border-white/10 bg-white/[0.04] p-4">
+                        <div className="flex items-center gap-2 text-sm font-semibold text-white"><Users size={16} className="text-blue-300" />Participants ({row.participants.length})</div>
+                        <div className="mt-4 grid gap-3 md:grid-cols-2">
+                          {row.participants.map((participant) => (
+                            <div key={`${row.id}-${participant.email}`} className="rounded-[1.1rem] border border-white/10 bg-black/20 p-3">
+                              <p className="font-semibold text-white">{participant.fullName}</p>
+                              <p className="mt-2 text-sm text-slate-300">{participant.email}</p>
+                              <p className="mt-1 text-sm text-slate-300">{participant.phone}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="grid gap-4 lg:grid-cols-[1fr_0.9fr]">
+                        <div className="rounded-[1.35rem] border border-white/10 bg-black/20 p-4">
+                          <div className="flex items-center gap-2"><Save size={16} className="text-amber-200" /><p className="text-sm font-semibold text-white">Review notes</p></div>
+                          <textarea value={reviewDrafts[row.id] ?? row.review_note ?? ''} onChange={(event) => setReviewDrafts((current) => ({ ...current, [row.id]: event.target.value }))} rows={4} className="floating-field-input mt-4 min-h-[112px] resize-none" placeholder="Add a short note for this verification..." />
+                          <button type="button" onClick={() => onSaveReviewNote(row.id, reviewDrafts[row.id] ?? row.review_note ?? '')} className="magnetic-button mt-4 inline-flex items-center gap-2 rounded-2xl border border-amber-300/18 bg-amber-400/10 px-4 py-3 text-sm font-bold text-amber-100"><Save size={16} />Save note</button>
+                        </div>
+                        <div className="rounded-[1.35rem] border border-white/10 bg-black/20 p-4">
+                          <div className="flex items-center gap-2"><Mail size={16} className="text-fuchsia-300" /><p className="text-sm font-semibold text-white">Notification center</p></div>
+                          <div className="mt-4"><NotificationPanel notification={row.latest_notification} /></div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="rounded-[1.35rem] border border-white/10 bg-white/5 p-4 text-center">
+                        <div className="inline-flex rounded-2xl border border-blue-300/20 bg-blue-400/10 p-3 text-blue-100"><QrCode size={18} /></div>
+                        <div className="mt-3 rounded-[1.3rem] bg-white p-3">
+                          <img src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(row.qr_value)}`} alt={`${row.registration_code} QR`} className="mx-auto h-36 w-36" />
+                        </div>
+                        <p className="mt-3 text-[11px] uppercase tracking-[0.2em] text-slate-400">Registration QR</p>
+                        <p className="mt-1 font-orbitron text-lg font-bold text-white">{row.registration_code}</p>
+                      </div>
+
+                      {row.payment_screenshot_path && !brokenProofs[row.id] ? (
+                        <button type="button" onClick={() => setProofModal(row)} className="group block w-full overflow-hidden rounded-[1.35rem] border border-cyan-300/12 bg-white/5 text-left">
+                          <img src={row.payment_screenshot_path} alt={`${row.team_name} payment proof`} onError={() => setBrokenProofs((current) => ({ ...current, [row.id]: true }))} className="h-48 w-full object-cover transition duration-500 group-hover:scale-105" />
+                          <div className="flex items-center justify-between px-4 py-3 text-sm text-cyan-100"><span>Open payment screenshot</span><Eye size={16} /></div>
+                        </button>
+                      ) : (
+                        <div className="rounded-[1.35rem] border border-dashed border-white/10 bg-black/10 p-5 text-sm text-slate-400">{row.payment_screenshot_path ? 'Payment screenshot is missing from storage. On Railway, attach persistent storage or older uploads can disappear after restart/redeploy.' : 'No payment screenshot uploaded for this registration.'}</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ) : null}
             </article>
           ))}
           {adminRows.length === 0 && !adminLoading ? <div className="rounded-[1.5rem] border border-dashed border-white/10 bg-black/10 p-5 text-sm text-slate-400">Load the admin records to review proofs, approve entries, and run exports.</div> : null}

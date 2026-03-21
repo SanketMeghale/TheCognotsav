@@ -162,7 +162,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
     if (!successReceipt || !passCardRef.current || typeof window === 'undefined') return;
 
     const animationFrame = window.requestAnimationFrame(() => {
-      passCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      passCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       passCardRef.current?.focus({ preventScroll: true });
     });
 
