@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowRight, CheckCircle2, Menu, X } from 'lucide-react';
+import { ArrowRight, Bell, CheckCircle2, House, Menu, Search, Trophy, X } from 'lucide-react';
 import { AdminRegistrationsPage } from './components/portal/AdminRegistrationsPage.tsx';
 import { AnnouncementArchiveSection } from './components/portal/AnnouncementArchiveSection.tsx';
 import { HeroSection } from './components/portal/HeroSection.tsx';
@@ -742,6 +742,17 @@ export const App: React.FC = () => {
   const isAdminPage = hashRoute.startsWith('#admin-registrations');
   const isTimelinePage = hashRoute === '#timeline';
   const isEventPage = Boolean(eventPageSlug);
+  const showFrontBottomDock = !isAdminPage && !isTimelinePage && !isEventPage;
+  const activeBottomDock =
+    !hashRoute || hashRoute === '#overview'
+      ? 'home'
+      : hashRoute.startsWith('#registration-panel')
+        ? 'events'
+        : hashRoute.startsWith('#tracker')
+          ? 'tracker'
+          : hashRoute.startsWith('#announcement-archive')
+            ? 'updates'
+            : 'home';
 
   useEffect(() => {
     if (!isEventPage || !eventPageSlug || !events.some((event) => event.slug === eventPageSlug)) {
@@ -1616,6 +1627,57 @@ export const App: React.FC = () => {
       )}
 
       <PortalFooter />
+
+      {showFrontBottomDock ? (
+        <>
+          <div className="portal-bottom-dock-spacer lg:hidden" aria-hidden="true" />
+          <div className="portal-bottom-dock-wrap lg:hidden">
+            <nav className="portal-bottom-dock" aria-label="Front navigation">
+              <a
+                href="#overview"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`portal-bottom-dock__item ${activeBottomDock === 'home' ? 'is-active' : ''}`}
+              >
+                <House size={18} />
+                <span>Home</span>
+              </a>
+              <a
+                href="#registration-panel"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`portal-bottom-dock__item ${activeBottomDock === 'events' ? 'is-active' : ''}`}
+              >
+                <Trophy size={18} />
+                <span>Events</span>
+              </a>
+
+              <div className="portal-bottom-dock__logo-slot" aria-hidden="true">
+                <a href="#overview" onClick={() => setMobileMenuOpen(false)} className="portal-bottom-dock__logo">
+                  <span className="portal-bottom-dock__logo-core">
+                    <img src="/images/ceasposter.jpeg" alt="CEAS logo" className="portal-bottom-dock__logo-image" />
+                  </span>
+                </a>
+              </div>
+
+              <a
+                href="#tracker"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`portal-bottom-dock__item ${activeBottomDock === 'tracker' ? 'is-active' : ''}`}
+              >
+                <Search size={18} />
+                <span>Tracker</span>
+              </a>
+              <a
+                href="#announcement-archive"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`portal-bottom-dock__item ${activeBottomDock === 'updates' ? 'is-active' : ''}`}
+              >
+                <Bell size={18} />
+                <span>Updates</span>
+              </a>
+            </nav>
+          </div>
+        </>
+      ) : null}
 
     </div>
   );
