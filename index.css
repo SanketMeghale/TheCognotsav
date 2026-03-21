@@ -323,11 +323,11 @@ img {
   font-weight: 900;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #f8fafc;
+  color: #fef3c7;
   text-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.92),
-    0 4px 0 rgba(8, 145, 178, 0.42),
-    0 10px 20px rgba(34, 211, 238, 0.18);
+    0 1px 0 rgba(255, 255, 255, 0.45),
+    0 0 14px rgba(251, 191, 36, 0.18),
+    0 8px 20px rgba(251, 191, 36, 0.12);
 }
 
 .portal-cognotsav-heading {
@@ -337,12 +337,12 @@ img {
   font-weight: 900;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  background: linear-gradient(90deg, #22d3ee 0%, #60a5fa 18%, #a855f7 38%, #ec4899 58%, #fbbf24 78%, #34d399 100%);
-  background-size: 220% 100%;
+  background: linear-gradient(90deg, #fff7d6 0%, #fef3c7 18%, #fbbf24 55%, #f59e0b 100%);
+  background-size: 180% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  text-shadow: 0 0 24px rgba(34, 211, 238, 0.16);
+  text-shadow: 0 0 24px rgba(251, 191, 36, 0.2);
   animation: gradientShift 5s linear infinite;
 }
 
@@ -387,8 +387,8 @@ img {
 
 .portal-legacy-title,
 .portal-title-xl {
-  background: linear-gradient(90deg, #fef08a 0%, #22d3ee 18%, #60a5fa 36%, #a855f7 58%, #ec4899 76%, #f97316 100%);
-  background-size: 200% 100%;
+  background: linear-gradient(90deg, #fff7d6 0%, #fef3c7 30%, #fbbf24 68%, #f59e0b 100%);
+  background-size: 170% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -1408,6 +1408,11 @@ img {
 .portal-title-lg {
   font-size: clamp(1.2rem, 4.4vw, 2rem);
   line-height: 1.06;
+  background: linear-gradient(90deg, #fff7d6 0%, #fef3c7 34%, #fbbf24 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 18px rgba(251, 191, 36, 0.14);
 }
 
 .portal-copy {
