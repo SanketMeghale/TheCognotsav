@@ -1514,7 +1514,7 @@ export const App: React.FC = () => {
               aria-label="Open admin panel"
             >
               <span className="portal-mobile-admin-trigger__core">
-                <ShieldCheck size={16} />
+                <img src="/images/ceasposter.jpeg" alt="Admin access" className="portal-mobile-admin-trigger__image" />
               </span>
               <span className="portal-mobile-admin-trigger__badge">
                 ADM
