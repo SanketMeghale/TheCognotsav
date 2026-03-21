@@ -1,10 +1,11 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowRight, CalendarDays, MapPin, Sparkles } from 'lucide-react';
 
 type Props = {};
 
 export const HeroSection: React.FC<Props> = () => {
   const visualShellRef = useRef<HTMLDivElement | null>(null);
+  const [playSquareBurst, setPlaySquareBurst] = useState(true);
   const particles = useMemo(
     () =>
       Array.from({ length: 22 }, (_, index) => ({
@@ -18,6 +19,11 @@ export const HeroSection: React.FC<Props> = () => {
       })),
     [],
   );
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setPlaySquareBurst(false), 2100);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   const handleTiltMove = (event: React.MouseEvent<HTMLDivElement>) => {
     const shell = visualShellRef.current;
@@ -40,7 +46,7 @@ export const HeroSection: React.FC<Props> = () => {
   return (
     <section id="overview" className="mx-auto w-full max-w-[1320px] px-1 sm:px-5 lg:px-8 pt-3 pb-2 md:pt-5 md:pb-4">
       <div className="portal-front-hero portal-front-hero--premium portal-front-hero--welcome">
-        <div className="portal-front-hero__particles" aria-hidden="true">
+        <div className={`portal-front-hero__particles ${playSquareBurst ? 'is-bursting' : ''}`} aria-hidden="true">
           {particles.map((particle) => (
             <span
               key={particle.id}

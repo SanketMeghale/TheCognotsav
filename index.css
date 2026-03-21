@@ -3269,7 +3269,10 @@ select.floating-field-input option {
   border-radius: 0.18rem;
   box-shadow: 0 0 14px rgba(125, 211, 252, 0.18);
   opacity: 0;
-  animation: portalHeroSquareFall 1.5s linear infinite;
+}
+
+.portal-front-hero__particles.is-bursting .portal-front-hero__particle {
+  animation: portalHeroSquareFall 1.5s linear 1 both;
 }
 
 .portal-front-hero__content--premium,
