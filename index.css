@@ -3336,8 +3336,9 @@ select.floating-field-input option {
   overflow: hidden;
   isolation: isolate;
   min-height: 42rem;
-  grid-template-columns: minmax(0, 1.02fr) minmax(330px, 0.98fr);
-  gap: 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
   padding: 1.4rem;
   border-radius: 2rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -3366,6 +3367,15 @@ select.floating-field-input option {
   border: none;
   background: none;
   padding: clamp(1rem, 2vw, 2.5rem);
+}
+
+.portal-front-hero__main {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.02fr) minmax(330px, 0.98fr);
+  gap: 1.6rem;
+  align-items: center;
 }
 
 .portal-front-hero__content--premium {
@@ -3579,6 +3589,20 @@ select.floating-field-input option {
   display: flex;
   flex-wrap: wrap;
   gap: 0.95rem;
+}
+
+.portal-front-hero__bottom-bar {
+  position: relative;
+  z-index: 1;
+  border-radius: 1.45rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background:
+    linear-gradient(145deg, rgba(12, 18, 35, 0.84), rgba(17, 24, 39, 0.72));
+  padding: 1rem 1.2rem;
+  backdrop-filter: blur(16px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 18px 36px rgba(2, 8, 23, 0.22);
 }
 
 .portal-front-hero__meta-item {
@@ -4046,8 +4070,11 @@ footer {
 
 @media (max-width: 1024px) {
   .portal-front-hero--premium {
-    grid-template-columns: minmax(0, 1fr);
     min-height: auto;
+  }
+
+  .portal-front-hero__main {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .portal-front-hero__headline {
@@ -4135,6 +4162,11 @@ footer {
   .portal-front-hero__content--premium,
   .portal-front-hero__panel--premium {
     padding: 0.95rem;
+  }
+
+  .portal-front-hero__bottom-bar {
+    padding: 0.85rem;
+    border-radius: 1.2rem;
   }
 
   .portal-front-hero__content--premium {
