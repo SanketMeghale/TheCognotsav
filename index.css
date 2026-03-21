@@ -3546,10 +3546,10 @@ select.floating-field-input option {
 }
 
 .portal-front-hero__content--premium .portal-prize-pool-card {
-  width: min(100%, 20rem);
-  margin-top: 0.35rem;
-  padding-top: 1.5rem;
-  border-radius: 1.7rem;
+  width: min(100%, 21.5rem);
+  margin-top: 0.15rem;
+  padding: 1rem 1.15rem 1rem;
+  border-radius: 1.55rem;
   border-color: rgba(96, 165, 250, 0.42);
   background:
     linear-gradient(145deg, rgba(12, 17, 33, 0.98), rgba(18, 16, 28, 0.94)),
@@ -3562,8 +3562,10 @@ select.floating-field-input option {
 }
 
 .portal-front-hero__content--premium .portal-prize-pool-card__badge {
-  height: 3.7rem;
-  width: 3.7rem;
+  position: static;
+  transform: none;
+  height: 3rem;
+  width: 3rem;
   color: #fbbf24;
   border-color: rgba(250, 204, 21, 0.92);
   background: linear-gradient(180deg, rgba(10, 18, 34, 0.98), rgba(17, 24, 39, 0.94));
@@ -3572,17 +3574,37 @@ select.floating-field-input option {
     0 0 24px rgba(250, 204, 21, 0.22);
 }
 
+.portal-front-hero__content--premium .portal-prize-pool-card__body {
+  display: flex;
+  align-items: center;
+  gap: 0.95rem;
+  margin-bottom: 0.8rem;
+}
+
 .portal-front-hero__content--premium .portal-prize-pool-card__value {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.15rem;
-  font-size: clamp(2rem, 4vw, 3.4rem);
+  font-size: clamp(1.9rem, 4vw, 3.1rem);
 }
 
 .portal-front-hero__content--premium .portal-prize-pool-card__meta strong {
   font-weight: 700;
   color: rgba(226, 232, 240, 0.9);
+}
+
+.portal-front-hero__content--premium .portal-prize-pool-card__kicker {
+  margin: 0 0 0.35rem;
+  text-align: left;
+}
+
+.portal-front-hero__content--premium .portal-prize-pool-card__meta {
+  width: 100%;
+  justify-content: flex-start;
+  margin: 0;
+  padding-left: 3.95rem;
+  font-size: 0.86rem;
 }
 
 .portal-front-hero__meta {

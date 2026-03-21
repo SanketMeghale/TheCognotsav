@@ -51,10 +51,12 @@ export const HeroSection: React.FC<Props> = () => {
               <div className="portal-prize-pool-card__badge" aria-hidden="true">
                 <Trophy size={20} />
               </div>
-              <p className="portal-prize-pool-card__kicker">Prize Pool</p>
-              <p className="portal-prize-pool-card__value">
-                <span>&#8377;1,00,000+</span>
-              </p>
+              <div className="portal-prize-pool-card__body">
+                <p className="portal-prize-pool-card__kicker">Prize Pool</p>
+                <p className="portal-prize-pool-card__value">
+                  <span>&#8377;1,00,000+</span>
+                </p>
+              </div>
               <div className="portal-prize-pool-card__meta">
                 <strong>Cash Rewards</strong>
                 <span aria-hidden="true" />
