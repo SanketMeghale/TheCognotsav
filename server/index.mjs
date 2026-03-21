@@ -2100,6 +2100,49 @@ app.patch('/api/admin/registrations/:id/review-note', requireAdmin, async (req, 
   return res.json({ registration });
 });
 
+app.delete('/api/admin/registrations/:id', requireAdmin, async (req, res) => {
+  const { id } = req.params;
+
+  const registrationScope = await pool.query(
+    `
+      SELECT id, status, event_slug
+      FROM registrations
+      WHERE id = $1
+      LIMIT 1
+    `,
+    [id],
+  );
+
+  if (registrationScope.rowCount === 0) {
+    return res.status(404).json({ error: 'Registration not found.' });
+  }
+
+  const registration = registrationScope.rows[0];
+
+  if (!hasScopedEventAccess(req, registration.event_slug)) {
+    return res.status(403).json({ error: 'This access key can delete only its assigned event registrations.' });
+  }
+
+  await pool.query(
+    `
+      DELETE FROM registrations
+      WHERE id = $1
+    `,
+    [id],
+  );
+
+  let promotedRegistration = null;
+  if (registration.status !== 'rejected' && registration.status !== 'waitlisted') {
+    promotedRegistration = await promoteNextWaitlistedRegistration(registration.event_slug);
+  }
+
+  return res.json({
+    success: true,
+    id,
+    promotedRegistration,
+  });
+});
+
 app.patch('/api/admin/registrations/:id/attendance', requireAdmin, async (req, res) => {
   const { id } = req.params;
   const attendanceStatus = String(req.body?.attendanceStatus || '').trim().toLowerCase();

@@ -28,6 +28,7 @@ type Props = {
   onLoadAdminRows: () => void;
   onDownload: (format: 'csv' | 'xlsx', eventSlug?: string) => void;
   onStatusChange: (registrationId: string, status: 'verified' | 'rejected' | 'pending') => void;
+  onDeleteRegistration: (registrationId: string) => void;
   onSaveReviewNote: (registrationId: string, reviewNote: string) => void;
   onResendStatusEmail: (registrationId: string) => void;
   onSendBroadcast: (payload: { title: string; message: string; eventSlug: string; isPinned: boolean }) => void;
@@ -128,7 +129,7 @@ function FloatingField({ label, icon, value, type = 'text', onChange }: { label:
   );
 }
 
-export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, adminMainKey, adminEventKey, adminEventKeySlug, adminScope, adminRows, events, announcements, backups, adminLoading, adminError, onAdminAccessModeChange, onAdminMainKeyChange, onAdminEventKeyChange, onAdminEventKeySlugChange, onLoadAdminRows, onDownload, onStatusChange, onSaveReviewNote, onResendStatusEmail, onSendBroadcast, onDeleteAnnouncement, onRunBackup, onDownloadBackup }) => {
+export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, adminMainKey, adminEventKey, adminEventKeySlug, adminScope, adminRows, events, announcements, backups, adminLoading, adminError, onAdminAccessModeChange, onAdminMainKeyChange, onAdminEventKeyChange, onAdminEventKeySlugChange, onLoadAdminRows, onDownload, onStatusChange, onDeleteRegistration, onSaveReviewNote, onResendStatusEmail, onSendBroadcast, onDeleteAnnouncement, onRunBackup, onDownloadBackup }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [eventFilter, setEventFilter] = useState('all');
@@ -415,6 +416,18 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
                   <button type="button" onClick={() => onStatusChange(row.id, 'verified')} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-emerald-300/20 bg-emerald-400/10 px-4 py-3 text-sm font-bold text-emerald-100"><CheckCircle2 size={16} />Approve</button>
                   <button type="button" onClick={() => onStatusChange(row.id, 'pending')} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-amber-300/20 bg-amber-400/10 px-4 py-3 text-sm font-bold text-amber-100"><Clock3 size={16} />Pending</button>
                   <button type="button" onClick={() => onStatusChange(row.id, 'rejected')} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-rose-300/20 bg-rose-400/10 px-4 py-3 text-sm font-bold text-rose-100"><XCircle size={16} />Reject</button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (window.confirm(`Delete registration ${row.registration_code} for ${row.team_name}? This cannot be undone.`)) {
+                        onDeleteRegistration(row.id);
+                      }
+                    }}
+                    className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-red-300/20 bg-red-500/10 px-4 py-3 text-sm font-bold text-red-100"
+                  >
+                    <Trash2 size={16} />
+                    Delete
+                  </button>
                 </div>
               </div>
 

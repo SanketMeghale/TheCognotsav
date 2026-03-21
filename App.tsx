@@ -1438,6 +1438,55 @@ export const App: React.FC = () => {
     }
   };
 
+  const deleteAdminRegistration = async (registrationId: string) => {
+    setAdminError('');
+    try {
+      const response = await fetch(`/api/admin/registrations/${registrationId}`, {
+        method: 'DELETE',
+        headers: {
+          'x-admin-key': adminKey,
+        },
+      });
+
+      const { data: payload, rawText } = await readApiBody<{
+        error?: string;
+        success?: boolean;
+        id?: string;
+        promotedRegistration?: {
+          registration?: AdminRegistration;
+        } | null;
+      }>(response);
+
+      if (!response.ok) {
+        throw new Error(getApiErrorMessage(response, payload, rawText, 'Failed to delete registration.'));
+      }
+
+      setAdminRows((current) => {
+        const nextRows = current.filter((row) => row.id !== registrationId);
+        const promoted = payload?.promotedRegistration?.registration;
+
+        if (!promoted) {
+          return nextRows;
+        }
+
+        const existingIndex = nextRows.findIndex((row) => row.id === promoted.id);
+        if (existingIndex === -1) {
+          return [promoted, ...nextRows];
+        }
+
+        return nextRows.map((row) => (row.id === promoted.id ? promoted : row));
+      });
+      setToastClosing(false);
+      setToastMessage(
+        payload?.promotedRegistration?.registration
+          ? 'Registration deleted. Next waitlisted team moved into review.'
+          : 'Registration deleted.',
+      );
+    } catch (error) {
+      setAdminError(error instanceof Error ? error.message : 'Failed to delete registration.');
+    }
+  };
+
   const sendBroadcast = async (payload: {
     title: string;
     message: string;
@@ -1713,6 +1762,7 @@ export const App: React.FC = () => {
             onLoadAdminRows={loadAdminRows}
             onDownload={downloadAdminFile}
             onStatusChange={updateAdminStatus}
+            onDeleteRegistration={deleteAdminRegistration}
             onSaveReviewNote={saveReviewNote}
             onResendStatusEmail={resendAdminStatusEmail}
             onSendBroadcast={sendBroadcast}
