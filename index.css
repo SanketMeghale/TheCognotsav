@@ -3311,7 +3311,7 @@ select.floating-field-input option {
   margin: 0;
   max-width: 11ch;
   font-family: 'Orbitron', 'Inter', sans-serif;
-  font-size: clamp(2.8rem, 7vw, 5.35rem);
+  font-size: clamp(2.3rem, 5.6vw, 4.35rem);
   font-weight: 800;
   line-height: 1.02;
   letter-spacing: 0.04em;
@@ -3331,11 +3331,11 @@ select.floating-field-input option {
 }
 
 .portal-front-hero__description {
-  max-width: 37rem;
+  max-width: 31rem;
   margin: 0;
   color: rgba(226, 232, 240, 0.74);
-  font-size: clamp(1rem, 1.5vw, 1.08rem);
-  line-height: 1.8;
+  font-size: clamp(0.95rem, 1.15vw, 1.02rem);
+  line-height: 1.72;
 }
 
 .portal-front-hero__cta-row {
