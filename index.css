@@ -3373,8 +3373,8 @@ select.floating-field-input option {
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: minmax(0, 1.02fr) minmax(330px, 0.98fr);
-  gap: 1.6rem;
+  grid-template-columns: minmax(0, 1.18fr) minmax(280px, 0.82fr);
+  gap: 1.2rem;
   align-items: center;
 }
 
@@ -3499,11 +3499,11 @@ select.floating-field-input option {
 
 .portal-front-hero__headline {
   margin: 0;
-  max-width: 8.8ch;
+  max-width: 10.8ch;
   font-family: 'Orbitron', 'Inter', sans-serif;
-  font-size: clamp(2.55rem, 5.6vw, 4.7rem);
+  font-size: clamp(2.2rem, 4.9vw, 4rem);
   font-weight: 900;
-  line-height: 0.94;
+  line-height: 0.96;
   letter-spacing: 0.025em;
   text-transform: uppercase;
   color: #f8fafc;
@@ -3527,7 +3527,7 @@ select.floating-field-input option {
 }
 
 .portal-front-hero__description {
-  max-width: 28rem;
+  max-width: 30rem;
   margin: 0;
   color: rgba(226, 232, 240, 0.82);
   font-size: clamp(0.98rem, 1.15vw, 1.04rem);
@@ -3546,7 +3546,7 @@ select.floating-field-input option {
 }
 
 .portal-front-hero__content--premium .portal-prize-pool-card {
-  width: min(100%, 23rem);
+  width: min(100%, 20rem);
   margin-top: 0.35rem;
   padding-top: 1.5rem;
   border-radius: 1.7rem;
@@ -3633,7 +3633,7 @@ select.floating-field-input option {
 
 .portal-front-hero__visual-shell {
   position: relative;
-  width: min(100%, 36rem);
+  width: min(100%, 30rem);
   transform: none;
   transition: none;
 }
@@ -3656,7 +3656,7 @@ select.floating-field-input option {
   position: absolute;
   inset: 8% 12%;
   border-radius: 2.3rem;
-  transform: rotate(10deg);
+  transform: rotate(7deg);
 }
 
 .portal-front-hero__visual-frame--outer {
@@ -3679,7 +3679,7 @@ select.floating-field-input option {
   flex-direction: column;
   align-items: center;
   gap: 1.35rem;
-  padding: 2.1rem 1.7rem;
+  padding: 1.8rem 1.35rem;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 2.2rem;
   background:
@@ -3689,7 +3689,7 @@ select.floating-field-input option {
     inset 0 1px 0 rgba(255, 255, 255, 0.08),
     0 26px 70px rgba(2, 8, 23, 0.44);
   backdrop-filter: blur(24px);
-  transform: rotate(-8deg);
+  transform: rotate(-5deg);
 }
 
 #registration-panel,
@@ -3702,8 +3702,8 @@ footer {
 
 .portal-front-hero__visual-logo-frame {
   display: inline-flex;
-  height: clamp(13rem, 24vw, 17rem);
-  width: clamp(13rem, 24vw, 17rem);
+  height: clamp(11.5rem, 22vw, 14.5rem);
+  width: clamp(11.5rem, 22vw, 14.5rem);
   align-items: center;
   justify-content: center;
   border-radius: 1.7rem;
@@ -3740,7 +3740,7 @@ footer {
 .portal-front-hero__visual-title {
   margin: 0;
   font-family: 'Orbitron', 'Inter', sans-serif;
-  font-size: clamp(1.3rem, 2.3vw, 1.95rem);
+  font-size: clamp(1.15rem, 2vw, 1.65rem);
   letter-spacing: 0.12em;
   line-height: 1.2;
   text-transform: uppercase;
@@ -3749,9 +3749,9 @@ footer {
 
 .portal-front-hero__visual-note {
   margin: 0.8rem auto 0;
-  max-width: 18rem;
+  max-width: 16rem;
   color: rgba(203, 213, 225, 0.72);
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   line-height: 1.7;
 }
 
@@ -4078,8 +4078,8 @@ footer {
   }
 
   .portal-front-hero__headline {
-    max-width: 9.2ch;
-    font-size: clamp(2.2rem, 6vw, 4rem);
+    max-width: 10.5ch;
+    font-size: clamp(2.1rem, 6vw, 3.6rem);
   }
 
   .portal-front-hero__wordmark {
@@ -4100,7 +4100,7 @@ footer {
   }
 
   .portal-front-hero__visual-shell {
-    width: min(100%, 30rem);
+    width: min(100%, 26rem);
   }
 
   .portal-front-hero__visual-card--premium {
