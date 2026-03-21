@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, CalendarDays, MapPin, Sparkles } from 'lucide-react';
+import { ArrowRight, CalendarDays, MapPin, Sparkles, Trophy } from 'lucide-react';
 
 type Props = {};
 
@@ -40,6 +40,23 @@ export const HeroSection: React.FC<Props> = () => {
             <a href="#timeline" className="portal-premium-button portal-premium-button--secondary">
               View Timeline
             </a>
+          </div>
+
+          <div className="portal-prize-pool-card" data-reveal="fade-up">
+            <div className="portal-prize-pool-card__badge" aria-hidden="true">
+              <Trophy size={20} />
+            </div>
+            <p className="portal-prize-pool-card__kicker">Total Prize Pool Distributed</p>
+            <p className="portal-prize-pool-card__value">
+              Over
+              <br />
+              <span>{'₹'}1,00,000</span>
+            </p>
+            <div className="portal-prize-pool-card__meta">
+              <strong>Cash Rewards</strong>
+              <span aria-hidden="true" />
+              <strong>Participation Certificates</strong>
+            </div>
           </div>
 
           <div className="portal-front-hero__meta" data-reveal="fade-up">

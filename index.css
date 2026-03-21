@@ -3463,6 +3463,27 @@ select.floating-field-input option {
   gap: 0.9rem;
 }
 
+.portal-front-hero__content--premium .portal-prize-pool-card {
+  width: min(100%, 34rem);
+  margin-top: 0.15rem;
+}
+
+.portal-front-hero__content--premium .portal-prize-pool-card__badge {
+  color: #fbbf24;
+}
+
+.portal-front-hero__content--premium .portal-prize-pool-card__value {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.portal-front-hero__content--premium .portal-prize-pool-card__meta strong {
+  font-weight: 700;
+  color: rgba(226, 232, 240, 0.9);
+}
+
 .portal-front-hero__meta {
   display: flex;
   flex-wrap: wrap;
@@ -3950,6 +3971,10 @@ footer {
     line-height: 1.72;
   }
 
+  .portal-front-hero__content--premium .portal-prize-pool-card {
+    width: 100%;
+  }
+
   .portal-hero-badge {
     font-size: 0.74rem;
   }
@@ -4043,7 +4068,8 @@ footer {
   }
 
   .portal-front-hero__cta-row,
-  .portal-front-hero__meta {
+  .portal-front-hero__meta,
+  .portal-front-hero__content--premium .portal-prize-pool-card__meta {
     justify-content: center;
   }
 
