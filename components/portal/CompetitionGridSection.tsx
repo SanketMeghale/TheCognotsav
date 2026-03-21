@@ -54,7 +54,7 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
   const [supportsHoverPreview, setSupportsHoverPreview] = useState(false);
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
   const observerRefs = useRef<Record<string, HTMLDivElement | null>>({});
-  const [mobileVisibleVideoSlugs, setMobileVisibleVideoSlugs] = useState<string[]>([]);
+  const [mobileVisibleVideoSlug, setMobileVisibleVideoSlug] = useState<string | null>(null);
 
   const visibleEvents = useMemo(
     () => (activeFilter === 'All' ? events : events.filter((event) => getDisplayCategory(event) === activeFilter)),
@@ -77,31 +77,29 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
 
   useEffect(() => {
     if (typeof window === 'undefined' || supportsHoverPreview) {
-      setMobileVisibleVideoSlugs([]);
+      setMobileVisibleVideoSlug(null);
       return;
     }
 
     const observer = new IntersectionObserver(
       (entries) => {
-        setMobileVisibleVideoSlugs((current) => {
-          const next = new Set(current);
-          entries.forEach((entry) => {
-            const slug = entry.target.getAttribute('data-video-slug');
-            if (!slug) {
-              return;
-            }
+        const strongestVisibleEntry = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((left, right) => right.intersectionRatio - left.intersectionRatio)[0];
 
-            if (entry.isIntersecting) {
-              next.add(slug);
-            } else {
-              next.delete(slug);
-            }
-          });
+        if (strongestVisibleEntry) {
+          setMobileVisibleVideoSlug(strongestVisibleEntry.target.getAttribute('data-video-slug'));
+          return;
+        }
 
-          return Array.from(next);
+        setMobileVisibleVideoSlug((current) => {
+          const stillVisibleEntry = entries.find(
+            (entry) => entry.target.getAttribute('data-video-slug') === current && entry.isIntersecting,
+          );
+          return stillVisibleEntry ? current : null;
         });
       },
-      { threshold: 0.6 },
+      { threshold: [0.45, 0.65, 0.85] },
     );
 
     Object.entries(observerRefs.current).forEach(([slug, node]) => {
@@ -116,13 +114,13 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
   useEffect(() => {
     const activeSlugs = new Set<string>([
       ...(supportsHoverPreview && hoveredVideoSlug ? [hoveredVideoSlug] : []),
-      ...(!supportsHoverPreview ? mobileVisibleVideoSlugs : []),
+      ...(!supportsHoverPreview && mobileVisibleVideoSlug ? [mobileVisibleVideoSlug] : []),
     ]);
 
     if (soundEnabledSlug && !activeSlugs.has(soundEnabledSlug)) {
       setSoundEnabledSlug(null);
     }
-  }, [hoveredVideoSlug, mobileVisibleVideoSlugs, soundEnabledSlug, supportsHoverPreview]);
+  }, [hoveredVideoSlug, mobileVisibleVideoSlug, soundEnabledSlug, supportsHoverPreview]);
 
   useEffect(() => {
     Object.entries(videoRefs.current).forEach(([slug, video]) => {
@@ -131,7 +129,7 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
       }
 
       const shouldHoverPreview = supportsHoverPreview && slug === hoveredVideoSlug;
-      const shouldPlayOnTouch = !supportsHoverPreview && mobileVisibleVideoSlugs.includes(slug);
+      const shouldPlayOnTouch = !supportsHoverPreview && mobileVisibleVideoSlug === slug;
       const shouldPlay = shouldHoverPreview || shouldPlayOnTouch;
       const hasSoundEnabled = slug === soundEnabledSlug;
 
@@ -151,8 +149,9 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
       video.loop = true;
       video.pause();
       video.currentTime = 0;
+      video.load();
     });
-  }, [hoveredVideoSlug, soundEnabledSlug, supportsHoverPreview, mobileVisibleVideoSlugs]);
+  }, [hoveredVideoSlug, soundEnabledSlug, supportsHoverPreview, mobileVisibleVideoSlug]);
 
   const toggleSound = (slug: string) => {
     const video = videoRefs.current[slug];
@@ -216,7 +215,7 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
               const hasIntroVideo = Boolean(event.intro_video_url);
               const isVideoActive = supportsHoverPreview
                 ? hoveredVideoSlug === event.slug
-                : mobileVisibleVideoSlugs.includes(event.slug);
+                : mobileVisibleVideoSlug === event.slug;
               const isSoundEnabled = soundEnabledSlug === event.slug;
 
               return (
@@ -291,7 +290,7 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
                             videoRefs.current[event.slug] = node;
                           }}
                           className={`portal-competition-card__video ${isVideoActive ? 'is-visible' : ''}`}
-                          preload="auto"
+                          preload="metadata"
                           playsInline
                           muted
                           loop

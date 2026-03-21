@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
   ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Clock3, Copy, CreditCard, Download, ExternalLink,
-  FileText, Info, MapPin, Phone, QrCode, Save, ShieldCheck, Sparkles, Trophy, Upload, Users,
+  Info, MapPin, QrCode, Save, Trophy, Upload, Users,
 } from 'lucide-react';
 import type { EventRecord, ParticipantDraft, RegistrationReceipt } from './types';
 import { formatCurrency, getTeamLabel } from './utils';
@@ -175,10 +175,6 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const showError = (field: string) => (touchedFields[field] ? validationErrors[field] : '');
   const selectedTheme = selectedEvent ? categoryThemes[selectedEvent.category] || categoryThemes.Technical : categoryThemes.Technical;
   const selectedHandbook = selectedEvent ? handbookBySlug[selectedEvent.slug] : null;
-  const handbookNotes = [
-    ...(selectedHandbook?.highlights || []).slice(0, 2).map((item) => ({ icon: Sparkles, tone: 'text-amber-200', text: item })),
-    ...(selectedHandbook?.rules || []).slice(0, 2).map((item) => ({ icon: ShieldCheck, tone: 'text-cyan-200', text: item })),
-  ];
   const upiLink = selectedEvent?.payment_upi ? `upi://pay?pa=${selectedEvent.payment_upi}&pn=${encodeURIComponent(selectedEvent.payment_payee || selectedEvent.name)}&am=${selectedEvent.registration_fee}&cu=INR&tn=${encodeURIComponent(selectedEvent.name)}` : '';
   const qrUrl = upiLink ? `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(upiLink)}` : '';
   const scrollToRegistrationForm = () => {
@@ -299,33 +295,6 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                 ))}
               </div>
             ) : null}
-          </section>
-
-          <section className="portal-event-section portal-glow-card portal-glass" data-reveal="up">
-            <div className="portal-event-section__head">
-              <FileText size={17} className="text-amber-200" />
-              <div>
-                <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Format & Rules</p>
-                <h3 className="mt-1 text-lg font-semibold text-white">Short notes before you register</h3>
-              </div>
-            </div>
-            <div className="portal-event-note-list mt-5">
-              {handbookNotes.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <div key={`${item.text}`} className="portal-event-note-list__item">
-                    <Icon size={15} className={`mt-0.5 shrink-0 ${item.tone}`} />
-                    <span>{item.text}</span>
-                  </div>
-                );
-              })}
-              {selectedHandbook?.contact?.slice(0, 2).map((item) => (
-                <div key={`contact-${item}`} className="portal-event-note-list__item">
-                  <Phone size={15} className="mt-0.5 shrink-0 text-orange-300" />
-                  <span>{item}</span>
-                </div>
-              ))}
-            </div>
           </section>
 
           <section className="portal-event-section portal-glow-card portal-glass" data-reveal="up">
