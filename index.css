@@ -1049,12 +1049,27 @@ img {
   cursor: pointer;
 }
 
+.portal-competition-card__video-poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .portal-competition-card__video {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
   background: #040712;
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+
+.portal-competition-card__video.is-visible {
+  opacity: 1;
 }
 
 .portal-competition-card__video-hint {

@@ -114,6 +114,17 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
   }, [supportsHoverPreview, visibleEvents]);
 
   useEffect(() => {
+    const activeSlugs = new Set<string>([
+      ...(supportsHoverPreview && hoveredVideoSlug ? [hoveredVideoSlug] : []),
+      ...(!supportsHoverPreview ? mobileVisibleVideoSlugs : []),
+    ]);
+
+    if (soundEnabledSlug && !activeSlugs.has(soundEnabledSlug)) {
+      setSoundEnabledSlug(null);
+    }
+  }, [hoveredVideoSlug, mobileVisibleVideoSlugs, soundEnabledSlug, supportsHoverPreview]);
+
+  useEffect(() => {
     Object.entries(videoRefs.current).forEach(([slug, video]) => {
       if (!video) {
         return;
@@ -144,7 +155,19 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
   }, [hoveredVideoSlug, soundEnabledSlug, supportsHoverPreview, mobileVisibleVideoSlugs]);
 
   const toggleSound = (slug: string) => {
-    setSoundEnabledSlug((current) => (current === slug ? null : slug));
+    const video = videoRefs.current[slug];
+    const nextSoundEnabled = soundEnabledSlug !== slug;
+
+    setSoundEnabledSlug(nextSoundEnabled ? slug : null);
+
+    if (video) {
+      video.currentTime = 0;
+      video.muted = !nextSoundEnabled;
+      const playPromise = video.play();
+      if (playPromise && typeof playPromise.catch === 'function') {
+        playPromise.catch(() => {});
+      }
+    }
   };
 
   return (
@@ -191,6 +214,10 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
               const teamLabel = getTeamLabel(event);
               const handleOpenEvent = () => onSelectEvent(event.slug);
               const hasIntroVideo = Boolean(event.intro_video_url);
+              const isVideoActive = supportsHoverPreview
+                ? hoveredVideoSlug === event.slug
+                : mobileVisibleVideoSlugs.includes(event.slug);
+              const isSoundEnabled = soundEnabledSlug === event.slug;
 
               return (
                 <article
@@ -205,6 +232,9 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
                   onMouseLeave={() => {
                     if (supportsHoverPreview && hoveredVideoSlug === event.slug) {
                       setHoveredVideoSlug(null);
+                      if (soundEnabledSlug === event.slug) {
+                        setSoundEnabledSlug(null);
+                      }
                     }
                   }}
                   onFocus={() => {
@@ -249,11 +279,18 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
                         tabIndex={0}
                         aria-label={!supportsHoverPreview ? `${event.name} intro video autoplay preview` : `${event.name} intro video preview`}
                       >
+                        <img
+                          src={event.poster_path}
+                          alt={event.name}
+                          loading="lazy"
+                          decoding="async"
+                          className="portal-competition-card__video-poster"
+                        />
                         <video
                           ref={(node) => {
                             videoRefs.current[event.slug] = node;
                           }}
-                          className="portal-competition-card__video"
+                          className={`portal-competition-card__video ${isVideoActive ? 'is-visible' : ''}`}
                           preload="auto"
                           playsInline
                           muted
@@ -268,15 +305,12 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
                           className="portal-competition-card__sound-toggle"
                           onClick={(clickEvent) => {
                             clickEvent.stopPropagation();
-                            if (!supportsHoverPreview) {
-                              setHoveredVideoSlug(event.slug);
-                            }
                             toggleSound(event.slug);
                           }}
-                          aria-label={soundEnabledSlug === event.slug ? `Mute ${event.name} intro video` : `Unmute ${event.name} intro video`}
+                          aria-label={isSoundEnabled ? `Mute ${event.name} intro video` : `Unmute ${event.name} intro video`}
                         >
-                          {soundEnabledSlug === event.slug ? <Volume2 size={16} /> : <VolumeX size={16} />}
-                          <span>{soundEnabledSlug === event.slug ? 'Sound On' : 'Sound Off'}</span>
+                          {isSoundEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
+                          <span>{isSoundEnabled ? 'Sound On' : 'Sound Off'}</span>
                         </button>
                         <div className="portal-competition-card__video-hint">
                           {!supportsHoverPreview
