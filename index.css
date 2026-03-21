@@ -1686,7 +1686,7 @@ select.floating-field-input option {
 
 .portal-bottom-dock__logo {
   position: absolute;
-  top: -2.35rem;
+  top: -2.75rem;
   display: grid;
   height: 4.15rem;
   width: 4.15rem;
@@ -1766,7 +1766,7 @@ select.floating-field-input option {
   }
 
   .portal-bottom-dock__logo {
-    top: -2.45rem;
+    top: -2.85rem;
     height: 4.45rem;
     width: 4.45rem;
   }
@@ -2279,7 +2279,7 @@ select.floating-field-input option {
   .portal-bottom-dock__logo {
     height: 3.85rem;
     width: 3.85rem;
-    top: -1.55rem;
+    top: -1.95rem;
   }
 
   .portal-bottom-dock__logo-core {
