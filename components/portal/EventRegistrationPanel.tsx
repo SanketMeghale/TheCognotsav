@@ -231,7 +231,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
         <div className="portal-event-layout__details space-y-5">
           <section className={`portal-event-showcase portal-glow-card portal-glass ${selectedTheme.glow}`}>
             <div className="portal-event-showcase__poster">
-              <img src={selectedEvent.poster_path} alt={selectedEvent.name} className="h-full w-full object-cover" />
+              <img src={selectedEvent.poster_path} alt={selectedEvent.name} loading="eager" decoding="async" className="h-full w-full object-cover" />
               <div className="portal-event-showcase__poster-overlay" />
             </div>
             <div className="portal-event-showcase__content">

@@ -1,10 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { ArrowRight, CalendarDays, MapPin, Sparkles } from 'lucide-react';
 
 type Props = {};
 
 export const HeroSection: React.FC<Props> = () => {
-  const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0 });
+  const visualShellRef = useRef<HTMLDivElement | null>(null);
   const particles = useMemo(
     () =>
       Array.from({ length: 20 }, (_, index) => ({
@@ -19,17 +19,21 @@ export const HeroSection: React.FC<Props> = () => {
   );
 
   const handleTiltMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    const shell = visualShellRef.current;
+    if (!shell || typeof window === 'undefined' || !window.matchMedia('(pointer: fine)').matches) {
+      return;
+    }
+
     const rect = event.currentTarget.getBoundingClientRect();
     const offsetX = (event.clientX - rect.left) / rect.width - 0.5;
     const offsetY = (event.clientY - rect.top) / rect.height - 0.5;
-    setTilt({
-      rotateX: Number((-offsetY * 10).toFixed(2)),
-      rotateY: Number((offsetX * 12).toFixed(2)),
-    });
+    shell.style.transform = `perspective(1400px) rotateX(${(-offsetY * 10).toFixed(2)}deg) rotateY(${(offsetX * 12).toFixed(2)}deg)`;
   };
 
   const resetTilt = () => {
-    setTilt({ rotateX: 0, rotateY: 0 });
+    if (visualShellRef.current) {
+      visualShellRef.current.style.transform = 'perspective(1400px) rotateX(0deg) rotateY(0deg)';
+    }
   };
 
   return (
@@ -96,19 +100,17 @@ export const HeroSection: React.FC<Props> = () => {
 
         <div className="portal-front-hero__panel portal-front-hero__panel--premium" data-reveal="fade-up">
           <div
+            ref={visualShellRef}
             className="portal-front-hero__visual-shell"
             onMouseMove={handleTiltMove}
             onMouseLeave={resetTilt}
-            style={{
-              transform: `perspective(1400px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)`,
-            }}
           >
             <div className="portal-front-hero__visual-glow" aria-hidden="true" />
             <div className="portal-front-hero__visual-ring portal-front-hero__visual-ring--outer" aria-hidden="true" />
             <div className="portal-front-hero__visual-ring portal-front-hero__visual-ring--inner" aria-hidden="true" />
             <div className="portal-front-hero__visual-card portal-front-hero__visual-card--premium">
               <div className="portal-front-hero__visual-logo-frame">
-                <img src="/images/ceasposter.jpeg" alt="CEAS COGNOTSAV crest" className="portal-front-hero__visual-image" />
+                <img src="/images/ceasposter.jpeg" alt="CEAS COGNOTSAV crest" loading="eager" decoding="async" className="portal-front-hero__visual-image" />
               </div>
               <div className="portal-front-hero__visual-copy">
                 <p className="portal-front-hero__visual-overline">Computer Engineering Association</p>

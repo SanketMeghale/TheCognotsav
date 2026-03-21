@@ -59,13 +59,15 @@ function PortalBackgroundCanvas() {
     if (!context) return;
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) return;
+    const saveData = 'connection' in navigator && (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+    const isLowPowerDevice = window.innerWidth < 768 || (navigator.hardwareConcurrency || 8) <= 4;
+    if (prefersReducedMotion || saveData || isLowPowerDevice) return;
 
     let width = 0;
     let height = 0;
     let animationFrame = 0;
     const pointer = { x: -9999, y: -9999 };
-    const particleCount = Math.min(CANVAS_PARTICLE_COUNT, window.innerWidth < 640 ? 32 : CANVAS_PARTICLE_COUNT);
+    const particleCount = Math.min(CANVAS_PARTICLE_COUNT, window.innerWidth < 1024 ? 28 : 40);
 
     const particles = Array.from({ length: particleCount }, () => ({
       x: Math.random(),
@@ -122,7 +124,7 @@ function PortalBackgroundCanvas() {
           const by = b.y * height;
           const distance = Math.hypot(ax - bx, ay - by);
 
-          if (distance < 150) {
+          if (distance < 130) {
             const alpha = 1 - distance / 150;
             context.beginPath();
             context.strokeStyle = `rgba(103, 180, 255, ${alpha * 0.08})`;

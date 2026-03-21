@@ -116,7 +116,7 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
                   } ${theme.glow}`}
                 >
                   <div className="portal-competition-card__media relative overflow-hidden">
-                    <img src={event.poster_path} alt={event.name} className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.04]" />
+                    <img src={event.poster_path} alt={event.name} loading="lazy" decoding="async" className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.04]" />
                     <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,10,21,0.02),rgba(7,10,21,0.44)_52%,rgba(7,10,21,0.9))]" />
                     <div className="portal-competition-card__noise" aria-hidden="true" />
                     <div className="absolute right-4 top-4 flex flex-wrap justify-end gap-2">

@@ -3377,7 +3377,8 @@ select.floating-field-input option {
   position: relative;
   width: min(100%, 34rem);
   transform-style: preserve-3d;
-  transition: transform 260ms ease;
+  will-change: transform;
+  transition: transform 180ms ease-out;
   animation: portalHeroFloat 7s ease-in-out infinite;
 }
 
@@ -3427,6 +3428,14 @@ select.floating-field-input option {
     inset 0 1px 0 rgba(255, 255, 255, 0.08),
     0 28px 60px rgba(2, 8, 23, 0.36);
   backdrop-filter: blur(24px);
+}
+
+#registration-panel,
+#tracker,
+#faq,
+footer {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 900px;
 }
 
 .portal-front-hero__visual-logo-frame {
@@ -3564,6 +3573,22 @@ select.floating-field-input option {
 }
 
 @media (max-width: 767px) {
+  .portal-shell::before,
+  .portal-front-hero__particle,
+  .portal-front-hero__visual-shell,
+  .portal-bottom-dock::before {
+    animation: none !important;
+  }
+
+  .portal-glass,
+  .portal-nav-shell,
+  .portal-bottom-dock,
+  .portal-front-hero__visual-card--premium,
+  .portal-brand-card {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
   .portal-nav-shell {
     padding: 0.85rem;
     border-radius: 1.35rem;
