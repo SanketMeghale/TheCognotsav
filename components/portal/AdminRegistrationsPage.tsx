@@ -57,6 +57,48 @@ function normalizeEventToken(value: string | null | undefined) {
     .replace(/^-+|-+$/g, '');
 }
 
+function buildEventAliases(...values: Array<string | null | undefined>) {
+  const aliases = new Set<string>();
+
+  values.forEach((value) => {
+    const raw = String(value || '').trim();
+    if (!raw) return;
+
+    const normalized = normalizeEventToken(raw);
+    if (normalized) aliases.add(normalized);
+
+    const withoutBrackets = raw.replace(/\([^)]*\)/g, ' ').trim();
+    const normalizedWithoutBrackets = normalizeEventToken(withoutBrackets);
+    if (normalizedWithoutBrackets) aliases.add(normalizedWithoutBrackets);
+
+    normalized
+      .split('-')
+      .filter(Boolean)
+      .forEach((part) => aliases.add(part));
+
+    normalizedWithoutBrackets
+      .split('-')
+      .filter(Boolean)
+      .forEach((part) => aliases.add(part));
+  });
+
+  return aliases;
+}
+
+function matchesEventAlias(row: Pick<AdminRegistration, 'event_slug' | 'event_name'>, event: Pick<EventRecord, 'slug' | 'name'>) {
+  const rowAliases = buildEventAliases(row.event_slug, row.event_name);
+  const eventAliases = buildEventAliases(event.slug, event.name);
+
+  for (const alias of eventAliases) {
+    if (rowAliases.has(alias)) {
+      return true;
+    }
+  }
+
+  const rowCombined = Array.from(rowAliases).join(' ');
+  return Array.from(eventAliases).some((alias) => alias.length > 3 && rowCombined.includes(alias));
+}
+
 function NotificationPanel({ notification }: { notification: AdminNotificationSummary | null | undefined }) {
   if (!notification) return <div className="rounded-[1.2rem] border border-dashed border-white/10 bg-black/10 p-4 text-sm text-slate-400">No status email logged yet.</div>;
   const tone = notification.delivery_status === 'sent' ? 'border-emerald-300/25 bg-emerald-400/10 text-emerald-100' : notification.delivery_status === 'failed' ? 'border-rose-300/25 bg-rose-400/10 text-rose-100' : 'border-amber-300/25 bg-amber-400/10 text-amber-100';
@@ -123,13 +165,7 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
 
   const counts = useMemo(() => ({ all: adminRows.length, pending: adminRows.filter((row) => row.status === 'pending').length, verified: adminRows.filter((row) => row.status === 'verified').length, waitlisted: adminRows.filter((row) => row.status === 'waitlisted').length, rejected: adminRows.filter((row) => row.status === 'rejected').length }), [adminRows]);
   const eventBuckets = useMemo(() => events.map((event) => {
-    const normalizedSlug = normalizeEventToken(event.slug);
-    const normalizedName = normalizeEventToken(event.name);
-    const rowsForEvent = adminRows.filter((row) => {
-      const rowSlug = normalizeEventToken(row.event_slug);
-      const rowName = normalizeEventToken(row.event_name);
-      return rowSlug === normalizedSlug || rowName === normalizedName;
-    });
+    const rowsForEvent = adminRows.filter((row) => matchesEventAlias(row, event));
 
     return {
       slug: event.slug,
@@ -143,15 +179,11 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
     const normalizedSearch = searchQuery.trim().toLowerCase();
     const normalizedEventFilter = normalizeEventToken(eventFilter);
     const activeEvent = events.find((event) => normalizeEventToken(event.slug) === normalizedEventFilter) || null;
-    const activeEventName = normalizeEventToken(activeEvent?.name);
 
     return adminRows.filter((row) => {
       const matchesStatus = statusFilter === 'all' || row.status === statusFilter;
-      const rowSlug = normalizeEventToken(row.event_slug);
-      const rowEventName = normalizeEventToken(row.event_name);
       const matchesEvent = eventFilter === 'all'
-        || rowSlug === normalizedEventFilter
-        || (activeEventName && rowEventName === activeEventName);
+        || (activeEvent ? matchesEventAlias(row, activeEvent) : normalizeEventToken(row.event_slug) === normalizedEventFilter);
       const matchesSearch = [row.registration_code, row.team_name, row.contact_name, row.contact_email, row.event_name, row.review_note ?? '', row.payment_reference ?? '']
         .some((value) => value.toLowerCase().includes(normalizedSearch));
 
