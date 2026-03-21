@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  ArrowLeft, ArrowRight, CheckCircle2, Clock3, Copy, CreditCard, Download, ExternalLink,
-  MapPin, Phone, QrCode, Save, ShieldCheck, Sparkles, Trophy, Upload, Users,
+  ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Clock3, Copy, CreditCard, Download, ExternalLink,
+  FileText, Info, MapPin, Phone, QrCode, Save, ShieldCheck, Sparkles, Trophy, Upload, Users,
 } from 'lucide-react';
 import type { EventRecord, ParticipantDraft, RegistrationReceipt } from './types';
 import { formatCurrency, getTeamLabel } from './utils';
@@ -175,6 +175,10 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const showError = (field: string) => (touchedFields[field] ? validationErrors[field] : '');
   const selectedTheme = selectedEvent ? categoryThemes[selectedEvent.category] || categoryThemes.Technical : categoryThemes.Technical;
   const selectedHandbook = selectedEvent ? handbookBySlug[selectedEvent.slug] : null;
+  const handbookNotes = [
+    ...(selectedHandbook?.highlights || []).slice(0, 2).map((item) => ({ icon: Sparkles, tone: 'text-amber-200', text: item })),
+    ...(selectedHandbook?.rules || []).slice(0, 2).map((item) => ({ icon: ShieldCheck, tone: 'text-cyan-200', text: item })),
+  ];
   const upiLink = selectedEvent?.payment_upi ? `upi://pay?pa=${selectedEvent.payment_upi}&pn=${encodeURIComponent(selectedEvent.payment_payee || selectedEvent.name)}&am=${selectedEvent.registration_fee}&cu=INR&tn=${encodeURIComponent(selectedEvent.name)}` : '';
   const qrUrl = upiLink ? `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(upiLink)}` : '';
   const scrollToRegistrationForm = () => {
@@ -223,134 +227,139 @@ export const EventRegistrationPanel: React.FC<Props> = ({
 
   return (
     <section id="registration-panel">
-      <div className="space-y-5">
-        <section className={`portal-glow-card portal-glass overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br ${selectedTheme.surface} ${selectedTheme.glow}`}>
-          <div className="grid gap-0 lg:grid-cols-[0.92fr_1.08fr]">
-            <div className="relative min-h-[18rem] overflow-hidden border-b border-white/10 lg:min-h-[32rem] lg:border-b-0 lg:border-r">
+      <div className="portal-event-layout">
+        <div className="portal-event-layout__details space-y-5">
+          <section className={`portal-event-showcase portal-glow-card portal-glass ${selectedTheme.glow}`}>
+            <div className="portal-event-showcase__poster">
               <img src={selectedEvent.poster_path} alt={selectedEvent.name} className="h-full w-full object-cover" />
-              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,10,20,0.16),rgba(6,10,20,0.84))]" />
-              <div className="absolute inset-x-0 bottom-0 p-5 md:p-6">
-                <div className={`inline-flex rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] ${selectedTheme.badge}`}>
-                  {selectedEvent.category}
-                </div>
-                <h2 className="mt-4 portal-title-xl font-black text-white">{selectedEvent.name}</h2>
-                <p className="mt-3 max-w-xl text-sm leading-7 text-slate-200">
-                  {selectedHandbook?.overview || selectedEvent.description}
-                </p>
-              </div>
+              <div className="portal-event-showcase__poster-overlay" />
             </div>
-
-            <div className="p-5 md:p-6">
+            <div className="portal-event-showcase__content">
               <div className="flex flex-wrap items-center gap-3">
                 <a href="#overview" className="magnetic-button inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-sm font-semibold text-white">
                   <ArrowLeft size={14} />
                   Back
                 </a>
-                {selectedHandbook?.handbookUrl ? (
-                  <a href={selectedHandbook.handbookUrl} target="_blank" rel="noreferrer" className="magnetic-button inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-sm font-semibold text-white">
-                    For details click on this
-                    <ExternalLink size={14} />
-                  </a>
-                ) : null}
-                <button type="button" onClick={scrollToRegistrationForm} className="portal-register-cta portal-register-cta--compact">
-                  Register Now
-                  <ArrowRight size={14} />
-                </button>
+                <span className={`inline-flex rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] ${selectedTheme.badge}`}>
+                  {selectedEvent.category}
+                </span>
               </div>
 
-              <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                <div className="portal-event-quick-card">
-                  <Clock3 size={16} className="text-cyan-200" />
-                  <p className="mt-3 text-[10px] uppercase tracking-[0.18em] text-slate-400">Date & Time</p>
-                  <p className="mt-2 text-sm font-semibold text-white">{selectedEvent.date_label}</p>
-                  <p className="mt-1 text-sm text-slate-300">{selectedEvent.time_label}</p>
-                </div>
-                <div className="portal-event-quick-card">
-                  <MapPin size={16} className="text-fuchsia-200" />
-                  <p className="mt-3 text-[10px] uppercase tracking-[0.18em] text-slate-400">Venue</p>
-                  <p className="mt-2 text-sm font-semibold text-white">{selectedEvent.venue}</p>
-                </div>
-                <div className="portal-event-quick-card">
-                  <Users size={16} className="text-emerald-200" />
-                  <p className="mt-3 text-[10px] uppercase tracking-[0.18em] text-slate-400">Team Format</p>
-                  <p className="mt-2 text-sm font-semibold text-white">{getTeamLabel(selectedEvent)}</p>
-                </div>
-                <div className="portal-event-quick-card">
-                  <CreditCard size={16} className="text-amber-200" />
-                  <p className="mt-3 text-[10px] uppercase tracking-[0.18em] text-slate-400">Registration Fee</p>
-                  <p className="mt-2 text-sm font-semibold text-white">{formatCurrency(selectedEvent.registration_fee)}</p>
-                </div>
+              <div className="mt-5">
+                <p className="portal-kicker">{selectedHandbook?.theme || 'Event Details'}</p>
+                <h2 className="mt-3 portal-title-xl font-black text-white">{selectedEvent.name}</h2>
+                <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-200">
+                  {selectedHandbook?.overview || selectedEvent.description}
+                </p>
               </div>
 
-              <div className="mt-5 grid gap-4 xl:grid-cols-[0.95fr_1.05fr]">
-                <div className="portal-event-detail-panel">
-                  <div className="flex items-center gap-2">
-                    <ExternalLink size={16} className="text-yellow-200" />
-                    <p className="text-sm font-semibold text-white">Handbook</p>
-                  </div>
-                  {selectedHandbook?.handbookUrl ? (
-                    <a
-                      href={selectedHandbook.handbookUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="portal-event-detail-line mt-4 inline-flex w-full items-center justify-between gap-3 text-white"
-                    >
-                      <span className="inline-flex items-center gap-2">
-                        <Sparkles size={15} className="text-yellow-200" />
-                        For details click on this handbook
-                      </span>
-                      <ExternalLink size={15} className="text-yellow-200" />
-                    </a>
-                  ) : (
-                    <div className="portal-event-detail-line mt-4 inline-flex items-center gap-2">
-                      <Sparkles size={15} className="text-yellow-200" />
-                      Event details are shown on this page.
-                    </div>
-                  )}
-                  {selectedHandbook?.quickDetails?.length ? (
-                    <div className="mt-4 grid gap-2">
-                      {selectedHandbook.quickDetails.slice(0, 3).map((item) => (
-                        <div key={item} className="portal-event-detail-line inline-flex items-center gap-2">
-                          <Trophy size={14} className="text-cyan-200" />
-                          <span>{item}</span>
-                        </div>
-                      ))}
-                    </div>
-                  ) : null}
+              <div className="portal-event-inline-info mt-6">
+                <div className="portal-event-inline-info__item">
+                  <Clock3 size={15} className="text-amber-200" />
+                  <span className="portal-event-inline-info__label">Date</span>
+                  <span className="portal-event-inline-info__value">{selectedEvent.date_label}</span>
                 </div>
-
-                <div className="portal-event-detail-panel">
-                  <div className="flex items-center gap-2">
-                    <ShieldCheck size={16} className="text-cyan-200" />
-                    <p className="text-sm font-semibold text-white">Short Event Notes</p>
-                  </div>
-                  <div className="mt-3 grid gap-2">
-                    {(selectedHandbook?.highlights || []).slice(0, 2).map((item) => (
-                      <div key={`highlight-${item}`} className="portal-event-detail-line inline-flex items-start gap-2">
-                        <Sparkles size={14} className="mt-0.5 shrink-0 text-yellow-200" />
-                        <span>{item}</span>
-                      </div>
-                    ))}
-                    {(selectedHandbook?.rules || []).slice(0, 2).map((item) => (
-                      <div key={`rule-${item}`} className="portal-event-detail-line inline-flex items-start gap-2">
-                        <ShieldCheck size={14} className="mt-0.5 shrink-0 text-cyan-200" />
-                        <span>{item}</span>
-                      </div>
-                    ))}
-                    {selectedHandbook?.contact?.slice(0, 2).map((item) => (
-                      <div key={`contact-${item}`} className="portal-event-detail-line inline-flex items-start gap-2">
-                        <Phone size={14} className="mt-0.5 shrink-0 text-emerald-200" />
-                        <span>{item}</span>
-                      </div>
-                    ))}
-                  </div>
+                <div className="portal-event-inline-info__item">
+                  <Users size={15} className="text-amber-200" />
+                  <span className="portal-event-inline-info__label">Team</span>
+                  <span className="portal-event-inline-info__value">{getTeamLabel(selectedEvent)}</span>
+                </div>
+                <div className="portal-event-inline-info__item">
+                  <CreditCard size={15} className="text-amber-200" />
+                  <span className="portal-event-inline-info__label">Fee</span>
+                  <span className="portal-event-inline-info__value">{formatCurrency(selectedEvent.registration_fee)}</span>
+                </div>
+                <div className="portal-event-inline-info__item">
+                  <MapPin size={15} className="text-amber-200" />
+                  <span className="portal-event-inline-info__label">Venue</span>
+                  <span className="portal-event-inline-info__value">{selectedEvent.venue}</span>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        <form id="portal-registration-form" onSubmit={onSubmit} className="space-y-4">
+          <section className="portal-event-section portal-glow-card portal-glass" data-reveal="up">
+            <div className="portal-event-section__head">
+              <Info size={17} className="text-amber-200" />
+              <div>
+                <p className="text-xs uppercase tracking-[0.22em] text-slate-400">About Event</p>
+                <h3 className="mt-1 text-lg font-semibold text-white">Quick overview</h3>
+              </div>
+            </div>
+            <p className="mt-4 text-sm leading-7 text-slate-300">
+              {selectedEvent.description}
+            </p>
+            {selectedHandbook?.quickDetails?.length ? (
+              <div className="portal-event-mini-grid mt-5">
+                {selectedHandbook.quickDetails.slice(0, 3).map((item) => (
+                  <div key={item} className="portal-event-mini-grid__item">
+                    <Trophy size={14} className="text-amber-200" />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+          </section>
+
+          <section className="portal-event-section portal-glow-card portal-glass" data-reveal="up">
+            <div className="portal-event-section__head">
+              <FileText size={17} className="text-amber-200" />
+              <div>
+                <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Format & Rules</p>
+                <h3 className="mt-1 text-lg font-semibold text-white">Short notes before you register</h3>
+              </div>
+            </div>
+            <div className="portal-event-note-list mt-5">
+              {handbookNotes.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <div key={`${item.text}`} className="portal-event-note-list__item">
+                    <Icon size={15} className={`mt-0.5 shrink-0 ${item.tone}`} />
+                    <span>{item.text}</span>
+                  </div>
+                );
+              })}
+              {selectedHandbook?.contact?.slice(0, 2).map((item) => (
+                <div key={`contact-${item}`} className="portal-event-note-list__item">
+                  <Phone size={15} className="mt-0.5 shrink-0 text-orange-300" />
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="portal-event-section portal-glow-card portal-glass" data-reveal="up">
+            <div className="portal-event-section__head">
+              <BookOpen size={17} className="text-amber-200" />
+              <div>
+                <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Handbook</p>
+                <h3 className="mt-1 text-lg font-semibold text-white">Read the full event guide</h3>
+              </div>
+            </div>
+            {selectedHandbook?.handbookUrl ? (
+              <a
+                href={selectedHandbook.handbookUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="portal-event-handbook-card mt-5"
+              >
+                <div>
+                  <p className="text-sm font-semibold text-white">For details click on this handbook</p>
+                  <p className="mt-2 text-sm text-slate-300">Open full rounds, judging flow, rules, coordinator notes, and reporting instructions.</p>
+                </div>
+                <ExternalLink size={18} className="shrink-0 text-amber-200" />
+              </a>
+            ) : (
+              <div className="portal-event-note-list__item mt-5">
+                <Info size={15} className="mt-0.5 shrink-0 text-amber-200" />
+                <span>Full handbook is not attached for this event yet.</span>
+              </div>
+            )}
+          </section>
+        </div>
+
+        <div className="portal-event-layout__form" data-reveal="right">
+          <form id="portal-registration-form" onSubmit={onSubmit} className="portal-event-form-shell space-y-4">
           {draftRecovered ? (
             <div className="flex items-start justify-between gap-3 rounded-[1.4rem] border border-sky-300/20 bg-sky-400/10 px-4 py-4 text-sm text-sky-100">
               <div className="flex items-start gap-3">
@@ -364,8 +373,6 @@ export const EventRegistrationPanel: React.FC<Props> = ({
             </div>
           ) : null}
 
-          <div className="grid gap-4 xl:grid-cols-[1.08fr_0.92fr]">
-            <div className="space-y-4">
               <SectionCard title="Start with the basics" subtitle="Team Setup">
                 <div className="grid gap-3 sm:grid-cols-2">
                   {selectedEvent.max_members > selectedEvent.min_members ? (
@@ -423,9 +430,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
               <SectionCard title="Anything organizers should know?" subtitle="Extra Notes">
                 <FloatingField label="Organizer notes" value={form.notes} onChange={(value) => onFormFieldChange('notes', value)} onBlur={() => onFieldBlur('notes')} textarea />
               </SectionCard>
-            </div>
 
-            <div className="space-y-4">
               <SectionCard title="Pay and upload proof" subtitle="Payment">
                 <div className="grid gap-4">
                   <div className={`rounded-[1.35rem] border border-white/10 bg-gradient-to-br p-4 ${selectedTheme.surface}`}>
@@ -464,7 +469,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                     <FloatingField label="Transaction ID / payment reference" value={form.paymentReference} onChange={(value) => onFormFieldChange('paymentReference', value)} onBlur={() => onFieldBlur('paymentReference')} error={showError('paymentReference')} required />
                     <label className="mt-4 block">
                       <span className="mb-2 block text-sm text-slate-200">Upload payment screenshot</span>
-                      <span className={`magnetic-button flex cursor-pointer items-center justify-center gap-2 rounded-[1.15rem] border border-dashed px-4 py-4 text-sm font-semibold ${selectedTheme.button}`}>
+                      <span className={`portal-event-upload-box magnetic-button flex cursor-pointer items-center justify-center gap-2 rounded-[1.15rem] border border-dashed px-4 py-5 text-sm font-semibold ${selectedTheme.button}`}>
                         <Upload size={16} />
                         {paymentScreenshotName || 'Choose screenshot'}
                         <input type="file" accept="image/*" className="hidden" onChange={(event) => onPaymentScreenshotChange(event.target.files?.[0] || null)} />
@@ -572,10 +577,18 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                   Once submitted, your entry is saved as <span className="font-semibold text-white">pending</span>. Organizers verify the payment proof and send the final update by email.
                 </p>
               </div>
-            </div>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
+
+      {!successReceipt ? (
+        <div className="portal-event-mobile-cta lg:hidden">
+          <button type="button" onClick={scrollToRegistrationForm} className="animated-gradient-button portal-event-mobile-cta__button">
+            Register Now
+            <ArrowRight size={16} />
+          </button>
+        </div>
+      ) : null}
     </section>
   );
 };
