@@ -153,6 +153,15 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const selectedHandbook = selectedEvent ? handbookBySlug[selectedEvent.slug] : null;
   const upiLink = selectedEvent?.payment_upi ? `upi://pay?pa=${selectedEvent.payment_upi}&pn=${encodeURIComponent(selectedEvent.payment_payee || selectedEvent.name)}&am=${selectedEvent.registration_fee}&cu=INR&tn=${encodeURIComponent(selectedEvent.name)}` : '';
   const qrUrl = upiLink ? `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(upiLink)}` : '';
+  const scrollToRegistrationForm = () => {
+    if (typeof window === 'undefined') return;
+
+    const formSection = document.getElementById('portal-registration-form');
+    if (!formSection) return;
+
+    const top = formSection.getBoundingClientRect().top + window.scrollY - 96;
+    window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
+  };
 
   useEffect(() => {
     setCodeCopied(false);
@@ -219,10 +228,10 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                     <ExternalLink size={14} />
                   </a>
                 ) : null}
-                <a href="#registration-form-start" className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold ${selectedTheme.button}`}>
+                <button type="button" onClick={scrollToRegistrationForm} className="portal-register-cta portal-register-cta--compact">
                   Register Now
                   <ArrowRight size={14} />
-                </a>
+                </button>
               </div>
 
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
@@ -254,7 +263,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                   <p className="portal-kicker">Competition Snapshot</p>
                   <div className="mt-3 grid gap-3 sm:grid-cols-3">
                     {selectedHandbook.quickDetails.map((item) => (
-                      <div key={item} className="rounded-[1.15rem] border border-white/10 bg-black/20 px-4 py-4 text-sm text-slate-200">
+                      <div key={item} className="portal-event-detail-pill">
                         {item}
                       </div>
                     ))}
@@ -263,28 +272,28 @@ export const EventRegistrationPanel: React.FC<Props> = ({
               ) : null}
 
               <div className="mt-5 grid gap-4 xl:grid-cols-2">
-                <div className="rounded-[1.35rem] border border-white/10 bg-black/20 p-4">
+                <div className="portal-event-detail-panel">
                   <div className="flex items-center gap-2">
                     <Trophy size={16} className="text-yellow-200" />
                     <p className="text-sm font-semibold text-white">Highlights</p>
                   </div>
                   <div className="mt-3 space-y-2">
                     {(selectedHandbook?.highlights || []).map((item) => (
-                      <div key={item} className="rounded-[1rem] border border-white/8 bg-white/[0.04] px-3 py-3 text-sm text-slate-300">
+                      <div key={item} className="portal-event-detail-line">
                         {item}
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <div className="rounded-[1.35rem] border border-white/10 bg-black/20 p-4">
+                <div className="portal-event-detail-panel">
                   <div className="flex items-center gap-2">
                     <ShieldCheck size={16} className="text-cyan-200" />
                     <p className="text-sm font-semibold text-white">Rules & Notes</p>
                   </div>
                   <div className="mt-3 space-y-2">
                     {(selectedHandbook?.rules || []).map((item) => (
-                      <div key={item} className="rounded-[1rem] border border-white/8 bg-white/[0.04] px-3 py-3 text-sm text-slate-300">
+                      <div key={item} className="portal-event-detail-line">
                         {item}
                       </div>
                     ))}
@@ -293,14 +302,14 @@ export const EventRegistrationPanel: React.FC<Props> = ({
               </div>
 
               {selectedHandbook?.contact?.length ? (
-                <div className="mt-5 rounded-[1.35rem] border border-white/10 bg-black/20 p-4">
+                <div className="portal-event-detail-panel mt-5">
                   <div className="flex items-center gap-2">
                     <Phone size={16} className="text-emerald-200" />
                     <p className="text-sm font-semibold text-white">Contact Coordinators</p>
                   </div>
                   <div className="mt-3 grid gap-2 sm:grid-cols-2">
                     {selectedHandbook.contact.map((item) => (
-                      <div key={item} className="rounded-[1rem] border border-white/8 bg-white/[0.04] px-3 py-3 text-sm text-slate-300">
+                      <div key={item} className="portal-event-detail-line">
                         {item}
                       </div>
                     ))}
@@ -311,7 +320,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
           </div>
         </section>
 
-        <form id="registration-form-start" onSubmit={onSubmit} className="space-y-4">
+        <form id="portal-registration-form" onSubmit={onSubmit} className="space-y-4">
           {draftRecovered ? (
             <div className="flex items-start justify-between gap-3 rounded-[1.4rem] border border-sky-300/20 bg-sky-400/10 px-4 py-4 text-sm text-sky-100">
               <div className="flex items-start gap-3">
@@ -457,7 +466,6 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                     </div>
                     <div className="min-w-0">
                       <p className="text-[10px] uppercase tracking-[0.22em] text-emerald-200/80">Registration Successful</p>
-                      <h3 className="mt-2 text-lg font-black text-white">Pass Ready Below The Register Button</h3>
                       <p className="mt-2 text-sm leading-6 text-slate-300">
                         Download the pass now and keep the registration code ready for event-day verification.
                       </p>

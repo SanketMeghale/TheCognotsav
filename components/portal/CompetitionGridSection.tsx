@@ -98,10 +98,8 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
               const theme = categoryThemes[displayCategory] || categoryThemes.Technical;
 
               return (
-                <button
+                <article
                   key={event.slug}
-                  type="button"
-                  onClick={() => onSelectEvent(event.slug)}
                   className={`portal-competition-card group tilt-card h-full overflow-hidden rounded-[1.9rem] border bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(9,13,24,0.9))] text-left transition duration-200 ${
                     active ? 'border-cyan-300/36' : 'border-white/10 hover:border-white/18'
                   } ${theme.glow}`}
@@ -139,12 +137,12 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
                       <span>{event.time_label}</span>
                     </div>
 
-                    <div className={`mt-5 inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r px-4 py-3 text-sm font-semibold ${theme.button}`}>
-                      View Details
+                    <button type="button" onClick={() => onSelectEvent(event.slug)} className="portal-register-cta mt-5 w-full">
+                      Register Now
                       <ArrowRight size={16} />
-                    </div>
+                    </button>
                   </div>
-                </button>
+                </article>
               );
             })}
       </div>
