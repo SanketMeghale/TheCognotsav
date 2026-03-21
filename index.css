@@ -3607,6 +3607,30 @@ select.floating-field-input option {
   font-size: 0.86rem;
 }
 
+@media (max-width: 640px) {
+  .portal-front-hero__content--premium .portal-prize-pool-card {
+    width: 100%;
+    padding: 0.9rem 1rem 1rem;
+  }
+
+  .portal-front-hero__content--premium .portal-prize-pool-card__body {
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .portal-front-hero__content--premium .portal-prize-pool-card__badge {
+    height: 2.7rem;
+    width: 2.7rem;
+  }
+
+  .portal-front-hero__content--premium .portal-prize-pool-card__meta {
+    padding-left: 0;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    row-gap: 0.35rem;
+  }
+}
+
 .portal-front-hero__meta {
   display: flex;
   flex-wrap: wrap;
