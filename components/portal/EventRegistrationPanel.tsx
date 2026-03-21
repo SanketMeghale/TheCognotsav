@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import {
   ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Clock3, Copy, CreditCard, Download, ExternalLink,
   Info, MapPin, QrCode, Save, Sparkles, Trophy, Upload, Users,
@@ -171,6 +171,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   onFormFieldChange, onParticipantChange, onSubmit,
 }) => {
   const passCardRef = useRef<HTMLDivElement | null>(null);
+  const eventTopRef = useRef<HTMLDivElement | null>(null);
   const [codeCopied, setCodeCopied] = useState(false);
   const showError = (field: string) => (touchedFields[field] ? validationErrors[field] : '');
   const selectedTheme = selectedEvent ? categoryThemes[selectedEvent.category] || categoryThemes.Technical : categoryThemes.Technical;
@@ -202,6 +203,11 @@ export const EventRegistrationPanel: React.FC<Props> = ({
     return () => window.cancelAnimationFrame(animationFrame);
   }, [successReceipt]);
 
+  useLayoutEffect(() => {
+    if (typeof window === 'undefined' || !selectedEvent || successReceipt) return;
+    eventTopRef.current?.scrollIntoView({ block: 'start', behavior: 'auto' });
+  }, [selectedEvent?.slug, successReceipt]);
+
   const handleCopyCode = async (code: string) => {
     try {
       await navigator.clipboard.writeText(code);
@@ -223,7 +229,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
 
   return (
     <section id="registration-panel">
-      <div className="portal-event-layout">
+      <div ref={eventTopRef} className="portal-event-layout">
         <div className="portal-event-layout__details space-y-5">
           <section className={`portal-event-showcase portal-glow-card portal-glass ${selectedTheme.glow}`}>
             <div className="portal-event-showcase__poster">

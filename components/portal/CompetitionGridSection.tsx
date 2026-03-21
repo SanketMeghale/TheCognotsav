@@ -309,13 +309,6 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
                           {isSoundEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
                           <span>{isSoundEnabled ? 'Sound On' : 'Sound Off'}</span>
                         </button>
-                        <div className="portal-competition-card__video-hint">
-                          {!supportsHoverPreview
-                            ? 'Autoplay on mobile'
-                            : supportsHoverPreview
-                              ? 'Hover preview'
-                              : 'Tap video to play'}
-                        </div>
                       </div>
                     ) : (
                       <img src={event.poster_path} alt={event.name} loading="lazy" decoding="async" className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.04]" />
