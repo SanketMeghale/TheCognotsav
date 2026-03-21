@@ -3260,15 +3260,16 @@ select.floating-field-input option {
   inset: 0;
   pointer-events: none;
   z-index: 0;
+  overflow: hidden;
 }
 
 .portal-front-hero__particle {
   position: absolute;
-  border-radius: 999px;
-  background: radial-gradient(circle, rgba(251, 191, 36, 0.7), rgba(96, 165, 250, 0.18) 62%, transparent 72%);
-  box-shadow: 0 0 18px rgba(251, 191, 36, 0.14);
-  opacity: 0.28;
-  animation: portalHeroParticleFloat 12s ease-in-out infinite;
+  top: -10%;
+  border-radius: 0.18rem;
+  box-shadow: 0 0 14px rgba(125, 211, 252, 0.18);
+  opacity: 0;
+  animation: portalHeroSquareFall 1.5s linear infinite;
 }
 
 .portal-front-hero__content--premium,
@@ -3813,15 +3814,20 @@ footer {
   animation-delay: 0.22s;
 }
 
-@keyframes portalHeroParticleFloat {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) scale(1);
-    opacity: 0.18;
+@keyframes portalHeroSquareFall {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -10%, 0) rotate(var(--portal-square-rotate, 0deg));
   }
-  50% {
-    transform: translate3d(0, -18px, 0) scale(1.16);
-    opacity: 0.34;
+  12% {
+    opacity: 0.42;
+  }
+  85% {
+    opacity: 0.28;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(0, 115vh, 0) rotate(calc(var(--portal-square-rotate, 0deg) + 220deg));
   }
 }
 

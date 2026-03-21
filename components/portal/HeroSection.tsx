@@ -7,13 +7,14 @@ export const HeroSection: React.FC<Props> = () => {
   const visualShellRef = useRef<HTMLDivElement | null>(null);
   const particles = useMemo(
     () =>
-      Array.from({ length: 20 }, (_, index) => ({
+      Array.from({ length: 22 }, (_, index) => ({
         id: index,
-        left: `${6 + ((index * 17) % 88)}%`,
-        top: `${8 + ((index * 23) % 80)}%`,
-        size: `${4 + (index % 4) * 2}px`,
-        delay: `${(index % 6) * 0.7}s`,
-        duration: `${10 + (index % 5) * 2}s`,
+        left: `${4 + ((index * 11) % 92)}%`,
+        size: `${6 + (index % 4) * 3}px`,
+        delay: `${(index % 7) * 0.22}s`,
+        duration: `${1.2 + (index % 4) * 0.22}s`,
+        color: ['#38bdf8', '#8b5cf6', '#22d3ee', '#a855f7', '#00ffff'][index % 5],
+        rotate: `${-28 + (index % 6) * 11}deg`,
       })),
     [],
   );
@@ -46,11 +47,12 @@ export const HeroSection: React.FC<Props> = () => {
               className="portal-front-hero__particle"
               style={{
                 left: particle.left,
-                top: particle.top,
                 width: particle.size,
                 height: particle.size,
                 animationDelay: particle.delay,
                 animationDuration: particle.duration,
+                background: particle.color,
+                ['--portal-square-rotate' as string]: particle.rotate,
               }}
             />
           ))}
