@@ -511,7 +511,6 @@ export const App: React.FC = () => {
   const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>({});
   const [toastMessage, setToastMessage] = useState('');
   const [toastClosing, setToastClosing] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [form, setForm] = useState<FormState>({
     teamName: '',
     collegeName: '',
@@ -796,7 +795,6 @@ export const App: React.FC = () => {
       window.location.hash = `#events/${slug}`;
       window.scrollTo({ top: 0, behavior: 'auto' });
     }
-    setMobileMenuOpen(false);
   };
 
   const handleTeamSizeChange = (nextSize: number) => {
@@ -1491,12 +1489,10 @@ export const App: React.FC = () => {
             </a>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen((current) => !current)}
+          <a
+            href="#admin-registrations"
             className="portal-mobile-admin-trigger lg:hidden"
-            aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
-            aria-expanded={mobileMenuOpen}
+            aria-label="Open admin panel"
           >
             <span className="portal-mobile-admin-trigger__image-frame">
               <img src="/images/ceasposter.jpeg" alt="Admin access" className="portal-mobile-admin-trigger__image" />
@@ -1504,21 +1500,8 @@ export const App: React.FC = () => {
             <span className="portal-mobile-admin-trigger__badge">
               <ShieldCheck size={11} />
             </span>
-          </button>
+          </a>
         </div>
-
-        {mobileMenuOpen ? (
-          <div className={`${shellClassName} mt-2 lg:hidden`}>
-            <div className="portal-mobile-menu">
-              <a href="#overview" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-nav-pill text-center">Home</a>
-              <a href="#registration-panel" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-nav-pill text-center">Competitions</a>
-              <a href="#tracker" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-nav-pill text-center">Tracker</a>
-              <a href="#announcement-archive" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-nav-pill text-center">Updates</a>
-              <a href="#timeline" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-nav-pill text-center">Timeline</a>
-              <a href="#admin-registrations" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-nav-pill text-center">Admin</a>
-            </div>
-          </div>
-        ) : null}
       </header>
       {isAdminPage ? (
         <AdminRegistrationsPage
@@ -1640,7 +1623,6 @@ export const App: React.FC = () => {
             <nav className="portal-bottom-dock" aria-label="Front navigation">
               <a
                 href="#overview"
-                onClick={() => setMobileMenuOpen(false)}
                 className={`portal-bottom-dock__item ${activeBottomDock === 'home' ? 'is-active' : ''}`}
               >
                 <House size={18} />
@@ -1648,7 +1630,6 @@ export const App: React.FC = () => {
               </a>
               <a
                 href="#registration-panel"
-                onClick={() => setMobileMenuOpen(false)}
                 className={`portal-bottom-dock__item ${activeBottomDock === 'events' ? 'is-active' : ''}`}
               >
                 <Trophy size={18} />
@@ -1656,7 +1637,6 @@ export const App: React.FC = () => {
               </a>
               <a
                 href="#timeline"
-                onClick={() => setMobileMenuOpen(false)}
                 className={`portal-bottom-dock__item ${activeBottomDock === 'timeline' ? 'is-active' : ''}`}
               >
                 <Clock3 size={18} />
@@ -1664,7 +1644,7 @@ export const App: React.FC = () => {
               </a>
 
               <div className="portal-bottom-dock__logo-slot">
-                <a href="#overview" onClick={() => setMobileMenuOpen(false)} className="portal-bottom-dock__logo">
+                <a href="#overview" className="portal-bottom-dock__logo">
                   <span className="portal-bottom-dock__logo-core">
                     <img src="/images/ceasposter.jpeg" alt="CEAS logo" className="portal-bottom-dock__logo-image" />
                   </span>
@@ -1673,7 +1653,6 @@ export const App: React.FC = () => {
 
               <a
                 href="#tracker"
-                onClick={() => setMobileMenuOpen(false)}
                 className={`portal-bottom-dock__item ${activeBottomDock === 'tracker' ? 'is-active' : ''}`}
               >
                 <Search size={18} />
@@ -1681,7 +1660,6 @@ export const App: React.FC = () => {
               </a>
               <a
                 href="#announcement-archive"
-                onClick={() => setMobileMenuOpen(false)}
                 className={`portal-bottom-dock__item ${activeBottomDock === 'updates' ? 'is-active' : ''}`}
               >
                 <Bell size={18} />
