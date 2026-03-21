@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   AlertTriangle, ArrowLeft, BarChart3, CheckCircle2, Clock3, Download,
-  Eye, FileSpreadsheet, HardDriveDownload, Mail, Megaphone, QrCode,
+  Eye, EyeOff, FileSpreadsheet, HardDriveDownload, Mail, Megaphone, QrCode,
   RotateCcw, Save, Search, Send, ShieldCheck, Trash2, Users, XCircle,
 } from 'lucide-react';
 import type { AdminAccessScope, AdminNotificationSummary, AdminRegistration, BackupSnapshot, EventRecord, PortalAnnouncement } from './types';
@@ -64,7 +64,26 @@ function NotificationPanel({ notification }: { notification: AdminNotificationSu
 }
 
 function FloatingField({ label, icon, value, type = 'text', onChange }: { label: string; icon: React.ReactNode; value: string; type?: 'text' | 'password'; onChange: (value: string) => void }) {
-  return <label className="floating-field block"><span className="pointer-events-none absolute left-4 top-[1.15rem] text-cyan-200/70">{icon}</span><input type={type} value={value} onChange={(event) => onChange(event.target.value)} placeholder=" " className="floating-field-input pl-11" /><span className="floating-field-label left-11">{label}</span></label>;
+  const [revealed, setRevealed] = useState(false);
+  const effectiveType = type === 'password' ? (revealed ? 'text' : 'password') : type;
+
+  return (
+    <label className="floating-field block">
+      <span className="pointer-events-none absolute left-4 top-[1.15rem] text-cyan-200/70">{icon}</span>
+      <input type={effectiveType} value={value} onChange={(event) => onChange(event.target.value)} placeholder=" " className={`floating-field-input ${type === 'password' ? 'pl-11 pr-12' : 'pl-11'}`} />
+      <span className="floating-field-label left-11">{label}</span>
+      {type === 'password' ? (
+        <button
+          type="button"
+          onClick={() => setRevealed((current) => !current)}
+          className="absolute right-3 top-1/2 inline-flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full text-slate-300 transition hover:bg-white/10 hover:text-white"
+          aria-label={revealed ? 'Hide key' : 'Show key'}
+        >
+          {revealed ? <EyeOff size={16} /> : <Eye size={16} />}
+        </button>
+      ) : null}
+    </label>
+  );
 }
 
 export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, adminMainKey, adminEventKey, adminEventKeySlug, adminScope, adminRows, events, announcements, backups, adminLoading, adminError, onAdminAccessModeChange, onAdminMainKeyChange, onAdminEventKeyChange, onAdminEventKeySlugChange, onLoadAdminRows, onDownload, onStatusChange, onSaveReviewNote, onResendStatusEmail, onSendBroadcast, onDeleteAnnouncement, onRunBackup, onDownloadBackup }) => {
@@ -166,30 +185,17 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
               <a href="#admin-verification" className="rounded-[1.4rem] border border-emerald-300/14 bg-emerald-400/10 p-4 transition hover:-translate-y-0.5 hover:border-emerald-300/24"><p className="text-xs uppercase tracking-[0.24em] text-emerald-100/80">Verified</p><p className="mt-2 text-3xl font-black text-white">{counts.verified}</p></a>
               <a href="#admin-analytics" className="rounded-[1.4rem] border border-yellow-300/14 bg-yellow-400/10 p-4 transition hover:-translate-y-0.5 hover:border-yellow-300/24"><p className="text-xs uppercase tracking-[0.24em] text-yellow-100/80">Busiest event</p><p className="mt-2 text-sm font-semibold text-white">{busiestEvent ? `${busiestEvent[0]} (${busiestEvent[1]})` : 'Waiting to load'}</p></a>
             </div>
-          ) : (
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-[1.4rem] border border-cyan-300/14 bg-cyan-400/10 p-4">
-                <p className="text-xs uppercase tracking-[0.24em] text-cyan-100/80">Main key</p>
-                <p className="mt-2 text-sm font-semibold text-white">Shows all competitions, backups, broadcast tools, and export controls.</p>
-              </div>
-              <div className="rounded-[1.4rem] border border-fuchsia-300/14 bg-fuchsia-400/10 p-4">
-                <p className="text-xs uppercase tracking-[0.24em] text-fuchsia-100/80">Particular event key</p>
-                <p className="mt-2 text-sm font-semibold text-white">Locks verification access to the selected competition so other event entries stay hidden.</p>
-              </div>
-            </div>
-          )}
+          ) : null}
         </div>
         <div className="mt-6 rounded-[1.6rem] border border-white/10 bg-black/20 p-4 md:p-5">
           <div className="grid gap-3 md:grid-cols-2">
             <button type="button" onClick={() => onAdminAccessModeChange('global')} className={`rounded-[1.35rem] border px-4 py-4 text-left transition ${adminAccessMode === 'global' ? 'border-cyan-300/28 bg-cyan-400/12 text-white' : 'border-white/10 bg-white/5 text-slate-200'}`}>
               <p className="text-xs uppercase tracking-[0.22em] text-cyan-100/80">Option 1</p>
               <p className="mt-2 text-lg font-bold text-white">Main key</p>
-              <p className="mt-2 text-sm text-slate-300">Use the organizer&apos;s main key to unlock all admin content.</p>
             </button>
             <button type="button" onClick={() => onAdminAccessModeChange('event')} className={`rounded-[1.35rem] border px-4 py-4 text-left transition ${adminAccessMode === 'event' ? 'border-fuchsia-300/28 bg-fuchsia-400/12 text-white' : 'border-white/10 bg-white/5 text-slate-200'}`}>
               <p className="text-xs uppercase tracking-[0.22em] text-fuchsia-100/80">Option 2</p>
               <p className="mt-2 text-lg font-bold text-white">Particular event key</p>
-              <p className="mt-2 text-sm text-slate-300">Pick one competition and open only that event&apos;s verification entries.</p>
             </button>
           </div>
 

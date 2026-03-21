@@ -286,11 +286,8 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                 <div className="portal-event-detail-panel">
                   <div className="flex items-center gap-2">
                     <ExternalLink size={16} className="text-yellow-200" />
-                    <p className="text-sm font-semibold text-white">Handbook Focus</p>
+                    <p className="text-sm font-semibold text-white">Handbook</p>
                   </div>
-                  <p className="mt-3 text-sm leading-6 text-slate-300">
-                    Keep the on-screen details short and use the handbook for full rules, round flow, judging, and coordinator instructions.
-                  </p>
                   {selectedHandbook?.handbookUrl ? (
                     <a
                       href={selectedHandbook.handbookUrl}

@@ -19,9 +19,6 @@ export const TimelinePage: React.FC = () => {
           <h2 className="mt-2 bg-gradient-to-r from-cyan-400 via-fuchsia-500 to-amber-300 bg-clip-text font-orbitron text-3xl font-black uppercase text-transparent md:text-4xl">
             Fest roadmap and live alerts
           </h2>
-          <p className="mt-4 text-sm leading-7 text-slate-200">
-            This page keeps the registration flow separate while giving participants a cleaner roadmap for reporting, verification, and event-day movement.
-          </p>
         </div>
       </section>
 

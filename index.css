@@ -320,14 +320,13 @@ img {
 .portal-cognotsav-heading-kicker {
   margin: 0;
   font-size: clamp(1rem, 2.3vw, 1.55rem);
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #fef3c7;
+  color: rgba(191, 219, 254, 0.88);
   text-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.45),
-    0 0 14px rgba(251, 191, 36, 0.18),
-    0 8px 20px rgba(251, 191, 36, 0.12);
+    0 1px 0 rgba(255, 255, 255, 0.2),
+    0 0 10px rgba(96, 165, 250, 0.12);
 }
 
 .portal-cognotsav-heading {
