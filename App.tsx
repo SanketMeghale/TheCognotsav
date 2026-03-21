@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowRight, Bell, CheckCircle2, Clock3, House, Search, ShieldCheck, Trophy } from 'lucide-react';
+import { ArrowRight, Bell, CheckCircle2, Clock3, House, Menu, Search, ShieldCheck, Trophy, X } from 'lucide-react';
 import { AdminRegistrationsPage } from './components/portal/AdminRegistrationsPage.tsx';
 import { AnnouncementArchiveSection } from './components/portal/AnnouncementArchiveSection.tsx';
 import { HeroSection } from './components/portal/HeroSection.tsx';
@@ -511,6 +511,8 @@ export const App: React.FC = () => {
   const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>({});
   const [toastMessage, setToastMessage] = useState('');
   const [toastClosing, setToastClosing] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [navSolid, setNavSolid] = useState(false);
   const [form, setForm] = useState<FormState>({
     teamName: '',
     collegeName: '',
@@ -551,11 +553,41 @@ export const App: React.FC = () => {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    document.querySelectorAll<HTMLElement>('[data-reveal]').forEach((element) => {
-      element.classList.add('is-visible');
-      element.style.transitionDelay = '0ms';
+    const revealElements = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal]'));
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.14, rootMargin: '0px 0px -10% 0px' },
+    );
+
+    revealElements.forEach((element, index) => {
+      element.style.transitionDelay = `${Math.min(index, 8) * 80}ms`;
+      observer.observe(element);
     });
+
+    return () => observer.disconnect();
   }, [events.length, adminRows.length, hashRoute, lookupResults.length]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const updateNavState = () => {
+      setNavSolid(window.scrollY > 18 || mobileMenuOpen);
+    };
+
+    updateNavState();
+    window.addEventListener('scroll', updateNavState, { passive: true });
+    return () => window.removeEventListener('scroll', updateNavState);
+  }, [mobileMenuOpen]);
+
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [hashRoute]);
 
   useEffect(() => {
     let disposed = false;
@@ -1461,8 +1493,8 @@ export const App: React.FC = () => {
         </div>
       ) : null}
 
-      <header className="sticky top-0 z-30 px-3 pt-3 sm:px-4 md:px-0">
-        <div className={`${shellClassName} portal-nav-shell`}>
+      <header className={`sticky top-0 z-40 px-3 pt-3 sm:px-4 md:px-0 ${navSolid ? 'portal-site-header is-scrolled' : 'portal-site-header'}`}>
+        <div className={`${shellClassName} portal-nav-shell ${navSolid ? 'is-scrolled' : ''}`}>
           <a href="#overview" className="portal-brand-card flex min-w-0 items-center gap-3 rounded-[1.4rem] px-3 py-2 transition hover:border-slate-200/18 hover:bg-white/[0.06]">
             <div className="portal-brand-logo-frame">
               <img src="/images/ceasposter.jpeg" alt="CEAS COGNOTSAV logo" className="portal-brand-logo-image" />
@@ -1489,18 +1521,46 @@ export const App: React.FC = () => {
             </a>
           </div>
 
-          <a
-            href="#admin-registrations"
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen((current) => !current)}
             className="portal-mobile-admin-trigger lg:hidden"
-            aria-label="Open admin panel"
+            aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+            aria-expanded={mobileMenuOpen}
           >
-            <span className="portal-mobile-admin-trigger__image-frame">
-              <img src="/images/ceasposter.jpeg" alt="Admin access" className="portal-mobile-admin-trigger__image" />
+            <span className="portal-mobile-admin-trigger__icon">
+              {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
             </span>
-            <span className="portal-mobile-admin-trigger__badge">
-              <ShieldCheck size={11} />
-            </span>
-          </a>
+          </button>
+        </div>
+
+        <div className={`portal-mobile-drawer-backdrop lg:hidden ${mobileMenuOpen ? 'is-open' : ''}`} onClick={() => setMobileMenuOpen(false)} />
+        <div className={`${shellClassName} portal-mobile-drawer lg:hidden ${mobileMenuOpen ? 'is-open' : ''}`}>
+          <div className="portal-mobile-drawer__header">
+            <div className="flex items-center gap-3">
+              <span className="portal-brand-logo-frame">
+                <img src="/images/ceasposter.jpeg" alt="CEAS COGNOTSAV logo" className="portal-brand-logo-image" />
+              </span>
+              <div>
+                <p className="portal-brand-overline">Navigation</p>
+                <p className="portal-brand-mark portal-brand-mark--nav">COGNOTSAV 2026</p>
+              </div>
+            </div>
+            <button type="button" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-drawer__close" aria-label="Close navigation menu">
+              <X size={18} />
+            </button>
+          </div>
+          <nav className="portal-mobile-drawer__nav">
+            <a href="#overview" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-drawer__link">Home</a>
+            <a href="#registration-panel" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-drawer__link">Competitions</a>
+            <a href="#tracker" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-drawer__link">Tracker</a>
+            <a href="#announcement-archive" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-drawer__link">Updates</a>
+            <a href="#timeline" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-drawer__link">Timeline</a>
+            <a href="#admin-registrations" onClick={() => setMobileMenuOpen(false)} className="portal-mobile-drawer__link portal-mobile-drawer__link--accent">
+              <ShieldCheck size={15} />
+              Admin Panel
+            </a>
+          </nav>
         </div>
       </header>
       {isAdminPage ? (
