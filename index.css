@@ -3576,13 +3576,23 @@ select.floating-field-input option {
     align-items: center;
   }
 
+  .portal-hero-badge {
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    padding: 0.52rem 0.8rem;
+  }
+
   .portal-front-hero__headline {
     max-width: none;
-    font-size: clamp(2.35rem, 12vw, 3.4rem);
+    font-size: clamp(1.95rem, 9.6vw, 2.8rem);
+    letter-spacing: 0.03em;
+    line-height: 1.06;
   }
 
   .portal-front-hero__description {
-    max-width: 34rem;
+    max-width: 30rem;
+    font-size: 0.92rem;
+    line-height: 1.7;
   }
 
   .portal-front-hero__cta-row,
