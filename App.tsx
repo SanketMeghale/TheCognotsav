@@ -787,6 +787,14 @@ export const App: React.FC = () => {
     }
   }, [eventPageSlug, events, isEventPage, selectedEventSlug]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined' || !isAdminPage) {
+      return;
+    }
+
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }, [isAdminPage, hashRoute]);
+
   const totalRegistrations = events.reduce((sum, event) => sum + event.registrations_count, 0);
   const visibleAnnouncements = announcements
     .filter((announcement) => isAnnouncementActive(announcement))
