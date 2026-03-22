@@ -577,6 +577,79 @@ function formatStatusTitle(status) {
   return 'Registration Under Review';
 }
 
+function buildEmailInfoGrid(items) {
+  return items
+    .map(
+      (item) => `
+        <div style="border-radius:18px;padding:14px 16px;background:linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.04));border:1px solid rgba(255,255,255,0.08);box-shadow:inset 0 1px 0 rgba(255,255,255,0.04);">
+          <div style="font-size:10px;letter-spacing:0.24em;text-transform:uppercase;color:#94a3b8;font-weight:700;">${item.label}</div>
+          <div style="margin-top:6px;color:${item.valueColor || '#ffffff'};font-size:${item.compact ? '13px' : '16px'};line-height:${item.compact ? '1.6' : '1.45'};font-weight:700;word-break:break-word;">${item.value}</div>
+        </div>
+      `,
+    )
+    .join('');
+}
+
+function buildPortalEmailHtml({
+  overline,
+  title,
+  intro,
+  accentGradient,
+  accentTone,
+  badgeLabel = '',
+  sections = [],
+  notice = '',
+  bodyAfterGrid = '',
+  footerCopy = 'Thank you for participating in CEAS COGNOTSAV 2026.',
+}) {
+  const logoUrl = `${publicBaseUrl.replace(/\/$/, '')}/images/ceasposter.jpeg`;
+  const safeBadge = badgeLabel ? `<div style="display:inline-flex;align-items:center;border-radius:999px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.06);padding:8px 12px;font-size:11px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:${accentTone};">${badgeLabel}</div>` : '';
+  const safeNotice = notice
+    ? `<div style="margin-top:18px;border-radius:18px;padding:16px;background:linear-gradient(135deg,rgba(251,191,36,0.12),rgba(251,191,36,0.06));border:1px solid rgba(251,191,36,0.18);color:#fef3c7;line-height:1.7;">${notice}</div>`
+    : '';
+  const safeAfterGrid = bodyAfterGrid
+    ? `<div style="margin-top:18px;color:#cbd5e1;line-height:1.75;">${bodyAfterGrid}</div>`
+    : '';
+
+  return `
+    <div style="margin:0;padding:30px 16px;background:radial-gradient(circle at top left,rgba(251,191,36,0.16),transparent 22%),radial-gradient(circle at bottom right,rgba(34,211,238,0.14),transparent 22%),linear-gradient(180deg,#08111f 0%,#0f172a 100%);font-family:Inter,Arial,sans-serif;color:#e2e8f0;">
+      <div style="max-width:680px;margin:0 auto;border-radius:28px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);background:linear-gradient(145deg,#111827,#171b2e);box-shadow:0 30px 72px rgba(2,8,23,0.38);">
+        <div style="position:relative;padding:22px 24px 24px;background:${accentGradient};border-bottom:1px solid rgba(255,255,255,0.08);">
+          <div style="position:absolute;right:-30px;top:-20px;width:180px;height:180px;background:url('${logoUrl}') center/contain no-repeat;opacity:0.08;pointer-events:none;"></div>
+          <div style="display:flex;align-items:center;gap:14px;position:relative;z-index:1;">
+            <div style="width:64px;height:64px;border-radius:20px;padding:5px;background:linear-gradient(180deg,rgba(255,255,255,0.24),rgba(203,213,225,0.1));border:1px solid rgba(255,255,255,0.16);box-shadow:inset 0 1px 0 rgba(255,255,255,0.48),0 12px 24px rgba(2,8,23,0.2);">
+              <img src="${logoUrl}" alt="CEAS logo" style="display:block;width:100%;height:100%;object-fit:cover;border-radius:16px;" />
+            </div>
+            <div>
+              <div style="font-size:10px;letter-spacing:0.38em;text-transform:uppercase;color:#bfdbfe;font-weight:700;">Computer Engineering Association</div>
+              <div style="margin-top:6px;font-family:Orbitron,Inter,Arial,sans-serif;font-size:24px;line-height:1.1;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#ffffff;">CEAS COGNOTSAV 2026</div>
+            </div>
+          </div>
+          <div style="position:relative;z-index:1;margin-top:18px;">
+            <div style="font-size:11px;letter-spacing:0.34em;text-transform:uppercase;color:#dbeafe;font-weight:700;">${overline}</div>
+            <h1 style="margin:12px 0 0;font-size:30px;line-height:1.12;color:#ffffff;">${title}</h1>
+          </div>
+        </div>
+        <div style="position:relative;padding:24px;">
+          <div style="position:absolute;inset:0;background:url('${logoUrl}') center/240px no-repeat;opacity:0.04;pointer-events:none;"></div>
+          <div style="position:relative;z-index:1;">
+            ${safeBadge}
+            <div style="margin-top:${badgeLabel ? '18px' : '0'};color:#cbd5e1;line-height:1.75;">${intro}</div>
+            <div style="margin-top:18px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;">
+              ${sections.join('')}
+            </div>
+            ${safeNotice}
+            ${safeAfterGrid}
+            <div style="margin-top:22px;border-radius:18px;padding:16px;background:linear-gradient(135deg,rgba(59,130,246,0.12),rgba(168,85,247,0.1));border:1px solid rgba(96,165,250,0.18);color:#dbeafe;line-height:1.7;">
+              ${footerCopy}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 function buildStatusEmail(registration) {
   const eventLine = `${registration.event_name} / ${registration.date_label} / ${registration.time_label}`;
   const salutation = registration.contact_name || registration.team_name || 'Participant';
@@ -653,41 +726,32 @@ function buildStatusEmail(registration) {
   const safePaymentReference = escapeHtml(registration.payment_reference || 'Pending manual entry');
   const safeTotalAmount = escapeHtml(`INR ${registration.total_amount}`);
 
-  const html = `
-    <div style="background:#0f111a;padding:32px 18px;font-family:Inter,Arial,sans-serif;color:#e2e8f0;">
-      <div style="max-width:640px;margin:0 auto;border-radius:24px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);background:linear-gradient(145deg,#111827,#171b2e);box-shadow:0 24px 60px rgba(2,8,23,0.35);">
-        <div style="padding:20px 24px;background:linear-gradient(90deg,rgba(59,130,246,0.2),rgba(168,85,247,0.16),rgba(236,72,153,0.18));border-bottom:1px solid rgba(255,255,255,0.08);">
-          <div style="font-size:11px;letter-spacing:0.35em;text-transform:uppercase;color:#93c5fd;font-weight:700;">CEAS COGNOTSAV 2026</div>
-          <h1 style="margin:12px 0 0;font-size:28px;line-height:1.15;color:#ffffff;">${safeStatusTitle}</h1>
-        </div>
-        <div style="padding:24px;">
-          <p style="margin:0 0 16px;color:#e2e8f0;">Hi ${safeSalutation},</p>
-          <p style="margin:0 0 18px;color:#cbd5e1;line-height:1.7;">${safeIntro}</p>
-          <div style="border-radius:20px;padding:18px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);">
-            <div style="display:grid;gap:12px;">
-              <div><div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#94a3b8;">Registration code</div><div style="margin-top:4px;color:#fff;font-weight:700;">${safeRegistrationCode}</div></div>
-              <div><div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#94a3b8;">Team name</div><div style="margin-top:4px;color:#fff;font-weight:700;">${safeTeamName}</div></div>
-              <div><div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#94a3b8;">Event</div><div style="margin-top:4px;color:#fff;font-weight:700;">${safeEventName}</div></div>
-              <div><div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#94a3b8;">Schedule</div><div style="margin-top:4px;color:#fff;font-weight:700;">${safeEventLine}</div></div>
-              <div><div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#94a3b8;">Venue</div><div style="margin-top:4px;color:#fff;font-weight:700;">${safeVenue}</div></div>
-              <div><div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#94a3b8;">Current status</div><div style="margin-top:4px;color:${accentColor};font-weight:700;">${safeStatusLabel}</div></div>
-              ${
-                registration.status === 'verified'
-                  ? `<div><div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#94a3b8;">Amount paid</div><div style="margin-top:4px;color:#fff;font-weight:700;">${safeTotalAmount}</div></div>
-                     <div><div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#94a3b8;">Payment reference</div><div style="margin-top:4px;color:#fff;font-weight:700;word-break:break-word;">${safePaymentReference}</div></div>`
-                  : ''
-              }
-            </div>
-          </div>
-          ${registration.review_note ? `<div style="margin-top:18px;border-radius:18px;padding:16px;background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.16);color:#fef3c7;">Organizer note: ${escapeHtml(registration.review_note)}</div>` : ''}
-          <p style="margin:18px 0 0;color:#cbd5e1;line-height:1.7;">${safeNextStep}</p>
-          <div style="margin-top:22px;border-radius:18px;padding:16px;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.16);color:#dbeafe;">
-            Thank you for participating in CEAS COGNOTSAV 2026.
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
+  const gridSections = buildEmailInfoGrid([
+    { label: 'Registration code', value: safeRegistrationCode },
+    { label: 'Team name', value: safeTeamName },
+    { label: 'Event', value: safeEventName },
+    { label: 'Schedule', value: safeEventLine, compact: true },
+    { label: 'Venue', value: safeVenue, compact: true },
+    { label: 'Current status', value: safeStatusLabel, valueColor: accentColor },
+    ...(registration.status === 'verified'
+      ? [
+          { label: 'Amount paid', value: safeTotalAmount },
+          { label: 'Payment reference', value: safePaymentReference, compact: true },
+        ]
+      : []),
+  ]);
+
+  const html = buildPortalEmailHtml({
+    overline: 'Registration Update',
+    title: safeStatusTitle,
+    intro: `Hi ${safeSalutation},<br /><br />${safeIntro}`,
+    accentGradient: 'linear-gradient(90deg,rgba(59,130,246,0.2),rgba(168,85,247,0.16),rgba(236,72,153,0.18))',
+    accentTone: accentColor,
+    badgeLabel: safeStatusLabel,
+    sections: [gridSections],
+    notice: registration.review_note ? `Organizer note: ${escapeHtml(registration.review_note)}` : '',
+    bodyAfterGrid: safeNextStep,
+  });
 
   return {
     subject,
@@ -859,31 +923,23 @@ function buildEventStartReminderEmail(registration, eventStart) {
     'CEAS Registration Team',
   ].join('\n');
 
-  const html = `
-    <div style="background:#0f111a;padding:32px 18px;font-family:Inter,Arial,sans-serif;color:#e2e8f0;">
-      <div style="max-width:640px;margin:0 auto;border-radius:24px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);background:linear-gradient(145deg,#111827,#171b2e);box-shadow:0 24px 60px rgba(2,8,23,0.35);">
-        <div style="padding:20px 24px;background:linear-gradient(90deg,rgba(34,211,238,0.18),rgba(59,130,246,0.18),rgba(168,85,247,0.18));border-bottom:1px solid rgba(255,255,255,0.08);">
-          <div style="font-size:11px;letter-spacing:0.35em;text-transform:uppercase;color:#93c5fd;font-weight:700;">Event Reminder</div>
-          <h1 style="margin:12px 0 0;font-size:28px;line-height:1.15;color:#ffffff;">${registration.event_name} starts in about 1 hour</h1>
-        </div>
-        <div style="padding:24px;">
-          <p style="margin:0 0 16px;color:#e2e8f0;">Hi ${salutation},</p>
-          <p style="margin:0 0 18px;color:#cbd5e1;line-height:1.7;">Your verified registration is all set. Please be ready to join the event shortly.</p>
-          <div style="border-radius:20px;padding:18px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);">
-            <div style="display:grid;gap:12px;">
-              <div><div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#94a3b8;">Registration code</div><div style="margin-top:4px;color:#fff;font-weight:700;">${registration.registration_code}</div></div>
-              <div><div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#94a3b8;">Event</div><div style="margin-top:4px;color:#fff;font-weight:700;">${registration.event_name}</div></div>
-              <div><div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#94a3b8;">Starts at</div><div style="margin-top:4px;color:#fff;font-weight:700;">${formattedStartTime} IST</div></div>
-              <div><div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#94a3b8;">Venue</div><div style="margin-top:4px;color:#fff;font-weight:700;">${registration.venue}</div></div>
-            </div>
-          </div>
-          <div style="margin-top:22px;border-radius:18px;padding:16px;background:rgba(34,211,238,0.08);border:1px solid rgba(34,211,238,0.16);color:#cffafe;">
-            Please arrive a little early and keep your registration code handy for event-day verification.
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
+  const html = buildPortalEmailHtml({
+    overline: 'Event Reminder',
+    title: `${escapeHtml(registration.event_name)} starts in about 1 hour`,
+    intro: `Hi ${escapeHtml(salutation)},<br /><br />Your verified registration is all set. Please be ready to join the event shortly.`,
+    accentGradient: 'linear-gradient(90deg,rgba(34,211,238,0.18),rgba(59,130,246,0.18),rgba(168,85,247,0.18))',
+    accentTone: '#67e8f9',
+    badgeLabel: 'Starts Soon',
+    sections: [
+      buildEmailInfoGrid([
+        { label: 'Registration code', value: escapeHtml(registration.registration_code) },
+        { label: 'Event', value: escapeHtml(registration.event_name) },
+        { label: 'Starts at', value: escapeHtml(`${formattedStartTime} IST`) },
+        { label: 'Venue', value: escapeHtml(registration.venue), compact: true },
+      ]),
+    ],
+    bodyAfterGrid: 'Please arrive a little early and keep your registration code handy for event-day verification.',
+  });
 
   return {
     subject,
@@ -1311,28 +1367,23 @@ function buildBroadcastEmail(registration, announcement) {
     'CEAS Registration Team',
   ].join('\n');
 
-  const html = `
-    <div style="background:#0f111a;padding:32px 18px;font-family:Inter,Arial,sans-serif;color:#e2e8f0;">
-      <div style="max-width:640px;margin:0 auto;border-radius:24px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);background:linear-gradient(145deg,#111827,#171b2e);box-shadow:0 24px 60px rgba(2,8,23,0.35);">
-        <div style="padding:20px 24px;background:linear-gradient(90deg,rgba(59,130,246,0.2),rgba(236,72,153,0.16),rgba(251,191,36,0.18));border-bottom:1px solid rgba(255,255,255,0.08);">
-          <div style="font-size:11px;letter-spacing:0.35em;text-transform:uppercase;color:#93c5fd;font-weight:700;">Organizer Broadcast</div>
-          <h1 style="margin:12px 0 0;font-size:28px;line-height:1.15;color:#ffffff;">${safeTitle}</h1>
-        </div>
-        <div style="padding:24px;">
-          <p style="margin:0 0 16px;color:#e2e8f0;">Hi ${escapeHtml(salutation)},</p>
-          <div style="margin:0 0 18px;border-radius:20px;padding:18px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:#cbd5e1;line-height:1.7;">${safeMessage}</div>
-          <div style="border-radius:20px;padding:18px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);">
-            <div style="display:grid;gap:12px;">
-              <div><div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#94a3b8;">Event</div><div style="margin-top:4px;color:#fff;font-weight:700;">${escapeHtml(registration.event_name)}</div></div>
-              <div><div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#94a3b8;">Schedule</div><div style="margin-top:4px;color:#fff;font-weight:700;">${escapeHtml(eventLine)}</div></div>
-              <div><div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#94a3b8;">Venue</div><div style="margin-top:4px;color:#fff;font-weight:700;">${escapeHtml(registration.venue)}</div></div>
-              <div><div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#94a3b8;">Registration code</div><div style="margin-top:4px;color:#fff;font-weight:700;">${escapeHtml(registration.registration_code)}</div></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
+  const html = buildPortalEmailHtml({
+    overline: 'Organizer Broadcast',
+    title: safeTitle,
+    intro: `Hi ${escapeHtml(salutation)},<br /><br />${safeMessage}`,
+    accentGradient: 'linear-gradient(90deg,rgba(59,130,246,0.2),rgba(236,72,153,0.16),rgba(251,191,36,0.18))',
+    accentTone: '#fde68a',
+    badgeLabel: announcement.is_pinned ? 'Priority Update' : 'Latest Update',
+    sections: [
+      buildEmailInfoGrid([
+        { label: 'Event', value: escapeHtml(registration.event_name) },
+        { label: 'Schedule', value: escapeHtml(eventLine), compact: true },
+        { label: 'Venue', value: escapeHtml(registration.venue), compact: true },
+        { label: 'Registration code', value: escapeHtml(registration.registration_code) },
+      ]),
+    ],
+    bodyAfterGrid: 'Please keep checking the participant portal for the latest official updates.',
+  });
 
   return {
     subject,
