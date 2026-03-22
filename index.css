@@ -803,7 +803,7 @@ img {
     border-color var(--portal-glow-transition),
     filter var(--portal-glow-transition),
     background var(--portal-glow-transition);
-  animation: portalRegisterFloat 3.6s ease-in-out infinite;
+  animation: portalRegisterFloat 3.6s ease-in-out infinite, portalButtonPulse 2.8s ease-out infinite;
 }
 
 .portal-register-cta::before {
@@ -1852,7 +1852,7 @@ img {
   background-size: 100% 100%, 220% 220%, 220% 220%;
   color: #09101b;
   box-shadow: var(--portal-cta-shadow);
-  animation: gradientShift 7s ease infinite;
+  animation: gradientShift 7s ease infinite, portalButtonPulse 2.8s ease-out infinite;
 }
 
 .animated-gradient-button::before {
@@ -3359,6 +3359,28 @@ select.floating-field-input option {
   }
 }
 
+@keyframes portalButtonPulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 0 rgba(0, 186, 255, 0),
+      0 0 0 0 rgba(0, 186, 255, 0),
+      var(--portal-cta-shadow);
+  }
+  18% {
+    box-shadow:
+      0 0 0 0 rgba(0, 186, 255, 0.2),
+      0 0 0 0 rgba(0, 186, 255, 0.08),
+      var(--portal-cta-shadow);
+  }
+  52% {
+    box-shadow:
+      0 0 0 10px rgba(0, 186, 255, 0),
+      0 0 0 18px rgba(0, 186, 255, 0),
+      var(--portal-cta-shadow);
+  }
+}
+
 @keyframes portalModalIn {
   from {
     opacity: 0;
@@ -3515,6 +3537,7 @@ select.floating-field-input option {
     background var(--portal-glow-transition),
     color var(--portal-glow-transition),
     filter var(--portal-glow-transition);
+  animation: portalButtonPulse 2.8s ease-out infinite;
 }
 
 .portal-premium-button:hover {
