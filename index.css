@@ -3583,17 +3583,17 @@ select.floating-field-input option {
   height: 100%;
   object-fit: cover;
   object-position: center 38%;
-  opacity: 0.5;
-  filter: saturate(1.04) contrast(1.04) brightness(0.92);
+  opacity: 0.62;
+  filter: saturate(1.06) contrast(1.05) brightness(0.95);
 }
 
 .portal-front-hero__video-overlay {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(108deg, rgba(2, 6, 23, 0.78) 14%, rgba(2, 6, 23, 0.44) 46%, rgba(2, 6, 23, 0.68) 100%),
-    radial-gradient(circle at 18% 20%, rgba(15, 23, 42, 0.12), transparent 28%),
-    radial-gradient(circle at 82% 22%, rgba(56, 189, 248, 0.1), transparent 26%);
+    linear-gradient(108deg, rgba(2, 6, 23, 0.7) 14%, rgba(2, 6, 23, 0.34) 46%, rgba(2, 6, 23, 0.58) 100%),
+    radial-gradient(circle at 18% 20%, rgba(15, 23, 42, 0.1), transparent 28%),
+    radial-gradient(circle at 82% 22%, rgba(56, 189, 248, 0.08), transparent 26%);
 }
 
 .portal-front-hero--premium::before,
@@ -4529,6 +4529,19 @@ footer {
     margin-left: -0.275rem;
     padding: 0.6rem;
     border-radius: 1.7rem;
+  }
+
+  .portal-front-hero__background-video {
+    object-fit: contain;
+    object-position: center center;
+    opacity: 0.72;
+    background: #020617;
+  }
+
+  .portal-front-hero__video-overlay {
+    background:
+      linear-gradient(180deg, rgba(2, 6, 23, 0.58) 0%, rgba(2, 6, 23, 0.32) 38%, rgba(2, 6, 23, 0.72) 100%),
+      radial-gradient(circle at 50% 18%, rgba(56, 189, 248, 0.08), transparent 30%);
   }
 
   .portal-front-hero__content--premium,
