@@ -51,45 +51,6 @@ function PortalBackgroundCanvas() {
   return <div className="portal-background-image" aria-hidden="true" />;
 }
 
-function PortalParticleField() {
-  const particles = useMemo(
-    () => [
-      { left: '6%', top: '14%', size: '0.55rem', delay: '0s', duration: '17s' },
-      { left: '18%', top: '66%', size: '0.35rem', delay: '-4s', duration: '19s' },
-      { left: '27%', top: '30%', size: '0.42rem', delay: '-8s', duration: '16s' },
-      { left: '34%', top: '82%', size: '0.6rem', delay: '-2s', duration: '20s' },
-      { left: '46%', top: '18%', size: '0.32rem', delay: '-7s', duration: '15s' },
-      { left: '58%', top: '72%', size: '0.5rem', delay: '-1s', duration: '18s' },
-      { left: '64%', top: '42%', size: '0.4rem', delay: '-9s', duration: '21s' },
-      { left: '76%', top: '14%', size: '0.52rem', delay: '-3s', duration: '18s' },
-      { left: '84%', top: '58%', size: '0.3rem', delay: '-10s', duration: '17s' },
-      { left: '92%', top: '26%', size: '0.46rem', delay: '-5s', duration: '22s' },
-      { left: '72%', top: '86%', size: '0.36rem', delay: '-6s', duration: '16s' },
-      { left: '12%', top: '44%', size: '0.48rem', delay: '-11s', duration: '19s' },
-    ],
-    [],
-  );
-
-  return (
-    <div className="portal-particle-field" aria-hidden="true">
-      {particles.map((particle, index) => (
-        <span
-          key={index}
-          className="portal-particle-field__item"
-          style={{
-            left: particle.left,
-            top: particle.top,
-            width: particle.size,
-            height: particle.size,
-            animationDelay: particle.delay,
-            animationDuration: particle.duration,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
 function DepartmentIntroStrip() {
   return (
     <section className="portal-department-strip rounded-[1.8rem] border border-white/10 p-4 md:rounded-[2rem] md:p-6">
@@ -629,62 +590,11 @@ export const App: React.FC = () => {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const elements = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal]'));
-    if (reduceMotion) {
-      elements.forEach((element) => element.classList.add('is-visible'));
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.14, rootMargin: '0px 0px -8% 0px' },
-    );
-
-    elements.forEach((element, index) => {
-      element.style.transitionDelay = `${Math.min(index % 4, 3) * 90}ms`;
-      observer.observe(element);
+    document.querySelectorAll<HTMLElement>('[data-reveal]').forEach((element) => {
+      element.classList.add('is-visible');
+      element.style.transitionDelay = '0ms';
     });
-
-    return () => observer.disconnect();
   }, [events.length, adminRows.length, hashRoute, lookupResults.length]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return undefined;
-
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduceMotion) return undefined;
-
-    let animationFrame = 0;
-    const updateHeroParallax = () => {
-      const progress = Math.min(window.scrollY / 520, 1);
-      document.documentElement.style.setProperty('--portal-scroll-progress', progress.toFixed(3));
-      animationFrame = 0;
-    };
-
-    const handleScroll = () => {
-      if (!animationFrame) {
-        animationFrame = window.requestAnimationFrame(updateHeroParallax);
-      }
-    };
-
-    updateHeroParallax();
-    window.addEventListener('scroll', handleScroll, { passive: true });
-
-    return () => {
-      if (animationFrame) {
-        window.cancelAnimationFrame(animationFrame);
-      }
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
 
   useEffect(() => {
     let disposed = false;
@@ -1650,7 +1560,6 @@ export const App: React.FC = () => {
   return (
     <div className="portal-shell portal-page-enter min-h-screen text-slate-100">
       <PortalBackgroundCanvas />
-      <PortalParticleField />
       <div className="portal-orb portal-orb--violet" />
       <div className="portal-orb portal-orb--cyan" />
       <div className="portal-orb portal-orb--blue" />
