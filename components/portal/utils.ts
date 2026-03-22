@@ -99,6 +99,73 @@ export function formatCountdownLabel(dateLabel: string, timeLabel: string, now =
   return `Starts in ${minutes}m`;
 }
 
+export type EventLiveState = {
+  label: string;
+  detail: string;
+  countdown: string;
+  tone: 'open' | 'warning' | 'critical' | 'live' | 'muted';
+};
+
+export function getEventLiveState(event: EventRecord, now = new Date()): EventLiveState {
+  const eventDate = parsePortalEventDate(event.date_label, event.time_label);
+  if (!eventDate) {
+    return {
+      label: 'Schedule Pending',
+      detail: 'Final event timing will be announced soon.',
+      countdown: 'Schedule pending',
+      tone: 'muted',
+    };
+  }
+
+  const diffMs = eventDate.getTime() - now.getTime();
+  const fourHoursMs = 4 * 60 * 60 * 1000;
+  const sixHoursMs = 6 * 60 * 60 * 1000;
+  const oneDayMs = 24 * 60 * 60 * 1000;
+
+  if (diffMs > oneDayMs) {
+    return {
+      label: 'Registration Open',
+      detail: 'Event window is live and registrations are open.',
+      countdown: formatCountdownLabel(event.date_label, event.time_label, now),
+      tone: 'open',
+    };
+  }
+
+  if (diffMs > sixHoursMs) {
+    return {
+      label: 'Closing Soon',
+      detail: 'Final prep window is active. Register before the event-day rush.',
+      countdown: formatCountdownLabel(event.date_label, event.time_label, now),
+      tone: 'warning',
+    };
+  }
+
+  if (diffMs > 0) {
+    return {
+      label: 'Reporting Today',
+      detail: 'Event-day reporting and coordinator support are active.',
+      countdown: formatCountdownLabel(event.date_label, event.time_label, now),
+      tone: 'critical',
+    };
+  }
+
+  if (diffMs > -fourHoursMs) {
+    return {
+      label: 'Live Now',
+      detail: 'The event is currently in progress or check-in is underway.',
+      countdown: 'Event in progress',
+      tone: 'live',
+    };
+  }
+
+  return {
+    label: 'Completed',
+    detail: 'This event has most likely concluded for the day.',
+    countdown: 'Completed',
+    tone: 'muted',
+  };
+}
+
 export function getEventHeatLevel(event: EventRecord) {
   if (event.max_slots === null) {
     return {

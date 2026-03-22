@@ -4,7 +4,7 @@ import {
   Info, MapPin, Phone, QrCode, Save, Smartphone, Sparkles, Trophy, Upload, Users,
 } from 'lucide-react';
 import type { EventRecord, ParticipantDraft, RegistrationReceipt } from './types';
-import { formatCurrency, getTeamLabel } from './utils';
+import { formatCurrency, getEventLiveState, getTeamLabel } from './utils';
 
 type FormState = {
   teamName: string;
@@ -182,6 +182,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const eventTopRef = useRef<HTMLDivElement | null>(null);
   const [codeCopied, setCodeCopied] = useState(false);
   const [paymentCopyState, setPaymentCopyState] = useState<'upi' | 'amount' | 'link' | null>(null);
+  const [now, setNow] = useState(() => new Date());
   const showError = (field: string) => (touchedFields[field] ? validationErrors[field] : '');
   const selectedTheme = selectedEvent ? categoryThemes[selectedEvent.category] || categoryThemes.Technical : categoryThemes.Technical;
   const selectedHandbook = selectedEvent ? handbookBySlug[selectedEvent.slug] : null;
@@ -198,6 +199,11 @@ export const EventRegistrationPanel: React.FC<Props> = ({
     const top = formSection.getBoundingClientRect().top + window.scrollY - 96;
     window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
   };
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(new Date()), 60 * 1000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     setCodeCopied(false);
@@ -254,6 +260,8 @@ export const EventRegistrationPanel: React.FC<Props> = ({
     );
   }
 
+  const liveState = getEventLiveState(selectedEvent, now);
+
   return (
     <section id="registration-panel">
       <div ref={eventTopRef} className="portal-event-layout">
@@ -303,6 +311,38 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                   <span className="portal-event-inline-info__label">Venue</span>
                   <span className="portal-event-inline-info__value">{selectedEvent.venue}</span>
                 </div>
+                <div className="portal-event-inline-info__item">
+                  <Clock3 size={15} className="text-amber-200" />
+                  <span className="portal-event-inline-info__label">Status</span>
+                  <span className="portal-event-inline-info__value">{liveState.label}</span>
+                </div>
+                <div className="portal-event-inline-info__item">
+                  <Sparkles size={15} className="text-amber-200" />
+                  <span className="portal-event-inline-info__label">Countdown</span>
+                  <span className="portal-event-inline-info__value">{liveState.countdown}</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="portal-event-section portal-glow-card portal-glass" data-reveal="up">
+            <div className="portal-event-section__head">
+              <Clock3 size={17} className="text-cyan-200" />
+              <div>
+                <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Event-day Live Status</p>
+                <h3 className="mt-1 text-lg font-semibold text-white">{liveState.label}</h3>
+              </div>
+            </div>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.04] p-4">
+                <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">Countdown</p>
+                <p className="mt-2 text-lg font-bold text-white">{liveState.countdown}</p>
+                <p className="mt-2 text-sm text-slate-300">{liveState.detail}</p>
+              </div>
+              <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.04] p-4">
+                <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">Schedule Snapshot</p>
+                <p className="mt-2 text-sm font-semibold text-white">{selectedEvent.date_label}</p>
+                <p className="mt-1 text-sm text-slate-300">{selectedEvent.time_label} / {selectedEvent.venue}</p>
               </div>
             </div>
           </section>

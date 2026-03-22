@@ -23,13 +23,6 @@ export const HeroSection: React.FC<Props> = () => {
           </video>
           <div className="portal-front-hero__video-overlay" />
         </div>
-        <div className="portal-front-hero__cosmos" aria-hidden="true">
-          <span className="portal-front-hero__star portal-front-hero__star--one" />
-          <span className="portal-front-hero__star portal-front-hero__star--two" />
-          <span className="portal-front-hero__star portal-front-hero__star--three" />
-          <span className="portal-front-hero__beam portal-front-hero__beam--gold" />
-          <span className="portal-front-hero__beam portal-front-hero__beam--blue" />
-        </div>
 
         <div className="portal-front-hero__main">
           <div className="portal-front-hero__content portal-front-hero__content--premium">

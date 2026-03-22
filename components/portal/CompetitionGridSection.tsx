@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { CalendarDays, CreditCard, ExternalLink, MapPin, Phone, Volume2, VolumeX, Trophy, Users } from 'lucide-react';
 import type { EventRecord } from './types';
-import { formatCurrency, getTeamLabel } from './utils';
+import { formatCurrency, getEventLiveState, getTeamLabel } from './utils';
 
 type Props = {
   events: EventRecord[];
@@ -49,6 +49,7 @@ function getDisplayCategory(event: EventRecord) {
 
 export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents, selectedEventSlug, onSelectEvent }) => {
   const [activeFilter, setActiveFilter] = useState<(typeof filterOrder)[number]>('All');
+  const [now, setNow] = useState(() => new Date());
   const [hoveredVideoSlug, setHoveredVideoSlug] = useState<string | null>(null);
   const [soundEnabledSlug, setSoundEnabledSlug] = useState<string | null>(null);
   const [supportsHoverPreview, setSupportsHoverPreview] = useState(false);
@@ -60,6 +61,11 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
     () => (activeFilter === 'All' ? events : events.filter((event) => getDisplayCategory(event) === activeFilter)),
     [activeFilter, events],
   );
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(new Date()), 60 * 1000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -209,6 +215,7 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
               const displayCategory = getDisplayCategory(event);
               const theme = categoryThemes[displayCategory] || categoryThemes.Technical;
               const teamLabel = getTeamLabel(event);
+              const liveState = getEventLiveState(event, now);
               const primaryCoordinator = event.coordinators?.[0] ?? null;
               const handleOpenEvent = () => onSelectEvent(event.slug);
               const hasIntroVideo = Boolean(event.intro_video_url);
@@ -340,12 +347,30 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
                           <span>{event.time_label}</span>
                         </p>
                       </div>
-                      <span className="portal-competition-card__status">
-                        Open
+                      <span
+                        className={`inline-flex rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] ${
+                          liveState.tone === 'live'
+                            ? 'border-cyan-300/18 bg-cyan-400/10 text-cyan-100'
+                            : liveState.tone === 'critical'
+                              ? 'border-rose-300/18 bg-rose-400/10 text-rose-100'
+                              : liveState.tone === 'warning'
+                                ? 'border-amber-300/18 bg-amber-400/10 text-amber-100'
+                                : liveState.tone === 'muted'
+                                  ? 'border-slate-300/14 bg-slate-400/10 text-slate-200'
+                                  : 'border-emerald-300/18 bg-emerald-400/10 text-emerald-100'
+                        }`}
+                      >
+                        {liveState.label}
                       </span>
                     </div>
 
                     <p className="portal-competition-card__description mt-4 line-clamp-3 text-sm leading-7 text-slate-300">{event.description}</p>
+
+                    <div className="mt-4 rounded-[1.15rem] border border-white/10 bg-white/[0.04] p-3">
+                      <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">Event-day status</p>
+                      <p className="mt-2 text-sm font-semibold text-white">{liveState.countdown}</p>
+                      <p className="mt-1 text-sm text-slate-300">{liveState.detail}</p>
+                    </div>
 
                     <div className="portal-competition-card__team-row mt-4">
                       <Users size={16} />
