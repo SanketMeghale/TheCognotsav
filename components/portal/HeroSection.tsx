@@ -3,10 +3,26 @@ import { ArrowRight, CalendarDays, MapPin, Sparkles, Trophy } from 'lucide-react
 
 type Props = {};
 
+const HERO_BACKGROUND_VIDEO_URL =
+  'https://res.cloudinary.com/dkxddhawc/video/upload/v1774151154/instagram_1774150372589_720p_a0eoxu.mp4';
+
 export const HeroSection: React.FC<Props> = () => {
   return (
     <section id="overview" className="mx-auto w-full max-w-[1320px] px-1 sm:px-5 lg:px-8 pt-3 pb-2 md:pt-5 md:pb-4">
       <div className="portal-front-hero portal-front-hero--premium portal-front-hero--welcome">
+        <div className="portal-front-hero__video-layer" aria-hidden="true">
+          <video
+            className="portal-front-hero__background-video"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+          >
+            <source src={HERO_BACKGROUND_VIDEO_URL} type="video/mp4" />
+          </video>
+          <div className="portal-front-hero__video-overlay" />
+        </div>
         <div className="portal-front-hero__cosmos" aria-hidden="true">
           <span className="portal-front-hero__star portal-front-hero__star--one" />
           <span className="portal-front-hero__star portal-front-hero__star--two" />
