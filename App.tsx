@@ -47,7 +47,9 @@ const DRAFT_STORAGE_KEY = 'cogno_registration_portal_draft_v1';
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phonePattern = /^\d{10}$/;
 
-const CANVAS_PARTICLE_COUNT = 56;
+const DESKTOP_PARTICLE_COUNT = 96;
+const TABLET_PARTICLE_COUNT = 64;
+const MOBILE_PARTICLE_COUNT = 34;
 
 function PortalBackgroundCanvas() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -61,23 +63,27 @@ function PortalBackgroundCanvas() {
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const saveData = 'connection' in navigator && (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
-    const isLowPowerDevice = window.innerWidth < 768 || (navigator.hardwareConcurrency || 8) <= 4;
-    if (prefersReducedMotion || saveData || isLowPowerDevice) return;
+    if (prefersReducedMotion || saveData) return;
 
     let width = 0;
     let height = 0;
     let animationFrame = 0;
-    let suspendUntil = 0;
     const pointer = { x: -9999, y: -9999 };
-    const particleCount = Math.min(CANVAS_PARTICLE_COUNT, window.innerWidth < 1024 ? 20 : 30);
-
-    const particles = Array.from({ length: particleCount }, () => ({
+    const isLowPowerDevice = (navigator.hardwareConcurrency || 8) <= 4;
+    const particleCount = window.innerWidth < 640
+      ? MOBILE_PARTICLE_COUNT
+      : window.innerWidth < 1024
+        ? TABLET_PARTICLE_COUNT
+        : DESKTOP_PARTICLE_COUNT;
+    const connectionDistance = window.innerWidth < 768 ? 88 : 118;
+    const particles = Array.from({ length: isLowPowerDevice ? Math.floor(particleCount * 0.75) : particleCount }, () => ({
       x: Math.random(),
       y: Math.random(),
-      vx: (Math.random() - 0.5) * 0.00045,
-      vy: (Math.random() - 0.5) * 0.00045,
-      radius: Math.random() * 1.8 + 1.1,
-      hue: [195, 220, 280, 320][Math.floor(Math.random() * 4)],
+      vx: (Math.random() - 0.5) * 0.00028,
+      vy: (Math.random() - 0.5) * 0.00028,
+      radius: Math.random() * 1.4 + 1.7,
+      alpha: Math.random() * 0.2 + 0.65,
+      color: ['#22d3ee', '#38bdf8', '#a78bfa'][Math.floor(Math.random() * 3)],
     }));
 
     const resize = () => {
@@ -91,31 +97,36 @@ function PortalBackgroundCanvas() {
       context.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
 
-    const draw = (frameTime = 0) => {
-      if (frameTime < suspendUntil) {
-        animationFrame = window.requestAnimationFrame(draw);
-        return;
-      }
-
+    const draw = () => {
       context.clearRect(0, 0, width, height);
 
       for (const particle of particles) {
+        const px = particle.x * width;
+        const py = particle.y * height;
+        const pointerDistance = Math.hypot(pointer.x - px, pointer.y - py);
+
+        if (pointerDistance < 110) {
+          const force = (110 - pointerDistance) / 110;
+          const angle = Math.atan2(py - pointer.y, px - pointer.x);
+          particle.vx += Math.cos(angle) * force * 0.0006;
+          particle.vy += Math.sin(angle) * force * 0.0006;
+        }
+
+        particle.vx *= 0.988;
+        particle.vy *= 0.988;
         particle.x += particle.vx;
         particle.y += particle.vy;
 
         if (particle.x < 0 || particle.x > 1) particle.vx *= -1;
         if (particle.y < 0 || particle.y > 1) particle.vy *= -1;
-
-        const px = particle.x * width;
-        const py = particle.y * height;
-        const pointerDistance = Math.hypot(pointer.x - px, pointer.y - py);
-        const glowBoost = pointerDistance < 140 ? 0.22 : 0;
+        particle.x = Math.min(Math.max(particle.x, 0), 1);
+        particle.y = Math.min(Math.max(particle.y, 0), 1);
 
         context.beginPath();
-        context.fillStyle = `hsla(${particle.hue}, 92%, 68%, ${0.18 + glowBoost})`;
-        context.shadowBlur = 12;
-        context.shadowColor = `hsla(${particle.hue}, 95%, 70%, 0.28)`;
-        context.arc(px, py, particle.radius + glowBoost * 7, 0, Math.PI * 2);
+        context.fillStyle = `${particle.color}${Math.round(Math.min(particle.alpha, 0.95) * 255).toString(16).padStart(2, '0')}`;
+        context.shadowBlur = 16;
+        context.shadowColor = particle.color;
+        context.arc(particle.x * width, particle.y * height, particle.radius, 0, Math.PI * 2);
         context.fill();
       }
 
@@ -131,10 +142,10 @@ function PortalBackgroundCanvas() {
           const by = b.y * height;
           const distance = Math.hypot(ax - bx, ay - by);
 
-          if (distance < 130) {
-            const alpha = 1 - distance / 150;
+          if (distance < connectionDistance) {
+            const alpha = (1 - distance / connectionDistance) * 0.75;
             context.beginPath();
-            context.strokeStyle = `rgba(103, 180, 255, ${alpha * 0.08})`;
+            context.strokeStyle = `rgba(56, 189, 248, ${alpha})`;
             context.lineWidth = 1;
             context.moveTo(ax, ay);
             context.lineTo(bx, by);
@@ -156,21 +167,15 @@ function PortalBackgroundCanvas() {
       pointer.y = -9999;
     };
 
-    const handleScroll = () => {
-      suspendUntil = performance.now() + 160;
-    };
-
     resize();
     draw();
     window.addEventListener('resize', resize);
-    window.addEventListener('scroll', handleScroll, { passive: true });
     window.addEventListener('mousemove', handleMove, { passive: true });
     window.addEventListener('mouseout', handleLeave);
 
     return () => {
       window.cancelAnimationFrame(animationFrame);
       window.removeEventListener('resize', resize);
-      window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('mousemove', handleMove);
       window.removeEventListener('mouseout', handleLeave);
     };

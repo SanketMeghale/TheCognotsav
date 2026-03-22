@@ -80,14 +80,9 @@ body {
   margin: 0;
   overflow-x: clip;
   background:
-    radial-gradient(circle at top left, rgba(59, 130, 246, 0.14), transparent 28%),
-    radial-gradient(circle at 82% 18%, rgba(168, 85, 247, 0.16), transparent 28%),
-    radial-gradient(circle at 72% 82%, rgba(236, 72, 153, 0.1), transparent 26%),
-    radial-gradient(circle at 20% 60%, rgba(56, 189, 248, 0.12), transparent 25%),
-    radial-gradient(circle at 90% 40%, rgba(251, 191, 36, 0.1), transparent 24%),
-    radial-gradient(circle at 40% 90%, rgba(52, 211, 153, 0.09), transparent 23%),
-    radial-gradient(circle at 60% 10%, rgba(251, 146, 60, 0.11), transparent 27%),
-    #05070d;
+    radial-gradient(circle at top left, rgba(251, 191, 36, 0.1), transparent 18%),
+    radial-gradient(circle at right bottom, rgba(251, 146, 60, 0.14), transparent 20%),
+    linear-gradient(180deg, #0b0f1a 0%, #080b14 54%, #05070d 100%);
   color: #e2e8f0;
   font-family: 'Inter', sans-serif;
   line-height: 1.6;
@@ -218,30 +213,22 @@ img {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  opacity: 0.9;
+  opacity: 0.78;
+  filter: saturate(1.02);
 }
 
-/* Animated background stays subtle so content remains readable. */
 .portal-shell::before {
   content: '';
   position: fixed;
-  inset: -20%;
+  inset: 0;
   z-index: -3;
   background:
-    radial-gradient(circle at 18% 24%, rgba(59, 130, 246, 0.35), transparent 25%),
-    radial-gradient(circle at 82% 20%, rgba(168, 85, 247, 0.30), transparent 23%),
-    radial-gradient(circle at 52% 78%, rgba(236, 72, 153, 0.22), transparent 28%),
-    radial-gradient(circle at 32% 62%, rgba(251, 191, 36, 0.20), transparent 24%),
-    radial-gradient(circle at 74% 68%, rgba(34, 211, 238, 0.18), transparent 22%),
-    radial-gradient(circle at 50% 15%, rgba(255, 255, 255, 0.08), transparent 24%),
-    radial-gradient(circle at 10% 50%, rgba(251, 146, 60, 0.24), transparent 26%),
-    radial-gradient(circle at 90% 70%, rgba(52, 211, 153, 0.19), transparent 21%),
-    radial-gradient(circle at 25% 85%, rgba(217, 70, 239, 0.16), transparent 23%),
-    radial-gradient(circle at 75% 35%, rgba(99, 102, 241, 0.21), transparent 25%),
-    linear-gradient(135deg, #03050b 0%, #070b15 34%, #0c1020 66%, #05070d 100%);
-  background-size: 140% 140%;
-  filter: saturate(1.08);
-  animation: portalBackgroundShift 18s ease-in-out infinite;
+    radial-gradient(circle at 8% 10%, rgba(251, 191, 36, 0.16), transparent 0, transparent 18%),
+    radial-gradient(circle at 82% 86%, rgba(251, 146, 60, 0.24), transparent 0, transparent 16%),
+    linear-gradient(140deg, rgba(255, 196, 92, 0.18), transparent 14%) top left / 28% 24% no-repeat,
+    linear-gradient(320deg, rgba(96, 165, 250, 0.14), transparent 16%) bottom right / 26% 22% no-repeat,
+    linear-gradient(180deg, rgba(5, 10, 22, 0.28), rgba(5, 10, 22, 0.08));
+  opacity: 0.95;
 }
 
 .portal-shell::after {
@@ -251,11 +238,11 @@ img {
   z-index: -2;
   pointer-events: none;
   background:
-    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-  background-size: 34px 34px;
-  mask-image: radial-gradient(circle at center, black 38%, transparent 88%);
-  opacity: 0.36;
+    radial-gradient(circle at center, rgba(148, 163, 184, 0.2) 0 1px, transparent 1.8px) 0 0 / 18px 18px,
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.04), transparent 40%),
+    radial-gradient(circle at bottom right, rgba(255, 255, 255, 0.04), transparent 34%);
+  mask-image: radial-gradient(circle at center, black 45%, transparent 96%);
+  opacity: 0.32;
 }
 
 .portal-shell[data-theme='light'] {
