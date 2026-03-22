@@ -284,33 +284,6 @@ body {
   border-radius: 0.82rem;
 }
 
-.portal-pass-surface {
-  position: relative;
-  overflow: hidden;
-}
-
-.portal-pass-surface > * {
-  position: relative;
-  z-index: 1;
-}
-
-.portal-pass-watermark {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.portal-pass-watermark__image {
-  width: min(18rem, 68%);
-  aspect-ratio: 1;
-  object-fit: contain;
-  opacity: 0.06;
-  filter: blur(0.2px) saturate(0.9);
-}
 
 .portal-admin-lockup {
   display: inline-flex;

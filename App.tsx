@@ -330,7 +330,7 @@ function buildPassWindowHtml(receipt: RegistrationReceipt) {
         <style>
           * { box-sizing: border-box; }
           @page { size: A4; margin: 12mm; }
-          body { margin: 0; font-family: Inter, Arial, sans-serif; background: linear-gradient(180deg, #07111d 0%, #0f172a 100%); color: #e2e8f0; }
+          body { margin: 0; font-family: Inter, Arial, sans-serif; background: radial-gradient(circle at top left, rgba(251,191,36,0.22), transparent 22%), radial-gradient(circle at bottom right, rgba(34,211,238,0.18), transparent 24%), linear-gradient(180deg, #07111d 0%, #0f172a 100%); color: #e2e8f0; }
           .toolbar { position: sticky; top: 0; z-index: 2; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; padding: 16px 18px; border-bottom: 1px solid rgba(255,255,255,0.08); background: rgba(7, 17, 29, 0.92); backdrop-filter: blur(12px); }
           .toolbar-copy { max-width: 620px; }
           .toolbar-copy h1 { margin: 0; font-size: 18px; color: #fff; }
@@ -340,7 +340,10 @@ function buildPassWindowHtml(receipt: RegistrationReceipt) {
           .toolbar-actions .primary { background: linear-gradient(90deg, #67e8f9, #fbbf24); color: #041018; }
           .toolbar-actions .secondary { background: rgba(255,255,255,0.05); color: #e2e8f0; }
           .wrap { padding: 18px 14px 24px; }
-          .sheet { width: min(100%, 794px); min-height: calc(297mm - 24mm); margin: 0 auto; border-radius: 28px; border: 2px solid rgba(125,211,252,0.22); background: linear-gradient(145deg, rgba(7,12,24,0.98), rgba(15,23,42,0.96)); box-shadow: 0 30px 80px rgba(2,8,23,0.42); padding: 22px; page-break-inside: avoid; }
+          .sheet { position: relative; overflow: hidden; width: min(100%, 794px); min-height: calc(297mm - 24mm); margin: 0 auto; border-radius: 28px; border: 2px solid rgba(125,211,252,0.22); background: linear-gradient(145deg, rgba(7,12,24,0.98), rgba(15,23,42,0.96)); box-shadow: 0 30px 80px rgba(2,8,23,0.42); padding: 22px; page-break-inside: avoid; }
+          .sheet::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at top right, rgba(251,191,36,0.14), transparent 24%), radial-gradient(circle at left center, rgba(217,70,239,0.12), transparent 22%), linear-gradient(135deg, rgba(34,211,238,0.08), transparent 42%); pointer-events: none; }
+          .sheet::after { content: ''; position: absolute; inset: 0; background: url('${escapePassHtml(logoUrl)}') center/280px no-repeat; opacity: 0.06; filter: saturate(0.9); pointer-events: none; }
+          .sheet > * { position: relative; z-index: 1; }
           .brand { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: 1px solid rgba(148,163,184,0.18); border-radius: 22px; background: linear-gradient(180deg, rgba(27,35,52,0.96), rgba(13,19,31,0.98)); box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.04), 0 18px 34px rgba(2,8,23,0.24); }
           .brand-logo { width: 62px; height: 62px; border-radius: 20px; padding: 5px; background: linear-gradient(180deg, rgba(255,255,255,0.24), rgba(203,213,225,0.1)); border: 1px solid rgba(255,255,255,0.16); box-shadow: inset 0 1px 0 rgba(255,255,255,0.48), 0 12px 24px rgba(2,8,23,0.2); }
           .brand-logo img { width: 100%; height: 100%; object-fit: cover; border-radius: 18px; }
@@ -349,30 +352,36 @@ function buildPassWindowHtml(receipt: RegistrationReceipt) {
           .hero { display: grid; grid-template-columns: minmax(0, 1.22fr) minmax(180px, 0.78fr); align-items: start; gap: 14px; margin-top: 18px; }
           .event-title { margin: 0; font-size: 25px; color: #fff; }
           .event-copy { margin: 8px 0 0; font-size: 13px; line-height: 1.6; color: #cbd5e1; }
-          .status { display: inline-flex; margin-top: 12px; border-radius: 999px; border: 1px solid rgba(103,232,249,0.18); background: rgba(34,211,238,0.1); padding: 7px 12px; font-size: 11px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: #cffafe; }
-          .qr-card { border-radius: 22px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); padding: 14px; text-align: center; }
+          .status { display: inline-flex; margin-top: 12px; border-radius: 999px; border: 1px solid rgba(251,191,36,0.22); background: linear-gradient(90deg, rgba(34,211,238,0.14), rgba(251,191,36,0.16)); padding: 7px 12px; font-size: 11px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: #fef3c7; box-shadow: 0 10px 26px rgba(34,211,238,0.08); }
+          .hero-highlights { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+          .hero-chip { border-radius: 999px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); padding: 8px 12px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #e2e8f0; }
+          .qr-card { border-radius: 22px; border: 1px solid rgba(255,255,255,0.1); background: linear-gradient(180deg, rgba(15,23,42,0.78), rgba(255,255,255,0.04)); padding: 14px; text-align: center; box-shadow: 0 18px 36px rgba(2,8,23,0.22); }
           .qr-frame { display: inline-flex; border-radius: 18px; background: #fff; padding: 10px; }
           .qr-frame img { width: 160px; height: 160px; }
           .qr-card p { margin: 12px 0 0; color: #cbd5e1; font-size: 12px; line-height: 1.5; }
           .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
-          .cell { border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.04); padding: 13px; }
+          .cell { border-radius: 18px; border: 1px solid rgba(255,255,255,0.08); background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.04)); padding: 13px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.04); }
           .label { font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase; color: #94a3b8; font-weight: 700; }
           .value { margin-top: 6px; font-size: 16px; font-weight: 700; color: #fff; word-break: break-word; }
           .value--small { font-size: 13px; line-height: 1.5; }
-          .instructions { margin-top: 14px; border-radius: 18px; border: 1px solid rgba(52,211,153,0.16); background: rgba(16,185,129,0.1); padding: 14px; }
+          .instructions { margin-top: 14px; border-radius: 18px; border: 1px solid rgba(52,211,153,0.16); background: linear-gradient(135deg, rgba(16,185,129,0.14), rgba(34,211,238,0.1)); padding: 14px; }
           .instructions h2 { margin: 0; font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: #a7f3d0; }
           .instructions ol { margin: 10px 0 0; padding-left: 16px; color: #ecfdf5; }
           .instructions li { margin-bottom: 6px; line-height: 1.5; }
-          .footer { margin-top: 14px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); background: rgba(59,130,246,0.08); padding: 14px; font-size: 12px; line-height: 1.6; color: #dbeafe; }
+          .footer { margin-top: 14px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); background: linear-gradient(135deg, rgba(59,130,246,0.12), rgba(168,85,247,0.1)); padding: 14px; font-size: 12px; line-height: 1.6; color: #dbeafe; }
           @media (max-width: 820px) { .hero, .grid { grid-template-columns: 1fr; } .sheet { padding: 18px; min-height: auto; } .brand-title { font-size: 20px; } .event-title { font-size: 22px; } .qr-frame img { width: 148px; height: 148px; } }
           @media print {
             body { background: #fff; }
             .toolbar { display: none; }
             .wrap { padding: 0; }
-            .sheet { width: 100%; min-height: calc(297mm - 24mm); box-shadow: none; border-color: #cbd5e1; background: #fff; color: #0f172a; padding: 14mm 12mm 12mm; }
+            .sheet { width: 100%; min-height: calc(297mm - 24mm); box-shadow: none; border-color: #cbd5e1; background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); color: #0f172a; padding: 14mm 12mm 12mm; }
+            .sheet::before { background: radial-gradient(circle at top right, rgba(251,191,36,0.08), transparent 22%), radial-gradient(circle at left center, rgba(59,130,246,0.08), transparent 22%); }
+            .sheet::after { opacity: 0.05; filter: grayscale(0.1); }
             .event-title, .value { color: #0f172a; }
             .event-copy, .qr-card p, .footer { color: #334155; }
-            .qr-card, .cell, .instructions, .footer { border-color: #dbeafe; background: #f8fafc; }
+            .qr-card, .cell, .instructions, .footer { border-color: #dbeafe; background: rgba(248,250,252,0.92); }
+            .status { color: #92400e; border-color: #fcd34d; background: linear-gradient(90deg, rgba(254,240,138,0.8), rgba(186,230,253,0.9)); }
+            .hero-chip { background: #eef2ff; color: #1e293b; border-color: #cbd5e1; }
           }
         </style>
       </head>
@@ -404,6 +413,11 @@ function buildPassWindowHtml(receipt: RegistrationReceipt) {
                 <h2 class="event-title">${escapePassHtml(receipt.eventName)}</h2>
                 <p class="event-copy">Official participant pass for entry, verification, and tracker reference. Keep this one-page pass with you until the event is completed.</p>
                 <div class="status">${escapePassHtml(statusLabel)}</div>
+                <div class="hero-highlights">
+                  <div class="hero-chip">${escapePassHtml(receipt.dateLabel)}</div>
+                  <div class="hero-chip">${escapePassHtml(receipt.timeLabel)}</div>
+                  <div class="hero-chip">${escapePassHtml(receipt.venue)}</div>
+                </div>
               </div>
               <div class="qr-card">
                 <div class="qr-frame">
