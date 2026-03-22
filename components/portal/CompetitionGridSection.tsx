@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { CalendarDays, CreditCard, ExternalLink, MapPin, Volume2, VolumeX, Trophy, Users } from 'lucide-react';
+import { CalendarDays, CreditCard, ExternalLink, MapPin, Phone, Volume2, VolumeX, Trophy, Users } from 'lucide-react';
 import type { EventRecord } from './types';
 import { formatCurrency, getTeamLabel } from './utils';
 
@@ -209,6 +209,7 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
               const displayCategory = getDisplayCategory(event);
               const theme = categoryThemes[displayCategory] || categoryThemes.Technical;
               const teamLabel = getTeamLabel(event);
+              const primaryCoordinator = event.coordinators?.[0] ?? null;
               const handleOpenEvent = () => onSelectEvent(event.slug);
               const hasIntroVideo = Boolean(event.intro_video_url);
               const isVideoActive = supportsHoverPreview
@@ -350,6 +351,27 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
                       <Users size={16} />
                       <span>{teamLabel}</span>
                     </div>
+
+                    {primaryCoordinator ? (
+                      <div className="mt-4 rounded-[1.15rem] border border-white/10 bg-white/[0.04] p-3">
+                        <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">Coordinator</p>
+                        <div className="mt-2 flex items-center justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-semibold text-white">{primaryCoordinator.name}</p>
+                            <p className="text-sm text-slate-300">{primaryCoordinator.phone}</p>
+                          </div>
+                          <a
+                            href={`tel:${primaryCoordinator.phone.replace(/\D+/g, '')}`}
+                            onClick={(clickEvent) => clickEvent.stopPropagation()}
+                            className="inline-flex shrink-0 items-center gap-2 rounded-full border border-emerald-300/18 bg-emerald-400/10 px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-100"
+                            aria-label={`Call ${primaryCoordinator.name}`}
+                          >
+                            <Phone size={14} />
+                            Call
+                          </a>
+                        </div>
+                      </div>
+                    ) : null}
 
                     <div className="portal-competition-card__stats mt-5">
                       <div className="portal-competition-card__stat-card">

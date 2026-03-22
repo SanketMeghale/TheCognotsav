@@ -19,6 +19,10 @@ export const eventSeed = [
     intro_video_url: 'https://res.cloudinary.com/dkxddhawc/video/upload/v1774094978/techKBC_dixjux.mp4',
     payment_upi: 'sahilbhatti292005@okaxis',
     payment_payee: 'Sahil Bhatti',
+    coordinators: [
+      { name: 'Sahil B.', phone: '9028313750' },
+      { name: 'Omkar B.', phone: '9359071534' },
+    ],
   },
   {
     slug: 'bgmi-esports',
@@ -40,6 +44,10 @@ export const eventSeed = [
     intro_video_url: 'https://res.cloudinary.com/dkxddhawc/video/upload/v1774094883/esport_kcmujl.mp4',
     payment_upi: 'kawadeakshay23@okaxis',
     payment_payee: 'Akshay Kawade',
+    coordinators: [
+      { name: 'Sanket M.', phone: '9356776307' },
+      { name: 'Harshad D.', phone: '9322665964' },
+    ],
   },
   {
     slug: 'ff-esports',
@@ -61,6 +69,10 @@ export const eventSeed = [
     intro_video_url: 'https://res.cloudinary.com/dkxddhawc/video/upload/v1774094883/esport_kcmujl.mp4',
     payment_upi: 'kawadeakshay23@okaxis',
     payment_payee: 'Akshay Kawade',
+    coordinators: [
+      { name: 'Sanket M.', phone: '9356776307' },
+      { name: 'Harshad D.', phone: '9322665964' },
+    ],
   },
   {
     slug: 'squid-game',
@@ -82,6 +94,10 @@ export const eventSeed = [
     intro_video_url: 'https://res.cloudinary.com/dkxddhawc/video/upload/v1774094901/squid_game_i2l62h.mp4',
     payment_upi: 'siddhideshpande11@okhdfcbank',
     payment_payee: 'Siddhi Deshpande',
+    coordinators: [
+      { name: 'Tejaswini G.', phone: '9890959580' },
+      { name: 'Om R.', phone: '7620322275' },
+    ],
   },
   {
     slug: 'rang-manch',
@@ -103,6 +119,10 @@ export const eventSeed = [
     intro_video_url: 'https://res.cloudinary.com/dkxddhawc/video/upload/v1774094878/rangmunch_y3w7dw.mp4',
     payment_upi: 'chaitanyamagar418@okhdfcbank',
     payment_payee: 'Chaitanya Magar',
+    coordinators: [
+      { name: 'Sayli A.', phone: '8668922831' },
+      { name: 'Nikita A.', phone: '8669948742' },
+    ],
   },
   {
     slug: 'googler-hunt',
@@ -124,6 +144,10 @@ export const eventSeed = [
     intro_video_url: 'https://res.cloudinary.com/dkxddhawc/video/upload/v1774094899/googler_qpsklm.mp4',
     payment_upi: 'siddhideshpande11@okhdfcbank',
     payment_payee: 'Siddhi Deshpande',
+    coordinators: [
+      { name: 'Harshal G.', phone: '9552843975' },
+      { name: 'Aditya G.', phone: '7558394479' },
+    ],
   },
   {
     slug: 'techxcelerate',
@@ -145,6 +169,10 @@ export const eventSeed = [
     intro_video_url: 'https://res.cloudinary.com/dkxddhawc/video/upload/v1774094887/techacclerate_eopgpp.mp4',
     payment_upi: 'kawadeakshay23@okaxis',
     payment_payee: 'Akshay Kawade',
+    coordinators: [
+      { name: 'Prerna C.', phone: '8767927244' },
+      { name: 'Akashy K.', phone: '9766205339' },
+    ],
   },
   {
     slug: 'utopia',
@@ -166,5 +194,9 @@ export const eventSeed = [
     intro_video_url: 'https://res.cloudinary.com/dkxddhawc/video/upload/v1774094875/utopia_am7x4t.mp4',
     payment_upi: 'siddhideshpande11@okhdfcbank',
     payment_payee: 'Siddhi Deshpande',
+    coordinators: [
+      { name: 'Trupti J.', phone: '9850560091' },
+      { name: 'Dipika N.', phone: '7276062774' },
+    ],
   },
 ];

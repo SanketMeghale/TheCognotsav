@@ -45,6 +45,7 @@ export async function initDatabase() {
       intro_video_url TEXT,
       payment_upi TEXT,
       payment_payee TEXT,
+      coordinators JSONB NOT NULL DEFAULT '[]'::jsonb,
       is_active BOOLEAN NOT NULL DEFAULT TRUE,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -130,6 +131,7 @@ export async function initDatabase() {
     ALTER TABLE events ADD COLUMN IF NOT EXISTS intro_video_url TEXT;
     ALTER TABLE events ADD COLUMN IF NOT EXISTS payment_upi TEXT;
     ALTER TABLE events ADD COLUMN IF NOT EXISTS payment_payee TEXT;
+    ALTER TABLE events ADD COLUMN IF NOT EXISTS coordinators JSONB NOT NULL DEFAULT '[]'::jsonb;
     ALTER TABLE registrations ADD COLUMN IF NOT EXISTS payment_method TEXT NOT NULL DEFAULT 'upi';
     ALTER TABLE registrations ADD COLUMN IF NOT EXISTS payment_screenshot_path TEXT;
     ALTER TABLE registrations ADD COLUMN IF NOT EXISTS payment_provider_order_id TEXT;
@@ -149,11 +151,11 @@ export async function initDatabase() {
         INSERT INTO events (
           slug, name, category, date_label, time_label, venue, description, prize,
           registration_fee, registration_fee_label, min_members, max_members, max_slots,
-          is_team_event, poster_path, intro_video_url, payment_upi, payment_payee, is_active
+          is_team_event, poster_path, intro_video_url, payment_upi, payment_payee, coordinators, is_active
         )
         VALUES (
           $1, $2, $3, $4, $5, $6, $7, $8,
-          $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, TRUE
+          $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, TRUE
         )
         ON CONFLICT (slug) DO UPDATE SET
           name = EXCLUDED.name,
@@ -173,6 +175,7 @@ export async function initDatabase() {
           intro_video_url = EXCLUDED.intro_video_url,
           payment_upi = EXCLUDED.payment_upi,
           payment_payee = EXCLUDED.payment_payee,
+          coordinators = EXCLUDED.coordinators,
           updated_at = NOW()
       `,
       [
@@ -194,6 +197,7 @@ export async function initDatabase() {
         event.intro_video_url ?? null,
         event.payment_upi,
         event.payment_payee,
+        JSON.stringify(event.coordinators ?? []),
       ],
     );
   }

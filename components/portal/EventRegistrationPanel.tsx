@@ -1,7 +1,7 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import {
   ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Clock3, Copy, CreditCard, Download, ExternalLink,
-  Info, MapPin, QrCode, Save, Smartphone, Sparkles, Trophy, Upload, Users,
+  Info, MapPin, Phone, QrCode, Save, Smartphone, Sparkles, Trophy, Upload, Users,
 } from 'lucide-react';
 import type { EventRecord, ParticipantDraft, RegistrationReceipt } from './types';
 import { formatCurrency, getTeamLabel } from './utils';
@@ -306,6 +306,36 @@ export const EventRegistrationPanel: React.FC<Props> = ({
               </div>
             </div>
           </section>
+
+          {selectedEvent.coordinators?.length ? (
+            <section className="portal-event-section portal-glow-card portal-glass" data-reveal="up">
+              <div className="portal-event-section__head">
+                <Phone size={17} className="text-emerald-200" />
+                <div>
+                  <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Coordinator Contacts</p>
+                  <h3 className="mt-1 text-lg font-semibold text-white">Call the event team directly</h3>
+                </div>
+              </div>
+              <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                {selectedEvent.coordinators.map((coordinator) => {
+                  const telValue = coordinator.phone.replace(/\D+/g, '');
+                  return (
+                    <div key={`${selectedEvent.slug}-${coordinator.name}-${coordinator.phone}`} className="rounded-[1.25rem] border border-white/10 bg-white/[0.04] p-4">
+                      <p className="text-sm font-semibold text-white">{coordinator.name}</p>
+                      <p className="mt-2 text-sm text-slate-300">{coordinator.phone}</p>
+                      <a
+                        href={`tel:${telValue}`}
+                        className="magnetic-button mt-4 inline-flex items-center gap-2 rounded-full border border-emerald-300/18 bg-emerald-400/10 px-4 py-2 text-sm font-semibold text-emerald-100"
+                      >
+                        <Phone size={15} />
+                        Call now
+                      </a>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          ) : null}
 
           <section className="portal-event-section portal-glow-card portal-glass" data-reveal="up">
             <div className="portal-event-section__head">

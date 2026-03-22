@@ -1,3 +1,8 @@
+export type CoordinatorContact = {
+  name: string;
+  phone: string;
+};
+
 export type EventRecord = {
   id: number;
   slug: string;
@@ -18,6 +23,7 @@ export type EventRecord = {
   intro_video_url?: string | null;
   payment_upi: string | null;
   payment_payee: string | null;
+  coordinators: CoordinatorContact[];
   registrations_count: number;
   waitlist_count: number;
 };
