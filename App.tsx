@@ -950,6 +950,11 @@ export const App: React.FC = () => {
   const visibleAnnouncements = announcements
     .filter((announcement) => isAnnouncementActive(announcement))
     .slice(0, 8);
+  const eventScopedAnnouncements = selectedEvent
+    ? visibleAnnouncements.filter(
+        (announcement) => announcement.event_slug === selectedEvent.slug || announcement.event_slug === null,
+      )
+    : [];
 
   const markFieldTouched = (field: string) => {
     setTouchedFields((current) => (current[field] ? current : { ...current, [field]: true }));
@@ -1783,6 +1788,7 @@ export const App: React.FC = () => {
           <Suspense fallback={<PortalSectionFallback label="Loading event details..." />}>
             <EventRegistrationPanel
               selectedEvent={selectedEvent}
+              eventAnnouncements={eventScopedAnnouncements}
               teamSize={teamSize}
               form={form}
               submitting={submitting}

@@ -1,9 +1,9 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import {
-  ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Clock3, Copy, CreditCard, Download, ExternalLink,
+  ArrowLeft, ArrowRight, BellRing, BookOpen, CheckCircle2, Clock3, Copy, CreditCard, Download, ExternalLink,
   Info, MapPin, Phone, QrCode, Save, Smartphone, Sparkles, Trophy, Upload, Users,
 } from 'lucide-react';
-import type { EventRecord, ParticipantDraft, RegistrationReceipt } from './types';
+import type { EventRecord, ParticipantDraft, PortalAnnouncement, RegistrationReceipt } from './types';
 import { formatCurrency, getEventLiveState, getTeamLabel } from './utils';
 
 type FormState = {
@@ -21,6 +21,7 @@ type FormState = {
 
 type Props = {
   selectedEvent: EventRecord | null;
+  eventAnnouncements: PortalAnnouncement[];
   teamSize: number;
   form: FormState;
   submitting: boolean;
@@ -173,7 +174,7 @@ function resolveEventAmount(event: EventRecord, participantCount: number) {
 }
 
 export const EventRegistrationPanel: React.FC<Props> = ({
-  selectedEvent, teamSize, form, submitting, successMessage, errorMessage, successReceipt, draftRecovered,
+  selectedEvent, eventAnnouncements, teamSize, form, submitting, successMessage, errorMessage, successReceipt, draftRecovered,
   validationErrors, touchedFields, paymentScreenshotName, paymentScreenshotReady, onDownloadPass,
   onDismissDraftRecovered, onFieldBlur, onPaymentScreenshotChange, onTeamSizeChange,
   onFormFieldChange, onParticipantChange, onSubmit,
@@ -327,17 +328,36 @@ export const EventRegistrationPanel: React.FC<Props> = ({
 
           <section className="portal-event-section portal-glow-card portal-glass" data-reveal="up">
             <div className="portal-event-section__head">
-              <Clock3 size={17} className="text-cyan-200" />
+              <BellRing size={17} className="text-cyan-200" />
               <div>
                 <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Live Status & Updates</p>
                 <h3 className="mt-1 text-lg font-semibold text-white">{liveState.label}</h3>
               </div>
             </div>
-            <div className="mt-5 rounded-[1.25rem] border border-white/10 bg-white/[0.04] p-4">
-              <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">Current Snapshot</p>
-              <p className="mt-2 text-lg font-bold text-white">{liveState.countdown}</p>
-              <p className="mt-2 text-sm text-slate-300">{liveState.detail}</p>
-              <p className="mt-3 text-sm text-slate-400">{selectedEvent.date_label} / {selectedEvent.time_label} / {selectedEvent.venue}</p>
+            <div className="mt-5 rounded-[1.35rem] border border-cyan-300/18 bg-[linear-gradient(145deg,rgba(34,211,238,0.12),rgba(15,23,42,0.82))] p-4 shadow-[0_0_30px_rgba(56,189,248,0.18)]">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="inline-flex rounded-full border border-cyan-300/18 bg-cyan-400/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-cyan-100">
+                  {liveState.countdown}
+                </span>
+                {eventAnnouncements[0]?.event_name ? (
+                  <span className="inline-flex rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-slate-200">
+                    {eventAnnouncements[0].event_name}
+                  </span>
+                ) : null}
+              </div>
+              <p className="mt-3 text-sm text-slate-200">{liveState.detail}</p>
+              <p className="mt-2 text-sm text-slate-400">{selectedEvent.date_label} / {selectedEvent.time_label} / {selectedEvent.venue}</p>
+              <div className="mt-4 rounded-[1rem] border border-white/10 bg-black/20 p-3">
+                <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">Latest Update</p>
+                <p className="mt-2 text-sm font-semibold text-white">
+                  {eventAnnouncements[0]?.title || 'No event-specific update published yet.'}
+                </p>
+                {eventAnnouncements[0]?.message ? (
+                  <p className="mt-1 line-clamp-2 text-sm text-slate-300">{eventAnnouncements[0].message}</p>
+                ) : (
+                  <p className="mt-1 text-sm text-slate-300">Watch this area for reporting changes, notices, and organizer instructions.</p>
+                )}
+              </div>
             </div>
           </section>
 
