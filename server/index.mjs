@@ -1433,7 +1433,6 @@ function buildVerifiedPassPage(registration) {
           body { margin: 0; font-family: Inter, Arial, sans-serif; background: radial-gradient(circle at top left, rgba(251,191,36,0.16), transparent 22%), radial-gradient(circle at bottom right, rgba(34,211,238,0.14), transparent 22%), linear-gradient(180deg, #08111f 0%, #0f172a 100%); color: #e2e8f0; }
           .wrap { min-height: 100vh; padding: 28px 16px; display: flex; align-items: center; justify-content: center; }
           .card { position: relative; overflow: hidden; width: min(100%, 760px); border-radius: 28px; border: 1px solid rgba(255,255,255,0.08); background: linear-gradient(145deg, #111827, #171b2e); box-shadow: 0 30px 72px rgba(2,8,23,0.38); }
-          .card::before { content: ''; position: absolute; inset: 0; background: url('${logoUrl}') center/260px no-repeat; opacity: 0.05; pointer-events: none; }
           .top { position: relative; padding: 22px 24px 24px; background: linear-gradient(90deg, rgba(59,130,246,0.2), rgba(168,85,247,0.16), rgba(236,72,153,0.18)); border-bottom: 1px solid rgba(255,255,255,0.08); text-align: center; }
           .logo { width: 84px; height: 84px; margin: 0 auto; border-radius: 24px; padding: 6px; background: linear-gradient(180deg, rgba(255,255,255,0.24), rgba(203,213,225,0.1)); border: 1px solid rgba(255,255,255,0.16); box-shadow: inset 0 1px 0 rgba(255,255,255,0.48), 0 12px 24px rgba(2,8,23,0.2); }
           .logo img { width: 100%; height: 100%; display: block; object-fit: cover; border-radius: 18px; }
@@ -1455,7 +1454,7 @@ function buildVerifiedPassPage(registration) {
           .button-primary { background: linear-gradient(90deg, #67e8f9, #fbbf24); color: #041018; }
           .button-secondary { border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.06); color: #ffffff; }
           @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } .title { font-size: 22px; } }
-          @media print { .actions { display: none; } body { background: #ffffff; } .card { box-shadow: none; border-color: #cbd5e1; background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); } .card::before { opacity: 0.04; } .cell, .qr-card { background: rgba(248,250,252,0.92); } .lead, .hint { color: #334155; } .value { color: #0f172a; } }
+          @media print { .actions { display: none; } body { background: #ffffff; } .card { box-shadow: none; border-color: #cbd5e1; background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); } .cell, .qr-card { background: rgba(248,250,252,0.92); } .lead, .hint { color: #334155; } .value { color: #0f172a; } }
         </style>
       </head>
       <body>
