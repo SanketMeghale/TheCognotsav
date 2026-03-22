@@ -73,12 +73,14 @@ html {
   background: #05070d;
   overflow-x: clip;
   scroll-behavior: smooth;
+  scroll-padding-top: 5.5rem;
 }
 
 body {
   min-height: 100vh;
   margin: 0;
   overflow-x: clip;
+  overscroll-behavior-y: contain;
   background:
     radial-gradient(circle at top left, rgba(251, 191, 36, 0.1), transparent 18%),
     radial-gradient(circle at right bottom, rgba(251, 146, 60, 0.14), transparent 20%),
@@ -213,6 +215,8 @@ img {
   width: 100%;
   height: 100%;
   pointer-events: none;
+  contain: paint;
+  transform: translateZ(0);
   background:
     linear-gradient(180deg, rgba(5, 10, 22, 0.52), rgba(5, 10, 22, 0.68)),
     url('https://res.cloudinary.com/dkxddhawc/image/upload/v1774157303/ChatGPT_Image_Mar_22_2026_10_54_12_AM_foafcx.png') center/cover no-repeat;
@@ -1694,9 +1698,9 @@ img {
   z-index: -1;
   border-radius: 999px;
   pointer-events: none;
-  filter: blur(18px);
-  opacity: 0.36;
-  animation: portalOrbFloat 15s ease-in-out infinite;
+  filter: blur(12px);
+  opacity: 0.22;
+  animation: portalOrbFloat 18s ease-in-out infinite;
 }
 
 .portal-orb--violet {
@@ -1726,7 +1730,7 @@ img {
 }
 
 .portal-page-enter {
-  animation: portalPageOpacityIn 0.9s ease both;
+  animation: portalPageOpacityIn 0.55s ease both;
 }
 
 .portal-glass {
@@ -1738,8 +1742,8 @@ img {
     radial-gradient(circle at bottom right, rgba(138, 43, 226, 0.1), transparent 34%) padding-box,
     linear-gradient(145deg, rgba(17, 24, 39, 0.82), rgba(15, 18, 29, 0.92)) padding-box,
     var(--portal-surface-border) border-box;
-  backdrop-filter: blur(22px);
-  -webkit-backdrop-filter: blur(22px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid transparent;
   box-shadow: var(--portal-surface-shadow-glow);
   transition:
@@ -3635,7 +3639,7 @@ select.floating-field-input option {
 .portal-front-hero--premium::before,
 .portal-front-hero--premium::after {
   opacity: 0.55;
-  filter: blur(54px);
+  filter: blur(32px);
 }
 
 .portal-front-hero__content--premium,
@@ -4019,10 +4023,15 @@ select.floating-field-input option {
 
 #registration-panel,
 #tracker,
+#announcement-archive,
 #faq,
 footer {
   content-visibility: auto;
   contain-intrinsic-size: 1px 900px;
+}
+
+footer {
+  margin-bottom: clamp(0.85rem, 2.8vw, 1.4rem);
 }
 
 .portal-front-hero__visual-logo-frame {

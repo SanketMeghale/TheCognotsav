@@ -1,26 +1,51 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ArrowRight, CalendarDays, MapPin, Sparkles, Trophy } from 'lucide-react';
 
 type Props = {};
 
 const HERO_BACKGROUND_VIDEO_URL =
   'https://res.cloudinary.com/dkxddhawc/video/upload/v1774151154/instagram_1774150372589_720p_a0eoxu.mp4';
+const HERO_BACKGROUND_FALLBACK_IMAGE =
+  'https://res.cloudinary.com/dkxddhawc/image/upload/v1774157303/ChatGPT_Image_Mar_22_2026_10_54_12_AM_foafcx.png';
 
 export const HeroSection: React.FC<Props> = () => {
+  const [enableHeroVideo, setEnableHeroVideo] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isDesktop = window.matchMedia('(min-width: 1024px) and (hover: hover) and (pointer: fine)').matches;
+    const saveData = 'connection' in navigator && (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+
+    setEnableHeroVideo(Boolean(isDesktop && !prefersReducedMotion && !saveData));
+  }, []);
+
   return (
     <section id="overview" className="mx-auto w-full max-w-[1320px] px-1 sm:px-5 lg:px-8 pt-3 pb-2 md:pt-5 md:pb-4">
       <div className="portal-front-hero portal-front-hero--premium portal-front-hero--welcome">
         <div className="portal-front-hero__video-layer" aria-hidden="true">
-          <video
-            className="portal-front-hero__background-video"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="metadata"
-          >
-            <source src={HERO_BACKGROUND_VIDEO_URL} type="video/mp4" />
-          </video>
+          {enableHeroVideo ? (
+            <video
+              className="portal-front-hero__background-video"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="none"
+              poster={HERO_BACKGROUND_FALLBACK_IMAGE}
+              disablePictureInPicture
+            >
+              <source src={HERO_BACKGROUND_VIDEO_URL} type="video/mp4" />
+            </video>
+          ) : (
+            <div
+              className="portal-front-hero__background-fallback"
+              style={{ backgroundImage: `url(${HERO_BACKGROUND_FALLBACK_IMAGE})` }}
+            />
+          )}
           <div className="portal-front-hero__video-overlay" />
         </div>
 
