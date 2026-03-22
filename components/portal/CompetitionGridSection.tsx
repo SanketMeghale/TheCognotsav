@@ -29,8 +29,6 @@ const categoryThemes: Record<string, { button: string; glow: string; badge: stri
 };
 
 const filterOrder = ['All', 'Technical', 'Sports', 'Gaming', 'Fun'] as const;
-const TECH_KBC_CARD_BACKGROUND =
-  'https://res.cloudinary.com/dkxddhawc/image/upload/v1774193946/ChatGPT_Image_Mar_22_2026_07_33_01_PM_kvlgk5.png';
 
 function getDisplayCategory(event: EventRecord) {
   const name = `${event.name} ${event.description}`.toLowerCase();
@@ -221,7 +219,6 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
               const primaryCoordinator = event.coordinators?.[0] ?? null;
               const handleOpenEvent = () => onSelectEvent(event.slug);
               const hasIntroVideo = Boolean(event.intro_video_url);
-              const cardPoster = event.slug === 'tech-kbc' ? TECH_KBC_CARD_BACKGROUND : event.poster_path;
               const isVideoActive = supportsHoverPreview
                 ? hoveredVideoSlug === event.slug
                 : mobileVisibleVideoSlug === event.slug;
@@ -288,7 +285,7 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
                         aria-label={!supportsHoverPreview ? `${event.name} intro video autoplay preview` : `${event.name} intro video preview`}
                       >
                         <img
-                          src={cardPoster}
+                          src={event.poster_path}
                           alt={event.name}
                           loading="lazy"
                           decoding="async"
@@ -303,7 +300,7 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
                           playsInline
                           muted
                           loop
-                          poster={cardPoster}
+                          poster={event.poster_path}
                         >
                           <source src={event.intro_video_url} type="video/mp4" />
                           Your browser does not support the event intro video.
@@ -322,7 +319,7 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
                         </button>
                       </div>
                     ) : (
-                      <img src={cardPoster} alt={event.name} loading="lazy" decoding="async" className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.04]" />
+                      <img src={event.poster_path} alt={event.name} loading="lazy" decoding="async" className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.04]" />
                     )}
                     <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(7,10,21,0.02),rgba(7,10,21,0.44)_52%,rgba(7,10,21,0.9))]" />
                     <div className="portal-competition-card__noise" aria-hidden="true" />
