@@ -32,11 +32,11 @@ const filterOrder = ['All', 'Technical', 'Sports', 'Gaming', 'Fun'] as const;
 
 function getDisplayCategory(event: EventRecord) {
   const name = `${event.name} ${event.description}`.toLowerCase();
-  if (event.category.toLowerCase() === 'sports' || /runbhumi|esport|bgmi|free fire|sport/i.test(name)) {
+  if (event.category.toLowerCase() === 'sports' || /sport/i.test(name)) {
     return 'Sports';
   }
 
-  if (event.category.toLowerCase() === 'gaming') {
+  if (event.category.toLowerCase() === 'gaming' || /runbhumi|esport|bgmi|free fire/i.test(name)) {
     return 'Gaming';
   }
 
