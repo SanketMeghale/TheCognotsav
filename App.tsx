@@ -448,11 +448,10 @@ function buildValidationErrors(
 ): FieldErrors {
   const errors: FieldErrors = {};
   const requiresTeamName = Boolean(selectedEvent && (selectedEvent.min_members > 1 || selectedEvent.is_team_event));
+  const isSoloEvent = Boolean(selectedEvent && selectedEvent.min_members === 1 && !selectedEvent.is_team_event);
 
   if (requiresTeamName && !form.teamName.trim()) errors.teamName = 'Enter your team name.';
   if (!form.collegeName.trim()) errors.collegeName = 'College name is required.';
-  if (!form.departmentName.trim()) errors.departmentName = 'Department is required.';
-  if (!form.yearOfStudy.trim()) errors.yearOfStudy = 'Year or semester is required.';
   if (!form.contactName.trim()) errors.contactName = 'Primary contact name is required.';
 
   if (!form.contactEmail.trim()) {
@@ -484,16 +483,18 @@ function buildValidationErrors(
       errors[`${prefix}.fullName`] = `Participant ${index + 1} name is required.`;
     }
 
-    if (!participant.email.trim()) {
-      errors[`${prefix}.email`] = `Participant ${index + 1} email is required.`;
-    } else if (!emailPattern.test(participant.email.trim())) {
-      errors[`${prefix}.email`] = `Participant ${index + 1} email is invalid.`;
-    }
+    if (isSoloEvent && index === 0) {
+      if (!participant.email.trim()) {
+        errors[`${prefix}.email`] = 'Email is required.';
+      } else if (!emailPattern.test(participant.email.trim())) {
+        errors[`${prefix}.email`] = 'Enter a valid email address.';
+      }
 
-    if (!participant.phone.trim()) {
-      errors[`${prefix}.phone`] = `Participant ${index + 1} phone is required.`;
-    } else if (!phonePattern.test(participant.phone.trim())) {
-      errors[`${prefix}.phone`] = `Participant ${index + 1} phone must be 10 digits.`;
+      if (!participant.phone.trim()) {
+        errors[`${prefix}.phone`] = 'Phone number is required.';
+      } else if (!phonePattern.test(participant.phone.trim())) {
+        errors[`${prefix}.phone`] = 'Enter a valid 10-digit phone number.';
+      }
     }
   });
 
@@ -543,8 +544,8 @@ export const App: React.FC = () => {
   const [form, setForm] = useState<FormState>({
     teamName: '',
     collegeName: '',
-    departmentName: '',
-    yearOfStudy: '',
+    departmentName: 'Not Provided',
+    yearOfStudy: 'Not Provided',
     contactName: '',
     contactEmail: '',
     contactPhone: '',
@@ -876,6 +877,19 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleBackToEvents = () => {
+    setSuccessMessage('');
+    setErrorMessage('');
+    setSuccessReceipt(null);
+    if (typeof window !== 'undefined') {
+      const nextHash = '#registration-panel';
+      if (window.location.hash.toLowerCase() !== nextHash) {
+        window.history.pushState(null, '', nextHash);
+      }
+      setHashRoute(nextHash);
+    }
+  };
+
   const handleTeamSizeChange = (nextSize: number) => {
     if (!selectedEvent) return;
 
@@ -892,7 +906,39 @@ export const App: React.FC = () => {
   };
 
   const updateFormField = (field: keyof FormState, value: string) => {
-    setForm((current) => ({ ...current, [field]: value }));
+    setForm((current) => {
+      if (field === 'contactName') {
+        return {
+          ...current,
+          contactName: value,
+          participants: current.participants.map((participant, index) =>
+            index === 0 ? { ...participant, fullName: value } : participant,
+          ),
+        };
+      }
+
+      if (field === 'contactEmail') {
+        return {
+          ...current,
+          contactEmail: value,
+          participants: current.participants.map((participant, index) =>
+            index === 0 ? { ...participant, email: value } : participant,
+          ),
+        };
+      }
+
+      if (field === 'contactPhone') {
+        return {
+          ...current,
+          contactPhone: value,
+          participants: current.participants.map((participant, index) =>
+            index === 0 ? { ...participant, phone: value } : participant,
+          ),
+        };
+      }
+
+      return { ...current, [field]: value };
+    });
   };
 
   const handleParticipantChange = (index: number, field: keyof ParticipantDraft, value: string) => {
@@ -960,6 +1006,14 @@ export const App: React.FC = () => {
     setErrorMessage('');
 
     try {
+      const normalizedParticipants = form.participants.map((participant, index) => ({
+        fullName: participant.fullName.trim(),
+        email: index === 0
+          ? form.contactEmail.trim()
+          : `member${index + 1}.${selectedEvent.slug}.${Date.now()}@cognotsav.local`,
+        phone: form.contactPhone.trim(),
+      }));
+
       const response = await fetch('/api/registrations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -970,16 +1024,16 @@ export const App: React.FC = () => {
               ? form.contactName
               : form.teamName,
           collegeName: form.collegeName,
-          departmentName: form.departmentName,
-          yearOfStudy: form.yearOfStudy,
+          departmentName: 'Not Provided',
+          yearOfStudy: 'Not Provided',
           contactName: form.contactName,
           contactEmail: form.contactEmail,
           contactPhone: form.contactPhone,
           paymentMethod: 'upi',
           paymentReference: form.paymentReference,
           paymentScreenshotDataUrl,
-          notes: form.notes,
-          participants: form.participants,
+          notes: null,
+          participants: normalizedParticipants,
         }),
       });
 
@@ -1039,8 +1093,8 @@ export const App: React.FC = () => {
       setForm({
         teamName: '',
         collegeName: '',
-        departmentName: '',
-        yearOfStudy: '',
+        departmentName: 'Not Provided',
+        yearOfStudy: 'Not Provided',
         contactName: '',
         contactEmail: '',
         contactPhone: '',
@@ -1701,6 +1755,7 @@ export const App: React.FC = () => {
               paymentScreenshotReady={Boolean(paymentScreenshotDataUrl)}
               onPaymentScreenshotChange={handlePaymentScreenshotChange}
               onTeamSizeChange={handleTeamSizeChange}
+              onBackToEvents={handleBackToEvents}
               onFormFieldChange={updateFormField}
               onParticipantChange={handleParticipantChange}
               onSubmit={handleSubmit}

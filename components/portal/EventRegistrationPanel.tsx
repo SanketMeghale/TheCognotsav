@@ -37,6 +37,7 @@ type Props = {
   onFieldBlur: (field: string) => void;
   onPaymentScreenshotChange: (file: File | null) => void;
   onTeamSizeChange: (size: number) => void;
+  onBackToEvents: () => void;
   onFormFieldChange: (field: keyof FormState, value: string) => void;
   onParticipantChange: (index: number, field: keyof ParticipantDraft, value: string) => void;
   onSubmit: (event: React.FormEvent) => void;
@@ -176,7 +177,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   selectedEvent, teamSize, form, submitting, successMessage, errorMessage, successReceipt, draftRecovered,
   validationErrors, touchedFields, paymentScreenshotName, paymentScreenshotReady, onDownloadPass,
   onDismissDraftRecovered, onFieldBlur, onPaymentScreenshotChange, onTeamSizeChange,
-  onFormFieldChange, onParticipantChange, onSubmit,
+  onBackToEvents, onFormFieldChange, onParticipantChange, onSubmit,
 }) => {
   const passCardRef = useRef<HTMLDivElement | null>(null);
   const eventTopRef = useRef<HTMLDivElement | null>(null);
@@ -190,6 +191,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const upiLink = selectedEvent?.payment_upi ? `upi://pay?pa=${selectedEvent.payment_upi}&pn=${encodeURIComponent(selectedEvent.payment_payee || selectedEvent.name)}&am=${payableAmount}&cu=INR&tn=${encodeURIComponent(selectedEvent.name)}` : '';
   const qrUrl = upiLink ? `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(upiLink)}` : '';
   const canOpenPaymentApp = typeof window !== 'undefined' && /Android|iPhone|iPad|iPod/i.test(window.navigator.userAgent);
+  const isSoloEvent = selectedEvent.min_members === 1 && !selectedEvent.is_team_event;
   const scrollToRegistrationForm = () => {
     if (typeof window === 'undefined') return;
 
@@ -268,10 +270,14 @@ export const EventRegistrationPanel: React.FC<Props> = ({
             </div>
             <div className="portal-event-showcase__content">
               <div className="flex flex-wrap items-center gap-3">
-                <a href="#overview" className="magnetic-button inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-sm font-semibold text-white">
+                <button
+                  type="button"
+                  onClick={onBackToEvents}
+                  className="magnetic-button inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-sm font-semibold text-white"
+                >
                   <ArrowLeft size={14} />
                   Back
-                </a>
+                </button>
                 <span className={`inline-flex rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] ${selectedTheme.badge}`}>
                   {selectedEvent.category}
                 </span>
@@ -420,61 +426,55 @@ export const EventRegistrationPanel: React.FC<Props> = ({
 
               <SectionCard title="Start with the basics" subtitle="Team Setup">
                 <div className="grid gap-3 sm:grid-cols-2">
-                  {selectedEvent.max_members > selectedEvent.min_members ? (
+                  {!isSoloEvent && selectedEvent.max_members > selectedEvent.min_members ? (
                     <label className="block">
                       <span className="mb-2 block text-sm text-slate-200">Team size</span>
                       <select value={teamSize} onChange={(event) => onTeamSizeChange(Number(event.target.value))} className="floating-field-input">
                         {Array.from({ length: selectedEvent.max_members - selectedEvent.min_members + 1 }, (_, index) => selectedEvent.min_members + index).map((size) => <option key={size} value={size}>{size} participants</option>)}
                       </select>
                     </label>
-                  ) : (
+                  ) : !isSoloEvent ? (
                     <div className="rounded-[1.15rem] border border-white/10 bg-white/[0.05] px-4 py-4 text-sm text-slate-200">
                       Fixed team size: {selectedEvent.min_members}
                     </div>
-                  )}
+                  ) : null}
                   <div className="rounded-[1.15rem] border border-white/10 bg-white/[0.05] px-4 py-4 text-sm text-slate-200">
                     Review flow: payment proof is checked by admins after submission.
                   </div>
-                  {selectedEvent.min_members === 1 && !selectedEvent.is_team_event ? null : (
+                  {isSoloEvent ? null : (
                     <div className="sm:col-span-2">
                       <FloatingField label="Team name" value={form.teamName} onChange={(value) => onFormFieldChange('teamName', value)} onBlur={() => onFieldBlur('teamName')} error={showError('teamName')} required />
                     </div>
                   )}
                   <FloatingField label="College name" value={form.collegeName} onChange={(value) => onFormFieldChange('collegeName', value)} onBlur={() => onFieldBlur('collegeName')} error={showError('collegeName')} required />
-                  <FloatingField label="Department" value={form.departmentName} onChange={(value) => onFormFieldChange('departmentName', value)} onBlur={() => onFieldBlur('departmentName')} error={showError('departmentName')} required />
-                  <FloatingField label="Year / semester" value={form.yearOfStudy} onChange={(value) => onFormFieldChange('yearOfStudy', value)} onBlur={() => onFieldBlur('yearOfStudy')} error={showError('yearOfStudy')} required />
                 </div>
               </SectionCard>
 
-              <SectionCard title="Who should organizers reach?" subtitle="Lead Contact">
+              <SectionCard title={isSoloEvent ? 'Participant details' : 'Who should organizers reach?'} subtitle={isSoloEvent ? 'Contact' : 'Lead Contact'}>
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <FloatingField label="Primary contact name" value={form.contactName} onChange={(value) => onFormFieldChange('contactName', value)} onBlur={() => onFieldBlur('contactName')} error={showError('contactName')} required />
-                  <FloatingField label="Primary contact phone" value={form.contactPhone} onChange={(value) => onFormFieldChange('contactPhone', value)} onBlur={() => onFieldBlur('contactPhone')} error={showError('contactPhone')} required />
+                  <FloatingField label={isSoloEvent ? 'Full name' : 'Leader name'} value={form.contactName} onChange={(value) => onFormFieldChange('contactName', value)} onBlur={() => onFieldBlur('contactName')} error={showError('contactName')} required />
+                  <FloatingField label={isSoloEvent ? 'Phone number' : 'Leader phone'} value={form.contactPhone} onChange={(value) => onFormFieldChange('contactPhone', value)} onBlur={() => onFieldBlur('contactPhone')} error={showError('contactPhone')} required />
                   <div className="sm:col-span-2">
-                    <FloatingField label="Primary contact email" value={form.contactEmail} onChange={(value) => onFormFieldChange('contactEmail', value)} onBlur={() => onFieldBlur('contactEmail')} error={showError('contactEmail')} type="email" required />
+                    <FloatingField label={isSoloEvent ? 'Email' : 'Leader email'} value={form.contactEmail} onChange={(value) => onFormFieldChange('contactEmail', value)} onBlur={() => onFieldBlur('contactEmail')} error={showError('contactEmail')} type="email" required />
                   </div>
                 </div>
               </SectionCard>
 
-              <SectionCard title="Add every participant clearly" subtitle="Participants">
-                <div className="mb-4 inline-flex rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-200">{teamSize} total</div>
-                <div className="space-y-3">
-                  {form.participants.map((participant, index) => (
-                    <div key={index} className={`rounded-[1.35rem] border p-4 ${index === 0 ? 'border-sky-300/14 bg-sky-400/8' : 'border-white/10 bg-white/[0.04]'}`}>
-                      <p className="text-sm font-semibold text-white">Participant {index + 1}{index === 0 ? ' - Lead' : ''}</p>
-                      <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                        <FloatingField label="Full name" value={participant.fullName} onChange={(value) => onParticipantChange(index, 'fullName', value)} onBlur={() => onFieldBlur(`participants.${index}.fullName`)} error={showError(`participants.${index}.fullName`)} required />
-                        <FloatingField label="Email" value={participant.email} onChange={(value) => onParticipantChange(index, 'email', value)} onBlur={() => onFieldBlur(`participants.${index}.email`)} error={showError(`participants.${index}.email`)} type="email" required />
-                        <FloatingField label="Phone" value={participant.phone} onChange={(value) => onParticipantChange(index, 'phone', value)} onBlur={() => onFieldBlur(`participants.${index}.phone`)} error={showError(`participants.${index}.phone`)} required />
+              {!isSoloEvent ? (
+                <SectionCard title="Add team members" subtitle="Member Names">
+                  <div className="mb-4 inline-flex rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-200">{teamSize} total</div>
+                  <div className="space-y-3">
+                    {form.participants.slice(1).map((participant, index) => (
+                      <div key={index + 1} className="rounded-[1.35rem] border border-white/10 bg-white/[0.04] p-4">
+                        <p className="text-sm font-semibold text-white">Member {index + 2} name</p>
+                        <div className="mt-4">
+                          <FloatingField label="Full name" value={participant.fullName} onChange={(value) => onParticipantChange(index + 1, 'fullName', value)} onBlur={() => onFieldBlur(`participants.${index + 1}.fullName`)} error={showError(`participants.${index + 1}.fullName`)} required />
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </SectionCard>
-
-              <SectionCard title="Anything organizers should know?" subtitle="Extra Notes">
-                <FloatingField label="Organizer notes" value={form.notes} onChange={(value) => onFormFieldChange('notes', value)} onBlur={() => onFieldBlur('notes')} textarea />
-              </SectionCard>
+                    ))}
+                  </div>
+                </SectionCard>
+              ) : null}
 
               <SectionCard title="Pay and upload proof" subtitle="Payment">
                 <div className="grid gap-4">
