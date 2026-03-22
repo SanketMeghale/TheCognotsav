@@ -369,7 +369,6 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
                     <div className="mt-4 rounded-[1.15rem] border border-white/10 bg-white/[0.04] p-3">
                       <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">Event-day status</p>
                       <p className="mt-2 text-sm font-semibold text-white">{liveState.countdown}</p>
-                      <p className="mt-1 text-sm text-slate-300">{liveState.detail}</p>
                     </div>
 
                     <div className="portal-competition-card__team-row mt-4">
