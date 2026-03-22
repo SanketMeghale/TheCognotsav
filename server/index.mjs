@@ -325,7 +325,7 @@ app.use('/uploads', express.static(path.join(storageRoot, 'uploads')));
 app.use(express.static(path.resolve(process.cwd(), 'dist')));
 
 app.use((req, res, next) => {
-  if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+  if (req.path.startsWith('/api') || req.path.startsWith('/uploads') || req.path.startsWith('/pass/')) {
     return next();
   }
   res.sendFile(path.resolve(process.cwd(), 'dist', 'index.html'));
@@ -615,7 +615,6 @@ function buildPortalEmailHtml({
     <div style="margin:0;padding:30px 16px;background:radial-gradient(circle at top left,rgba(251,191,36,0.16),transparent 22%),radial-gradient(circle at bottom right,rgba(34,211,238,0.14),transparent 22%),linear-gradient(180deg,#08111f 0%,#0f172a 100%);font-family:Inter,Arial,sans-serif;color:#e2e8f0;">
       <div style="max-width:680px;margin:0 auto;border-radius:28px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);background:linear-gradient(145deg,#111827,#171b2e);box-shadow:0 30px 72px rgba(2,8,23,0.38);">
         <div style="position:relative;padding:22px 24px 24px;background:${accentGradient};border-bottom:1px solid rgba(255,255,255,0.08);">
-          <div style="position:absolute;right:-30px;top:-20px;width:180px;height:180px;background:url('${logoUrl}') center/contain no-repeat;opacity:0.08;pointer-events:none;"></div>
           <div style="position:relative;z-index:1;text-align:center;">
             <div style="display:inline-block;width:84px;height:84px;border-radius:24px;padding:6px;background:linear-gradient(180deg,rgba(255,255,255,0.24),rgba(203,213,225,0.1));border:1px solid rgba(255,255,255,0.16);box-shadow:inset 0 1px 0 rgba(255,255,255,0.48),0 12px 24px rgba(2,8,23,0.2);">
               <img src="${logoUrl}" alt="CEAS logo" style="display:block;width:100%;height:100%;object-fit:cover;border-radius:18px;" />
@@ -632,9 +631,8 @@ function buildPortalEmailHtml({
             <h1 style="margin:12px 0 0;font-size:30px;line-height:1.12;color:#ffffff;">${title}</h1>
           </div>
         </div>
-        <div style="position:relative;padding:24px;">
-          <div style="position:absolute;inset:0;background:url('${logoUrl}') center/240px no-repeat;opacity:0.04;pointer-events:none;"></div>
-          <div style="position:relative;z-index:1;">
+        <div style="padding:24px;">
+          <div>
             ${safeBadge}
             <div style="margin-top:${badgeLabel ? '18px' : '0'};color:#cbd5e1;line-height:1.75;">${intro}</div>
             <div style="margin-top:18px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;">
@@ -727,6 +725,7 @@ function buildStatusEmail(registration) {
   const safeStatusLabel = escapeHtml(getPaymentStatusLabel(registration.status));
   const safePaymentReference = escapeHtml(registration.payment_reference || 'Pending manual entry');
   const safeTotalAmount = escapeHtml(`INR ${registration.total_amount}`);
+  const passLink = `${publicAppUrl}/pass/${encodeURIComponent(registration.registration_code)}`;
   const verifiedPassQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(
     `COGNOTSAV|${registration.registration_code}|${registration.event_name}|${registration.venue}`,
   )}`;
@@ -741,6 +740,10 @@ function buildStatusEmail(registration) {
             <img src="${verifiedPassQrUrl}" alt="Verified pass QR" style="display:block;width:170px;height:170px;" />
           </div>
           <div style="margin-top:12px;font-size:12px;color:#cbd5e1;line-height:1.65;">Show this QR with registration code <strong style="color:#ffffff;">${safeRegistrationCode}</strong> during venue verification.</div>
+        </div>
+        <div style="margin-top:16px;text-align:center;">
+          <a href="${passLink}" style="display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:linear-gradient(90deg,#67e8f9,#fbbf24);color:#041018;text-decoration:none;padding:13px 22px;font-size:13px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;">Open / Download Official Pass</a>
+          <div style="margin-top:10px;font-size:12px;color:#cbd5e1;line-height:1.65;">If needed, open this link in your browser: <span style="color:#ffffff;word-break:break-all;">${passLink}</span></div>
         </div>
       `
     : '';
@@ -1412,6 +1415,84 @@ function buildBroadcastEmail(registration, announcement) {
   };
 }
 
+function buildVerifiedPassPage(registration) {
+  const logoUrl = 'https://res.cloudinary.com/dkxddhawc/image/upload/v1774197829/Screenshot_2026-03-22_220018_oln02p.png';
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(
+    `COGNOTSAV|${registration.registration_code}|${registration.event_name}|${registration.venue}`,
+  )}`;
+
+  return `
+    <!doctype html>
+    <html>
+      <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>${escapeHtml(registration.registration_code)} Pass</title>
+        <style>
+          * { box-sizing: border-box; }
+          body { margin: 0; font-family: Inter, Arial, sans-serif; background: radial-gradient(circle at top left, rgba(251,191,36,0.16), transparent 22%), radial-gradient(circle at bottom right, rgba(34,211,238,0.14), transparent 22%), linear-gradient(180deg, #08111f 0%, #0f172a 100%); color: #e2e8f0; }
+          .wrap { min-height: 100vh; padding: 28px 16px; display: flex; align-items: center; justify-content: center; }
+          .card { position: relative; overflow: hidden; width: min(100%, 760px); border-radius: 28px; border: 1px solid rgba(255,255,255,0.08); background: linear-gradient(145deg, #111827, #171b2e); box-shadow: 0 30px 72px rgba(2,8,23,0.38); }
+          .card::before { content: ''; position: absolute; inset: 0; background: url('${logoUrl}') center/260px no-repeat; opacity: 0.05; pointer-events: none; }
+          .top { position: relative; padding: 22px 24px 24px; background: linear-gradient(90deg, rgba(59,130,246,0.2), rgba(168,85,247,0.16), rgba(236,72,153,0.18)); border-bottom: 1px solid rgba(255,255,255,0.08); text-align: center; }
+          .logo { width: 84px; height: 84px; margin: 0 auto; border-radius: 24px; padding: 6px; background: linear-gradient(180deg, rgba(255,255,255,0.24), rgba(203,213,225,0.1)); border: 1px solid rgba(255,255,255,0.16); box-shadow: inset 0 1px 0 rgba(255,255,255,0.48), 0 12px 24px rgba(2,8,23,0.2); }
+          .logo img { width: 100%; height: 100%; display: block; object-fit: cover; border-radius: 18px; }
+          .overline { margin-top: 14px; font-size: 10px; letter-spacing: 0.38em; text-transform: uppercase; color: #bfdbfe; font-weight: 700; }
+          .title { margin: 12px 0 0; font-family: Orbitron, Inter, Arial, sans-serif; font-size: 28px; line-height: 1.12; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #ffffff; }
+          .body { position: relative; z-index: 1; padding: 24px; }
+          .badge { display: inline-flex; border-radius: 999px; border: 1px solid rgba(52,211,153,0.22); background: linear-gradient(90deg, rgba(16,185,129,0.14), rgba(34,211,238,0.1)); padding: 8px 12px; font-size: 11px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: #d1fae5; }
+          .lead { margin-top: 16px; color: #cbd5e1; line-height: 1.75; }
+          .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
+          .cell { border-radius: 18px; padding: 14px 16px; background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04)); border: 1px solid rgba(255,255,255,0.08); }
+          .label { font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase; color: #94a3b8; font-weight: 700; }
+          .value { margin-top: 6px; color: #ffffff; font-size: 16px; line-height: 1.5; font-weight: 700; word-break: break-word; }
+          .qr-card { margin-top: 18px; border-radius: 22px; padding: 18px; background: linear-gradient(180deg, rgba(15,23,42,0.78), rgba(255,255,255,0.04)); border: 1px solid rgba(255,255,255,0.08); text-align: center; }
+          .qr-frame { display: inline-flex; border-radius: 18px; background: #ffffff; padding: 10px; box-shadow: 0 14px 30px rgba(2,8,23,0.18); }
+          .qr-frame img { display: block; width: 170px; height: 170px; }
+          .hint { margin-top: 12px; color: #cbd5e1; font-size: 12px; line-height: 1.65; }
+          .actions { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+          .button { display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; padding: 13px 22px; font-size: 13px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none; }
+          .button-primary { background: linear-gradient(90deg, #67e8f9, #fbbf24); color: #041018; }
+          .button-secondary { border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.06); color: #ffffff; }
+          @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } .title { font-size: 22px; } }
+          @media print { .actions { display: none; } body { background: #ffffff; } .card { box-shadow: none; border-color: #cbd5e1; background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); } .card::before { opacity: 0.04; } .cell, .qr-card { background: rgba(248,250,252,0.92); } .lead, .hint { color: #334155; } .value { color: #0f172a; } }
+        </style>
+      </head>
+      <body>
+        <div class="wrap">
+          <div class="card">
+            <div class="top">
+              <div class="logo"><img src="${logoUrl}" alt="CEAS logo" /></div>
+              <div class="overline">Computer Engineering Association</div>
+              <h1 class="title">Official Event Pass</h1>
+            </div>
+            <div class="body">
+              <div class="badge">Verified Registration</div>
+              <div class="lead">This is your official verified Cognotsav pass. Download or print it, then show the QR code and registration code during event-time verification.</div>
+              <div class="grid">
+                <div class="cell"><div class="label">Registration code</div><div class="value">${escapeHtml(registration.registration_code)}</div></div>
+                <div class="cell"><div class="label">Event</div><div class="value">${escapeHtml(registration.event_name)}</div></div>
+                <div class="cell"><div class="label">Team / Participant</div><div class="value">${escapeHtml(registration.team_name)}</div></div>
+                <div class="cell"><div class="label">Contact</div><div class="value">${escapeHtml(registration.contact_name)}<br />${escapeHtml(registration.contact_email)}</div></div>
+                <div class="cell"><div class="label">Schedule</div><div class="value">${escapeHtml(registration.date_label)}<br />${escapeHtml(registration.time_label)}</div></div>
+                <div class="cell"><div class="label">Venue</div><div class="value">${escapeHtml(registration.venue)}</div></div>
+              </div>
+              <div class="qr-card">
+                <div class="qr-frame"><img src="${qrUrl}" alt="Official pass QR" /></div>
+                <div class="hint">Show this QR and your registration code at the venue entry desk.</div>
+              </div>
+              <div class="actions">
+                <a class="button button-primary" href="javascript:window.print()">Print / Save PDF</a>
+                <a class="button button-secondary" href="${publicAppUrl}#tracker">Open Tracker</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+}
+
 async function sendBroadcastAnnouncement({
   title,
   message,
@@ -1859,6 +1940,45 @@ app.get('/api/registrations/lookup', async (req, res) => {
 
   const rows = await fetchLookupRegistrations(query);
   res.json(rows);
+});
+
+app.get('/pass/:registrationCode', async (req, res) => {
+  const registrationCode = String(req.params.registrationCode || '').trim().toUpperCase();
+  if (!registrationCode) {
+    return res.status(400).send('Invalid registration code.');
+  }
+
+  const result = await pool.query(
+    `
+      SELECT
+        r.registration_code,
+        r.team_name,
+        r.contact_name,
+        r.contact_email,
+        r.status,
+        e.name AS event_name,
+        e.date_label,
+        e.time_label,
+        e.venue
+      FROM registrations r
+      JOIN events e ON e.slug = r.event_slug
+      WHERE UPPER(r.registration_code) = $1
+      LIMIT 1
+    `,
+    [registrationCode],
+  );
+
+  const registration = result.rows[0] ?? null;
+  if (!registration) {
+    return res.status(404).send('Pass not found.');
+  }
+
+  if (registration.status !== 'verified') {
+    return res.status(403).send('Official pass is available only after verification.');
+  }
+
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  return res.send(buildVerifiedPassPage(registration));
 });
 
 app.post('/api/registrations', async (req, res) => {

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Clock3, Copy, CreditCard, Download, ExternalLink,
+  ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Clock3, Copy, CreditCard, ExternalLink,
   Info, MapPin, Phone, QrCode, Save, Smartphone, Sparkles, Trophy, Upload, Users,
 } from 'lucide-react';
 import type { EventRecord, ParticipantDraft, RegistrationReceipt } from './types';
@@ -623,54 +623,13 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                     </div>
                   </div>
 
-                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                    <div className="rounded-[1.15rem] border border-white/10 bg-white/[0.05] p-4">
-                      <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400">Competition</p>
-                      <p className="mt-2 text-sm font-semibold text-white">{successReceipt.eventName}</p>
-                    </div>
-                    <div className="rounded-[1.15rem] border border-white/10 bg-white/[0.05] p-4">
-                      <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400">Team / Participant</p>
-                      <p className="mt-2 text-sm font-semibold text-white">{successReceipt.teamName}</p>
-                    </div>
-                    <div className="rounded-[1.15rem] border border-white/10 bg-white/[0.05] p-4">
-                      <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400">Schedule</p>
-                      <p className="mt-2 text-sm font-semibold text-white">{successReceipt.dateLabel}</p>
-                      <p className="mt-1 text-sm text-slate-300">{successReceipt.timeLabel}</p>
-                    </div>
-                    <div className="rounded-[1.15rem] border border-white/10 bg-white/[0.05] p-4">
-                      <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400">Venue</p>
-                      <p className="mt-2 text-sm font-semibold text-white">{successReceipt.venue}</p>
-                    </div>
-                  </div>
-
                   <div className="mt-4 rounded-[1.15rem] border border-white/10 bg-black/20 p-4 text-sm leading-7 text-slate-300">
                     <p className="font-semibold text-white">Short instructions</p>
                     <p className="mt-2">Keep the registration code safe and watch your email. After organizer verification, your official pass will be sent there. Download it and show it at event time.</p>
                   </div>
 
-                  <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-                    {successReceipt.status === 'verified' ? (
-                      <button
-                        type="button"
-                        onClick={() => onDownloadPass(successReceipt)}
-                        className="animated-gradient-button inline-flex flex-1 items-center justify-center gap-2 rounded-2xl px-5 py-3 font-bold text-slate-950"
-                      >
-                        <Download size={16} />
-                        Download Pass
-                      </button>
-                    ) : (
-                      <div className="flex-1 rounded-2xl border border-cyan-300/16 bg-cyan-400/10 px-5 py-3 text-sm font-semibold leading-6 text-cyan-100">
-                        Official pass will be sent by email after verification.
-                      </div>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => handleCopyCode(successReceipt.registrationCode)}
-                      className="magnetic-button inline-flex flex-1 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.05] px-5 py-3 font-semibold text-white"
-                    >
-                      <Copy size={16} />
-                      {codeCopied ? 'Code copied' : 'Copy Registration Code'}
-                    </button>
+                  <div className="mt-4 rounded-2xl border border-cyan-300/16 bg-cyan-400/10 px-5 py-3 text-sm font-semibold leading-6 text-cyan-100">
+                    Official pass will be sent by email after verification.
                   </div>
                 </div>
               ) : null}
