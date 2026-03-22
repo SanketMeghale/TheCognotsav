@@ -2,9 +2,11 @@ import React from 'react';
 import { Github, Instagram, Mail, MapPin, Phone } from 'lucide-react';
 import { shellClassName } from './utils';
 
+const FOOTER_QR_URL = 'https://res.cloudinary.com/dkxddhawc/image/upload/v1774197848/My_QR_Code_1-1024_dhiqjw.png';
+
 export const PortalFooter: React.FC = () => {
   return (
-    <footer className="pb-4 pt-5 md:pb-6 md:pt-6">
+    <footer className="pb-14 pt-5 md:pb-20 md:pt-6">
       <div className={shellClassName}>
         <div className="rounded-[1.8rem] border border-white/10 bg-[linear-gradient(145deg,rgba(5,8,16,0.98),rgba(9,14,24,0.96))] px-4 py-6 sm:px-5 sm:py-7">
           <div className="grid gap-8 border-b border-white/8 pb-8 lg:grid-cols-[1.15fr_0.8fr_1fr_0.72fr]">
@@ -73,7 +75,7 @@ export const PortalFooter: React.FC = () => {
             <div className="flex flex-col items-center">
               <div className="rounded-[1.4rem] border-4 border-cyan-400/90 bg-white p-3 shadow-[0_0_34px_rgba(34,211,238,0.24)]">
                 <img
-                  src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https%3A%2F%2Fcognotsav2026.in"
+                  src={FOOTER_QR_URL}
                   alt="COGNOTSAV portal QR"
                   className="h-36 w-36 rounded-[0.8rem]"
                 />

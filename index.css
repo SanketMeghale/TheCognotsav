@@ -173,19 +173,6 @@ body {
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.18), 0 0 12px rgba(125, 211, 252, 0.08);
 }
 
-.portal-hero-crest-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.8rem;
-  margin-bottom: 1rem;
-  padding: 0.5rem 0.9rem 0.5rem 0.55rem;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 999px;
-  background: linear-gradient(180deg, rgba(10, 18, 32, 0.9), rgba(10, 18, 32, 0.72));
-  box-shadow: 0 14px 30px rgba(2, 8, 23, 0.22), 0 0 20px rgba(34, 211, 238, 0.08);
-}
-
-.portal-hero-crest-badge__frame,
 .portal-footer-lockup__frame,
 .portal-pass-lockup__frame,
 .portal-admin-lockup__frame,
@@ -199,14 +186,6 @@ body {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.38), 0 10px 24px rgba(2, 8, 23, 0.18);
 }
 
-.portal-hero-crest-badge__frame {
-  width: 2.65rem;
-  height: 2.65rem;
-  border-radius: 0.92rem;
-  padding: 0.22rem;
-}
-
-.portal-hero-crest-badge__image,
 .portal-footer-lockup__image,
 .portal-pass-lockup__image,
 .portal-admin-lockup__image,
@@ -217,17 +196,6 @@ body {
   display: block;
 }
 
-.portal-hero-crest-badge__image {
-  border-radius: 0.72rem;
-}
-
-.portal-hero-crest-badge__copy {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.portal-hero-crest-badge__kicker,
 .portal-footer-lockup__overline,
 .portal-pass-lockup__overline,
 .portal-admin-lockup__overline {
@@ -238,7 +206,6 @@ body {
   color: rgba(167, 243, 208, 0.86);
 }
 
-.portal-hero-crest-badge__title,
 .portal-pass-lockup__title {
   margin-top: 0.18rem;
   font-family: 'Orbitron', 'Inter', sans-serif;
@@ -251,22 +218,24 @@ body {
 
 .portal-updates-watermark {
   position: absolute;
-  right: 1rem;
-  top: 1rem;
+  left: 50%;
+  top: 50%;
   pointer-events: none;
-  opacity: 0.16;
+  opacity: 0.1;
+  transform: translate(-50%, -50%);
+  z-index: 0;
 }
 
 .portal-updates-watermark__frame {
-  width: 4.2rem;
-  height: 4.2rem;
-  border-radius: 1.35rem;
-  padding: 0.24rem;
-  backdrop-filter: blur(4px);
+  width: 7.25rem;
+  height: 7.25rem;
+  border-radius: 2rem;
+  padding: 0.32rem;
+  backdrop-filter: blur(5px);
 }
 
 .portal-updates-watermark__image {
-  border-radius: 1.08rem;
+  border-radius: 1.6rem;
 }
 
 .portal-footer-lockup {
@@ -313,6 +282,34 @@ body {
 
 .portal-pass-lockup__image {
   border-radius: 0.82rem;
+}
+
+.portal-pass-surface {
+  position: relative;
+  overflow: hidden;
+}
+
+.portal-pass-surface > * {
+  position: relative;
+  z-index: 1;
+}
+
+.portal-pass-watermark {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.portal-pass-watermark__image {
+  width: min(18rem, 68%);
+  aspect-ratio: 1;
+  object-fit: contain;
+  opacity: 0.06;
+  filter: blur(0.2px) saturate(0.9);
 }
 
 .portal-admin-lockup {

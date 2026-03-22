@@ -34,21 +34,6 @@ export const HeroSection: React.FC<Props> = () => {
             </div>
 
             <div className="portal-front-hero__copy" data-reveal="fade-up">
-              <div className="portal-hero-crest-badge">
-                <span className="portal-hero-crest-badge__frame">
-                  <img
-                    src="/images/ceasposter.jpeg"
-                    alt="CEAS crest"
-                    loading="eager"
-                    decoding="async"
-                    className="portal-hero-crest-badge__image"
-                  />
-                </span>
-                <div className="portal-hero-crest-badge__copy">
-                  <span className="portal-hero-crest-badge__kicker">Official Crest</span>
-                  <span className="portal-hero-crest-badge__title">CEAS 2026</span>
-                </div>
-              </div>
               <p className="portal-front-hero__wordmark">COGNOTSAV 2026</p>
               <h1 className="portal-front-hero__headline">
                 <span className="portal-front-hero__headline-line">Engineering.</span>

@@ -594,8 +594,11 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                 <div
                   ref={passCardRef}
                   tabIndex={-1}
-                  className="rounded-[1.55rem] border border-emerald-300/20 bg-[linear-gradient(145deg,rgba(4,28,38,0.92),rgba(14,23,39,0.96))] p-4 text-slate-100 shadow-[0_24px_70px_rgba(16,185,129,0.14)] outline-none"
+                  className="portal-pass-surface rounded-[1.55rem] border border-emerald-300/20 bg-[linear-gradient(145deg,rgba(4,28,38,0.92),rgba(14,23,39,0.96))] p-4 text-slate-100 shadow-[0_24px_70px_rgba(16,185,129,0.14)] outline-none"
                 >
+                  <div className="portal-pass-watermark" aria-hidden="true">
+                    <img src="/images/ceasposter.jpeg" alt="" className="portal-pass-watermark__image" />
+                  </div>
                   <div className="portal-pass-lockup">
                     <div className="portal-pass-lockup__frame">
                       <img src="/images/ceasposter.jpeg" alt="CEAS logo" className="portal-pass-lockup__image" />
