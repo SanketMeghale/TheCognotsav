@@ -603,7 +603,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                     <div className="min-w-0">
                       <p className="text-[10px] uppercase tracking-[0.22em] text-emerald-200/80">Registration Successful</p>
                       <p className="mt-2 text-sm leading-6 text-slate-300">
-                        Download the pass now and keep the registration code ready for event-day verification.
+                        Your registration is under review. The official pass will be sent to your email after verification. Please download it and show it at event time.
                       </p>
                     </div>
                   </div>
@@ -645,18 +645,24 @@ export const EventRegistrationPanel: React.FC<Props> = ({
 
                   <div className="mt-4 rounded-[1.15rem] border border-white/10 bg-black/20 p-4 text-sm leading-7 text-slate-300">
                     <p className="font-semibold text-white">Short instructions</p>
-                    <p className="mt-2">Download the pass, keep the code safe, and watch your email for organizer status updates if they review or change your registration.</p>
+                    <p className="mt-2">Keep the registration code safe and watch your email. After organizer verification, your official pass will be sent there. Download it and show it at event time.</p>
                   </div>
 
                   <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-                    <button
-                      type="button"
-                      onClick={() => onDownloadPass(successReceipt)}
-                      className="animated-gradient-button inline-flex flex-1 items-center justify-center gap-2 rounded-2xl px-5 py-3 font-bold text-slate-950"
-                    >
-                      <Download size={16} />
-                      Download Pass
-                    </button>
+                    {successReceipt.status === 'verified' ? (
+                      <button
+                        type="button"
+                        onClick={() => onDownloadPass(successReceipt)}
+                        className="animated-gradient-button inline-flex flex-1 items-center justify-center gap-2 rounded-2xl px-5 py-3 font-bold text-slate-950"
+                      >
+                        <Download size={16} />
+                        Download Pass
+                      </button>
+                    ) : (
+                      <div className="flex-1 rounded-2xl border border-cyan-300/16 bg-cyan-400/10 px-5 py-3 text-sm font-semibold leading-6 text-cyan-100">
+                        Official pass will be sent by email after verification.
+                      </div>
+                    )}
                     <button
                       type="button"
                       onClick={() => handleCopyCode(successReceipt.registrationCode)}

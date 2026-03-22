@@ -602,7 +602,7 @@ function buildPortalEmailHtml({
   bodyAfterGrid = '',
   footerCopy = 'Thank you for participating in CEAS COGNOTSAV 2026.',
 }) {
-  const logoUrl = `${publicBaseUrl.replace(/\/$/, '')}/images/ceasposter.jpeg`;
+  const logoUrl = `${publicAppUrl.replace(/\/$/, '')}/images/ceasposter.jpeg`;
   const safeBadge = badgeLabel ? `<div style="display:inline-flex;align-items:center;border-radius:999px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.06);padding:8px 12px;font-size:11px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:${accentTone};">${badgeLabel}</div>` : '';
   const safeNotice = notice
     ? `<div style="margin-top:18px;border-radius:18px;padding:16px;background:linear-gradient(135deg,rgba(251,191,36,0.12),rgba(251,191,36,0.06));border:1px solid rgba(251,191,36,0.18);color:#fef3c7;line-height:1.7;">${notice}</div>`
@@ -725,6 +725,23 @@ function buildStatusEmail(registration) {
   const safeStatusLabel = escapeHtml(getPaymentStatusLabel(registration.status));
   const safePaymentReference = escapeHtml(registration.payment_reference || 'Pending manual entry');
   const safeTotalAmount = escapeHtml(`INR ${registration.total_amount}`);
+  const verifiedPassQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(
+    `COGNOTSAV|${registration.registration_code}|${registration.event_name}|${registration.venue}`,
+  )}`;
+  const verifiedPassInstructions = registration.status === 'verified'
+    ? `
+        <div style="margin-top:18px;border-radius:20px;padding:18px;background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(34,211,238,0.1));border:1px solid rgba(52,211,153,0.18);color:#ecfdf5;line-height:1.75;">
+          <strong style="display:block;margin-bottom:8px;font-size:15px;color:#ffffff;">Official verified pass issued</strong>
+          Your official event pass is now available in this email. Please download or save this email as a PDF, and show the QR code plus your registration code at event time.
+        </div>
+        <div style="margin-top:16px;border-radius:20px;padding:18px;background:linear-gradient(180deg,rgba(15,23,42,0.78),rgba(255,255,255,0.04));border:1px solid rgba(255,255,255,0.08);text-align:center;">
+          <div style="display:inline-flex;border-radius:18px;background:#ffffff;padding:10px;box-shadow:0 14px 30px rgba(2,8,23,0.18);">
+            <img src="${verifiedPassQrUrl}" alt="Verified pass QR" style="display:block;width:170px;height:170px;" />
+          </div>
+          <div style="margin-top:12px;font-size:12px;color:#cbd5e1;line-height:1.65;">Show this QR with registration code <strong style="color:#ffffff;">${safeRegistrationCode}</strong> during venue verification.</div>
+        </div>
+      `
+    : '';
 
   const gridSections = buildEmailInfoGrid([
     { label: 'Registration code', value: safeRegistrationCode },
@@ -750,7 +767,7 @@ function buildStatusEmail(registration) {
     badgeLabel: safeStatusLabel,
     sections: [gridSections],
     notice: registration.review_note ? `Organizer note: ${escapeHtml(registration.review_note)}` : '',
-    bodyAfterGrid: safeNextStep,
+    bodyAfterGrid: `${safeNextStep}${verifiedPassInstructions}`,
   });
 
   return {
