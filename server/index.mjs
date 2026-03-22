@@ -602,7 +602,7 @@ function buildPortalEmailHtml({
   bodyAfterGrid = '',
   footerCopy = 'Thank you for participating in CEAS COGNOTSAV 2026.',
 }) {
-  const logoUrl = `${publicAppUrl.replace(/\/$/, '')}/images/ceasposter.jpeg`;
+  const logoUrl = 'https://res.cloudinary.com/dkxddhawc/image/upload/v1774197829/Screenshot_2026-03-22_220018_oln02p.png';
   const safeBadge = badgeLabel ? `<div style="display:inline-flex;align-items:center;border-radius:999px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.06);padding:8px 12px;font-size:11px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:${accentTone};">${badgeLabel}</div>` : '';
   const safeNotice = notice
     ? `<div style="margin-top:18px;border-radius:18px;padding:16px;background:linear-gradient(135deg,rgba(251,191,36,0.12),rgba(251,191,36,0.06));border:1px solid rgba(251,191,36,0.18);color:#fef3c7;line-height:1.7;">${notice}</div>`
@@ -616,10 +616,12 @@ function buildPortalEmailHtml({
       <div style="max-width:680px;margin:0 auto;border-radius:28px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);background:linear-gradient(145deg,#111827,#171b2e);box-shadow:0 30px 72px rgba(2,8,23,0.38);">
         <div style="position:relative;padding:22px 24px 24px;background:${accentGradient};border-bottom:1px solid rgba(255,255,255,0.08);">
           <div style="position:absolute;right:-30px;top:-20px;width:180px;height:180px;background:url('${logoUrl}') center/contain no-repeat;opacity:0.08;pointer-events:none;"></div>
-          <div style="display:flex;align-items:center;gap:14px;position:relative;z-index:1;">
-            <div style="width:64px;height:64px;border-radius:20px;padding:5px;background:linear-gradient(180deg,rgba(255,255,255,0.24),rgba(203,213,225,0.1));border:1px solid rgba(255,255,255,0.16);box-shadow:inset 0 1px 0 rgba(255,255,255,0.48),0 12px 24px rgba(2,8,23,0.2);">
-              <img src="${logoUrl}" alt="CEAS logo" style="display:block;width:100%;height:100%;object-fit:cover;border-radius:16px;" />
+          <div style="position:relative;z-index:1;text-align:center;">
+            <div style="display:inline-block;width:84px;height:84px;border-radius:24px;padding:6px;background:linear-gradient(180deg,rgba(255,255,255,0.24),rgba(203,213,225,0.1));border:1px solid rgba(255,255,255,0.16);box-shadow:inset 0 1px 0 rgba(255,255,255,0.48),0 12px 24px rgba(2,8,23,0.2);">
+              <img src="${logoUrl}" alt="CEAS logo" style="display:block;width:100%;height:100%;object-fit:cover;border-radius:18px;" />
             </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;gap:14px;position:relative;z-index:1;margin-top:14px;text-align:center;">
             <div>
               <div style="font-size:10px;letter-spacing:0.38em;text-transform:uppercase;color:#bfdbfe;font-weight:700;">Computer Engineering Association</div>
               <div style="margin-top:6px;font-family:Orbitron,Inter,Arial,sans-serif;font-size:24px;line-height:1.1;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#ffffff;">CEAS COGNOTSAV 2026</div>
