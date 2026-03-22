@@ -53,7 +53,6 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
   const [hoveredVideoSlug, setHoveredVideoSlug] = useState<string | null>(null);
   const [soundEnabledSlug, setSoundEnabledSlug] = useState<string | null>(null);
   const [supportsHoverPreview, setSupportsHoverPreview] = useState(false);
-  const [allowVideoPreview, setAllowVideoPreview] = useState(false);
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
   const observerRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const [mobileVisibleVideoSlug, setMobileVisibleVideoSlug] = useState<string | null>(null);
@@ -83,27 +82,7 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
   }, []);
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
-      return;
-    }
-
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const desktopQuery = window.matchMedia('(min-width: 1024px) and (hover: hover) and (pointer: fine)');
-    const saveData = 'connection' in navigator && (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
-    const isLowPowerDevice = (navigator.hardwareConcurrency || 8) <= 4;
-
-    const syncPreviewCapability = () => {
-      setAllowVideoPreview(Boolean(desktopQuery.matches && !prefersReducedMotion && !saveData && !isLowPowerDevice));
-    };
-
-    syncPreviewCapability();
-    desktopQuery.addEventListener('change', syncPreviewCapability);
-
-    return () => desktopQuery.removeEventListener('change', syncPreviewCapability);
-  }, []);
-
-  useEffect(() => {
-    if (typeof window === 'undefined' || supportsHoverPreview || !allowVideoPreview) {
+    if (typeof window === 'undefined' || supportsHoverPreview) {
       setMobileVisibleVideoSlug(null);
       return;
     }
@@ -136,7 +115,7 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
     });
 
     return () => observer.disconnect();
-  }, [allowVideoPreview, supportsHoverPreview, visibleEvents]);
+  }, [supportsHoverPreview, visibleEvents]);
 
   useEffect(() => {
     const activeSlugs = new Set<string>([
@@ -155,8 +134,8 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
         return;
       }
 
-      const shouldHoverPreview = allowVideoPreview && supportsHoverPreview && slug === hoveredVideoSlug;
-      const shouldPlayOnTouch = allowVideoPreview && !supportsHoverPreview && mobileVisibleVideoSlug === slug;
+      const shouldHoverPreview = supportsHoverPreview && slug === hoveredVideoSlug;
+      const shouldPlayOnTouch = !supportsHoverPreview && mobileVisibleVideoSlug === slug;
       const shouldPlay = shouldHoverPreview || shouldPlayOnTouch;
       const hasSoundEnabled = slug === soundEnabledSlug;
 
@@ -239,7 +218,7 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
               const liveState = getEventLiveState(event, now);
               const primaryCoordinator = event.coordinators?.[0] ?? null;
               const handleOpenEvent = () => onSelectEvent(event.slug);
-              const hasIntroVideo = Boolean(event.intro_video_url) && allowVideoPreview;
+              const hasIntroVideo = Boolean(event.intro_video_url);
               const isVideoActive = supportsHoverPreview
                 ? hoveredVideoSlug === event.slug
                 : mobileVisibleVideoSlug === event.slug;
