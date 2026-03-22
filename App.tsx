@@ -67,8 +67,9 @@ function PortalBackgroundCanvas() {
     let width = 0;
     let height = 0;
     let animationFrame = 0;
+    let suspendUntil = 0;
     const pointer = { x: -9999, y: -9999 };
-    const particleCount = Math.min(CANVAS_PARTICLE_COUNT, window.innerWidth < 1024 ? 28 : 40);
+    const particleCount = Math.min(CANVAS_PARTICLE_COUNT, window.innerWidth < 1024 ? 20 : 30);
 
     const particles = Array.from({ length: particleCount }, () => ({
       x: Math.random(),
@@ -90,7 +91,12 @@ function PortalBackgroundCanvas() {
       context.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
 
-    const draw = () => {
+    const draw = (frameTime = 0) => {
+      if (frameTime < suspendUntil) {
+        animationFrame = window.requestAnimationFrame(draw);
+        return;
+      }
+
       context.clearRect(0, 0, width, height);
 
       for (const particle of particles) {
@@ -150,15 +156,21 @@ function PortalBackgroundCanvas() {
       pointer.y = -9999;
     };
 
+    const handleScroll = () => {
+      suspendUntil = performance.now() + 160;
+    };
+
     resize();
     draw();
     window.addEventListener('resize', resize);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     window.addEventListener('mousemove', handleMove, { passive: true });
     window.addEventListener('mouseout', handleLeave);
 
     return () => {
       window.cancelAnimationFrame(animationFrame);
       window.removeEventListener('resize', resize);
+      window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('mousemove', handleMove);
       window.removeEventListener('mouseout', handleLeave);
     };
