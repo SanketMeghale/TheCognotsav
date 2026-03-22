@@ -186,8 +186,22 @@ function DepartmentPage() {
 
 function PortalSectionFallback({ label = 'Loading section...' }: { label?: string }) {
   return (
-    <div className="portal-glow-card portal-glass rounded-[1.7rem] p-5 text-sm text-slate-300">
-      {label}
+    <div className="portal-glow-card portal-glass rounded-[1.7rem] p-5">
+      <PortalLoader label={label} compact />
+    </div>
+  );
+}
+
+function PortalLoader({ label = 'Loading...', compact = false }: { label?: string; compact?: boolean }) {
+  return (
+    <div className={`portal-loader-card ${compact ? 'portal-loader-card--compact' : ''}`}>
+      <div className="portal-loader-brand">
+        <div className="portal-loader-brand__frame">
+          <img src="/images/ceasposter.jpeg" alt="CEAS logo" className="portal-loader-brand__image" />
+        </div>
+        <div className="portal-loader-ring" />
+      </div>
+      <p className="portal-loader-label">{label}</p>
     </div>
   );
 }
@@ -816,9 +830,13 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     if (typeof window === 'undefined' || !isEventPage) return;
-    if (!window.matchMedia('(max-width: 767px)').matches) return;
 
     const animationFrame = window.requestAnimationFrame(() => {
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
       window.scrollTo({ top: 0, behavior: 'auto' });
     });
 
@@ -865,14 +883,16 @@ export const App: React.FC = () => {
     setPaymentScreenshotDataUrl(null);
     setPaymentScreenshotName('');
     if (typeof window !== 'undefined') {
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
       const nextHash = `#events/${slug}`;
-      const isMobileViewport = window.matchMedia('(max-width: 767px)').matches;
       if (window.location.hash.toLowerCase() !== nextHash.toLowerCase()) {
         window.history.pushState(null, '', nextHash);
       }
-      if (isMobileViewport) {
-        window.scrollTo({ top: 0, behavior: 'auto' });
-      }
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      window.scrollTo({ top: 0, behavior: 'auto' });
       setHashRoute(nextHash.toLowerCase());
     }
   };
@@ -882,10 +902,15 @@ export const App: React.FC = () => {
     setErrorMessage('');
     setSuccessReceipt(null);
     if (typeof window !== 'undefined') {
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
       const nextHash = '#registration-panel';
       if (window.location.hash.toLowerCase() !== nextHash) {
         window.history.pushState(null, '', nextHash);
       }
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
       setHashRoute(nextHash);
     }
   };
@@ -1636,10 +1661,7 @@ export const App: React.FC = () => {
 
       {loadingEvents && events.length === 0 && !isAdminPage && !isTimelinePage ? (
         <div className="portal-loader-overlay">
-          <div className="portal-loader-card">
-            <div className="portal-loader-ring" />
-            <p className="mt-4 text-sm font-semibold text-white">Loading competitions...</p>
-          </div>
+          <PortalLoader label="Loading..." />
         </div>
       ) : null}
 
