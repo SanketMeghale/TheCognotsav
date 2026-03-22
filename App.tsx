@@ -555,6 +555,7 @@ export const App: React.FC = () => {
   const [toastMessage, setToastMessage] = useState('');
   const [toastClosing, setToastClosing] = useState(false);
   const [navScrolled, setNavScrolled] = useState(false);
+  const [navigationLoading, setNavigationLoading] = useState(false);
   const [form, setForm] = useState<FormState>({
     teamName: '',
     collegeName: '',
@@ -791,6 +792,13 @@ export const App: React.FC = () => {
     return () => window.removeEventListener('hashchange', syncHashRoute);
   }, []);
 
+  useEffect(() => {
+    if (!navigationLoading || typeof window === 'undefined') return undefined;
+
+    const timer = window.setTimeout(() => setNavigationLoading(false), 260);
+    return () => window.clearTimeout(timer);
+  }, [navigationLoading, hashRoute]);
+
   const eventPageSlug = hashRoute.startsWith('#events/') ? hashRoute.slice('#events/'.length) : '';
   const isAdminPage = hashRoute.startsWith('#admin-registrations');
   const isTimelinePage = hashRoute === '#timeline';
@@ -876,6 +884,7 @@ export const App: React.FC = () => {
   };
 
   const handleSelectEvent = (slug: string) => {
+    setNavigationLoading(true);
     setSelectedEventSlug(slug);
     setSuccessMessage('');
     setErrorMessage('');
@@ -898,6 +907,7 @@ export const App: React.FC = () => {
   };
 
   const handleBackToEvents = () => {
+    setNavigationLoading(true);
     setSuccessMessage('');
     setErrorMessage('');
     setSuccessReceipt(null);
@@ -1660,6 +1670,12 @@ export const App: React.FC = () => {
       ) : null}
 
       {loadingEvents && events.length === 0 && !isAdminPage && !isTimelinePage ? (
+        <div className="portal-loader-overlay">
+          <PortalLoader label="Loading..." />
+        </div>
+      ) : null}
+
+      {navigationLoading ? (
         <div className="portal-loader-overlay">
           <PortalLoader label="Loading..." />
         </div>

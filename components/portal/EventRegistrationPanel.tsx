@@ -199,7 +199,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
     if (!formSection) return;
 
     const top = formSection.getBoundingClientRect().top + window.scrollY - 96;
-    window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
+    window.scrollTo({ top: Math.max(top, 0), behavior: 'auto' });
   };
 
   useEffect(() => {
@@ -222,7 +222,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
     if (!successReceipt || !passCardRef.current || typeof window === 'undefined') return;
 
     const animationFrame = window.requestAnimationFrame(() => {
-      passCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      passCardRef.current?.scrollIntoView({ behavior: 'auto', block: 'start' });
       passCardRef.current?.focus({ preventScroll: true });
     });
 

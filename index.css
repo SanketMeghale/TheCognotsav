@@ -72,7 +72,7 @@
 html {
   background: #05070d;
   overflow-x: clip;
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
   scroll-padding-top: 5.5rem;
 }
 
