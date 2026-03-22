@@ -9,10 +9,17 @@ export const PortalFooter: React.FC = () => {
         <div className="rounded-[1.8rem] border border-white/10 bg-[linear-gradient(145deg,rgba(5,8,16,0.98),rgba(9,14,24,0.96))] px-4 py-6 sm:px-5 sm:py-7">
           <div className="grid gap-8 border-b border-white/8 pb-8 lg:grid-cols-[1.15fr_0.8fr_1fr_0.72fr]">
             <div>
-              <div className="flex items-center gap-3">
-                <p className="font-orbitron text-2xl font-black uppercase text-cyan-300">
-                  CEAS<span className="text-white">/COGNOTSAV</span>
-                </p>
+              <div className="portal-footer-lockup">
+                <div className="portal-footer-lockup__frame">
+                  <img src="/images/ceasposter.jpeg" alt="CEAS logo" className="portal-footer-lockup__image" />
+                </div>
+                <div>
+                  <p className="portal-footer-lockup__overline">Computer Engineering Association of Students</p>
+                  <p className="font-orbitron text-2xl font-black uppercase text-cyan-300">
+                    CEAS<span className="text-white">/COGNOTSAV</span>
+                  </p>
+                  <p className="portal-footer-lockup__meta">Dr. Vithalrao Vikhe Patil College of Engineering, Ahilyanagar</p>
+                </div>
               </div>
               <p className="mt-5 max-w-sm text-sm leading-8 text-slate-400">
                 Empowering innovators and shaping the future of technology through collaborative excellence and competitive spirit.

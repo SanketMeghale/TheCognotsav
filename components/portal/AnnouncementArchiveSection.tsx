@@ -54,7 +54,12 @@ export const AnnouncementArchiveSection: React.FC<Props> = ({ announcements, eve
   }, [alerts, announcements.length, liveCount, nextEvent, now]);
 
   return (
-    <section id="announcement-archive" data-reveal="up" className="portal-glow-card portal-glass overflow-hidden rounded-[2rem] p-4 sm:p-5 md:p-6">
+    <section id="announcement-archive" data-reveal="up" className="portal-glow-card portal-glass relative overflow-hidden rounded-[2rem] p-4 sm:p-5 md:p-6">
+      <div className="portal-updates-watermark" aria-hidden="true">
+        <div className="portal-updates-watermark__frame">
+          <img src="/images/ceasposter.jpeg" alt="" className="portal-updates-watermark__image" />
+        </div>
+      </div>
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div className="inline-flex items-center gap-2 rounded-full border border-fuchsia-300/18 bg-fuchsia-400/10 px-3 py-2 text-[10px] uppercase tracking-[0.22em] text-fuchsia-100 sm:text-[11px]">
           <Radio size={14} />

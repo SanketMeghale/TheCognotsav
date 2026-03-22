@@ -173,6 +173,176 @@ body {
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.18), 0 0 12px rgba(125, 211, 252, 0.08);
 }
 
+.portal-hero-crest-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem 0.9rem 0.5rem 0.55rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(10, 18, 32, 0.9), rgba(10, 18, 32, 0.72));
+  box-shadow: 0 14px 30px rgba(2, 8, 23, 0.22), 0 0 20px rgba(34, 211, 238, 0.08);
+}
+
+.portal-hero-crest-badge__frame,
+.portal-footer-lockup__frame,
+.portal-pass-lockup__frame,
+.portal-admin-lockup__frame,
+.portal-updates-watermark__frame {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(148, 163, 184, 0.08));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.38), 0 10px 24px rgba(2, 8, 23, 0.18);
+}
+
+.portal-hero-crest-badge__frame {
+  width: 2.65rem;
+  height: 2.65rem;
+  border-radius: 0.92rem;
+  padding: 0.22rem;
+}
+
+.portal-hero-crest-badge__image,
+.portal-footer-lockup__image,
+.portal-pass-lockup__image,
+.portal-admin-lockup__image,
+.portal-updates-watermark__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.portal-hero-crest-badge__image {
+  border-radius: 0.72rem;
+}
+
+.portal-hero-crest-badge__copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.portal-hero-crest-badge__kicker,
+.portal-footer-lockup__overline,
+.portal-pass-lockup__overline,
+.portal-admin-lockup__overline {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(167, 243, 208, 0.86);
+}
+
+.portal-hero-crest-badge__title,
+.portal-pass-lockup__title {
+  margin-top: 0.18rem;
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  font-size: 0.86rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #eef6ff;
+}
+
+.portal-updates-watermark {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  pointer-events: none;
+  opacity: 0.16;
+}
+
+.portal-updates-watermark__frame {
+  width: 4.2rem;
+  height: 4.2rem;
+  border-radius: 1.35rem;
+  padding: 0.24rem;
+  backdrop-filter: blur(4px);
+}
+
+.portal-updates-watermark__image {
+  border-radius: 1.08rem;
+}
+
+.portal-footer-lockup {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.portal-footer-lockup__frame {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 1.25rem;
+  padding: 0.26rem;
+  flex: 0 0 auto;
+}
+
+.portal-footer-lockup__image {
+  border-radius: 1rem;
+}
+
+.portal-footer-lockup__meta,
+.portal-admin-lockup__meta {
+  margin-top: 0.32rem;
+  font-size: 0.78rem;
+  color: rgba(148, 163, 184, 0.88);
+}
+
+.portal-pass-lockup {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.portal-pass-lockup__frame {
+  width: 3.1rem;
+  height: 3.1rem;
+  border-radius: 1rem;
+  padding: 0.24rem;
+  flex: 0 0 auto;
+}
+
+.portal-pass-lockup__image {
+  border-radius: 0.82rem;
+}
+
+.portal-admin-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 1rem;
+  padding: 0.7rem 0.9rem 0.7rem 0.7rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1.1rem;
+  background: linear-gradient(180deg, rgba(8, 15, 28, 0.72), rgba(8, 15, 28, 0.46));
+}
+
+.portal-admin-lockup--compact {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.portal-admin-lockup__frame {
+  width: 2.85rem;
+  height: 2.85rem;
+  border-radius: 0.95rem;
+  padding: 0.22rem;
+  flex: 0 0 auto;
+}
+
+.portal-admin-lockup__image {
+  border-radius: 0.72rem;
+}
+
 #root {
   overflow-x: clip;
 }

@@ -91,6 +91,15 @@ export const TrackerAdminPanel: React.FC<Props> = ({
   return (
     <section id="tracker" className={`grid gap-5 ${showAdmin ? 'xl:grid-cols-[0.92fr_1.08fr] xl:gap-6' : ''}`}>
       <div data-reveal="left" className="portal-glow-card portal-glass rounded-[1.6rem] p-4 md:rounded-[2rem] md:p-8">
+        <div className="portal-admin-lockup portal-admin-lockup--compact">
+          <div className="portal-admin-lockup__frame">
+            <img src="/images/ceasposter.jpeg" alt="CEAS logo" className="portal-admin-lockup__image" />
+          </div>
+          <div>
+            <p className="portal-admin-lockup__overline">CEAS Participant Desk</p>
+            <p className="portal-admin-lockup__meta">Official status tracking and organizer verification layer.</p>
+          </div>
+        </div>
         <p className="text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Registration lookup</p>
         <h3 className="portal-title-lg mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron font-black uppercase text-transparent">
           Track your status

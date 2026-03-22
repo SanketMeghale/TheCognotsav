@@ -208,6 +208,15 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
             <a href="#overview" className="magnetic-button inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200"><ArrowLeft size={16} />Back to portal</a>
+            <div className="portal-admin-lockup">
+              <div className="portal-admin-lockup__frame">
+                <img src="/images/ceasposter.jpeg" alt="CEAS logo" className="portal-admin-lockup__image" />
+              </div>
+              <div>
+                <p className="portal-admin-lockup__overline">CEAS Organizer Console</p>
+                <p className="portal-admin-lockup__meta">Official operations workspace for registrations, announcements, and verification.</p>
+              </div>
+            </div>
             <p className="mt-5 text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Admin workspace</p>
             <h2 className="mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron text-2xl font-black uppercase text-transparent md:text-4xl">Operations dashboard</h2>
           </div>
