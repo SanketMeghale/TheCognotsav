@@ -930,6 +930,17 @@ export const App: React.FC = () => {
   }, [eventPageSlug, events, isEventPage, selectedEventSlug]);
 
   useEffect(() => {
+    if (typeof window === 'undefined' || !isEventPage) return;
+    if (!window.matchMedia('(max-width: 767px)').matches) return;
+
+    const animationFrame = window.requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    });
+
+    return () => window.cancelAnimationFrame(animationFrame);
+  }, [isEventPage, eventPageSlug]);
+
+  useEffect(() => {
     if (typeof window === 'undefined' || !isAdminPage) {
       return;
     }
@@ -970,8 +981,12 @@ export const App: React.FC = () => {
     setPaymentScreenshotName('');
     if (typeof window !== 'undefined') {
       const nextHash = `#events/${slug}`;
+      const isMobileViewport = window.matchMedia('(max-width: 767px)').matches;
       if (window.location.hash.toLowerCase() !== nextHash.toLowerCase()) {
         window.history.pushState(null, '', nextHash);
+      }
+      if (isMobileViewport) {
+        window.scrollTo({ top: 0, behavior: 'auto' });
       }
       setHashRoute(nextHash.toLowerCase());
     }
