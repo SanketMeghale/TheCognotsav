@@ -4578,6 +4578,18 @@ footer {
     border-radius: 1.7rem;
   }
 
+  #registration-panel {
+    box-shadow: none;
+    border-color: transparent;
+    transform: none;
+    filter: none;
+  }
+
+  #registration-panel::after,
+  #registration-panel::before {
+    display: none;
+  }
+
   .portal-front-hero__background-video {
     object-fit: contain;
     object-position: center center;
