@@ -10,7 +10,7 @@ export const HeroSection: React.FC<Props> = () => {
   return (
     <section id="overview" className="mx-auto w-full max-w-[1320px] px-1 sm:px-5 lg:px-8 pt-3 pb-2 md:pt-5 md:pb-4">
       <div className="portal-front-hero portal-front-hero--premium portal-front-hero--welcome">
-        <div className="portal-front-hero__video-layer" aria-hidden="true">
+        <div className="portal-front-hero__video-layer portal-front-hero__video-layer--parallax" aria-hidden="true">
           <video
             className="portal-front-hero__background-video"
             autoPlay
@@ -33,8 +33,8 @@ export const HeroSection: React.FC<Props> = () => {
               <span>CEAS Presents</span>
             </div>
 
-            <div className="portal-front-hero__copy" data-reveal="fade-up">
-              <p className="portal-front-hero__wordmark">COGNOTSAV 2026</p>
+            <div className="portal-front-hero__copy portal-front-hero__copy--parallax" data-reveal="fade-up">
+              <p className="portal-front-hero__wordmark portal-front-hero__wordmark--parallax">COGNOTSAV 2026</p>
               <h1 className="portal-front-hero__headline">
                 <span className="portal-front-hero__headline-line">Engineering.</span>
                 <span className="portal-front-hero__headline-line">Innovation.</span>
@@ -46,7 +46,7 @@ export const HeroSection: React.FC<Props> = () => {
               </p>
             </div>
 
-            <div className="portal-front-hero__cta-row" data-reveal="fade-up">
+            <div className="portal-front-hero__cta-row portal-front-hero__cta-row--parallax" data-reveal="fade-up">
               <a href="#registration-panel" className="portal-premium-button portal-premium-button--primary">
                 Register Now
                 <ArrowRight size={16} />
@@ -72,7 +72,7 @@ export const HeroSection: React.FC<Props> = () => {
             </div>
           </div>
 
-          <div className="portal-front-hero__panel portal-front-hero__panel--premium" data-reveal="fade-up">
+          <div className="portal-front-hero__panel portal-front-hero__panel--premium portal-front-hero__panel--parallax" data-reveal="fade-up">
             <div className="portal-front-hero__visual-shell">
               <div className="portal-front-hero__visual-glow" aria-hidden="true" />
               <div className="portal-front-hero__visual-frame portal-front-hero__visual-frame--outer" aria-hidden="true" />

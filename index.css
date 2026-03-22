@@ -2,6 +2,7 @@
 
 :root {
   color-scheme: dark;
+  --portal-scroll-progress: 0;
   --portal-cyan: #22d3ee;
   --portal-sky: #38bdf8;
   --portal-blue: #3b82f6;
@@ -222,6 +223,26 @@ img {
     url('https://res.cloudinary.com/dkxddhawc/image/upload/v1774157303/ChatGPT_Image_Mar_22_2026_10_54_12_AM_foafcx.png') center/cover no-repeat;
   opacity: 1;
   filter: saturate(1.04);
+}
+
+.portal-particle-field {
+  position: fixed;
+  inset: 0;
+  z-index: -3;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0.82;
+}
+
+.portal-particle-field__item {
+  position: absolute;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.92) 0%, rgba(56, 189, 248, 0.78) 32%, rgba(14, 165, 233, 0.08) 72%, transparent 100%);
+  box-shadow:
+    0 0 12px rgba(56, 189, 248, 0.32),
+    0 0 28px rgba(168, 85, 247, 0.12);
+  animation: portalParticleDrift linear infinite;
 }
 
 .portal-shell::before {
@@ -1910,28 +1931,34 @@ img {
 }
 
 .tilt-card {
-  transform: none;
-  transition: box-shadow 180ms ease, border-color 180ms ease;
+  transform: perspective(1200px) translateY(0) rotateX(0) rotateY(0) scale(1);
+  transform-style: preserve-3d;
+  transition: transform 260ms cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 220ms ease, border-color 220ms ease;
 }
 
 .tilt-card:hover {
-  transform: none;
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.14);
+  transform: perspective(1200px) translateY(-8px) rotateX(2.6deg) rotateY(-2.8deg) scale(1.012);
+  box-shadow:
+    0 24px 54px rgba(15, 23, 42, 0.28),
+    0 0 28px rgba(56, 189, 248, 0.08);
 }
 
 [data-reveal] {
-  opacity: 1;
-  transform: none;
-  transition: none;
-  filter: none;
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 700ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    filter 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  filter: saturate(0.92);
 }
 
 [data-reveal='left'] {
-  transform: none;
+  transform: translateX(-26px);
 }
 
 [data-reveal='right'] {
-  transform: none;
+  transform: translateX(26px);
 }
 
 [data-reveal].is-visible {
@@ -3359,6 +3386,24 @@ select.floating-field-input option {
   }
 }
 
+@keyframes portalParticleDrift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.92);
+    opacity: 0.22;
+  }
+  20% {
+    opacity: 0.8;
+  }
+  50% {
+    transform: translate3d(16px, -22px, 0) scale(1.14);
+    opacity: 0.58;
+  }
+  100% {
+    transform: translate3d(-14px, -56px, 0) scale(0.96);
+    opacity: 0.18;
+  }
+}
+
 @keyframes portalModalIn {
   from {
     opacity: 0;
@@ -3378,6 +3423,7 @@ select.floating-field-input option {
 
 @media (prefers-reduced-motion: reduce) {
   .portal-shell::before,
+  .portal-particle-field__item,
   .portal-orb,
   .animated-gradient-button,
   .floating-card {
@@ -3400,6 +3446,14 @@ select.floating-field-input option {
 @media (max-width: 767px) {
   .portal-orb {
     opacity: 0.24;
+  }
+
+  .portal-particle-field {
+    opacity: 0.42;
+  }
+
+  .portal-particle-field__item:nth-child(n + 7) {
+    display: none;
   }
 
   .portal-shell::after {
@@ -3618,6 +3672,11 @@ select.floating-field-input option {
   pointer-events: none;
 }
 
+.portal-front-hero__video-layer--parallax {
+  transform: translateY(calc(var(--portal-scroll-progress) * 26px)) scale(calc(1 + var(--portal-scroll-progress) * 0.045));
+  transform-origin: center top;
+}
+
 .portal-front-hero__background-video {
   width: 100%;
   height: 100%;
@@ -3625,6 +3684,22 @@ select.floating-field-input option {
   object-position: center 38%;
   opacity: 0.62;
   filter: saturate(1.06) contrast(1.05) brightness(0.95);
+}
+
+.portal-front-hero__copy--parallax {
+  transform: translateY(calc(var(--portal-scroll-progress) * -12px));
+}
+
+.portal-front-hero__wordmark--parallax {
+  transform: translateY(calc(var(--portal-scroll-progress) * -18px));
+}
+
+.portal-front-hero__cta-row--parallax {
+  transform: translateY(calc(var(--portal-scroll-progress) * -8px));
+}
+
+.portal-front-hero__panel--parallax {
+  transform: translate3d(0, calc(var(--portal-scroll-progress) * -20px), 0);
 }
 
 .portal-front-hero__video-overlay {
@@ -4455,23 +4530,6 @@ footer {
 [data-reveal='fade-up'] {
   opacity: 0;
   transform: translateY(18px);
-  animation: portalRevealUp 720ms cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
-}
-
-.portal-front-hero__content--premium > *:nth-child(2) {
-  animation-delay: 0.08s;
-}
-
-.portal-front-hero__content--premium > *:nth-child(3) {
-  animation-delay: 0.26s;
-}
-
-.portal-front-hero__content--premium > *:nth-child(4) {
-  animation-delay: 0.36s;
-}
-
-.portal-front-hero__panel--premium[data-reveal='fade-up'] {
-  animation-delay: 0.22s;
 }
 
 @keyframes portalRevealUp {
@@ -4604,6 +4662,15 @@ footer {
   .portal-front-hero__content--premium,
   .portal-front-hero__panel--premium {
     padding: 0.95rem;
+  }
+
+  .portal-front-hero__video-layer--parallax,
+  .portal-front-hero__copy--parallax,
+  .portal-front-hero__wordmark--parallax,
+  .portal-front-hero__cta-row--parallax,
+  .portal-front-hero__panel--parallax,
+  .tilt-card:hover {
+    transform: none;
   }
 
   .portal-front-hero__bottom-bar {
