@@ -329,21 +329,15 @@ export const EventRegistrationPanel: React.FC<Props> = ({
             <div className="portal-event-section__head">
               <Clock3 size={17} className="text-cyan-200" />
               <div>
-                <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Event-day Live Status</p>
+                <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Live Status & Updates</p>
                 <h3 className="mt-1 text-lg font-semibold text-white">{liveState.label}</h3>
               </div>
             </div>
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.04] p-4">
-                <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">Countdown</p>
-                <p className="mt-2 text-lg font-bold text-white">{liveState.countdown}</p>
-                <p className="mt-2 text-sm text-slate-300">{liveState.detail}</p>
-              </div>
-              <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.04] p-4">
-                <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">Schedule Snapshot</p>
-                <p className="mt-2 text-sm font-semibold text-white">{selectedEvent.date_label}</p>
-                <p className="mt-1 text-sm text-slate-300">{selectedEvent.time_label} / {selectedEvent.venue}</p>
-              </div>
+            <div className="mt-5 rounded-[1.25rem] border border-white/10 bg-white/[0.04] p-4">
+              <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">Current Snapshot</p>
+              <p className="mt-2 text-lg font-bold text-white">{liveState.countdown}</p>
+              <p className="mt-2 text-sm text-slate-300">{liveState.detail}</p>
+              <p className="mt-3 text-sm text-slate-400">{selectedEvent.date_label} / {selectedEvent.time_label} / {selectedEvent.venue}</p>
             </div>
           </section>
 
