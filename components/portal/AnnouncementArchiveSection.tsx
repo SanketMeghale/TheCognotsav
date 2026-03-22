@@ -1,17 +1,57 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { BellRing, CalendarClock, Eye, EyeOff, Pin, Radio } from 'lucide-react';
-import type { PortalAnnouncement } from './types';
+import type { EventRecord, PortalAlert, PortalAnnouncement } from './types';
+import { getEventLiveState, parsePortalEventDate } from './utils';
 
 type Props = {
   announcements: PortalAnnouncement[];
+  events: EventRecord[];
+  alerts: PortalAlert[];
   loading: boolean;
 };
 
-export const AnnouncementArchiveSection: React.FC<Props> = ({ announcements, loading }) => {
+export const AnnouncementArchiveSection: React.FC<Props> = ({ announcements, events, alerts, loading }) => {
   const [collapsed, setCollapsed] = useState(false);
+  const [now, setNow] = useState(() => new Date());
   const featured = announcements.slice(0, 4);
   const lead = featured[0] ?? null;
   const secondary = featured.slice(1, 4);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(new Date()), 60 * 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const nextEvent = useMemo(
+    () =>
+      [...events]
+        .filter((event) => {
+          const eventDate = parsePortalEventDate(event.date_label, event.time_label);
+          return eventDate ? eventDate.getTime() > now.getTime() : false;
+        })
+        .sort((left, right) => {
+          const leftDate = parsePortalEventDate(left.date_label, left.time_label);
+          const rightDate = parsePortalEventDate(right.date_label, right.time_label);
+          return (leftDate?.getTime() || 0) - (rightDate?.getTime() || 0);
+        })[0] ?? null,
+    [events, now],
+  );
+
+  const liveCount = useMemo(
+    () => events.filter((event) => getEventLiveState(event, now).tone === 'live').length,
+    [events, now],
+  );
+
+  const stripItems = useMemo(() => {
+    const alertItems = alerts.slice(0, 3).map((alert) => alert.title);
+    const statusItems = [
+      `Live now: ${liveCount}`,
+      nextEvent ? `Next: ${nextEvent.name} • ${getEventLiveState(nextEvent, now).countdown}` : 'Next: schedule syncing',
+      `Updates: ${announcements.length}`,
+    ];
+
+    return [...statusItems, ...alertItems];
+  }, [alerts, announcements.length, liveCount, nextEvent, now]);
 
   return (
     <section id="announcement-archive" data-reveal="up" className="portal-glow-card portal-glass overflow-hidden rounded-[2rem] p-4 sm:p-5 md:p-6">
@@ -22,6 +62,17 @@ export const AnnouncementArchiveSection: React.FC<Props> = ({ announcements, loa
         </div>
         <div className="rounded-full border border-white/10 bg-white/6 px-4 py-2 text-xs uppercase tracking-[0.2em] text-slate-200">
           {announcements.length} notices
+        </div>
+      </div>
+
+      <div className="mt-4 portal-live-strip">
+        <div className="portal-live-strip__track">
+          {[...stripItems, ...stripItems].map((item, index) => (
+            <div key={`${item}-${index}`} className="portal-live-pill">
+              <span className="portal-live-dot" />
+              <span>{item}</span>
+            </div>
+          ))}
         </div>
       </div>
 

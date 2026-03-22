@@ -2,7 +2,6 @@ import React, { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'rea
 import { ArrowRight, ArrowLeft, Bell, Building2, CheckCircle2, Clock3, GraduationCap, House, Search, ShieldCheck, Sparkles, Trophy } from 'lucide-react';
 import { HeroSection } from './components/portal/HeroSection.tsx';
 import { CompetitionGridSection } from './components/portal/CompetitionGridSection.tsx';
-import { LiveCommandCenter } from './components/portal/LiveCommandCenter.tsx';
 import type {
   AdminAccessScope,
   AdminNotificationSummary,
@@ -1816,13 +1815,6 @@ export const App: React.FC = () => {
           <main className={`${shellClassName} space-y-5 pb-8 md:space-y-8 md:pb-12`}>
             <HeroSection />
 
-            <LiveCommandCenter
-              events={events}
-              alerts={portalAlerts}
-              loadingEvents={loadingEvents}
-              loadingAlerts={loadingAlerts}
-            />
-
             <DepartmentIntroStrip />
 
             <div className={`${shellClassName} portal-section-divider`} aria-hidden="true" />
@@ -1830,6 +1822,8 @@ export const App: React.FC = () => {
             <Suspense fallback={<PortalSectionFallback label="Loading updates..." />}>
               <AnnouncementArchiveSection
                 announcements={visibleAnnouncements}
+                events={events}
+                alerts={portalAlerts}
                 loading={loadingAnnouncements}
               />
             </Suspense>
