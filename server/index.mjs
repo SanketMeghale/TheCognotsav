@@ -726,20 +726,14 @@ function buildStatusEmail(registration) {
   const safePaymentReference = escapeHtml(registration.payment_reference || 'Pending manual entry');
   const safeTotalAmount = escapeHtml(`INR ${registration.total_amount}`);
   const passLink = `${publicAppUrl}/pass/${encodeURIComponent(registration.registration_code)}`;
-  const verifiedPassQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(
-    `COGNOTSAV|${registration.registration_code}|${registration.event_name}|${registration.venue}`,
-  )}`;
   const verifiedPassInstructions = registration.status === 'verified'
     ? `
         <div style="margin-top:18px;border-radius:20px;padding:18px;background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(34,211,238,0.1));border:1px solid rgba(52,211,153,0.18);color:#ecfdf5;line-height:1.75;">
           <strong style="display:block;margin-bottom:8px;font-size:15px;color:#ffffff;">Official verified pass issued</strong>
-          Your official event pass is now available in this email. Please download or save this email as a PDF, and show the QR code plus your registration code at event time.
+          Your official event pass is now available in this email. Please download or save this email as a PDF, and show the pass with your registration code at event time.
         </div>
         <div style="margin-top:16px;border-radius:20px;padding:18px;background:linear-gradient(180deg,rgba(15,23,42,0.78),rgba(255,255,255,0.04));border:1px solid rgba(255,255,255,0.08);text-align:center;">
-          <div style="display:inline-flex;border-radius:18px;background:#ffffff;padding:10px;box-shadow:0 14px 30px rgba(2,8,23,0.18);">
-            <img src="${verifiedPassQrUrl}" alt="Verified pass QR" style="display:block;width:170px;height:170px;" />
-          </div>
-          <div style="margin-top:12px;font-size:12px;color:#cbd5e1;line-height:1.65;">Show this QR with registration code <strong style="color:#ffffff;">${safeRegistrationCode}</strong> during venue verification.</div>
+          <div style="font-size:12px;color:#cbd5e1;line-height:1.65;">Carry this pass and share registration code <strong style="color:#ffffff;">${safeRegistrationCode}</strong> during venue verification.</div>
         </div>
         <div style="margin-top:16px;text-align:center;">
           <a href="${passLink}" style="display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:linear-gradient(90deg,#67e8f9,#fbbf24);color:#041018;text-decoration:none;padding:13px 22px;font-size:13px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;">Open / Download Official Pass</a>
@@ -1120,7 +1114,7 @@ function buildRegistrationTimeline(registration, notifications) {
 
   const verificationDescription =
     registration.status === 'verified'
-      ? 'Your entry has been approved and the QR pass is ready for event-day check-in.'
+      ? 'Your entry has been approved and your official pass is ready for event-day check-in.'
       : registration.status === 'rejected'
         ? registration.review_note || 'The organizer requested an update to the payment proof or transaction details.'
         : registration.status === 'waitlisted'
@@ -1417,9 +1411,6 @@ function buildBroadcastEmail(registration, announcement) {
 
 function buildVerifiedPassPage(registration) {
   const logoUrl = 'https://res.cloudinary.com/dkxddhawc/image/upload/v1774197829/Screenshot_2026-03-22_220018_oln02p.png';
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(
-    `COGNOTSAV|${registration.registration_code}|${registration.event_name}|${registration.venue}`,
-  )}`;
 
   return `
     <!doctype html>
@@ -1431,30 +1422,37 @@ function buildVerifiedPassPage(registration) {
         <style>
           * { box-sizing: border-box; }
           body { margin: 0; font-family: Inter, Arial, sans-serif; background: radial-gradient(circle at top left, rgba(251,191,36,0.16), transparent 22%), radial-gradient(circle at bottom right, rgba(34,211,238,0.14), transparent 22%), linear-gradient(180deg, #08111f 0%, #0f172a 100%); color: #e2e8f0; }
-          .wrap { min-height: 100vh; padding: 28px 16px; display: flex; align-items: center; justify-content: center; }
+          .wrap { min-height: 100vh; padding: 20px 16px; display: flex; align-items: center; justify-content: center; }
           .card { position: relative; overflow: hidden; width: min(100%, 760px); border-radius: 28px; border: 1px solid rgba(255,255,255,0.08); background: linear-gradient(145deg, #111827, #171b2e); box-shadow: 0 30px 72px rgba(2,8,23,0.38); }
-          .top { position: relative; padding: 22px 24px 24px; background: linear-gradient(90deg, rgba(59,130,246,0.2), rgba(168,85,247,0.16), rgba(236,72,153,0.18)); border-bottom: 1px solid rgba(255,255,255,0.08); text-align: center; }
-          .logo { width: 84px; height: 84px; margin: 0 auto; border-radius: 24px; padding: 6px; background: linear-gradient(180deg, rgba(255,255,255,0.24), rgba(203,213,225,0.1)); border: 1px solid rgba(255,255,255,0.16); box-shadow: inset 0 1px 0 rgba(255,255,255,0.48), 0 12px 24px rgba(2,8,23,0.2); }
+          .top { position: relative; padding: 18px 22px 20px; background: linear-gradient(90deg, rgba(59,130,246,0.2), rgba(168,85,247,0.16), rgba(236,72,153,0.18)); border-bottom: 1px solid rgba(255,255,255,0.08); text-align: center; }
+          .logo { width: 72px; height: 72px; margin: 0 auto; border-radius: 22px; padding: 6px; background: linear-gradient(180deg, rgba(255,255,255,0.24), rgba(203,213,225,0.1)); border: 1px solid rgba(255,255,255,0.16); box-shadow: inset 0 1px 0 rgba(255,255,255,0.48), 0 12px 24px rgba(2,8,23,0.2); }
           .logo img { width: 100%; height: 100%; display: block; object-fit: cover; border-radius: 18px; }
-          .overline { margin-top: 14px; font-size: 10px; letter-spacing: 0.38em; text-transform: uppercase; color: #bfdbfe; font-weight: 700; }
-          .title { margin: 12px 0 0; font-family: Orbitron, Inter, Arial, sans-serif; font-size: 28px; line-height: 1.12; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #ffffff; }
-          .body { position: relative; z-index: 1; padding: 24px; }
+          .overline { margin-top: 12px; font-size: 10px; letter-spacing: 0.34em; text-transform: uppercase; color: #bfdbfe; font-weight: 700; }
+          .title { margin: 10px 0 0; font-family: Orbitron, Inter, Arial, sans-serif; font-size: 26px; line-height: 1.12; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #ffffff; }
+          .body { position: relative; z-index: 1; padding: 20px; }
           .badge { display: inline-flex; border-radius: 999px; border: 1px solid rgba(52,211,153,0.22); background: linear-gradient(90deg, rgba(16,185,129,0.14), rgba(34,211,238,0.1)); padding: 8px 12px; font-size: 11px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: #d1fae5; }
-          .lead { margin-top: 16px; color: #cbd5e1; line-height: 1.75; }
-          .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
-          .cell { border-radius: 18px; padding: 14px 16px; background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04)); border: 1px solid rgba(255,255,255,0.08); }
+          .lead { margin-top: 14px; color: #cbd5e1; line-height: 1.6; }
+          .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 16px; }
+          .cell { border-radius: 18px; padding: 12px 14px; background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04)); border: 1px solid rgba(255,255,255,0.08); }
           .label { font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase; color: #94a3b8; font-weight: 700; }
-          .value { margin-top: 6px; color: #ffffff; font-size: 16px; line-height: 1.5; font-weight: 700; word-break: break-word; }
-          .qr-card { margin-top: 18px; border-radius: 22px; padding: 18px; background: linear-gradient(180deg, rgba(15,23,42,0.78), rgba(255,255,255,0.04)); border: 1px solid rgba(255,255,255,0.08); text-align: center; }
-          .qr-frame { display: inline-flex; border-radius: 18px; background: #ffffff; padding: 10px; box-shadow: 0 14px 30px rgba(2,8,23,0.18); }
-          .qr-frame img { display: block; width: 170px; height: 170px; }
-          .hint { margin-top: 12px; color: #cbd5e1; font-size: 12px; line-height: 1.65; }
-          .actions { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
-          .button { display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; padding: 13px 22px; font-size: 13px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none; }
+          .value { margin-top: 6px; color: #ffffff; font-size: 15px; line-height: 1.4; font-weight: 700; word-break: break-word; }
+          .notice { margin-top: 16px; border-radius: 20px; padding: 14px 16px; background: linear-gradient(180deg, rgba(15,23,42,0.78), rgba(255,255,255,0.04)); border: 1px solid rgba(255,255,255,0.08); }
+          .hint { margin: 0; color: #cbd5e1; font-size: 12px; line-height: 1.6; }
+          .actions { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+          .button { display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; padding: 12px 20px; font-size: 13px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none; }
           .button-primary { background: linear-gradient(90deg, #67e8f9, #fbbf24); color: #041018; }
           .button-secondary { border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.06); color: #ffffff; }
           @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } .title { font-size: 22px; } }
-          @media print { .actions { display: none; } body { background: #ffffff; } .card { box-shadow: none; border-color: #cbd5e1; background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); } .cell, .qr-card { background: rgba(248,250,252,0.92); } .lead, .hint { color: #334155; } .value { color: #0f172a; } }
+          @page { size: A4; margin: 10mm; }
+          @media print {
+            .actions { display: none; }
+            body { background: #ffffff; }
+            .wrap { min-height: auto; padding: 0; display: block; }
+            .card { width: 100%; box-shadow: none; border-color: #cbd5e1; background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); break-inside: avoid; }
+            .cell, .notice { background: rgba(248,250,252,0.92); }
+            .lead, .hint { color: #334155; }
+            .value { color: #0f172a; }
+          }
         </style>
       </head>
       <body>
@@ -1467,7 +1465,7 @@ function buildVerifiedPassPage(registration) {
             </div>
             <div class="body">
               <div class="badge">Verified Registration</div>
-              <div class="lead">This is your official verified Cognotsav pass. Download or print it, then show the QR code and registration code during event-time verification.</div>
+              <div class="lead">This is your official verified Cognotsav pass. Download or print it, then show this pass with your registration code during event-time verification.</div>
               <div class="grid">
                 <div class="cell"><div class="label">Registration code</div><div class="value">${escapeHtml(registration.registration_code)}</div></div>
                 <div class="cell"><div class="label">Event</div><div class="value">${escapeHtml(registration.event_name)}</div></div>
@@ -1476,9 +1474,8 @@ function buildVerifiedPassPage(registration) {
                 <div class="cell"><div class="label">Schedule</div><div class="value">${escapeHtml(registration.date_label)}<br />${escapeHtml(registration.time_label)}</div></div>
                 <div class="cell"><div class="label">Venue</div><div class="value">${escapeHtml(registration.venue)}</div></div>
               </div>
-              <div class="qr-card">
-                <div class="qr-frame"><img src="${qrUrl}" alt="Official pass QR" /></div>
-                <div class="hint">Show this QR and your registration code at the venue entry desk.</div>
+              <div class="notice">
+                <p class="hint">Carry this pass and share your registration code at the venue entry desk for verification.</p>
               </div>
               <div class="actions">
                 <a class="button button-primary" href="javascript:window.print()">Print / Save PDF</a>

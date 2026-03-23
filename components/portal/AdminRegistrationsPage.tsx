@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   AlertTriangle, ArrowLeft, BarChart3, CheckCircle2, Clock3, Download,
-  Eye, EyeOff, FileSpreadsheet, HardDriveDownload, Mail, Megaphone, QrCode,
+  Eye, EyeOff, FileSpreadsheet, HardDriveDownload, Mail, Megaphone,
   RotateCcw, Save, Search, Send, ShieldCheck, Trash2, Users, XCircle,
 } from 'lucide-react';
 import type { AdminAccessScope, AdminNotificationSummary, AdminRegistration, BackupSnapshot, EventRecord, PortalAnnouncement } from './types';
@@ -472,12 +472,11 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
 
                     <div className="space-y-4">
                       <div className="rounded-[1.35rem] border border-white/10 bg-white/5 p-4 text-center">
-                        <div className="inline-flex rounded-2xl border border-blue-300/20 bg-blue-400/10 p-3 text-blue-100"><QrCode size={18} /></div>
-                        <div className="mt-3 rounded-[1.3rem] bg-white p-3">
-                          <img src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(row.qr_value)}`} alt={`${row.registration_code} QR`} className="mx-auto h-36 w-36" />
-                        </div>
-                        <p className="mt-3 text-[11px] uppercase tracking-[0.2em] text-slate-400">Registration QR</p>
-                        <p className="mt-1 font-orbitron text-lg font-bold text-white">{row.registration_code}</p>
+                        <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Registration code</p>
+                        <p className="mt-2 font-orbitron text-lg font-bold text-white">{row.registration_code}</p>
+                        <p className="mt-3 text-sm leading-6 text-slate-300">
+                          Venue verification now relies on the official pass details and registration code.
+                        </p>
                       </div>
 
                       {row.payment_screenshot_path && !brokenProofs[row.id] ? (

@@ -5,7 +5,6 @@ import {
   Download,
   Eye,
   FileSpreadsheet,
-  QrCode,
   Search,
   ShieldCheck,
   XCircle,
@@ -228,18 +227,11 @@ export const TrackerAdminPanel: React.FC<Props> = ({
 
                 <div className="space-y-4">
                   <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5 text-center">
-                    <div className="inline-flex rounded-2xl border border-blue-300/20 bg-blue-400/10 p-3 text-blue-100">
-                      <QrCode size={18} />
-                    </div>
-                    <div className="mt-4 flex aspect-square items-center justify-center rounded-[1.5rem] bg-white p-4">
-                      <img
-                        src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(result.qr_value)}`}
-                        alt={`${result.registration_code} QR`}
-                        className="h-full w-full max-w-[11rem] object-contain sm:max-w-[12rem] md:max-w-[13rem]"
-                      />
-                    </div>
-                    <p className="mt-4 text-xs uppercase tracking-[0.24em] text-slate-400">Event-day entry pass</p>
+                    <p className="text-xs uppercase tracking-[0.24em] text-slate-400">Event-day entry pass</p>
                     <p className="mt-2 font-orbitron text-xl font-black text-white">{result.registration_code}</p>
+                    <p className="mt-3 text-sm leading-6 text-slate-300">
+                      Verification now uses the official pass details and registration code only.
+                    </p>
                   </div>
 
                   <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-4 text-sm text-slate-200">
