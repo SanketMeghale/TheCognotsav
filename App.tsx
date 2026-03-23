@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useEffect, useMemo, useState } from 'react';
+import React, { Suspense, lazy, memo, useEffect, useMemo, useState } from 'react';
 import { ArrowRight, ArrowLeft, Bell, Building2, CheckCircle2, Clock3, GraduationCap, House, Search, ShieldCheck, Sparkles, Trophy } from 'lucide-react';
 import { HeroSection } from './components/portal/HeroSection.tsx';
 import { CompetitionGridSection } from './components/portal/CompetitionGridSection.tsx';
@@ -46,6 +46,14 @@ type ApiReadResult<T> = {
 const DRAFT_STORAGE_KEY = 'cogno_registration_portal_draft_v1';
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phonePattern = /^\d{10}$/;
+const NAV_LINKS = [
+  { href: '#overview', label: 'Home' },
+  { href: '#registration-panel', label: 'Competitions' },
+  { href: '#tracker', label: 'Tracker' },
+  { href: '#announcement-archive', label: 'Updates' },
+  { href: '#timeline', label: 'Timeline' },
+  { href: '#admin-registrations', label: 'Admin' },
+];
 const GALLERY_PHOTOS = [
   {
     image: 'https://res.cloudinary.com/dkxddhawc/image/upload/v1774254050/_39A8389_iqde8k.jpg',
@@ -104,11 +112,22 @@ const GALLERY_PHOTOS = [
   },
 ];
 
-function PortalBackgroundCanvas() {
+function optimizeCloudinaryImage(url: string, width: number) {
+  return url.replace('/image/upload/', `/image/upload/f_auto,q_auto,w_${width},c_limit/`);
+}
+
+const DEPARTMENT_GALLERY_PHOTOS = GALLERY_PHOTOS.map((photo) => ({
+  ...photo,
+  image: optimizeCloudinaryImage(photo.image, 960),
+}));
+
+function PortalBackgroundCanvasBase() {
   return <div className="portal-background-image" aria-hidden="true" />;
 }
 
-function DepartmentIntroStrip() {
+const PortalBackgroundCanvas = memo(PortalBackgroundCanvasBase);
+
+function DepartmentIntroStripBase() {
   return (
     <section className="portal-department-strip rounded-[1.8rem] border border-white/10 p-4 md:rounded-[2rem] md:p-6">
       <div className="portal-department-strip__layout">
@@ -142,7 +161,9 @@ function DepartmentIntroStrip() {
   );
 }
 
-function DepartmentPage() {
+const DepartmentIntroStrip = memo(DepartmentIntroStripBase);
+
+function DepartmentPageBase() {
   return (
     <main className={`${shellClassName} space-y-5 pb-10 pt-4 md:space-y-8 md:pb-14`}>
       <section className="portal-department-page portal-glow-card portal-glass rounded-[1.7rem] p-4 md:rounded-[2rem] md:p-8">
@@ -223,7 +244,7 @@ function DepartmentPage() {
         </div>
 
         <div className="portal-department-page__gallery">
-          {GALLERY_PHOTOS.map((photo) => (
+          {DEPARTMENT_GALLERY_PHOTOS.map((photo) => (
             <div key={photo.image} className="portal-department-page__gallery-card">
               <div className="overflow-hidden rounded-[1.2rem] border border-white/10 bg-black/20">
                 <img
@@ -246,7 +267,9 @@ function DepartmentPage() {
   );
 }
 
-function PortalSectionFallback({ label = 'Loading section...' }: { label?: string }) {
+const DepartmentPage = memo(DepartmentPageBase);
+
+function PortalSectionFallbackBase({ label = 'Loading section...' }: { label?: string }) {
   return (
     <div className="portal-glow-card portal-glass rounded-[1.7rem] p-5">
       <PortalLoader label={label} compact />
@@ -254,7 +277,9 @@ function PortalSectionFallback({ label = 'Loading section...' }: { label?: strin
   );
 }
 
-function PortalLoader({ label = 'Loading...', compact = false }: { label?: string; compact?: boolean }) {
+const PortalSectionFallback = memo(PortalSectionFallbackBase);
+
+function PortalLoaderBase({ label = 'Loading...', compact = false }: { label?: string; compact?: boolean }) {
   return (
     <div className={`portal-loader-card ${compact ? 'portal-loader-card--compact' : ''}`}>
       <div className="portal-loader-brand">
@@ -267,6 +292,8 @@ function PortalLoader({ label = 'Loading...', compact = false }: { label?: strin
     </div>
   );
 }
+
+const PortalLoader = memo(PortalLoaderBase);
 
 async function readApiBody<T>(response: Response): Promise<ApiReadResult<T>> {
   const rawText = await response.text();
@@ -647,7 +674,8 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setNavScrolled(window.scrollY > 18);
+      const nextScrolled = window.scrollY > 18;
+      setNavScrolled((current) => (current === nextScrolled ? current : nextScrolled));
     };
 
     handleScroll();
@@ -881,14 +909,6 @@ export const App: React.FC = () => {
   const isDepartmentPage = hashRoute === '#department';
   const isEventPage = Boolean(eventPageSlug);
   const showFrontBottomDock = !isAdminPage && !isEventPage && !isDepartmentPage;
-  const navLinks = [
-    { href: '#overview', label: 'Home' },
-    { href: '#registration-panel', label: 'Competitions' },
-    { href: '#tracker', label: 'Tracker' },
-    { href: '#announcement-archive', label: 'Updates' },
-    { href: '#timeline', label: 'Timeline' },
-    { href: '#admin-registrations', label: 'Admin' },
-  ];
   const activeBottomDock =
     !hashRoute || hashRoute === '#overview'
       ? 'home'
@@ -1770,7 +1790,7 @@ export const App: React.FC = () => {
           </a>
 
           <nav className="portal-nav-links hidden lg:flex">
-            {navLinks.map((link) => (
+            {NAV_LINKS.map((link) => (
               <a key={link.href} href={link.href} className={`portal-nav-link ${hashRoute === link.href ? 'is-active' : ''}`}>
                 {link.label}
               </a>

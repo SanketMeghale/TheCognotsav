@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { CalendarDays, CreditCard, ExternalLink, MapPin, Phone, Volume2, VolumeX, Trophy, Users } from 'lucide-react';
 import type { EventRecord } from './types';
 import { formatCurrency, getEventLiveState, getTeamLabel } from './utils';
@@ -47,7 +47,7 @@ function getDisplayCategory(event: EventRecord) {
   return 'Technical';
 }
 
-export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents, selectedEventSlug, onSelectEvent }) => {
+export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEvents, selectedEventSlug, onSelectEvent }) => {
   const [activeFilter, setActiveFilter] = useState<(typeof filterOrder)[number]>('All');
   const [now, setNow] = useState(() => new Date());
   const [hoveredVideoSlug, setHoveredVideoSlug] = useState<string | null>(null);
@@ -446,6 +446,6 @@ export const CompetitionGridSection: React.FC<Props> = ({ events, loadingEvents,
       ) : null}
     </section>
   );
-};
+});
 
 export default CompetitionGridSection;

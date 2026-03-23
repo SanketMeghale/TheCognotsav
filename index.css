@@ -359,7 +359,7 @@ img {
   transform: translateZ(0);
   background:
     linear-gradient(180deg, rgba(5, 10, 22, 0.52), rgba(5, 10, 22, 0.68)),
-    url('https://res.cloudinary.com/dkxddhawc/image/upload/v1774157303/ChatGPT_Image_Mar_22_2026_10_54_12_AM_foafcx.png') center/cover no-repeat;
+    url('https://res.cloudinary.com/dkxddhawc/image/upload/f_auto,q_auto,w_1920,c_limit/v1774157303/ChatGPT_Image_Mar_22_2026_10_54_12_AM_foafcx.png') center/cover no-repeat;
   opacity: 1;
   filter: saturate(1.04);
 }
@@ -4569,6 +4569,8 @@ footer {
 }
 
 .portal-department-page__gallery-card {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 360px;
   overflow: hidden;
   border-radius: 1.4rem;
   position: relative;

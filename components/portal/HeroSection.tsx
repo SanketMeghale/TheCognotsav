@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { ArrowRight, CalendarDays, MapPin, Sparkles, Trophy } from 'lucide-react';
 
 type Props = {};
 
-export const HeroSection: React.FC<Props> = () => {
+export const HeroSection: React.FC<Props> = memo(() => {
   return (
     <section id="overview" className="mx-auto w-full max-w-[1320px] px-1 sm:px-5 lg:px-8 pt-3 pb-2 md:pt-5 md:pb-4">
       <div className="portal-front-hero portal-front-hero--premium portal-front-hero--welcome">
@@ -97,4 +97,4 @@ export const HeroSection: React.FC<Props> = () => {
       </div>
     </section>
   );
-};
+});
