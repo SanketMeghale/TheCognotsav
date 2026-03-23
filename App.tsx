@@ -46,6 +46,63 @@ type ApiReadResult<T> = {
 const DRAFT_STORAGE_KEY = 'cogno_registration_portal_draft_v1';
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phonePattern = /^\d{10}$/;
+const GALLERY_PHOTOS = [
+  {
+    image: 'https://res.cloudinary.com/dkxddhawc/image/upload/v1774254050/_39A8389_iqde8k.jpg',
+    title: 'Cognotsav Spotlight',
+    text: 'A live moment from the CEAS event floor.',
+  },
+  {
+    image: 'https://res.cloudinary.com/dkxddhawc/image/upload/v1774253254/WhatsApp_Image_2025-02-23_at_14.29.05_48110bef_rfgems.jpg',
+    title: 'Campus Energy',
+    text: 'Students, crowd energy, and on-ground participation.',
+  },
+  {
+    image: 'https://res.cloudinary.com/dkxddhawc/image/upload/v1774253247/WhatsApp_Image_2025-02-23_at_14.38.32_195c4cf7_yyrihu.jpg',
+    title: 'Event Highlights',
+    text: 'A captured frame from the Cognotsav experience.',
+  },
+  {
+    image: 'https://res.cloudinary.com/dkxddhawc/image/upload/v1774253391/IMG_5035_jsvyai.jpg',
+    title: 'Student Participation',
+    text: 'Memories from CEAS-led event activities.',
+  },
+  {
+    image: 'https://res.cloudinary.com/dkxddhawc/image/upload/v1774253421/IMG_5282_u0bjoi.jpg',
+    title: 'On-Stage Moment',
+    text: 'An event-day scene from the department showcase.',
+  },
+  {
+    image: 'https://res.cloudinary.com/dkxddhawc/image/upload/v1774253542/DSC_2915_apz4fe.jpg',
+    title: 'Candid Frame',
+    text: 'A snapshot reflecting the crowd and atmosphere.',
+  },
+  {
+    image: 'https://res.cloudinary.com/dkxddhawc/image/upload/v1774253537/DSC_2864_uvfscw.jpg',
+    title: 'Legacy Capture',
+    text: 'A visual memory from a previous Cognotsav event.',
+  },
+  {
+    image: 'https://res.cloudinary.com/dkxddhawc/image/upload/v1774253536/_39A8377_osrfcx.jpg',
+    title: 'Department Fest',
+    text: 'Scenes from the CE department flagship celebration.',
+  },
+  {
+    image: 'https://res.cloudinary.com/dkxddhawc/image/upload/v1774253535/IMG_5542_sxmqw7.jpg',
+    title: 'Crowd and Culture',
+    text: 'A gallery frame showing the event-day vibe.',
+  },
+  {
+    image: 'https://res.cloudinary.com/dkxddhawc/image/upload/v1774253533/IMG_5546_hk55de.jpg',
+    title: 'Moments That Stayed',
+    text: 'A memorable shot from the Cognotsav archive.',
+  },
+  {
+    image: 'https://res.cloudinary.com/dkxddhawc/image/upload/v1774253507/IMG_5398_kl6ih5.jpg',
+    title: 'CEAS Archive',
+    text: 'One more look into the event legacy collection.',
+  },
+];
 
 function PortalBackgroundCanvas() {
   return <div className="portal-background-image" aria-hidden="true" />;
@@ -161,20 +218,25 @@ function DepartmentPage() {
             <h3 className="portal-department-page__section-title">Gallery and Event Legacy</h3>
           </div>
           <p className="portal-department-page__section-copy portal-department-page__section-copy--compact">
-            Empty placeholders are ready here. You can later upload previous event photos, posters, captions, and short
-            highlight notes.
+            A live archive of previous Cognotsav and CEAS event moments.
           </p>
         </div>
 
         <div className="portal-department-page__gallery">
-          {Array.from({ length: 6 }).map((_, index) => (
-            <div key={index} className="portal-department-page__gallery-card">
-              <div className="portal-department-page__gallery-placeholder">
-                <span>Upload photo {index + 1}</span>
+          {GALLERY_PHOTOS.map((photo) => (
+            <div key={photo.image} className="portal-department-page__gallery-card">
+              <div className="overflow-hidden rounded-[1.2rem] border border-white/10 bg-black/20">
+                <img
+                  src={photo.image}
+                  alt={photo.title}
+                  loading="lazy"
+                  decoding="async"
+                  className="h-56 w-full object-cover transition duration-500 hover:scale-105"
+                />
               </div>
               <div className="portal-department-page__gallery-copy">
-                <p className="portal-department-page__gallery-title">Past Event Highlight</p>
-                <p className="portal-department-page__gallery-text">Add event name, year, and 1-line description here.</p>
+                <p className="portal-department-page__gallery-title">{photo.title}</p>
+                <p className="portal-department-page__gallery-text">{photo.text}</p>
               </div>
             </div>
           ))}
