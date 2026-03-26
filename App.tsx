@@ -963,6 +963,23 @@ export const App: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'auto' });
   }, [isDepartmentPage, hashRoute]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined' || !isTimelinePage) {
+      return;
+    }
+
+    const animationFrame = window.requestAnimationFrame(() => {
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    });
+
+    return () => window.cancelAnimationFrame(animationFrame);
+  }, [isTimelinePage, hashRoute]);
+
   const totalRegistrations = events.reduce((sum, event) => sum + event.registrations_count, 0);
   const visibleAnnouncements = announcements
     .filter((announcement) => isAnnouncementActive(announcement))

@@ -268,6 +268,16 @@ export const EventRegistrationPanel: React.FC<Props> = ({
               <img src={selectedEvent.poster_path} alt={selectedEvent.name} loading="eager" decoding="async" className="h-full w-full object-cover" />
               <div className="portal-event-showcase__poster-overlay" />
             </div>
+            <div className="px-5 pt-5 md:px-5 md:pt-5">
+              <button
+                type="button"
+                onClick={scrollToRegistrationForm}
+                className="portal-register-cta inline-flex w-full items-center justify-center gap-2"
+              >
+                Register
+                <ArrowRight size={16} />
+              </button>
+            </div>
             <div className="portal-event-showcase__content">
               <div className="flex flex-wrap items-center gap-3">
                 <button

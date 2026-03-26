@@ -413,7 +413,7 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
                         }}
                         className="portal-register-cta portal-register-cta--compact w-full"
                       >
-                        Register Now
+                        Register
                         <ExternalLink size={16} />
                       </button>
                     </div>
