@@ -1435,76 +1435,105 @@ img {
 
 .portal-competition-card__body {
   background:
-    radial-gradient(circle at top right, rgba(168, 85, 247, 0.12), transparent 38%),
-    linear-gradient(135deg, rgba(20, 30, 49, 0.98), rgba(34, 28, 54, 0.92));
+    radial-gradient(circle at top right, rgba(236, 72, 153, 0.18), transparent 28%),
+    radial-gradient(circle at left bottom, rgba(59, 130, 246, 0.16), transparent 22%),
+    linear-gradient(180deg, rgba(38, 20, 78, 0.98), rgba(29, 17, 64, 0.98) 48%, rgba(18, 11, 43, 0.99));
+}
+
+.portal-competition-card__topline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.portal-competition-card__tagline {
+  margin: 0.55rem 0 0;
+  color: rgba(226, 232, 240, 0.74);
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.5;
 }
 
 .portal-competition-card__title {
   margin: 0;
   font-family: 'Orbitron', 'Inter', sans-serif;
-  font-size: clamp(1.2rem, 2.2vw, 1.72rem);
+  font-size: clamp(1.9rem, 3vw, 2.35rem);
   font-weight: 800;
-  letter-spacing: 0.05em;
-  color: #31d7ff;
-  text-shadow: 0 0 18px rgba(34, 211, 238, 0.16);
-  line-height: 1.16;
+  letter-spacing: -0.04em;
+  color: #5edcff;
+  text-shadow: 0 0 18px rgba(59, 130, 246, 0.18);
+  line-height: 1.08;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-.portal-competition-card__meta-row {
+.portal-competition-card__schedule {
+  border-radius: 1.35rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02)),
+    linear-gradient(135deg, rgba(67, 56, 202, 0.18), rgba(76, 29, 149, 0.14));
+  padding: 1rem 1rem 1.05rem;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 18px 34px rgba(2, 8, 23, 0.2);
+}
+
+.portal-competition-card__schedule-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.48rem;
-  margin: 0.55rem 0 0;
-  color: #8fd4eb;
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
+  color: #dbeafe;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   line-height: 1.5;
 }
 
 .portal-competition-card__meta-dot {
-  width: 0.2rem;
-  height: 0.2rem;
+  width: 0.28rem;
+  height: 0.28rem;
   border-radius: 999px;
-  background: rgba(125, 211, 252, 0.8);
+  background: rgba(191, 219, 254, 0.84);
 }
 
 .portal-competition-card__status {
   flex: 0 0 auto;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.05);
-  padding: 0.5rem 0.8rem;
-  color: rgba(226, 232, 240, 0.92);
-  font-size: 0.66rem;
+  padding: 0.58rem 1rem;
+  font-size: 0.76rem;
   font-weight: 800;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   white-space: nowrap;
 }
 
-.portal-competition-card__description {
-  color: rgba(203, 213, 225, 0.92);
-}
-
-.portal-competition-card__team-row {
+.portal-competition-card__countdown-pill {
   display: inline-flex;
   align-items: center;
-  gap: 0.72rem;
-  color: #8fe7f9;
-  font-size: 0.94rem;
-  font-weight: 500;
-  line-height: 1.45;
+  gap: 0.55rem;
+  margin-top: 0.95rem;
+  border: 1px solid rgba(251, 191, 36, 0.64);
+  border-radius: 999px;
+  background:
+    linear-gradient(90deg, rgba(37, 99, 235, 0.3), rgba(99, 102, 241, 0.12) 28%, rgba(234, 88, 12, 0.16) 72%, rgba(244, 114, 182, 0.22)),
+    rgba(9, 13, 26, 0.82);
+  padding: 0.78rem 1rem;
+  color: #eff6ff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+    0 0 24px rgba(251, 191, 36, 0.1);
 }
 
-.portal-competition-card__team-row svg {
-  color: #22d3ee;
+.portal-competition-card__description {
+  color: rgba(226, 232, 240, 0.86);
 }
 
 .portal-competition-card__stats {
@@ -1514,20 +1543,18 @@ img {
 }
 
 .portal-competition-card__stat-card {
-  border-radius: 1.15rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: linear-gradient(145deg, rgba(47, 61, 82, 0.52), rgba(41, 26, 60, 0.4));
-  padding: 0.95rem 1rem;
+  border-radius: 1.1rem;
+  padding: 0.92rem 1rem;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    0 18px 28px rgba(2, 8, 23, 0.14);
+    0 16px 28px rgba(2, 8, 23, 0.16);
 }
 
 .portal-competition-card__stat-label {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: rgba(148, 163, 184, 0.9);
+  color: rgba(191, 219, 254, 0.72);
   font-size: 0.66rem;
   font-weight: 800;
   letter-spacing: 0.16em;
@@ -1542,33 +1569,66 @@ img {
   margin-top: 0.65rem;
   color: #ffffff;
   font-family: 'Orbitron', 'Inter', sans-serif;
-  font-size: 0.96rem;
+  font-size: 1rem;
   font-weight: 800;
   line-height: 1.25;
   word-break: break-word;
 }
 
 .portal-competition-card__stat-value--accent {
-  color: #31d7ff;
+  color: #d7ecff;
+}
+
+.portal-competition-card__stat-card--action {
+  border-color: rgba(34, 211, 238, 0.22);
+  background:
+    linear-gradient(180deg, rgba(34, 211, 238, 0.08), rgba(255, 255, 255, 0.02)),
+    linear-gradient(145deg, rgba(9, 40, 86, 0.88), rgba(58, 24, 90, 0.76));
+}
+
+.portal-competition-card__action-split {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.65rem;
+}
+
+.portal-competition-card__link-text {
+  color: rgba(226, 232, 240, 0.9);
+  font-size: 0.95rem;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .portal-competition-card__footer {
   display: grid;
-  gap: 0.9rem;
+  gap: 0.95rem;
 }
 
-.portal-competition-card__venue {
+.portal-competition-card__details-button {
   display: inline-flex;
   align-items: center;
-  gap: 0.55rem;
-  color: rgba(203, 213, 225, 0.88);
-  font-size: 0.88rem;
+  justify-content: center;
+  gap: 0.65rem;
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1.15rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
+  padding: 0.95rem 1rem;
+  color: rgba(226, 232, 240, 0.92);
+  font-size: 1rem;
   font-weight: 600;
-  line-height: 1.4;
+  transition:
+    border-color var(--portal-glow-transition),
+    background var(--portal-glow-transition),
+    transform var(--portal-glow-transition);
 }
 
-.portal-competition-card__venue svg {
-  color: #c084fc;
+.portal-competition-card__details-button:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.03));
+  transform: translateY(-1px);
 }
 
 .portal-update-marquee {
@@ -1824,7 +1884,21 @@ img {
   }
 
   .portal-competition-card__title {
-    font-size: 1.4rem;
+    font-size: 1.72rem;
+  }
+
+  .portal-competition-card__tagline {
+    font-size: 0.82rem;
+  }
+
+  .portal-competition-card__schedule-row {
+    font-size: 0.7rem;
+  }
+
+  .portal-competition-card__countdown-pill {
+    width: 100%;
+    justify-content: center;
+    font-size: 0.88rem;
   }
 
   .portal-competition-card__hero-title {
@@ -1838,6 +1912,12 @@ img {
   .portal-competition-card__status {
     padding: 0.42rem 0.68rem;
     font-size: 0.6rem;
+  }
+
+  .portal-competition-card__action-split {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
   }
 
   .portal-update-layout {
@@ -3069,15 +3149,19 @@ select.floating-field-input option {
 }
 
 .portal-competition-card__status {
-  border-color: rgba(0, 255, 159, 0.34);
-  background: linear-gradient(135deg, rgba(0, 255, 159, 0.18), rgba(0, 209, 255, 0.08));
-  color: rgba(230, 255, 247, 0.96);
-  box-shadow: 0 0 18px rgba(0, 255, 159, 0.12);
+  border-color: rgba(103, 232, 249, 0.64);
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.16), rgba(59, 130, 246, 0.12));
+  color: #c7fdff;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+    0 0 18px rgba(34, 211, 238, 0.18);
 }
 
 .portal-competition-card__stat-card {
   border-color: rgba(0, 209, 255, 0.14);
-  background: linear-gradient(145deg, rgba(14, 22, 38, 0.88), rgba(10, 14, 26, 0.92));
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02)),
+    linear-gradient(145deg, rgba(35, 25, 73, 0.9), rgba(63, 20, 76, 0.84));
   box-shadow:
     0 18px 30px rgba(2, 8, 23, 0.18),
     0 0 18px rgba(0, 209, 255, 0.05),
@@ -3095,6 +3179,13 @@ select.floating-field-input option {
     0 0 22px rgba(0, 209, 255, 0.08),
     0 0 34px rgba(138, 43, 226, 0.04),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.portal-competition-card__stat-card--action {
+  border-color: rgba(34, 211, 238, 0.22);
+  background:
+    linear-gradient(180deg, rgba(34, 211, 238, 0.08), rgba(255, 255, 255, 0.02)),
+    linear-gradient(145deg, rgba(9, 40, 86, 0.88), rgba(58, 24, 90, 0.76));
 }
 
 .portal-pass-modal {

@@ -192,15 +192,6 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const qrUrl = upiLink ? `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(upiLink)}` : '';
   const canOpenPaymentApp = typeof window !== 'undefined' && /Android|iPhone|iPad|iPod/i.test(window.navigator.userAgent);
   const isSoloEvent = selectedEvent.min_members === 1 && !selectedEvent.is_team_event;
-  const scrollToRegistrationForm = () => {
-    if (typeof window === 'undefined') return;
-
-    const formSection = document.getElementById('portal-registration-form');
-    if (!formSection) return;
-
-    const top = formSection.getBoundingClientRect().top + window.scrollY - 96;
-    window.scrollTo({ top: Math.max(top, 0), behavior: 'auto' });
-  };
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(new Date()), 60 * 1000);
@@ -267,16 +258,6 @@ export const EventRegistrationPanel: React.FC<Props> = ({
             <div className="portal-event-showcase__poster">
               <img src={selectedEvent.poster_path} alt={selectedEvent.name} loading="eager" decoding="async" className="h-full w-full object-cover" />
               <div className="portal-event-showcase__poster-overlay" />
-            </div>
-            <div className="px-5 pt-5 md:px-5 md:pt-5">
-              <button
-                type="button"
-                onClick={scrollToRegistrationForm}
-                className="portal-register-cta inline-flex w-full items-center justify-center gap-2"
-              >
-                Register
-                <ArrowRight size={16} />
-              </button>
             </div>
             <div className="portal-event-showcase__content">
               <div className="flex flex-wrap items-center gap-3">

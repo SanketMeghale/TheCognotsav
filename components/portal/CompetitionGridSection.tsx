@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
-import { CalendarDays, CreditCard, ExternalLink, MapPin, Phone, Play, Volume2, VolumeX, Trophy, Users } from 'lucide-react';
+import { CalendarDays, ChevronDown, CreditCard, ExternalLink, Hourglass, Play, Volume2, VolumeX, Trophy, Users } from 'lucide-react';
 import type { EventRecord } from './types';
 import { formatCurrency, getEventLiveState, getTeamLabel } from './utils';
 
@@ -29,6 +29,12 @@ const categoryThemes: Record<string, { button: string; glow: string; badge: stri
 };
 
 const filterOrder = ['All', 'Technical', 'Sports', 'Gaming', 'Fun'] as const;
+const categoryTaglines: Record<string, string> = {
+  Technical: 'Innovate • Present • Accelerate',
+  Sports: 'Compete • Perform • Triumph',
+  Gaming: 'Squad Up • Survive • Dominate',
+  Fun: 'Play • Laugh • Conquer',
+};
 
 function getDisplayCategory(event: EventRecord) {
   const name = `${event.name} ${event.description}`.toLowerCase();
@@ -191,13 +197,14 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
               const theme = categoryThemes[displayCategory] || categoryThemes.Technical;
               const teamLabel = getTeamLabel(event);
               const liveState = getEventLiveState(event, now);
-              const primaryCoordinator = event.coordinators?.[0] ?? null;
               const handleOpenEvent = () => onSelectEvent(event.slug);
               const hasIntroVideo = Boolean(event.intro_video_url);
               const isVideoActive = supportsHoverPreview
                 ? hoveredVideoSlug === event.slug
                 : tappedVideoSlug === event.slug;
               const isSoundEnabled = soundEnabledSlug === event.slug;
+              const statusLabel = liveState.label === 'Registration Open' ? 'OPEN' : liveState.label.toUpperCase();
+              const tagline = categoryTaglines[displayCategory] || categoryTaglines.Technical;
               const videoInstruction = supportsHoverPreview
                 ? 'Hover to preview video'
                 : isVideoActive
@@ -321,65 +328,28 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
                   </div>
 
                   <div className="portal-competition-card__body p-5">
-                    <div className="flex items-start justify-between gap-3">
+                    <div className="portal-competition-card__topline">
                       <div className="min-w-0">
                         <h4 className="portal-competition-card__title">{event.name}</h4>
-                        <p className="portal-competition-card__meta-row">
-                          <CalendarDays size={13} />
-                          <span>{event.date_label}</span>
-                          <span className="portal-competition-card__meta-dot" />
-                          <span>{event.time_label}</span>
-                        </p>
+                        <p className="portal-competition-card__tagline">{tagline}</p>
                       </div>
-                      <span
-                        className={`inline-flex rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] ${
-                          liveState.tone === 'live'
-                            ? 'border-cyan-300/18 bg-cyan-400/10 text-cyan-100'
-                            : liveState.tone === 'critical'
-                              ? 'border-rose-300/18 bg-rose-400/10 text-rose-100'
-                              : liveState.tone === 'warning'
-                                ? 'border-amber-300/18 bg-amber-400/10 text-amber-100'
-                                : liveState.tone === 'muted'
-                                  ? 'border-slate-300/14 bg-slate-400/10 text-slate-200'
-                                  : 'border-emerald-300/18 bg-emerald-400/10 text-emerald-100'
-                        }`}
-                      >
-                        {liveState.label}
-                      </span>
+                      <span className="portal-competition-card__status">{statusLabel}</span>
                     </div>
 
-                    <p className="portal-competition-card__description mt-4 line-clamp-3 text-sm leading-7 text-slate-300">{event.description}</p>
-
-                    <div className="mt-4 rounded-[1.15rem] border border-white/10 bg-white/[0.04] p-3">
-                      <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">Event-day status</p>
-                      <p className="mt-2 text-sm font-semibold text-white">{liveState.countdown}</p>
-                    </div>
-
-                    <div className="portal-competition-card__team-row mt-4">
-                      <Users size={16} />
-                      <span>{teamLabel}</span>
-                    </div>
-
-                    {primaryCoordinator ? (
-                      <div className="mt-4 rounded-[1.15rem] border border-white/10 bg-white/[0.04] p-3">
-                        <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">Coordinator</p>
-                        <div className="mt-2 flex items-center justify-between gap-3">
-                          <div className="min-w-0">
-                            <p className="truncate text-sm font-semibold text-white">{primaryCoordinator.name}</p>
-                            <p className="text-sm text-slate-300">{primaryCoordinator.phone}</p>
-                          </div>
-                          <a
-                            href={`tel:${primaryCoordinator.phone.replace(/\D+/g, '')}`}
-                            onClick={(clickEvent) => clickEvent.stopPropagation()}
-                            className="inline-flex shrink-0 items-center gap-2 rounded-full border border-emerald-300/18 bg-emerald-400/10 px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-100"
-                            aria-label={`Call ${primaryCoordinator.name}`}
-                          >
-                            <Phone size={14} />
-                            Call
-                          </a>
-                        </div>
+                    <div className="portal-competition-card__schedule mt-5">
+                      <div className="portal-competition-card__schedule-row">
+                        <CalendarDays size={15} />
+                        <span>{event.date_label}</span>
+                        <span className="portal-competition-card__meta-dot" />
+                        <span>{event.time_label}</span>
                       </div>
-                    ) : null}
+                      <div className="portal-competition-card__countdown-pill">
+                        <Hourglass size={15} />
+                        <span>{liveState.countdown}</span>
+                      </div>
+                    </div>
+
+                    <p className="portal-competition-card__description mt-5 line-clamp-1 text-sm leading-7 text-slate-300">{event.description}</p>
 
                     <div className="portal-competition-card__stats mt-5">
                       <div className="portal-competition-card__stat-card">
@@ -391,20 +361,29 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
                       </div>
                       <div className="portal-competition-card__stat-card">
                         <div className="portal-competition-card__stat-label">
-                          <CreditCard size={13} />
-                          <span>Reg. Fee</span>
+                          <Users size={13} />
+                          <span>Team Size</span>
                         </div>
-                        <div className="portal-competition-card__stat-value portal-competition-card__stat-value--accent">
-                          {event.registration_fee_label || formatCurrency(event.registration_fee)}
+                        <div className="portal-competition-card__stat-value portal-competition-card__stat-value--accent">{teamLabel}</div>
+                      </div>
+                    </div>
+
+                    <div className="portal-competition-card__action-row mt-4">
+                      <div className="portal-competition-card__stat-card portal-competition-card__stat-card--action">
+                        <div className="portal-competition-card__stat-label">
+                          <CreditCard size={13} />
+                          <span>Fee</span>
+                        </div>
+                        <div className="portal-competition-card__action-split">
+                          <div className="portal-competition-card__stat-value portal-competition-card__stat-value--accent">
+                            {event.registration_fee_label || formatCurrency(event.registration_fee)}
+                          </div>
+                          <span className="portal-competition-card__link-text">View Details</span>
                         </div>
                       </div>
                     </div>
 
                     <div className="portal-competition-card__footer mt-5">
-                      <div className="portal-competition-card__venue">
-                        <MapPin size={15} />
-                        <span>{event.venue}</span>
-                      </div>
                       <button
                         type="button"
                         onClick={(clickEvent) => {
@@ -413,8 +392,19 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
                         }}
                         className="portal-register-cta portal-register-cta--compact w-full"
                       >
-                        Register
+                        Register Now
                         <ExternalLink size={16} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(clickEvent) => {
+                          clickEvent.stopPropagation();
+                          handleOpenEvent();
+                        }}
+                        className="portal-competition-card__details-button"
+                      >
+                        <ChevronDown size={16} />
+                        View Details
                       </button>
                     </div>
                   </div>
