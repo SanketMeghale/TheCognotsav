@@ -1253,6 +1253,47 @@ img {
   opacity: 1;
 }
 
+.portal-competition-card__video-hint {
+  position: absolute;
+  left: 1rem;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  align-self: center;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(6, 12, 24, 0.78), rgba(6, 12, 24, 0.92));
+  box-shadow: 0 16px 32px rgba(2, 8, 23, 0.2);
+  padding: 0.7rem 1rem;
+  color: rgba(241, 245, 249, 0.96);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: opacity 160ms ease, transform 160ms ease, border-color 160ms ease;
+}
+
+.portal-competition-card__video-shell:hover .portal-competition-card__video-hint,
+.portal-competition-card__video-shell:focus-visible .portal-competition-card__video-hint {
+  border-color: rgba(103, 232, 249, 0.28);
+  transform: translateY(-1px);
+}
+
+.portal-competition-card__video-shell:focus-visible {
+  outline: 2px solid rgba(103, 232, 249, 0.45);
+  outline-offset: -2px;
+}
+
+.portal-competition-card__video-shell .portal-competition-card__video.is-visible ~ .portal-competition-card__video-hint {
+  opacity: 0.92;
+}
+
 .portal-competition-card__sound-toggle {
   position: absolute;
   left: 1rem;
@@ -1315,6 +1356,15 @@ img {
 
   .portal-competition-card__sound-toggle span {
     white-space: nowrap;
+  }
+
+  .portal-competition-card__video-hint {
+    left: 0.85rem;
+    right: 0.85rem;
+    bottom: 0.85rem;
+    padding: 0.72rem 0.9rem;
+    font-size: 0.62rem;
+    letter-spacing: 0.09em;
   }
 }
 
