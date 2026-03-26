@@ -291,7 +291,9 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
                           Your browser does not support the event intro video.
                         </video>
                         <div className="portal-competition-card__video-hint" aria-hidden="true">
-                          <Play size={16} />
+                          <span className="portal-competition-card__video-hint-icon">
+                            <Play size={16} />
+                          </span>
                           <span>{videoInstruction}</span>
                         </div>
                         {isVideoActive ? (

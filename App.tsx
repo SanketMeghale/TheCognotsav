@@ -175,11 +175,6 @@ function DepartmentPageBase() {
             </a>
             <p className="portal-department-page__kicker">Department / CEAS</p>
             <h2 className="portal-department-page__title">Computer Engineering Association of Students</h2>
-            <p className="portal-department-page__lead">
-              A premium introduction page for the Computer Engineering Department and CEAS, designed to present the
-              department story, student culture, and flagship event legacy without affecting the core registration
-              experience.
-            </p>
             <div className="portal-department-page__actions">
               <a href="#registration-panel" className="portal-premium-button portal-premium-button--primary">
                 Go To Registration
@@ -195,9 +190,6 @@ function DepartmentPageBase() {
             <div className="portal-department-page__hero-logo-frame">
               <img src="/images/ceasposter.jpeg" alt="CEAS logo" loading="eager" decoding="async" className="portal-department-page__hero-logo" />
             </div>
-            <div className="portal-department-page__hero-meta">
-              <p>Department profile, CEAS identity, and event legacy space.</p>
-            </div>
           </div>
         </div>
       </section>
@@ -206,10 +198,6 @@ function DepartmentPageBase() {
         <article className="portal-department-page__section portal-glow-card portal-glass rounded-[1.7rem] p-4 md:rounded-[2rem] md:p-6">
           <p className="portal-department-page__section-kicker">Department</p>
           <h3 className="portal-department-page__section-title">Computer Engineering Department</h3>
-          <p className="portal-department-page__section-copy">
-            Use this space for department vision, academic environment, labs, student opportunities, innovation
-            culture, and what makes the CE department distinctive.
-          </p>
           <div className="portal-department-page__points">
             <div className="portal-department-page__point">Academic excellence and practical learning</div>
             <div className="portal-department-page__point">Labs, projects, and technical exposure</div>
@@ -220,10 +208,6 @@ function DepartmentPageBase() {
         <article className="portal-department-page__section portal-glow-card portal-glass rounded-[1.7rem] p-4 md:rounded-[2rem] md:p-6">
           <p className="portal-department-page__section-kicker">CEAS</p>
           <h3 className="portal-department-page__section-title">Student Leadership and Culture</h3>
-          <p className="portal-department-page__section-copy">
-            Use this section for CEAS goals, student coordination, technical clubs, yearly activities, and how CEAS
-            creates a strong student-led ecosystem inside the department.
-          </p>
           <div className="portal-department-page__points">
             <div className="portal-department-page__point">Student-driven technical initiatives</div>
             <div className="portal-department-page__point">Flagship event planning and execution</div>
