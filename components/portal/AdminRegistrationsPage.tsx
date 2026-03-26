@@ -210,7 +210,12 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
             <a href="#overview" className="magnetic-button inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200"><ArrowLeft size={16} />Back to portal</a>
             <div className="portal-admin-lockup">
               <div className="portal-admin-lockup__frame">
-                <img src="/images/ceasposter.jpeg" alt="CEAS logo" className="portal-admin-lockup__image" />
+                <div className="portal-admin-lockup__core" aria-hidden="true">
+                  <span className="portal-admin-lockup__icon">
+                    <ShieldCheck size={15} />
+                  </span>
+                  <span className="portal-admin-lockup__monogram">AX</span>
+                </div>
               </div>
               <div>
                 <p className="portal-admin-lockup__overline">CEAS Organizer Console</p>

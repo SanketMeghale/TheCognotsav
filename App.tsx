@@ -16,13 +16,21 @@ import type {
 } from './components/portal/types.ts';
 import { makeParticipants, shellClassName } from './components/portal/utils.ts';
 
-const AdminRegistrationsPage = lazy(() => import('./components/portal/AdminRegistrationsPage.tsx').then((module) => ({ default: module.AdminRegistrationsPage })));
-const AnnouncementArchiveSection = lazy(() => import('./components/portal/AnnouncementArchiveSection.tsx').then((module) => ({ default: module.AnnouncementArchiveSection })));
-const TimelinePage = lazy(() => import('./components/portal/TimelinePage.tsx').then((module) => ({ default: module.TimelinePage })));
-const EventRegistrationPanel = lazy(() => import('./components/portal/EventRegistrationPanel.tsx').then((module) => ({ default: module.EventRegistrationPanel })));
-const FAQSection = lazy(() => import('./components/portal/FAQSection.tsx').then((module) => ({ default: module.FAQSection })));
-const TrackerAdminPanel = lazy(() => import('./components/portal/TrackerAdminPanel.tsx').then((module) => ({ default: module.TrackerAdminPanel })));
-const PortalFooter = lazy(() => import('./components/portal/PortalFooter.tsx').then((module) => ({ default: module.PortalFooter })));
+const loadAdminRegistrationsPage = () => import('./components/portal/AdminRegistrationsPage.tsx');
+const loadAnnouncementArchiveSection = () => import('./components/portal/AnnouncementArchiveSection.tsx');
+const loadTimelinePage = () => import('./components/portal/TimelinePage.tsx');
+const loadEventRegistrationPanel = () => import('./components/portal/EventRegistrationPanel.tsx');
+const loadFAQSection = () => import('./components/portal/FAQSection.tsx');
+const loadTrackerAdminPanel = () => import('./components/portal/TrackerAdminPanel.tsx');
+const loadPortalFooter = () => import('./components/portal/PortalFooter.tsx');
+
+const AdminRegistrationsPage = lazy(() => loadAdminRegistrationsPage().then((module) => ({ default: module.AdminRegistrationsPage })));
+const AnnouncementArchiveSection = lazy(() => loadAnnouncementArchiveSection().then((module) => ({ default: module.AnnouncementArchiveSection })));
+const TimelinePage = lazy(() => loadTimelinePage().then((module) => ({ default: module.TimelinePage })));
+const EventRegistrationPanel = lazy(() => loadEventRegistrationPanel().then((module) => ({ default: module.EventRegistrationPanel })));
+const FAQSection = lazy(() => loadFAQSection().then((module) => ({ default: module.FAQSection })));
+const TrackerAdminPanel = lazy(() => loadTrackerAdminPanel().then((module) => ({ default: module.TrackerAdminPanel })));
+const PortalFooter = lazy(() => loadPortalFooter().then((module) => ({ default: module.PortalFooter })));
 
 type FormState = {
   teamName: string;
@@ -887,6 +895,26 @@ export const App: React.FC = () => {
     return () => window.clearTimeout(timer);
   }, [navigationLoading, hashRoute]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const preloadPanels = () => {
+      void loadEventRegistrationPanel();
+      void loadTrackerAdminPanel();
+      void loadAnnouncementArchiveSection();
+      void loadFAQSection();
+      void loadPortalFooter();
+    };
+
+    if ('requestIdleCallback' in window) {
+      const idleId = window.requestIdleCallback(preloadPanels, { timeout: 1200 });
+      return () => window.cancelIdleCallback(idleId);
+    }
+
+    const timer = window.setTimeout(preloadPanels, 400);
+    return () => window.clearTimeout(timer);
+  }, []);
+
   const eventPageSlug = hashRoute.startsWith('#events/') ? hashRoute.slice('#events/'.length) : '';
   const isAdminPage = hashRoute.startsWith('#admin-registrations');
   const isTimelinePage = hashRoute === '#timeline';
@@ -981,7 +1009,6 @@ export const App: React.FC = () => {
   };
 
   const handleSelectEvent = (slug: string) => {
-    setNavigationLoading(true);
     setSelectedEventSlug(slug);
     setSuccessMessage('');
     setErrorMessage('');
@@ -1004,7 +1031,6 @@ export const App: React.FC = () => {
   };
 
   const handleBackToEvents = () => {
-    setNavigationLoading(true);
     setSuccessMessage('');
     setErrorMessage('');
     setSuccessReceipt(null);
@@ -1812,7 +1838,10 @@ export const App: React.FC = () => {
               aria-label="Open admin panel"
             >
               <span className="portal-mobile-admin-trigger__core">
-                <img src="/images/ceasposter.jpeg" alt="Admin access" className="portal-mobile-admin-trigger__image" />
+                <span className="portal-mobile-admin-trigger__icon">
+                  <ShieldCheck size={14} />
+                </span>
+                <span className="portal-mobile-admin-trigger__monogram">AX</span>
               </span>
               <span className="portal-mobile-admin-trigger__badge">
                 ADM

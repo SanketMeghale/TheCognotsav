@@ -92,7 +92,12 @@ export const TrackerAdminPanel: React.FC<Props> = ({
       <div data-reveal="left" className="portal-glow-card portal-glass rounded-[1.6rem] p-4 md:rounded-[2rem] md:p-8">
         <div className="portal-admin-lockup portal-admin-lockup--compact">
           <div className="portal-admin-lockup__frame">
-            <img src="/images/ceasposter.jpeg" alt="CEAS logo" className="portal-admin-lockup__image" />
+            <div className="portal-admin-lockup__core" aria-hidden="true">
+              <span className="portal-admin-lockup__icon">
+                <ShieldCheck size={15} />
+              </span>
+              <span className="portal-admin-lockup__monogram">AX</span>
+            </div>
           </div>
           <div>
             <p className="portal-admin-lockup__overline">CEAS Participant Desk</p>
