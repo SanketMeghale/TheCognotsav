@@ -46,7 +46,7 @@ export const eventSeed = [
     payment_payee: 'Akshay Kawade',
     coordinators: [
       { name: 'Sanket M.', phone: '9356776307' },
-      { name: 'Harshad D.', phone: '9322665964' },
+      { name: 'Rutvik Shinde', phone: '9168277048' },
     ],
   },
   {
@@ -71,7 +71,7 @@ export const eventSeed = [
     payment_payee: 'Akshay Kawade',
     coordinators: [
       { name: 'Sanket M.', phone: '9356776307' },
-      { name: 'Harshad D.', phone: '9322665964' },
+      { name: 'Rutvik Shinde', phone: '9168277048' },
     ],
   },
   {
