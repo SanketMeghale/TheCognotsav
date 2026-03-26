@@ -136,6 +136,18 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
     }
   };
 
+  const toggleMobilePreview = (slug: string) => {
+    if (supportsHoverPreview) {
+      return;
+    }
+
+    setTappedVideoSlug((current) => {
+      const nextSlug = current === slug ? null : slug;
+      setSoundEnabledSlug(nextSlug ? slug : null);
+      return nextSlug;
+    });
+  };
+
   return (
     <section id="registration-panel" className="portal-glow-card rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(5,8,18,0.9))] p-3 sm:p-5 md:p-6">
       <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
@@ -190,7 +202,7 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
                 ? 'Hover to preview video'
                 : isVideoActive
                   ? 'Tap again to stop preview'
-                  : 'Tap to play preview';
+                  : 'Tap to play with sound';
 
               return (
                 <article
@@ -237,17 +249,13 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
                         className="portal-competition-card__video-shell"
                         onClick={(clickEvent) => {
                           clickEvent.stopPropagation();
-                          if (!supportsHoverPreview) {
-                            setTappedVideoSlug((current) => (current === event.slug ? null : event.slug));
-                          }
+                          toggleMobilePreview(event.slug);
                         }}
                         onKeyDown={(keyEvent) => {
                           if (keyEvent.key === 'Enter' || keyEvent.key === ' ') {
                             keyEvent.preventDefault();
                             keyEvent.stopPropagation();
-                            if (!supportsHoverPreview) {
-                              setTappedVideoSlug((current) => (current === event.slug ? null : event.slug));
-                            }
+                            toggleMobilePreview(event.slug);
                           }
                         }}
                         role="button"

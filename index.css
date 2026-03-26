@@ -1264,24 +1264,24 @@ img {
   justify-content: center;
   gap: 0.55rem;
   align-self: center;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(253, 224, 71, 0.58);
   border-radius: 999px;
-  background: linear-gradient(180deg, rgba(6, 12, 24, 0.78), rgba(6, 12, 24, 0.92));
-  box-shadow: 0 16px 32px rgba(2, 8, 23, 0.2);
+  background: linear-gradient(180deg, rgba(251, 191, 36, 0.96), rgba(245, 158, 11, 0.96));
+  box-shadow:
+    0 16px 32px rgba(2, 8, 23, 0.28),
+    0 0 0 1px rgba(255, 255, 255, 0.12) inset;
   padding: 0.7rem 1rem;
-  color: rgba(241, 245, 249, 0.96);
+  color: #111827;
   font-size: 0.7rem;
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   transition: opacity 160ms ease, transform 160ms ease, border-color 160ms ease;
 }
 
 .portal-competition-card__video-shell:hover .portal-competition-card__video-hint,
 .portal-competition-card__video-shell:focus-visible .portal-competition-card__video-hint {
-  border-color: rgba(103, 232, 249, 0.28);
+  border-color: rgba(254, 240, 138, 0.9);
   transform: translateY(-1px);
 }
 
@@ -1292,6 +1292,10 @@ img {
 
 .portal-competition-card__video-shell .portal-competition-card__video.is-visible ~ .portal-competition-card__video-hint {
   opacity: 0.92;
+}
+
+.portal-competition-card__video-hint svg {
+  flex: 0 0 auto;
 }
 
 .portal-competition-card__sound-toggle {
