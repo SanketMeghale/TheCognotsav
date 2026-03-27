@@ -2,8 +2,9 @@ import React from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { TimelineSection } from './TimelineSection';
 import { shellClassName } from './utils';
+import type { EventRecord } from './types';
 
-export const TimelinePage: React.FC = () => {
+export const TimelinePage: React.FC<{ events: EventRecord[] }> = ({ events }) => {
   return (
     <main className={`${shellClassName} space-y-6 pb-16 pt-8 md:space-y-8 md:pb-20 md:pt-10`}>
       <section data-reveal="up" className="portal-glow-card portal-glass rounded-[2rem] p-6 md:p-8">
@@ -17,12 +18,15 @@ export const TimelinePage: React.FC = () => {
         <div className="mt-5 max-w-3xl">
           <p className="text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Timeline page</p>
           <h2 className="mt-2 bg-gradient-to-r from-cyan-400 via-fuchsia-500 to-amber-300 bg-clip-text font-orbitron text-3xl font-black uppercase text-transparent md:text-4xl">
-            Fest roadmap and live alerts
+            Event-wise schedule and live progression
           </h2>
+          <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300 md:text-base">
+            Track each competition with its scheduled time and venue. The current step stays highlighted so participants can quickly spot what is active now.
+          </p>
         </div>
       </section>
 
-      <TimelineSection standalone />
+      <TimelineSection standalone events={events} />
     </main>
   );
 };

@@ -1931,7 +1931,7 @@ export const App: React.FC = () => {
         </Suspense>
       ) : isTimelinePage ? (
         <Suspense fallback={<PortalSectionFallback label="Loading timeline..." />}>
-          <TimelinePage />
+          <TimelinePage events={events} />
         </Suspense>
       ) : isDepartmentPage ? (
         <DepartmentPage />
