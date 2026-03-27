@@ -551,12 +551,12 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                       <QrCode size={18} />
                       <p className="text-sm font-semibold">Event payment QR</p>
                     </div>
-                    <div className={`mt-4 flex items-center justify-center rounded-[1.4rem] p-4 ${hasCustomQrImage ? 'aspect-[3/4] bg-[#050505]' : 'aspect-square bg-white'}`}>
+                    <div className={`mt-4 flex items-center justify-center overflow-hidden rounded-[1.4rem] p-4 ${hasCustomQrImage ? 'aspect-square bg-white' : 'aspect-square bg-white'}`}>
                       {paymentQrSrc ? (
                         <img
                           src={paymentQrSrc}
                           alt={`${selectedEvent.name} payment QR`}
-                          className={hasCustomQrImage ? 'h-full w-full rounded-[1rem] object-cover object-top' : 'h-full w-full max-w-[14rem] object-contain'}
+                          className={hasCustomQrImage ? 'h-full w-full rounded-[1rem] object-cover object-[center_52%]' : 'h-full w-full max-w-[14rem] object-contain'}
                         />
                       ) : (
                         <div className="h-full w-full max-w-[14rem] rounded-[1.2rem] bg-slate-200/30" />
