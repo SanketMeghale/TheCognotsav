@@ -24,6 +24,7 @@ export type EventRecord = {
   payment_upi: string | null;
   payment_payee: string | null;
   coordinators: CoordinatorContact[];
+  registration_enabled: boolean;
   registrations_count: number;
   waitlist_count: number;
 };
@@ -106,6 +107,7 @@ export type AdminAccessScope = {
   event_name: string | null;
   can_export: boolean;
   can_delete_registrations: boolean;
+  can_manage_event_controls: boolean;
   can_manage_backups: boolean;
   can_manage_broadcasts: boolean;
   can_manage_announcements: boolean;

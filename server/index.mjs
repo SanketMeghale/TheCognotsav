@@ -119,6 +119,7 @@ async function buildAdminAccessPayload(access) {
       event_name: null,
       can_export: true,
       can_delete_registrations: true,
+      can_manage_event_controls: true,
       can_manage_backups: true,
       can_manage_broadcasts: true,
       can_manage_announcements: true,
@@ -141,6 +142,7 @@ async function buildAdminAccessPayload(access) {
     event_name: result.rows[0]?.name || access.eventSlug,
     can_export: true,
     can_delete_registrations: false,
+    can_manage_event_controls: false,
     can_manage_backups: false,
     can_manage_broadcasts: false,
     can_manage_announcements: false,
@@ -485,11 +487,11 @@ async function fetchActiveEventsWithCounts() {
     `
       SELECT
         e.*,
+        e.is_active AS registration_enabled,
         COUNT(r.id) FILTER (WHERE r.status NOT IN ('rejected', 'waitlisted'))::int AS registrations_count,
         COUNT(r.id) FILTER (WHERE r.status = 'waitlisted')::int AS waitlist_count
       FROM events e
       LEFT JOIN registrations r ON r.event_slug = e.slug
-      WHERE e.is_active = TRUE
       GROUP BY e.id
       ORDER BY e.id ASC
     `,
@@ -502,6 +504,8 @@ function buildSmartAlerts(events, now = new Date()) {
   const alerts = [];
 
   for (const event of events) {
+    if (!event.registration_enabled) continue;
+
     const eventStart = parseEventDateTime(event.date_label, event.time_label);
     if (!eventStart) continue;
 
@@ -2015,13 +2019,17 @@ app.post('/api/registrations', async (req, res) => {
   }
 
   const eventResult = await pool.query(
-    `SELECT * FROM events WHERE slug = $1 AND is_active = TRUE`,
+    `SELECT *, is_active AS registration_enabled FROM events WHERE slug = $1`,
     [eventSlug],
   );
 
   const event = eventResult.rows[0];
   if (!event) {
     return res.status(404).json({ error: 'Selected event is not available.' });
+  }
+
+  if (!event.registration_enabled) {
+    return res.status(400).json({ error: 'Registration for this event is currently stopped by the organizer.' });
   }
 
   if (participants.length < event.min_members || participants.length > event.max_members) {
@@ -2336,6 +2344,60 @@ app.delete('/api/admin/registrations/:id', requireAdmin, async (req, res) => {
     success: true,
     id,
     promotedRegistration,
+  });
+});
+
+app.patch('/api/admin/events/:slug/registration-state', requireAdmin, async (req, res) => {
+  if (!req.adminAccess || req.adminAccess.mode !== 'global') {
+    return res.status(403).json({ error: 'Only the main admin key can manage event registration state.' });
+  }
+
+  const slug = String(req.params.slug || '').trim();
+  const enabled = Boolean(req.body?.enabled);
+
+  const eventResult = await pool.query(
+    `
+      SELECT
+        e.*,
+        COUNT(r.id) FILTER (WHERE r.status NOT IN ('rejected', 'waitlisted'))::int AS registrations_count,
+        COUNT(r.id) FILTER (WHERE r.status = 'waitlisted')::int AS waitlist_count
+      FROM events e
+      LEFT JOIN registrations r ON r.event_slug = e.slug
+      WHERE e.slug = $1
+      GROUP BY e.id
+      LIMIT 1
+    `,
+    [slug],
+  );
+
+  if (eventResult.rowCount === 0) {
+    return res.status(404).json({ error: 'Event not found.' });
+  }
+
+  const event = eventResult.rows[0];
+  const remainingSlots =
+    event.max_slots === null ? null : Math.max(Number(event.max_slots) - Number(event.registrations_count || 0), 0);
+
+  if (enabled && remainingSlots !== null && remainingSlots <= 0) {
+    return res.status(400).json({ error: 'Registration cannot be restarted because no seats are left for this event.' });
+  }
+
+  await pool.query(
+    `
+      UPDATE events
+      SET is_active = $2,
+          updated_at = NOW()
+      WHERE slug = $1
+    `,
+    [slug, enabled],
+  );
+
+  const refreshedEvents = await fetchActiveEventsWithCounts();
+  const refreshedEvent = refreshedEvents.find((item) => item.slug === slug) || null;
+
+  return res.json({
+    success: true,
+    event: refreshedEvent,
   });
 });
 

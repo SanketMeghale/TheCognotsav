@@ -1643,6 +1643,43 @@ export const App: React.FC = () => {
     }
   };
 
+  const toggleEventRegistrationState = async (eventSlug: string, enabled: boolean) => {
+    setAdminError('');
+    try {
+      const response = await fetch(`/api/admin/events/${eventSlug}/registration-state`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-key': adminKey,
+        },
+        body: JSON.stringify({ enabled }),
+      });
+
+      const { data: payload, rawText } = await readApiBody<{
+        error?: string;
+        success?: boolean;
+        event?: EventRecord | null;
+      }>(response);
+
+      if (!response.ok) {
+        throw new Error(getApiErrorMessage(response, payload, rawText, 'Failed to update event registration state.'));
+      }
+
+      if (payload?.event) {
+        setEvents((current) =>
+          current.map((event) => (event.slug === payload.event?.slug ? payload.event : event)),
+        );
+      } else {
+        await refreshEvents();
+      }
+
+      setToastClosing(false);
+      setToastMessage(enabled ? 'Registration restarted for the selected event.' : 'Registration stopped for the selected event.');
+    } catch (error) {
+      setAdminError(error instanceof Error ? error.message : 'Failed to update event registration state.');
+    }
+  };
+
   const sendBroadcast = async (payload: {
     title: string;
     message: string;
@@ -1921,6 +1958,7 @@ export const App: React.FC = () => {
             onDownload={downloadAdminFile}
             onStatusChange={updateAdminStatus}
             onDeleteRegistration={deleteAdminRegistration}
+            onToggleEventRegistrationState={toggleEventRegistrationState}
             onSaveReviewNote={saveReviewNote}
             onResendStatusEmail={resendAdminStatusEmail}
             onSendBroadcast={sendBroadcast}

@@ -192,6 +192,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const qrUrl = upiLink ? `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(upiLink)}` : '';
   const canOpenPaymentApp = typeof window !== 'undefined' && /Android|iPhone|iPad|iPod/i.test(window.navigator.userAgent);
   const isSoloEvent = selectedEvent.min_members === 1 && !selectedEvent.is_team_event;
+  const registrationPaused = selectedEvent.registration_enabled === false;
   const scrollToRegistrationForm = () => {
     if (typeof window === 'undefined') return;
 
@@ -272,9 +273,10 @@ export const EventRegistrationPanel: React.FC<Props> = ({
               <button
                 type="button"
                 onClick={scrollToRegistrationForm}
+                disabled={registrationPaused}
                 className="portal-register-cta inline-flex w-full items-center justify-center gap-2"
               >
-                Register Now
+                {registrationPaused ? 'Registration Paused' : 'Register Now'}
                 <ArrowRight size={16} />
               </button>
             </div>
@@ -594,8 +596,9 @@ export const EventRegistrationPanel: React.FC<Props> = ({
 
               {successMessage && !successReceipt ? <div className="rounded-[1.35rem] border border-emerald-300/20 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-100">{successMessage}</div> : null}
               {errorMessage ? <div className="rounded-[1.35rem] border border-rose-300/20 bg-rose-400/10 px-4 py-3 text-sm text-rose-100">{errorMessage}</div> : null}
+              {registrationPaused ? <div className="rounded-[1.35rem] border border-amber-300/20 bg-amber-400/10 px-4 py-3 text-sm text-amber-100">Registration is currently stopped for this event by the organizer. Please check updates or contact the coordinators before trying again.</div> : null}
 
-              <button type="submit" disabled={submitting} className="animated-gradient-button inline-flex w-full items-center justify-center rounded-2xl px-6 py-4 text-base font-bold text-slate-950 disabled:opacity-60">
+              <button type="submit" disabled={submitting || registrationPaused} className="animated-gradient-button inline-flex w-full items-center justify-center rounded-2xl px-6 py-4 text-base font-bold text-slate-950 disabled:opacity-60">
                 {submitting ? 'Submitting registration...' : 'Submit registration'}
                 <ArrowRight size={18} />
               </button>

@@ -172,7 +172,11 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
               const handleOpenEvent = () => onSelectEvent(event.slug);
               const hasIntroVideo = Boolean(event.intro_video_url);
               const isVideoActive = activeVideoSlug === event.slug;
-              const statusLabel = liveState.label === 'Registration Open' ? 'OPEN' : liveState.label.toUpperCase();
+              const statusLabel = event.registration_enabled === false
+                ? 'REGISTRATION PAUSED'
+                : liveState.label === 'Registration Open'
+                  ? 'OPEN'
+                  : liveState.label.toUpperCase();
               const tagline = categoryTaglines[displayCategory] || categoryTaglines.Technical;
               const videoInstruction = isVideoActive ? 'Tap to stop preview' : 'Tap to play preview';
 
@@ -334,7 +338,7 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
                         }}
                         className="portal-register-cta portal-register-cta--compact w-full"
                       >
-                        Register Now
+                        {event.registration_enabled === false ? 'Registration Paused' : 'Register Now'}
                         <ExternalLink size={16} />
                       </button>
                       <button

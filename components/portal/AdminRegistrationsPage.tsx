@@ -29,6 +29,7 @@ type Props = {
   onDownload: (format: 'csv' | 'xlsx', eventSlug?: string) => void;
   onStatusChange: (registrationId: string, status: 'verified' | 'rejected' | 'pending') => void;
   onDeleteRegistration: (registrationId: string) => void;
+  onToggleEventRegistrationState: (eventSlug: string, enabled: boolean) => void;
   onSaveReviewNote: (registrationId: string, reviewNote: string) => void;
   onResendStatusEmail: (registrationId: string) => void;
   onSendBroadcast: (payload: { title: string; message: string; eventSlug: string; isPinned: boolean }) => void;
@@ -129,7 +130,7 @@ function FloatingField({ label, icon, value, type = 'text', onChange }: { label:
   );
 }
 
-export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, adminMainKey, adminEventKey, adminEventKeySlug, adminScope, adminRows, events, announcements, backups, adminLoading, adminError, onAdminAccessModeChange, onAdminMainKeyChange, onAdminEventKeyChange, onAdminEventKeySlugChange, onLoadAdminRows, onDownload, onStatusChange, onDeleteRegistration, onSaveReviewNote, onResendStatusEmail, onSendBroadcast, onDeleteAnnouncement, onRunBackup, onDownloadBackup }) => {
+export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, adminMainKey, adminEventKey, adminEventKeySlug, adminScope, adminRows, events, announcements, backups, adminLoading, adminError, onAdminAccessModeChange, onAdminMainKeyChange, onAdminEventKeyChange, onAdminEventKeySlugChange, onLoadAdminRows, onDownload, onStatusChange, onDeleteRegistration, onToggleEventRegistrationState, onSaveReviewNote, onResendStatusEmail, onSendBroadcast, onDeleteAnnouncement, onRunBackup, onDownloadBackup }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [eventFilter, setEventFilter] = useState('all');
@@ -151,6 +152,7 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
     ? Boolean(adminMainKey.trim())
     : Boolean(adminEventKeySlug && adminEventKey.trim());
   const canDeleteRegistrations = hasResolvedAccess && adminScope?.can_delete_registrations !== false;
+  const canManageEventControls = hasResolvedAccess && adminScope?.can_manage_event_controls !== false;
   const canShowBroadcastTools = hasResolvedAccess && adminScope?.can_manage_broadcasts !== false;
   const canShowBackupTools = hasResolvedAccess && adminScope?.can_manage_backups !== false;
   const accessSummary = adminScope?.mode === 'event'
@@ -196,6 +198,15 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
   const busiestEvent = useMemo(() => Object.entries(adminRows.reduce<Record<string, number>>((collection, row) => ({ ...collection, [row.event_name]: (collection[row.event_name] || 0) + 1 }), {})).sort((left, right) => right[1] - left[1])[0] || null, [adminRows]);
   const approvalRate = counts.all ? Math.round((counts.verified / counts.all) * 100) : 0;
   const topTrackedEvents = useMemo(() => [...eventBuckets].sort((left, right) => right.total - left.total).slice(0, 4), [eventBuckets]);
+  const eventControlRows = useMemo(() => events.map((event) => {
+    const registrationsCount = Number(event.registrations_count || 0);
+    const remainingSlots = event.max_slots === null ? null : Math.max(event.max_slots - registrationsCount, 0);
+
+    return {
+      ...event,
+      remainingSlots,
+    };
+  }), [events]);
 
   useEffect(() => {
     if (expandedRowId && !filteredRows.some((row) => row.id === expandedRowId)) {
@@ -278,11 +289,12 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
         </div>
         {adminError ? <div className="mt-5 rounded-2xl border border-rose-400/25 bg-gradient-to-r from-rose-500/14 to-orange-500/8 px-4 py-3 text-sm text-rose-100">{adminError}</div> : null}
       </section>
-      <div className="flex flex-wrap gap-2">
-        <a href="#admin-analytics" className="magnetic-button rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Analytics</a>
-        <a href="#admin-verification" className="magnetic-button rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Verification</a>
-        {canShowBroadcastTools ? <a href="#admin-broadcast" className="magnetic-button rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Broadcast</a> : null}
-      </div>
+        <div className="flex flex-wrap gap-2">
+          <a href="#admin-analytics" className="magnetic-button rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Analytics</a>
+          {canManageEventControls ? <a href="#admin-event-controls" className="magnetic-button rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Event Controls</a> : null}
+          <a href="#admin-verification" className="magnetic-button rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Verification</a>
+          {canShowBroadcastTools ? <a href="#admin-broadcast" className="magnetic-button rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Broadcast</a> : null}
+        </div>
 
       <section id="admin-analytics" className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
         <div data-reveal="up" className="portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-6">
@@ -345,6 +357,80 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
           </div> : null}
         </div>
       </section>
+
+      {canManageEventControls ? (
+        <section id="admin-event-controls" data-reveal="up" className="portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-8">
+          <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Event controls</p>
+              <h3 className="mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron text-3xl font-black uppercase text-transparent">Stop or restart registrations</h3>
+              <p className="mt-3 max-w-2xl text-sm text-slate-300">Only the main admin key can pause registration or reopen an event. Restart stays blocked when no seats are left.</p>
+            </div>
+          </div>
+
+          <div className="mt-6 grid gap-4 lg:grid-cols-2">
+            {eventControlRows.map((event) => {
+              const isOpen = event.registration_enabled;
+              const noSeatsLeft = event.remainingSlots !== null && event.remainingSlots <= 0;
+
+              return (
+                <article key={event.slug} className="rounded-[1.5rem] border border-white/10 bg-[linear-gradient(145deg,rgba(12,20,35,0.92),rgba(18,27,45,0.82))] p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-lg font-semibold text-white">{event.name}</p>
+                      <p className="mt-1 text-sm text-slate-300">{event.date_label} / {event.time_label} / {event.venue}</p>
+                    </div>
+                    <span className={`rounded-full border px-3 py-1 text-xs uppercase tracking-[0.18em] ${
+                      isOpen
+                        ? 'border-emerald-300/20 bg-emerald-400/10 text-emerald-100'
+                        : 'border-rose-300/20 bg-rose-400/10 text-rose-100'
+                    }`}>
+                      {isOpen ? 'Open' : 'Stopped'}
+                    </span>
+                  </div>
+
+                  <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                    <div className="rounded-[1.1rem] border border-white/10 bg-black/20 p-3">
+                      <p className="text-[10px] uppercase tracking-[0.18em] text-slate-500">Registered</p>
+                      <p className="mt-2 text-base font-semibold text-white">{event.registrations_count}</p>
+                    </div>
+                    <div className="rounded-[1.1rem] border border-white/10 bg-black/20 p-3">
+                      <p className="text-[10px] uppercase tracking-[0.18em] text-slate-500">Seats left</p>
+                      <p className="mt-2 text-base font-semibold text-white">{event.remainingSlots === null ? 'Open' : event.remainingSlots}</p>
+                    </div>
+                    <div className="rounded-[1.1rem] border border-white/10 bg-black/20 p-3">
+                      <p className="text-[10px] uppercase tracking-[0.18em] text-slate-500">Waitlist</p>
+                      <p className="mt-2 text-base font-semibold text-white">{event.waitlist_count}</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 flex flex-wrap gap-3">
+                    {isOpen ? (
+                      <button
+                        type="button"
+                        onClick={() => onToggleEventRegistrationState(event.slug, false)}
+                        className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-rose-300/20 bg-rose-400/10 px-4 py-3 text-sm font-bold text-rose-100"
+                      >
+                        Stop Registration
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => onToggleEventRegistrationState(event.slug, true)}
+                        disabled={noSeatsLeft}
+                        className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-emerald-300/20 bg-emerald-400/10 px-4 py-3 text-sm font-bold text-emerald-100 disabled:opacity-50"
+                      >
+                        Restart Registration
+                      </button>
+                    )}
+                    {noSeatsLeft ? <p className="self-center text-xs uppercase tracking-[0.16em] text-amber-200">No seats left, restart disabled</p> : null}
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+      ) : null}
 
       <section id="admin-verification" data-reveal="up" className="portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-8">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
