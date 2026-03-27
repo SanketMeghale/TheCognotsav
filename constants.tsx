@@ -122,7 +122,7 @@ export const COMPETITIONS: Competition[] = [
   },
   {
     id: 'googler-hunt',
-    name: 'Googler (Tech Treasure Hunt)',
+    name: 'Tech Treasure Hunt',
     description: 'Solve complex technical puzzles and sequential clues using your research and problem-solving skills.',
     date: '07 Apr 2026',
     time: '10:30 AM',

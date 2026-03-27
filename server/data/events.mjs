@@ -126,7 +126,7 @@ export const eventSeed = [
   },
   {
     slug: 'googler-hunt',
-    name: 'Googler (Tech Treasure Hunt)',
+    name: 'Tech Treasure Hunt',
     category: 'Technical',
     date_label: '07 Apr 2026',
     time_label: '10:30 AM',

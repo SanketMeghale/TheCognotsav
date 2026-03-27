@@ -7,7 +7,7 @@ const posters = [
   { title: 'Ranbhoomi Free Fire', image: '/images/freefire.jpg' },
   { title: 'Squid Game', image: '/images/squidgame.jpg' },
   { title: 'Rangmanch', image: '/images/rangmanch.jpg' },
-  { title: 'Googler', image: '/images/techtreasurehunt.jpg' },
+  { title: 'Tech Treasure Hunt', image: '/images/techtreasurehunt.jpg' },
   { title: 'Techxcelerate', image: '/images/projectexpo.jpg' },
   { title: 'UTOPIA', image: '/images/hackathon.jpg' },
 ];
