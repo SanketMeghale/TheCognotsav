@@ -827,11 +827,11 @@ export const App: React.FC = () => {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    document.querySelectorAll<HTMLElement>('[data-reveal]').forEach((element) => {
+    document.querySelectorAll<HTMLElement>('[data-reveal]:not(.is-visible)').forEach((element) => {
       element.classList.add('is-visible');
       element.style.transitionDelay = '0ms';
     });
-  }, [events.length, adminRows.length, hashRoute, lookupResults.length]);
+  }, [hashRoute]);
 
   useEffect(() => {
     let disposed = false;

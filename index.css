@@ -2119,6 +2119,7 @@ img {
   position: relative;
   overflow: hidden;
   isolation: isolate;
+  contain: paint;
   transition:
     box-shadow var(--portal-glow-transition),
     transform var(--portal-glow-transition),
@@ -3979,6 +3980,7 @@ select.floating-field-input option {
 }
 
 .portal-nav-shell {
+  contain: paint;
   border-color: rgba(251, 191, 36, 0.08);
   background: linear-gradient(180deg, rgba(2, 6, 23, 0.44), rgba(2, 6, 23, 0.2));
   box-shadow: 0 12px 32px rgba(2, 8, 23, 0.18);
@@ -5261,6 +5263,45 @@ footer {
   .portal-department-page__actions .portal-premium-button {
     width: 100%;
     justify-content: center;
+  }
+}
+
+@media (max-width: 1024px), (pointer: coarse) {
+  .portal-shell::before,
+  .portal-orb,
+  .portal-section-divider::before,
+  .portal-glow-card::before,
+  .portal-glow-card::after {
+    display: none;
+  }
+
+  .portal-glass,
+  .portal-glow-card,
+  .portal-front-hero__panel,
+  .portal-front-hero__panel--premium,
+  .portal-brand-card,
+  .portal-bottom-dock,
+  .portal-nav-shell {
+    box-shadow:
+      0 10px 24px rgba(2, 8, 23, 0.16),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    filter: none;
+  }
+
+  .portal-glass,
+  .portal-front-hero__panel,
+  .portal-front-hero__panel--premium,
+  .portal-nav-shell,
+  .portal-bottom-dock {
+    background: linear-gradient(180deg, rgba(12, 18, 31, 0.94), rgba(9, 14, 24, 0.96));
+  }
+
+  .portal-competition-card,
+  .portal-department-page__gallery-card,
+  .portal-department-page__hero-card,
+  .tilt-card {
+    transform: none !important;
+    filter: none !important;
   }
 }
 

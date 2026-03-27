@@ -1,5 +1,5 @@
 import React from 'react';
-import { Github, Instagram, Mail, MapPin, Phone } from 'lucide-react';
+import { Instagram, Mail, MapPin, Phone } from 'lucide-react';
 import { shellClassName } from './utils';
 
 const FOOTER_QR_URL = 'https://res.cloudinary.com/dkxddhawc/image/upload/v1774197848/My_QR_Code_1-1024_dhiqjw.png';
@@ -35,9 +35,6 @@ export const PortalFooter: React.FC = () => {
                 </a>
                 <a href="tel:+918087379885" className="magnetic-button inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-slate-200">
                   <Phone size={18} />
-                </a>
-                <a href="https://github.com/SanketMeghale/TheCognotsav" target="_blank" rel="noreferrer" className="magnetic-button inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-slate-200">
-                  <Github size={18} />
                 </a>
               </div>
             </div>
