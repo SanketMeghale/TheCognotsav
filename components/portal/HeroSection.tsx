@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { ArrowRight, CalendarDays, MapPin, ShieldCheck, Sparkles, Trophy } from 'lucide-react';
+import { ArrowRight, CalendarDays, MapPin, Sparkles, Trophy } from 'lucide-react';
 
 type Props = {};
 
@@ -9,27 +9,6 @@ export const HeroSection: React.FC<Props> = memo(() => {
       <div className="portal-front-hero portal-front-hero--premium portal-front-hero--welcome">
         <div className="portal-front-hero__main">
           <div className="portal-front-hero__content portal-front-hero__content--premium">
-            <div className="portal-mobile-hero-rail" data-reveal="fade-up">
-              <div className="portal-mobile-hero-rail__logo">
-                <img
-                  src="/images/ceasposter.jpeg"
-                  alt="CEAS COGNOTSAV crest"
-                  loading="eager"
-                  decoding="async"
-                  className="portal-mobile-hero-rail__logo-image"
-                />
-              </div>
-              <div className="portal-mobile-hero-rail__center">
-                <p className="portal-mobile-hero-rail__kicker">CEAS Presents</p>
-                <h2 className="portal-mobile-hero-rail__title">COGNOTSAV 2026</h2>
-              </div>
-              <div className="portal-mobile-hero-rail__action">
-                <span className="portal-mobile-hero-rail__action-core">
-                  <ShieldCheck size={15} />
-                </span>
-              </div>
-            </div>
-
             <div className="portal-hero-badge" data-reveal="fade-up">
               <span className="portal-hero-badge__icon">
                 <Sparkles size={14} />
