@@ -99,10 +99,6 @@ export const TrackerAdminPanel: React.FC<Props> = ({
               <span className="portal-admin-lockup__monogram">AX</span>
             </div>
           </div>
-          <div>
-            <p className="portal-admin-lockup__overline">CEAS Participant Desk</p>
-            <p className="portal-admin-lockup__meta">Official status tracking and organizer verification layer.</p>
-          </div>
         </div>
         <p className="text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Registration lookup</p>
         <h3 className="portal-title-lg mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron font-black uppercase text-transparent">

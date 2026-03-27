@@ -217,10 +217,6 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
                   <span className="portal-admin-lockup__monogram">AX</span>
                 </div>
               </div>
-              <div>
-                <p className="portal-admin-lockup__overline">CEAS Organizer Console</p>
-                <p className="portal-admin-lockup__meta">Official operations workspace for registrations, announcements, and verification.</p>
-              </div>
             </div>
             <p className="mt-5 text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Admin workspace</p>
             <h2 className="mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron text-2xl font-black uppercase text-transparent md:text-4xl">Operations dashboard</h2>
