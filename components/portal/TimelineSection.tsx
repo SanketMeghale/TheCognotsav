@@ -65,6 +65,17 @@ export const TimelineSection: React.FC<TimelineSectionProps> = ({ standalone = f
 
   const currentEventSlug = useMemo(() => getCurrentEventSlug(events, now), [events, now]);
 
+  if (events.length === 0) {
+    return (
+      <section id={standalone ? undefined : 'timeline'} className={standalone ? '' : `${shellClassName} py-4 md:py-8`}>
+        <div className="rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(9,13,24,0.78))] p-6 text-center">
+          <p className="text-[11px] uppercase tracking-[0.24em] text-slate-400">Timeline unavailable</p>
+          <p className="mt-3 text-base text-slate-300">The event schedule is still loading. Refresh in a moment to see the full timeline.</p>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section id={standalone ? undefined : 'timeline'} className={standalone ? '' : `${shellClassName} py-4 md:py-8`}>
       <div className="rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(9,13,24,0.78))] p-4 sm:p-5 md:p-6">
@@ -84,9 +95,21 @@ export const TimelineSection: React.FC<TimelineSectionProps> = ({ standalone = f
 
           {groupedEvents.map((group, groupIndex) => (
             <div key={group.dateLabel} className="relative">
-              <div className="sticky top-24 z-10 mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-[rgba(10,18,32,0.9)] px-4 py-2 text-sm font-semibold text-white backdrop-blur-md">
-                <CalendarDays size={16} className="text-cyan-200" />
-                {group.dateLabel}
+              <div className="sticky top-24 z-10 mb-4 rounded-[1.35rem] border border-white/10 bg-[rgba(10,18,32,0.9)] p-3 backdrop-blur-md">
+                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                  <div className="inline-flex items-center gap-2 text-sm font-semibold text-white">
+                    <CalendarDays size={16} className="text-cyan-200" />
+                    {group.dateLabel}
+                  </div>
+                  <div className="flex flex-wrap gap-2 text-xs">
+                    <span className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 font-semibold uppercase tracking-[0.18em] text-slate-200">
+                      {group.events.length} events
+                    </span>
+                    <span className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 font-semibold uppercase tracking-[0.18em] text-slate-200">
+                      {group.events[0]?.time_label} onwards
+                    </span>
+                  </div>
+                </div>
               </div>
 
               <div className="relative space-y-4 pl-6 sm:pl-8">
@@ -150,6 +173,21 @@ export const TimelineSection: React.FC<TimelineSectionProps> = ({ standalone = f
                               {isCurrent ? <Sparkles size={16} className="text-yellow-200" /> : <Clock3 size={16} className="text-cyan-200" />}
                               {liveState.countdown}
                             </div>
+                          </div>
+
+                          <div className="mt-4 flex flex-wrap gap-2">
+                            <a
+                              href={`#events/${event.slug}`}
+                              className="inline-flex items-center rounded-full border border-cyan-300/20 bg-cyan-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-cyan-100 transition hover:border-cyan-300/32 hover:bg-cyan-400/14"
+                            >
+                              Open Event
+                            </a>
+                            <a
+                              href="#registration-panel"
+                              className="inline-flex items-center rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-100 transition hover:border-white/18 hover:bg-white/[0.08]"
+                            >
+                              Register Section
+                            </a>
                           </div>
 
                           <div className="mt-5 grid gap-3 md:grid-cols-3">
