@@ -1,6 +1,8 @@
 import 'dotenv/config';
 import cors from 'cors';
 import express from 'express';
+import { rateLimit } from 'express-rate-limit';
+import helmet from 'helmet';
 import nodemailer from 'nodemailer';
 import XLSX from 'xlsx';
 import { randomUUID } from 'node:crypto';
@@ -14,7 +16,7 @@ const dnsLookup = dns.promises.lookup;
 
 const app = express();
 const port = Number(process.env.PORT || 8787);
-const adminAccessKey = process.env.ADMIN_ACCESS_KEY || 'change-this-admin-key';
+const adminAccessKey = String(process.env.ADMIN_ACCESS_KEY || '').trim();
 const rawEventAdminKeys = String(process.env.EVENT_ADMIN_KEYS_JSON || process.env.EVENT_ADMIN_KEYS || '').trim();
 const storageRoot = path.resolve(
   process.env.RAILWAY_VOLUME_MOUNT_PATH || process.env.STORAGE_ROOT || process.cwd(),
@@ -47,6 +49,7 @@ const REGISTRATION_CLOSING_WINDOW_MS = 24 * 60 * 60 * 1000;
 const SMART_NOTIFICATION_POLL_MS = Number(process.env.SMART_NOTIFICATION_POLL_MS || 5 * 60 * 1000);
 const LOW_SLOT_ALERT_THRESHOLD = Number(process.env.LOW_SLOT_ALERT_THRESHOLD || 5);
 const BACKUP_POLL_MS = Number(process.env.BACKUP_POLL_MS || 24 * 60 * 60 * 1000);
+const allowedOriginSet = buildAllowedOriginSet();
 const monthIndexByShortName = {
   Jan: 0,
   Feb: 1,
@@ -61,6 +64,57 @@ const monthIndexByShortName = {
   Nov: 10,
   Dec: 11,
 };
+
+if (!adminAccessKey) {
+  throw new Error('ADMIN_ACCESS_KEY is required. Refusing to start with no default admin key.');
+}
+
+function buildAllowedOriginSet() {
+  const rawConfiguredOrigins = String(process.env.ALLOWED_ORIGINS || '').trim();
+  const configuredOrigins = rawConfiguredOrigins
+    ? rawConfiguredOrigins.split(',').map((origin) => origin.trim()).filter(Boolean)
+    : [];
+  const defaults = [
+    publicAppUrl,
+    'http://localhost:3002',
+    'http://127.0.0.1:3002',
+    'http://localhost:8787',
+    'http://127.0.0.1:8787',
+  ];
+
+  return new Set(
+    [...defaults, ...configuredOrigins]
+      .map((origin) => origin.replace(/\/+$/, ''))
+      .filter(Boolean),
+  );
+}
+
+function isAllowedOrigin(origin) {
+  if (!origin) return true;
+
+  const normalizedOrigin = String(origin).trim().replace(/\/+$/, '');
+  if (allowedOriginSet.has(normalizedOrigin)) {
+    return true;
+  }
+
+  try {
+    const parsed = new URL(normalizedOrigin);
+    if (
+      parsed.protocol === 'https:' &&
+      (parsed.hostname.endsWith('.vercel.app') || parsed.hostname.endsWith('.railway.app'))
+    ) {
+      return true;
+    }
+  } catch {
+    return false;
+  }
+
+  return false;
+}
+
+function buildRateLimitMessage(message) {
+  return { error: message };
+}
 
 function parseEventAdminKeys(rawValue) {
   if (!rawValue) return new Map();
@@ -323,10 +377,55 @@ async function sendPortalMail(message) {
   throw lastError || new Error('SMTP transport is not configured.');
 }
 
-app.use(cors());
+app.set('trust proxy', 1);
+
+app.use(helmet({
+  contentSecurityPolicy: false,
+  crossOriginEmbedderPolicy: false,
+}));
+
+app.use(cors({
+  origin(origin, callback) {
+    if (isAllowedOrigin(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(null, false);
+  },
+  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'x-admin-key'],
+}));
 app.use(express.json({ limit: '8mb' }));
 app.use('/uploads', express.static(path.join(storageRoot, 'uploads')));
 app.use(express.static(path.resolve(process.cwd(), 'dist')));
+
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 300,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: buildRateLimitMessage('Too many requests. Please try again in a few minutes.'),
+});
+
+const registrationLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: buildRateLimitMessage('Too many registration attempts. Please wait before submitting again.'),
+});
+
+const adminLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 60,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: buildRateLimitMessage('Too many admin requests. Please wait before trying again.'),
+});
+
+app.use('/api', apiLimiter);
+app.use('/api/registrations', registrationLimiter);
+app.use('/api/admin', adminLimiter);
 
 app.use((req, res, next) => {
   if (req.path.startsWith('/api') || req.path.startsWith('/uploads') || req.path.startsWith('/pass/')) {
