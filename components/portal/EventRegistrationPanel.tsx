@@ -188,8 +188,11 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const selectedTheme = selectedEvent ? categoryThemes[selectedEvent.category] || categoryThemes.Technical : categoryThemes.Technical;
   const selectedHandbook = selectedEvent ? handbookBySlug[selectedEvent.slug] : null;
   const payableAmount = selectedEvent ? resolveEventAmount(selectedEvent, teamSize) : 0;
+  const customQrImagePath = selectedEvent?.payment_qr_image_path?.trim() || '';
+  const hasCustomQrImage = Boolean(customQrImagePath);
   const upiLink = selectedEvent?.payment_upi ? `upi://pay?pa=${selectedEvent.payment_upi}&pn=${encodeURIComponent(selectedEvent.payment_payee || selectedEvent.name)}&am=${payableAmount}&cu=INR&tn=${encodeURIComponent(selectedEvent.name)}` : '';
   const qrUrl = upiLink ? `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(upiLink)}` : '';
+  const paymentQrSrc = hasCustomQrImage ? customQrImagePath : qrUrl;
   const canOpenPaymentApp = typeof window !== 'undefined' && /Android|iPhone|iPad|iPod/i.test(window.navigator.userAgent);
   const isSoloEvent = selectedEvent.min_members === 1 && !selectedEvent.is_team_event;
   const registrationPaused = selectedEvent.registration_enabled === false;
@@ -537,7 +540,9 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                       <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1">Any UPI App</span>
                     </div>
                     <p className="mt-3 text-xs leading-6 text-slate-300">
-                      On mobile, use <span className="font-semibold text-white">Open UPI App</span>. On laptop, scan the QR below using any UPI app on your phone, then submit the transaction ID and screenshot.
+                      {upiLink
+                        ? <>On mobile, use <span className="font-semibold text-white">Open UPI App</span>. On laptop, scan the QR below using any UPI app on your phone, then submit the transaction ID and screenshot.</>
+                        : <>Scan the QR below using any UPI app on your phone, then submit the transaction ID and screenshot for verification.</>}
                     </p>
                   </div>
 
@@ -546,8 +551,16 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                       <QrCode size={18} />
                       <p className="text-sm font-semibold">Event payment QR</p>
                     </div>
-                    <div className="mt-4 flex aspect-square items-center justify-center rounded-[1.4rem] bg-white p-4">
-                      {qrUrl ? <img src={qrUrl} alt={`${selectedEvent.name} payment QR`} className="h-full w-full max-w-[14rem] object-contain" /> : <div className="h-full w-full max-w-[14rem] rounded-[1.2rem] bg-slate-200/30" />}
+                    <div className={`mt-4 flex items-center justify-center rounded-[1.4rem] p-4 ${hasCustomQrImage ? 'aspect-[3/4] bg-[#050505]' : 'aspect-square bg-white'}`}>
+                      {paymentQrSrc ? (
+                        <img
+                          src={paymentQrSrc}
+                          alt={`${selectedEvent.name} payment QR`}
+                          className={hasCustomQrImage ? 'h-full w-full rounded-[1rem] object-cover object-top' : 'h-full w-full max-w-[14rem] object-contain'}
+                        />
+                      ) : (
+                        <div className="h-full w-full max-w-[14rem] rounded-[1.2rem] bg-slate-200/30" />
+                      )}
                     </div>
                   </div>
 
@@ -561,21 +574,26 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                       <p className="mt-2 text-lg font-semibold text-white">{formatCurrency(payableAmount)}</p>
                       {selectedEvent.slug === 'rang-manch' ? <p className="mt-1 text-xs text-slate-300">Calculated at Rs 50 per participant.</p> : null}
                     </div>
-                    <div className="mt-3 rounded-[1.15rem] border border-white/10 bg-black/20 p-4">
-                      <p className="text-xs uppercase tracking-[0.16em] text-slate-500">UPI ID</p>
-                      <div className="mt-2 flex items-center justify-between gap-3">
-                        <p className="break-all text-sm font-semibold text-white">{selectedEvent.payment_upi || 'Not configured'}</p>
-                        {selectedEvent.payment_upi ? (
+                    {selectedEvent.payment_upi ? (
+                      <div className="mt-3 rounded-[1.15rem] border border-white/10 bg-black/20 p-4">
+                        <p className="text-xs uppercase tracking-[0.16em] text-slate-500">UPI ID</p>
+                        <div className="mt-2 flex items-center justify-between gap-3">
+                          <p className="break-all text-sm font-semibold text-white">{selectedEvent.payment_upi}</p>
                           <button type="button" onClick={() => navigator.clipboard.writeText(selectedEvent.payment_upi || '')} className="magnetic-button rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white">
                             <Copy size={14} />
                           </button>
-                        ) : null}
+                        </div>
                       </div>
-                    </div>
+                    ) : null}
                     <div className="mt-3 rounded-[1.15rem] border border-white/10 bg-black/20 p-4">
                       <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Payee Name</p>
                       <p className="mt-2 text-sm font-semibold text-white">{selectedEvent.payment_payee || selectedEvent.name}</p>
                     </div>
+                    {!selectedEvent.payment_upi && hasCustomQrImage ? (
+                      <p className="mt-3 text-xs leading-6 text-slate-300">
+                        Use the QR image above to complete payment for this event.
+                      </p>
+                    ) : null}
                   </div>
 
                   <div className={`rounded-[1.35rem] border border-white/10 bg-gradient-to-br p-4 ${selectedTheme.surface}`}>

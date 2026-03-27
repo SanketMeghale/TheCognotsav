@@ -23,6 +23,7 @@ export type EventRecord = {
   intro_video_url?: string | null;
   payment_upi: string | null;
   payment_payee: string | null;
+  payment_qr_image_path?: string | null;
   coordinators: CoordinatorContact[];
   registration_enabled: boolean;
   registrations_count: number;

@@ -16,6 +16,53 @@ import type {
 } from './components/portal/types.ts';
 import { makeParticipants, shellClassName } from './components/portal/utils.ts';
 
+const CHUNK_RELOAD_STORAGE_KEY = 'cognotsav_chunk_reload_attempt_ts';
+const CHUNK_RELOAD_COOLDOWN_MS = 60_000;
+
+function getChunkErrorMessage(error: unknown) {
+  if (error instanceof Error) {
+    return `${error.name} ${error.message}`.trim();
+  }
+
+  return typeof error === 'string' ? error : '';
+}
+
+function isRecoverableChunkError(error: unknown) {
+  const message = getChunkErrorMessage(error);
+  return /ChunkLoadError|Failed to fetch dynamically imported module|error loading dynamically imported module|Importing a module script failed|Loading chunk [\d]+ failed/i.test(message);
+}
+
+function attemptChunkReloadRecovery(error: unknown): Promise<never> {
+  if (typeof window === 'undefined' || !isRecoverableChunkError(error)) {
+    return Promise.reject(error);
+  }
+
+  let lastAttemptAt = 0;
+
+  try {
+    lastAttemptAt = Number(window.sessionStorage.getItem(CHUNK_RELOAD_STORAGE_KEY) ?? '0');
+  } catch {
+    lastAttemptAt = 0;
+  }
+
+  if (Date.now() - lastAttemptAt > CHUNK_RELOAD_COOLDOWN_MS) {
+    try {
+      window.sessionStorage.setItem(CHUNK_RELOAD_STORAGE_KEY, String(Date.now()));
+    } catch {
+      // Ignore storage access issues and still attempt a one-time reload.
+    }
+
+    window.location.reload();
+    return new Promise<never>(() => {});
+  }
+
+  return Promise.reject(error);
+}
+
+function loadLazyModule<T>(loader: () => Promise<T>) {
+  return loader().catch((error) => attemptChunkReloadRecovery(error));
+}
+
 const loadAdminRegistrationsPage = () => import('./components/portal/AdminRegistrationsPage.tsx');
 const loadAnnouncementArchiveSection = () => import('./components/portal/AnnouncementArchiveSection.tsx');
 const loadTimelinePage = () => import('./components/portal/TimelinePage.tsx');
@@ -24,13 +71,13 @@ const loadFAQSection = () => import('./components/portal/FAQSection.tsx');
 const loadTrackerAdminPanel = () => import('./components/portal/TrackerAdminPanel.tsx');
 const loadPortalFooter = () => import('./components/portal/PortalFooter.tsx');
 
-const AdminRegistrationsPage = lazy(() => loadAdminRegistrationsPage().then((module) => ({ default: module.AdminRegistrationsPage })));
-const AnnouncementArchiveSection = lazy(() => loadAnnouncementArchiveSection().then((module) => ({ default: module.AnnouncementArchiveSection })));
-const TimelinePage = lazy(() => loadTimelinePage().then((module) => ({ default: module.TimelinePage })));
-const EventRegistrationPanel = lazy(() => loadEventRegistrationPanel().then((module) => ({ default: module.EventRegistrationPanel })));
-const FAQSection = lazy(() => loadFAQSection().then((module) => ({ default: module.FAQSection })));
-const TrackerAdminPanel = lazy(() => loadTrackerAdminPanel().then((module) => ({ default: module.TrackerAdminPanel })));
-const PortalFooter = lazy(() => loadPortalFooter().then((module) => ({ default: module.PortalFooter })));
+const AdminRegistrationsPage = lazy(() => loadLazyModule(loadAdminRegistrationsPage).then((module) => ({ default: module.AdminRegistrationsPage })));
+const AnnouncementArchiveSection = lazy(() => loadLazyModule(loadAnnouncementArchiveSection).then((module) => ({ default: module.AnnouncementArchiveSection })));
+const TimelinePage = lazy(() => loadLazyModule(loadTimelinePage).then((module) => ({ default: module.TimelinePage })));
+const EventRegistrationPanel = lazy(() => loadLazyModule(loadEventRegistrationPanel).then((module) => ({ default: module.EventRegistrationPanel })));
+const FAQSection = lazy(() => loadLazyModule(loadFAQSection).then((module) => ({ default: module.FAQSection })));
+const TrackerAdminPanel = lazy(() => loadLazyModule(loadTrackerAdminPanel).then((module) => ({ default: module.TrackerAdminPanel })));
+const PortalFooter = lazy(() => loadLazyModule(loadPortalFooter).then((module) => ({ default: module.PortalFooter })));
 
 type FormState = {
   teamName: string;
@@ -712,6 +759,23 @@ export const App: React.FC = () => {
     notes: '',
     participants: makeParticipants(1),
   });
+
+  useEffect(() => {
+    const handleWindowError = (event: ErrorEvent) => {
+      void attemptChunkReloadRecovery(event.error ?? event.message).catch(() => undefined);
+    };
+
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      void attemptChunkReloadRecovery(event.reason).catch(() => undefined);
+    };
+
+    window.addEventListener('error', handleWindowError);
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+    return () => {
+      window.removeEventListener('error', handleWindowError);
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+    };
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
