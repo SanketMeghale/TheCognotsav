@@ -1806,11 +1806,11 @@ export const App: React.FC = () => {
 
       <header className="sticky top-0 z-30 px-3 pt-3 sm:px-4 md:px-0">
         <div className={`${shellClassName} portal-nav-shell ${navScrolled ? 'is-scrolled' : ''}`}>
-          <a href="#overview" className="portal-brand-card flex min-w-0 items-center gap-3 rounded-[1.4rem] px-3 py-2 transition hover:border-slate-200/18 hover:bg-white/[0.06]">
+          <a href="#overview" className="portal-brand-card portal-brand-card--nav flex min-w-0 items-center gap-3 rounded-[1.4rem] px-3 py-2 transition hover:border-slate-200/18 hover:bg-white/[0.06]">
             <div className="portal-brand-logo-frame">
               <img src="/images/ceasposter.jpeg" alt="CEAS COGNOTSAV logo" className="portal-brand-logo-image" />
             </div>
-            <div className="min-w-0">
+            <div className="portal-brand-copy min-w-0">
               <p className="portal-brand-overline truncate">Computer Engineering Association</p>
               <h1 className="portal-brand-mark portal-brand-mark--nav truncate">CEAS COGNOTSAV 2026</h1>
             </div>
@@ -1841,10 +1841,6 @@ export const App: React.FC = () => {
                 <span className="portal-mobile-admin-trigger__icon">
                   <ShieldCheck size={14} />
                 </span>
-                <span className="portal-mobile-admin-trigger__monogram">AX</span>
-              </span>
-              <span className="portal-mobile-admin-trigger__badge">
-                ADM
               </span>
             </a>
           </div>

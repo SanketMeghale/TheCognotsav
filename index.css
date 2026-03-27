@@ -173,6 +173,10 @@ body {
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.18), 0 0 12px rgba(125, 211, 252, 0.08);
 }
 
+.portal-brand-copy {
+  min-width: 0;
+}
+
 .portal-footer-lockup__frame,
 .portal-pass-lockup__frame,
 .portal-admin-lockup__frame,
@@ -1309,7 +1313,8 @@ img {
 .portal-competition-card__video-hint {
   position: absolute;
   left: 50%;
-  bottom: 1.15rem;
+  top: 1rem;
+  bottom: auto;
   z-index: 2;
   display: inline-flex;
   align-items: center;
@@ -1403,6 +1408,21 @@ img {
 }
 
 @media (max-width: 767px) {
+  .portal-brand-card--nav {
+    gap: 0;
+    padding: 0.55rem;
+  }
+
+  .portal-brand-card--nav .portal-brand-copy {
+    display: none;
+  }
+
+  .portal-brand-card--nav .portal-brand-logo-frame {
+    height: 2.8rem;
+    width: 2.8rem;
+    border-radius: 0.95rem;
+  }
+
   .portal-competition-card__sound-toggle {
     left: 0.85rem;
     top: 0.85rem;
@@ -1430,7 +1450,8 @@ img {
   }
 
   .portal-competition-card__video-hint {
-    bottom: 0.9rem;
+    top: 0.85rem;
+    bottom: auto;
     padding: 0.52rem 0.82rem 0.52rem 0.62rem;
     font-size: 0.6rem;
     letter-spacing: 0.07em;
@@ -2490,7 +2511,7 @@ select.floating-field-input option {
   height: 2.15rem;
   width: 2.15rem;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   border-radius: 0.8rem;
   border: 1px solid rgba(125, 211, 252, 0.18);
   background:

@@ -4,28 +4,68 @@ import { shellClassName } from './utils';
 
 const timelineItems = [
   {
+    phase: 'Phase 01',
     title: 'Registration Opens',
-    time: 'Now',
-    detail: 'Open a competition, read the brief, and submit the registration with payment proof.',
+    time: 'Live Now',
+    detail: 'Browse competitions, lock your preferred event, and submit the registration form with payment proof.',
+    checkpoints: ['Choose the correct event and team size', 'Upload payment screenshot clearly', 'Save your registration code for tracking'],
     accent: 'from-cyan-400 via-sky-400 to-blue-500',
   },
   {
-    title: 'Verification Wave',
-    time: 'Before Event Day',
-    detail: 'Every registration enters pending review before organizers approve and publish final updates.',
+    phase: 'Phase 02',
+    title: 'Screening And Verification',
+    time: 'Rolling Review',
+    detail: 'Every submission enters organizer review for payment verification, team validation, and slot confirmation.',
+    checkpoints: ['Incomplete entries may stay pending', 'Approved teams receive confirmation updates', 'Waitlisted teams move up as slots open'],
     accent: 'from-fuchsia-400 via-purple-400 to-indigo-500',
   },
   {
-    title: 'Day 1 Launch',
-    time: '07 Apr 2026',
-    detail: 'Gaming, quiz, hunt, and technical rounds begin with reporting checkpoints.',
+    phase: 'Phase 03',
+    title: 'Pre-Event Briefing',
+    time: '06 Apr 2026',
+    detail: 'Final instructions, venue reminders, and reporting windows are pushed through the updates and tracker sections.',
+    checkpoints: ['Recheck venue and reporting time', 'Carry ID card and registration code', 'Review event-specific rules before arrival'],
+    accent: 'from-violet-400 via-fuchsia-400 to-pink-500',
+  },
+  {
+    phase: 'Phase 04',
+    title: 'Day 1 Reporting Desk Opens',
+    time: '07 Apr 2026 • Morning',
+    detail: 'Participants report at assigned desks for attendance, team confirmation, and final event routing.',
+    checkpoints: ['Entry verification at reporting counter', 'Late reporting may affect participation', 'Teams are directed to event zones after check-in'],
     accent: 'from-amber-300 via-orange-400 to-rose-500',
   },
   {
-    title: 'Day 2 Showcase',
-    time: '08 Apr 2026',
-    detail: 'Expo, stage events, finals, and closing highlights continue with live guidance and tracker support.',
+    phase: 'Phase 05',
+    title: 'Day 1 Competition Blocks',
+    time: '07 Apr 2026 • Full Day',
+    detail: 'Gaming qualifiers, quiz rounds, technical screening, and hunt activities run in parallel across the campus schedule.',
+    checkpoints: ['Technical eliminations and shortlisting', 'Gaming rooms and match rotations', 'Round-wise announcements published live'],
+    accent: 'from-yellow-300 via-amber-400 to-orange-500',
+  },
+  {
+    phase: 'Phase 06',
+    title: 'Day 1 Finalists Update',
+    time: '07 Apr 2026 • Evening',
+    detail: 'Shortlisted teams and finalists are announced after evaluation so participants can prepare for showcase and final rounds.',
+    checkpoints: ['Finalists list published in updates', 'Next-day reporting slots confirmed', 'Teams receive final-round guidance'],
+    accent: 'from-emerald-300 via-teal-400 to-cyan-500',
+  },
+  {
+    phase: 'Phase 07',
+    title: 'Day 2 Expo And Showcase',
+    time: '08 Apr 2026 • Morning',
+    detail: 'Project Expo, poster showcases, and presentation-based events move into judged display and demo sessions.',
+    checkpoints: ['Judging panels begin review', 'Teams present demos and explain solutions', 'Scoring and evaluation are consolidated live'],
     accent: 'from-lime-300 via-emerald-400 to-cyan-500',
+  },
+  {
+    phase: 'Phase 08',
+    title: 'Day 2 Finals And Closing',
+    time: '08 Apr 2026 • Afternoon To Evening',
+    detail: 'Final rounds, stage highlights, results, prize announcements, and closing moments complete the fest roadmap.',
+    checkpoints: ['Final matchups and decisive rounds', 'Winner announcements and recognition', 'Prize distribution and event close-out'],
+    accent: 'from-cyan-300 via-sky-400 to-blue-500',
   },
 ];
 
@@ -56,14 +96,29 @@ export const TimelineSection: React.FC<{ standalone?: boolean }> = ({ standalone
                     <div className={`roadmap-card__glow bg-gradient-to-r ${item.accent}`} />
                     <div className="relative z-10">
                       <div className="flex items-center justify-between gap-3">
-                        <span className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-200">
-                          {item.time}
-                        </span>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-200">
+                            {item.phase}
+                          </span>
+                          <span className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-200">
+                            {item.time}
+                          </span>
+                        </div>
                         {index === 0 ? <Sparkles size={18} className="text-cyan-200" /> : <CircleCheckBig size={18} className="text-white/80" />}
                       </div>
                       <div className={`mt-4 h-1.5 w-20 rounded-full bg-gradient-to-r ${item.accent}`} />
                       <h4 className="mt-4 text-lg font-semibold text-white">{item.title}</h4>
                       <p className="mt-3 text-sm leading-7 text-slate-300">{item.detail}</p>
+                      <div className="mt-4 grid gap-2">
+                        {item.checkpoints.map((checkpoint) => (
+                          <div
+                            key={checkpoint}
+                            className="rounded-2xl border border-white/8 bg-white/[0.04] px-3 py-2 text-xs font-medium tracking-[0.04em] text-slate-200"
+                          >
+                            {checkpoint}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </article>
                 </div>
