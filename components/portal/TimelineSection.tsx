@@ -95,18 +95,21 @@ export const TimelineSection: React.FC<TimelineSectionProps> = ({ standalone = f
 
           {groupedEvents.map((group, groupIndex) => (
             <div key={group.dateLabel} className="relative">
-              <div className="sticky top-24 z-10 mb-4 rounded-[1.35rem] border border-white/10 bg-[rgba(10,18,32,0.9)] p-3 backdrop-blur-md">
+              <div className="mb-4 rounded-[1.45rem] border border-white/10 bg-[linear-gradient(145deg,rgba(10,18,32,0.96),rgba(9,13,24,0.88))] p-4">
                 <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                  <div className="inline-flex items-center gap-2 text-sm font-semibold text-white">
-                    <CalendarDays size={16} className="text-cyan-200" />
-                    {group.dateLabel}
+                  <div>
+                    <div className="inline-flex items-center gap-2 text-sm font-semibold text-white">
+                      <CalendarDays size={16} className="text-cyan-200" />
+                      Day {groupIndex + 1}
+                    </div>
+                    <p className="mt-2 text-lg font-semibold text-white">{group.dateLabel}</p>
                   </div>
                   <div className="flex flex-wrap gap-2 text-xs">
                     <span className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 font-semibold uppercase tracking-[0.18em] text-slate-200">
                       {group.events.length} events
                     </span>
                     <span className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 font-semibold uppercase tracking-[0.18em] text-slate-200">
-                      {group.events[0]?.time_label} onwards
+                      Reporting from {group.events[0]?.time_label}
                     </span>
                   </div>
                 </div>
@@ -175,21 +178,6 @@ export const TimelineSection: React.FC<TimelineSectionProps> = ({ standalone = f
                             </div>
                           </div>
 
-                          <div className="mt-4 flex flex-wrap gap-2">
-                            <a
-                              href={`#events/${event.slug}`}
-                              className="inline-flex items-center rounded-full border border-cyan-300/20 bg-cyan-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-cyan-100 transition hover:border-cyan-300/32 hover:bg-cyan-400/14"
-                            >
-                              Open Event
-                            </a>
-                            <a
-                              href="#registration-panel"
-                              className="inline-flex items-center rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-100 transition hover:border-white/18 hover:bg-white/[0.08]"
-                            >
-                              Register Section
-                            </a>
-                          </div>
-
                           <div className="mt-5 grid gap-3 md:grid-cols-3">
                             <div className="rounded-[1.2rem] border border-white/10 bg-black/15 p-4">
                               <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Time</p>
@@ -224,6 +212,10 @@ export const TimelineSection: React.FC<TimelineSectionProps> = ({ standalone = f
                             <div className="rounded-2xl border border-white/8 bg-white/[0.04] px-3 py-2 text-xs font-medium tracking-[0.04em] text-slate-200">
                               Coordinators: {event.coordinators.map((coordinator) => coordinator.name).join(', ')}
                             </div>
+                          </div>
+
+                          <div className="mt-4 rounded-[1.1rem] border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-slate-300">
+                            Event link: <a href={`#events/${event.slug}`} className="font-semibold text-cyan-100 transition hover:text-white">{event.name}</a>
                           </div>
                         </div>
                       </article>
