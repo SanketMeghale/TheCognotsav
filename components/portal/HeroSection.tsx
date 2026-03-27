@@ -34,7 +34,7 @@ export const HeroSection: React.FC<Props> = memo(() => {
                 Register Now
                 <ArrowRight size={16} />
               </a>
-              <a href="#events" className="portal-premium-button portal-premium-button--secondary">
+              <a href="#registration-panel" className="portal-premium-button portal-premium-button--secondary">
                 Explore Events
               </a>
             </div>

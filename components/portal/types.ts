@@ -105,6 +105,7 @@ export type AdminAccessScope = {
   event_slug: string | null;
   event_name: string | null;
   can_export: boolean;
+  can_delete_registrations: boolean;
   can_manage_backups: boolean;
   can_manage_broadcasts: boolean;
   can_manage_announcements: boolean;

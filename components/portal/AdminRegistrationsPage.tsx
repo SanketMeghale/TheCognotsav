@@ -150,6 +150,7 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
   const canSubmitAccess = adminAccessMode === 'global'
     ? Boolean(adminMainKey.trim())
     : Boolean(adminEventKeySlug && adminEventKey.trim());
+  const canDeleteRegistrations = hasResolvedAccess && adminScope?.can_delete_registrations !== false;
   const canShowBroadcastTools = hasResolvedAccess && adminScope?.can_manage_broadcasts !== false;
   const canShowBackupTools = hasResolvedAccess && adminScope?.can_manage_backups !== false;
   const accessSummary = adminScope?.mode === 'event'
@@ -426,18 +427,20 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
                   <button type="button" onClick={() => onStatusChange(row.id, 'verified')} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-emerald-300/20 bg-emerald-400/10 px-4 py-3 text-sm font-bold text-emerald-100"><CheckCircle2 size={16} />Approve</button>
                   <button type="button" onClick={() => onStatusChange(row.id, 'pending')} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-amber-300/20 bg-amber-400/10 px-4 py-3 text-sm font-bold text-amber-100"><Clock3 size={16} />Pending</button>
                   <button type="button" onClick={() => onStatusChange(row.id, 'rejected')} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-rose-300/20 bg-rose-400/10 px-4 py-3 text-sm font-bold text-rose-100"><XCircle size={16} />Reject</button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (window.confirm(`Delete registration ${row.registration_code} for ${row.team_name}? This cannot be undone.`)) {
-                        onDeleteRegistration(row.id);
-                      }
-                    }}
-                    className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-red-300/20 bg-red-500/10 px-4 py-3 text-sm font-bold text-red-100"
-                  >
-                    <Trash2 size={16} />
-                    Delete
-                  </button>
+                  {canDeleteRegistrations ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (window.confirm(`Delete registration ${row.registration_code} for ${row.team_name}? This cannot be undone.`)) {
+                          onDeleteRegistration(row.id);
+                        }
+                      }}
+                      className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-red-300/20 bg-red-500/10 px-4 py-3 text-sm font-bold text-red-100"
+                    >
+                      <Trash2 size={16} />
+                      Delete
+                    </button>
+                  ) : null}
                 </div>
               </div>
 

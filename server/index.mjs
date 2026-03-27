@@ -118,6 +118,7 @@ async function buildAdminAccessPayload(access) {
       event_slug: null,
       event_name: null,
       can_export: true,
+      can_delete_registrations: true,
       can_manage_backups: true,
       can_manage_broadcasts: true,
       can_manage_announcements: true,
@@ -139,6 +140,7 @@ async function buildAdminAccessPayload(access) {
     event_slug: access.eventSlug,
     event_name: result.rows[0]?.name || access.eventSlug,
     can_export: true,
+    can_delete_registrations: false,
     can_manage_backups: false,
     can_manage_broadcasts: false,
     can_manage_announcements: false,
@@ -2297,6 +2299,10 @@ app.patch('/api/admin/registrations/:id/review-note', requireAdmin, async (req, 
 app.delete('/api/admin/registrations/:id', requireAdmin, async (req, res) => {
   const { id } = req.params;
 
+  if (!req.adminAccess || req.adminAccess.mode !== 'global') {
+    return res.status(403).json({ error: 'Only the main admin key can delete registrations.' });
+  }
+
   const registrationScope = await pool.query(
     `
       SELECT id, status, event_slug
@@ -2312,10 +2318,6 @@ app.delete('/api/admin/registrations/:id', requireAdmin, async (req, res) => {
   }
 
   const registration = registrationScope.rows[0];
-
-  if (!hasScopedEventAccess(req, registration.event_slug)) {
-    return res.status(403).json({ error: 'This access key can delete only its assigned event registrations.' });
-  }
 
   await pool.query(
     `
