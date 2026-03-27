@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, memo, useEffect, useMemo, useState } from 'react';
+import React, { Suspense, lazy, memo, useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowRight, ArrowLeft, Bell, Building2, CheckCircle2, Clock3, GraduationCap, House, Search, ShieldCheck, Sparkles, Trophy } from 'lucide-react';
 import { HeroSection } from './components/portal/HeroSection.tsx';
 import { CompetitionGridSection } from './components/portal/CompetitionGridSection.tsx';
@@ -270,6 +270,54 @@ function PortalSectionFallbackBase({ label = 'Loading section...' }: { label?: s
 }
 
 const PortalSectionFallback = memo(PortalSectionFallbackBase);
+
+function DeferredSectionBase({
+  children,
+  fallback,
+  rootMargin = '320px 0px',
+  className = '',
+}: {
+  children: React.ReactNode;
+  fallback: React.ReactNode;
+  rootMargin?: string;
+  className?: string;
+}) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [shouldRender, setShouldRender] = useState(false);
+
+  useEffect(() => {
+    if (shouldRender || typeof window === 'undefined') {
+      return undefined;
+    }
+
+    const node = containerRef.current;
+    if (!node || !('IntersectionObserver' in window)) {
+      setShouldRender(true);
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          setShouldRender(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin, threshold: 0.01 },
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [rootMargin, shouldRender]);
+
+  return (
+    <div ref={containerRef} className={className}>
+      {shouldRender ? children : fallback}
+    </div>
+  );
+}
+
+const DeferredSection = memo(DeferredSectionBase);
 
 function PortalLoaderBase({ label = 'Loading...', compact = false }: { label?: string; compact?: boolean }) {
   return (
@@ -651,6 +699,7 @@ export const App: React.FC = () => {
   const [toastClosing, setToastClosing] = useState(false);
   const [navScrolled, setNavScrolled] = useState(false);
   const [navigationLoading, setNavigationLoading] = useState(false);
+  const navScrollFrameRef = useRef<number | null>(null);
   const [form, setForm] = useState<FormState>({
     teamName: '',
     collegeName: '',
@@ -666,13 +715,25 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const nextScrolled = window.scrollY > 18;
-      setNavScrolled((current) => (current === nextScrolled ? current : nextScrolled));
+      if (navScrollFrameRef.current !== null) {
+        return;
+      }
+
+      navScrollFrameRef.current = window.requestAnimationFrame(() => {
+        navScrollFrameRef.current = null;
+        const nextScrolled = window.scrollY > 18;
+        setNavScrolled((current) => (current === nextScrolled ? current : nextScrolled));
+      });
     };
 
     handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (navScrollFrameRef.current !== null) {
+        window.cancelAnimationFrame(navScrollFrameRef.current);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -894,26 +955,6 @@ export const App: React.FC = () => {
     const timer = window.setTimeout(() => setNavigationLoading(false), 260);
     return () => window.clearTimeout(timer);
   }, [navigationLoading, hashRoute]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const preloadPanels = () => {
-      void loadEventRegistrationPanel();
-      void loadTrackerAdminPanel();
-      void loadAnnouncementArchiveSection();
-      void loadFAQSection();
-      void loadPortalFooter();
-    };
-
-    if ('requestIdleCallback' in window) {
-      const idleId = window.requestIdleCallback(preloadPanels, { timeout: 1200 });
-      return () => window.cancelIdleCallback(idleId);
-    }
-
-    const timer = window.setTimeout(preloadPanels, 400);
-    return () => window.clearTimeout(timer);
-  }, []);
 
   const eventPageSlug = hashRoute.startsWith('#events/') ? hashRoute.slice('#events/'.length) : '';
   const isAdminPage = hashRoute.startsWith('#admin-registrations');
@@ -1792,7 +1833,7 @@ export const App: React.FC = () => {
         </div>
       ) : null}
 
-      {loadingEvents && events.length === 0 && !isAdminPage && !isTimelinePage ? (
+      {loadingEvents && events.length === 0 && isEventPage ? (
         <div className="portal-loader-overlay">
           <PortalLoader label="Loading..." />
         </div>
@@ -1931,14 +1972,16 @@ export const App: React.FC = () => {
 
             <div className={`${shellClassName} portal-section-divider`} aria-hidden="true" />
 
-            <Suspense fallback={<PortalSectionFallback label="Loading updates..." />}>
-              <AnnouncementArchiveSection
-                announcements={visibleAnnouncements}
-                events={events}
-                alerts={portalAlerts}
-                loading={loadingAnnouncements}
-              />
-            </Suspense>
+            <DeferredSection fallback={<PortalSectionFallback label="Loading updates..." />}>
+              <Suspense fallback={<PortalSectionFallback label="Loading updates..." />}>
+                <AnnouncementArchiveSection
+                  announcements={visibleAnnouncements}
+                  events={events}
+                  alerts={portalAlerts}
+                  loading={loadingAnnouncements}
+                />
+              </Suspense>
+            </DeferredSection>
 
             <div className={`${shellClassName} portal-section-divider portal-section-divider--angled`} aria-hidden="true" />
 
@@ -1949,32 +1992,36 @@ export const App: React.FC = () => {
               onSelectEvent={handleSelectEvent}
             />
 
-            <Suspense fallback={<PortalSectionFallback label="Loading tracker..." />}>
-              <TrackerAdminPanel
-                lookupQuery={lookupQuery}
-                lookupLoading={lookupLoading}
-                lookupTouched={lookupTouched}
-                lookupResults={lookupResults}
-                adminKey={adminKey}
-                adminRows={adminRows}
-                adminLoading={adminLoading}
-                adminError={adminError}
-                onStatusChange={updateAdminStatus}
-                onLookupQueryChange={setLookupQuery}
-                onLookup={handleLookup}
-                onAdminKeyChange={(value) => {
-                  setAdminKey(value);
-                  setAdminScope(null);
-                }}
-                onLoadAdminRows={loadAdminRows}
-                onDownload={downloadAdminFile}
-                showAdmin={false}
-              />
-            </Suspense>
+            <DeferredSection fallback={<PortalSectionFallback label="Loading tracker..." />}>
+              <Suspense fallback={<PortalSectionFallback label="Loading tracker..." />}>
+                <TrackerAdminPanel
+                  lookupQuery={lookupQuery}
+                  lookupLoading={lookupLoading}
+                  lookupTouched={lookupTouched}
+                  lookupResults={lookupResults}
+                  adminKey={adminKey}
+                  adminRows={adminRows}
+                  adminLoading={adminLoading}
+                  adminError={adminError}
+                  onStatusChange={updateAdminStatus}
+                  onLookupQueryChange={setLookupQuery}
+                  onLookup={handleLookup}
+                  onAdminKeyChange={(value) => {
+                    setAdminKey(value);
+                    setAdminScope(null);
+                  }}
+                  onLoadAdminRows={loadAdminRows}
+                  onDownload={downloadAdminFile}
+                  showAdmin={false}
+                />
+              </Suspense>
+            </DeferredSection>
 
-            <Suspense fallback={<PortalSectionFallback label="Loading FAQs..." />}>
-              <FAQSection />
-            </Suspense>
+            <DeferredSection fallback={<PortalSectionFallback label="Loading FAQs..." />}>
+              <Suspense fallback={<PortalSectionFallback label="Loading FAQs..." />}>
+                <FAQSection />
+              </Suspense>
+            </DeferredSection>
           </main>
         </>
       )}
@@ -2033,9 +2080,11 @@ export const App: React.FC = () => {
         </>
       ) : null}
 
-      <Suspense fallback={<PortalSectionFallback label="Loading footer..." />}>
-        <PortalFooter />
-      </Suspense>
+      <DeferredSection fallback={<PortalSectionFallback label="Loading footer..." />} rootMargin="220px 0px">
+        <Suspense fallback={<PortalSectionFallback label="Loading footer..." />}>
+          <PortalFooter />
+        </Suspense>
+      </DeferredSection>
 
     </div>
   );

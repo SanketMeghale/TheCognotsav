@@ -5093,11 +5093,24 @@ footer {
 }
 
 @media (max-width: 767px) {
+  [data-reveal='fade-up'] {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+
   .portal-shell::before,
+  .portal-orb,
+  .portal-glow-card::before,
   .portal-front-hero__particle,
   .portal-front-hero__visual-shell,
   .portal-bottom-dock::before {
     animation: none !important;
+  }
+
+  .portal-orb,
+  .portal-glow-card::before {
+    display: none;
   }
 
   .portal-glass,
@@ -5248,5 +5261,21 @@ footer {
   .portal-department-page__actions .portal-premium-button {
     width: 100%;
     justify-content: center;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .portal-glow-card:hover,
+  .animated-gradient-button:hover,
+  .magnetic-button:hover,
+  .portal-premium-button:hover {
+    transform: none;
+    filter: none;
+  }
+
+  .portal-glow-card:hover::before,
+  .portal-glow-card:hover::after {
+    transform: none;
+    filter: none;
   }
 }
