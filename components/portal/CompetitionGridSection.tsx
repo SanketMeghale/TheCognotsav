@@ -102,7 +102,8 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
       const shouldPlay = slug === activeVideoSlug;
 
       if (shouldPlay) {
-        video.muted = true;
+        video.muted = false;
+        video.volume = 1;
         video.controls = false;
         video.loop = true;
         const playPromise = video.play();
@@ -117,6 +118,7 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
       video.loop = true;
       video.pause();
       video.currentTime = 0;
+      video.muted = true;
     });
   }, [activeVideoSlug]);
 
@@ -236,7 +238,6 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
                           className={`portal-competition-card__video ${isVideoActive ? 'is-visible' : ''}`}
                           preload="metadata"
                           playsInline
-                          muted
                           loop
                           poster={event.poster_path}
                         >
