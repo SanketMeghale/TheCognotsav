@@ -173,6 +173,19 @@ function resolveEventAmount(event: EventRecord, participantCount: number) {
   return Number(event.registration_fee || 0);
 }
 
+function resolveCustomQrObjectPosition(eventSlug: string) {
+  switch (eventSlug) {
+    case 'squid-game':
+      return 'center 45%';
+    case 'techxcelerate':
+    case 'utopia':
+    case 'googler-hunt':
+      return 'center 52%';
+    default:
+      return 'center center';
+  }
+}
+
 export const EventRegistrationPanel: React.FC<Props> = ({
   selectedEvent, teamSize, form, submitting, successMessage, errorMessage, successReceipt, draftRecovered,
   validationErrors, touchedFields, paymentScreenshotName, paymentScreenshotReady, onDownloadPass,
@@ -190,6 +203,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const payableAmount = selectedEvent ? resolveEventAmount(selectedEvent, teamSize) : 0;
   const customQrImagePath = selectedEvent?.payment_qr_image_path?.trim() || '';
   const hasCustomQrImage = Boolean(customQrImagePath);
+  const customQrObjectPosition = selectedEvent ? resolveCustomQrObjectPosition(selectedEvent.slug) : 'center center';
   const upiLink = selectedEvent?.payment_upi ? `upi://pay?pa=${selectedEvent.payment_upi}&pn=${encodeURIComponent(selectedEvent.payment_payee || selectedEvent.name)}&am=${payableAmount}&cu=INR&tn=${encodeURIComponent(selectedEvent.name)}` : '';
   const qrUrl = upiLink ? `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(upiLink)}` : '';
   const paymentQrSrc = hasCustomQrImage ? customQrImagePath : qrUrl;
@@ -556,7 +570,8 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                         <img
                           src={paymentQrSrc}
                           alt={`${selectedEvent.name} payment QR`}
-                          className={hasCustomQrImage ? 'h-full w-full rounded-[1rem] object-cover object-[center_52%]' : 'h-full w-full max-w-[14rem] object-contain'}
+                          className={hasCustomQrImage ? 'h-full w-full rounded-[1rem] object-cover' : 'h-full w-full max-w-[14rem] object-contain'}
+                          style={hasCustomQrImage ? { objectPosition: customQrObjectPosition } : undefined}
                         />
                       ) : (
                         <div className="h-full w-full max-w-[14rem] rounded-[1.2rem] bg-slate-200/30" />
