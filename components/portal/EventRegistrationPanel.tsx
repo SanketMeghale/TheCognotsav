@@ -178,13 +178,22 @@ function resolveCustomQrObjectPosition(eventSlug: string) {
     case 'squid-game':
       return 'center 45%';
     case 'tech-kbc':
-      return 'center 48%';
+      return 'center 50%';
     case 'techxcelerate':
     case 'utopia':
     case 'googler-hunt':
       return 'center 52%';
     default:
       return 'center center';
+  }
+}
+
+function resolveCustomQrScale(eventSlug: string) {
+  switch (eventSlug) {
+    case 'tech-kbc':
+      return 1.22;
+    default:
+      return 1;
   }
 }
 
@@ -206,6 +215,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const customQrImagePath = selectedEvent?.payment_qr_image_path?.trim() || '';
   const hasCustomQrImage = Boolean(customQrImagePath);
   const customQrObjectPosition = selectedEvent ? resolveCustomQrObjectPosition(selectedEvent.slug) : 'center center';
+  const customQrScale = selectedEvent ? resolveCustomQrScale(selectedEvent.slug) : 1;
   const upiLink = selectedEvent?.payment_upi ? `upi://pay?pa=${selectedEvent.payment_upi}&pn=${encodeURIComponent(selectedEvent.payment_payee || selectedEvent.name)}&am=${payableAmount}&cu=INR&tn=${encodeURIComponent(selectedEvent.name)}` : '';
   const qrUrl = upiLink ? `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(upiLink)}` : '';
   const paymentQrSrc = hasCustomQrImage ? customQrImagePath : qrUrl;
@@ -573,7 +583,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                           src={paymentQrSrc}
                           alt={`${selectedEvent.name} payment QR`}
                           className={hasCustomQrImage ? 'h-full w-full rounded-[1rem] object-cover' : 'h-full w-full max-w-[14rem] object-contain'}
-                          style={hasCustomQrImage ? { objectPosition: customQrObjectPosition } : undefined}
+                          style={hasCustomQrImage ? { objectPosition: customQrObjectPosition, transform: `scale(${customQrScale})` } : undefined}
                         />
                       ) : (
                         <div className="h-full w-full max-w-[14rem] rounded-[1.2rem] bg-slate-200/30" />
