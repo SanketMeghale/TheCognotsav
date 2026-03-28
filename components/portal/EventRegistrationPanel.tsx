@@ -177,6 +177,8 @@ function resolveCustomQrObjectPosition(eventSlug: string) {
   switch (eventSlug) {
     case 'squid-game':
       return 'center 45%';
+    case 'tech-kbc':
+      return 'center 48%';
     case 'techxcelerate':
     case 'utopia':
     case 'googler-hunt':
