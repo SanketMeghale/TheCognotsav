@@ -226,7 +226,6 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
                   <span className="portal-admin-lockup__icon">
                     <ShieldCheck size={15} />
                   </span>
-                  <span className="portal-admin-lockup__monogram">AX</span>
                 </div>
               </div>
             </div>

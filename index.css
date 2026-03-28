@@ -323,10 +323,10 @@ body {
   display: flex;
   height: 100%;
   width: 100%;
-  align-items: flex-end;
-  justify-content: space-between;
+  align-items: center;
+  justify-content: center;
   border-radius: 0.8rem;
-  padding: 0.34rem 0.38rem;
+  padding: 0.34rem;
   background:
     radial-gradient(circle at top left, rgba(125, 211, 252, 0.26), transparent 42%),
     linear-gradient(145deg, rgba(7, 23, 47, 0.98), rgba(11, 18, 32, 0.98));
@@ -349,25 +349,14 @@ body {
   position: relative;
   z-index: 1;
   display: inline-flex;
-  height: 1.3rem;
-  width: 1.3rem;
+  height: 1.42rem;
+  width: 1.42rem;
   align-items: center;
   justify-content: center;
   border-radius: 0.5rem;
   background: linear-gradient(135deg, rgba(34, 211, 238, 0.22), rgba(59, 130, 246, 0.18));
   color: #67e8f9;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
-}
-
-.portal-admin-lockup__monogram {
-  position: relative;
-  z-index: 1;
-  font-family: 'Orbitron', 'Inter', sans-serif;
-  font-size: 0.92rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  line-height: 1;
-  color: #f8fafc;
 }
 
 #root {
