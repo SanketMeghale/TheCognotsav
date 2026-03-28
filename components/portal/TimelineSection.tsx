@@ -144,7 +144,11 @@ export const TimelineSection: React.FC<TimelineSectionProps> = ({ standalone = f
                         <div className={`pointer-events-none absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r ${accent}`} />
 
                         <div className="relative z-10">
-                          <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                          <div className="md:hidden">
+                            <h4 className="text-base font-semibold text-white">{event.name}</h4>
+                          </div>
+
+                          <div className="hidden flex-col gap-3 md:flex md:flex-row md:items-start md:justify-between">
                             <div className="min-w-0">
                               <div className="flex flex-wrap items-center gap-2">
                                 <span className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-200">
@@ -178,7 +182,7 @@ export const TimelineSection: React.FC<TimelineSectionProps> = ({ standalone = f
                             </div>
                           </div>
 
-                          <div className="mt-5 grid gap-3 md:grid-cols-3">
+                          <div className="mt-5 hidden gap-3 md:grid md:grid-cols-3">
                             <div className="rounded-[1.2rem] border border-white/10 bg-black/15 p-4">
                               <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Time</p>
                               <div className="mt-2 flex items-center gap-2 text-sm font-semibold text-white">
@@ -202,7 +206,7 @@ export const TimelineSection: React.FC<TimelineSectionProps> = ({ standalone = f
                             </div>
                           </div>
 
-                          <div className="mt-4 grid gap-2 md:grid-cols-3">
+                          <div className="mt-4 hidden gap-2 md:grid md:grid-cols-3">
                             <div className="rounded-2xl border border-white/8 bg-white/[0.04] px-3 py-2 text-xs font-medium tracking-[0.04em] text-slate-200">
                               Date: {event.date_label}
                             </div>
@@ -214,7 +218,7 @@ export const TimelineSection: React.FC<TimelineSectionProps> = ({ standalone = f
                             </div>
                           </div>
 
-                          <div className="mt-4 rounded-[1.1rem] border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-slate-300">
+                          <div className="mt-4 hidden rounded-[1.1rem] border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-slate-300 md:block">
                             Event link: <a href={`#events/${event.slug}`} className="font-semibold text-cyan-100 transition hover:text-white">{event.name}</a>
                           </div>
                         </div>
