@@ -146,6 +146,22 @@ export const TimelineSection: React.FC<TimelineSectionProps> = ({ standalone = f
                         <div className="relative z-10">
                           <div className="md:hidden">
                             <h4 className="text-base font-semibold text-white">{event.name}</h4>
+                            <div className="mt-3 flex flex-wrap items-center gap-2">
+                              <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-3 py-1.5 text-xs font-medium text-slate-200">
+                                <Clock3 size={14} className="text-cyan-200" />
+                                {event.time_label}
+                              </span>
+                              <span
+                                className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium ${
+                                  isCurrent
+                                    ? 'border-yellow-200/25 bg-yellow-400/10 text-yellow-50'
+                                    : 'border-white/10 bg-white/[0.05] text-slate-200'
+                                }`}
+                              >
+                                {isCurrent ? <Sparkles size={14} className="text-yellow-200" /> : <Clock3 size={14} className="text-cyan-200" />}
+                                {liveState.countdown}
+                              </span>
+                            </div>
                           </div>
 
                           <div className="hidden flex-col gap-3 md:flex md:flex-row md:items-start md:justify-between">
