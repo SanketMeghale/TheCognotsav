@@ -3,7 +3,6 @@ import {
   ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Clock3, Copy, CreditCard, ExternalLink,
   Info, MapPin, Phone, QrCode, Save, Smartphone, Sparkles, Trophy, Upload, Users,
 } from 'lucide-react';
-import { BACKUP_REGISTRATION_FORM_URL } from '../../supportConfig';
 import type { EventRecord, ParticipantDraft, RegistrationReceipt } from './types';
 import { formatCurrency, getEventLiveState, getTeamLabel } from './utils';
 
@@ -309,20 +308,6 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                 {registrationPaused ? 'Registration Paused' : 'Register Now'}
                 <ArrowRight size={16} />
               </button>
-              <a
-                href={BACKUP_REGISTRATION_FORM_URL}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-3 flex items-start justify-between gap-3 rounded-[1.15rem] border border-sky-300/18 bg-sky-400/10 px-4 py-3 text-left text-sm text-sky-100 transition hover:border-sky-200/28 hover:bg-sky-400/14"
-              >
-                <div>
-                  <p className="font-semibold text-white">Registration issue?</p>
-                  <p className="mt-1 text-sky-100/80">
-                    Use the backup Google Form if the portal is slow, not loading, or payment upload fails.
-                  </p>
-                </div>
-                <ExternalLink size={18} className="mt-0.5 shrink-0 text-sky-100" />
-              </a>
             </div>
             <div className="portal-event-showcase__content">
               <div className="flex flex-wrap items-center gap-3">

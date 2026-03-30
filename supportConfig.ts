@@ -4,9 +4,6 @@ export interface SupportMember {
   phone: string;
 }
 
-// Replace this with the live backup Google Form before publishing.
-export const BACKUP_REGISTRATION_FORM_URL = 'https://forms.gle/your-backup-registration-link';
-
 export const GENERAL_SUPPORT: SupportMember[] = [
   { name: "Siddhi Pagire", phone: "9421329709" },
   { name: "Abhijeet Saykad", phone: "9309111799" },
