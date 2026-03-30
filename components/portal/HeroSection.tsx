@@ -45,7 +45,7 @@ export const HeroSection: React.FC<Props> = memo(() => {
               </div>
               <p className="portal-prize-pool-card__kicker">Prize Pool</p>
               <p className="portal-prize-pool-card__value">
-                <span>Up to &#8377;5,000</span>
+                <span>Up to &#8377;1,00,000</span>
               </p>
               <div className="portal-prize-pool-card__meta">
                 <strong>Cash Rewards</strong>
