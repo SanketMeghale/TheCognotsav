@@ -248,183 +248,53 @@ function DepartmentIntroStripBase() {
 
 const DepartmentIntroStrip = memo(DepartmentIntroStripBase);
 
-const BROCHURE_EVENT_PODS = [
-  {
-    side: 'left',
-    title: 'Ranbhoomi',
-    subtitle: 'E-Sport',
-    contacts: ['Sanket M.', 'Harshal G.'],
-  },
-  {
-    side: 'left',
-    title: 'Tech KBC / Treasure',
-    subtitle: 'Quiz + Hunt',
-    contacts: ['Sahil B.', 'Harshal G.'],
-  },
-  {
-    side: 'right',
-    title: 'Techxcelerate',
-    subtitle: 'Presentation',
-    contacts: ['Prerana C.', 'Akashy K.'],
-  },
-  {
-    side: 'right',
-    title: 'Squid Game / Rangmanch',
-    subtitle: 'Crowd Favorites',
-    contacts: ['Tejaswini G.', 'Sayli A.'],
-  },
-  {
-    side: 'right',
-    title: 'Utopia',
-    subtitle: 'Hackathon',
-    contacts: ['Trupti J.', 'Deepika N.'],
-  },
-];
-
 function PremiumBrochureStripBase() {
-  const leftPods = BROCHURE_EVENT_PODS.filter((pod) => pod.side === 'left');
-  const rightPods = BROCHURE_EVENT_PODS.filter((pod) => pod.side === 'right');
-
   return (
     <section className="portal-brochure-strip portal-glow-card portal-glass rounded-[1.8rem] p-4 md:rounded-[2rem] md:p-6" data-reveal="fade-up">
-      <div className="portal-brochure-strip__layout">
-        <div className="portal-brochure-strip__aside">
-          <div className="portal-brochure-strip__prize-card">
-            <div className="portal-brochure-strip__prize-badge">
-              <Trophy size={18} />
-              <span>Prize Pool</span>
-            </div>
-            <div className="portal-brochure-strip__prize-value">Up to Rs 1 Lakh</div>
-            <p className="portal-brochure-strip__prize-copy">
-              Flagship CEAS events, esports intensity, and a sharper official event presence across the portal.
-            </p>
-          </div>
-
-          <div className="portal-brochure-strip__mini-grid">
-            <div className="portal-brochure-strip__mini-card">
-              <Clock3 size={16} />
-              <div>
-                <p>07-08 April 2026</p>
-                <span>Starts at 10 AM</span>
-              </div>
-            </div>
-            <div className="portal-brochure-strip__mini-card">
-              <Building2 size={16} />
-              <div>
-                <p>DVVPCOE, Ahilyanagar</p>
-                <span>Official CEAS venue</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="portal-brochure-strip__event-stack">
-            {leftPods.map((pod) => (
-              <article key={pod.title} className="portal-brochure-strip__event-pod">
-                <div className="portal-brochure-strip__event-pod-cap">
-                  <p>{pod.title}</p>
-                  <span>{pod.subtitle}</span>
-                </div>
-                <div className="portal-brochure-strip__event-pod-body">
-                  {pod.contacts.map((contact) => (
-                    <div key={contact} className="portal-brochure-strip__event-contact">
-                      <CheckCircle2 size={14} />
-                      <span>{contact}</span>
-                    </div>
-                  ))}
-                </div>
-              </article>
-            ))}
-          </div>
+      <div className="portal-brochure-strip__header">
+        <div>
+          <p className="portal-brochure-strip__eyebrow">Official Event Poster</p>
+          <h3 className="portal-brochure-strip__title">Cognotsav 2026 Snapshot</h3>
+          <p className="portal-brochure-strip__intro">
+            A direct poster view between the hero and competitions for a cleaner, more premium presentation on mobile and desktop.
+          </p>
         </div>
-
-        <div className="portal-brochure-strip__center">
-          <div className="portal-brochure-strip__center-topline">
-            <span>DVVPCOE, Ahilyanagar</span>
-            <span>Department of Computer Engineering</span>
-            <span>CEAS Presents</span>
-          </div>
-
-          <div className="portal-brochure-strip__brand-row">
-            <div className="portal-brochure-strip__brand-badge">
-              <img src="/images/ceasposter.jpeg" alt="CEAS crest" loading="lazy" decoding="async" />
-            </div>
-            <div className="portal-brochure-strip__brand-copy">
-              <p className="portal-brochure-strip__eyebrow">State-Level Technical Events</p>
-              <h3>COGNOTSAV 2026</h3>
-              <p>"Where intellect shines, and ideas rise."</p>
-            </div>
-          </div>
-
-          <div className="portal-brochure-strip__ribbon">
-            <span>Official Event Brochure</span>
-          </div>
-
-          <div className="portal-brochure-strip__feature-grid">
-            <div className="portal-brochure-strip__feature">
-              <Sparkles size={16} />
-              <span>Premium event experience</span>
-            </div>
-            <div className="portal-brochure-strip__feature">
-              <CheckCircle2 size={16} />
-              <span>Live registration and tracker</span>
-            </div>
-            <div className="portal-brochure-strip__feature">
-              <GraduationCap size={16} />
-              <span>Institution-backed credibility</span>
-            </div>
-          </div>
-
-          <div className="portal-brochure-strip__lineup">
-            <div className="portal-brochure-strip__lineup-item">
-              <p>Events</p>
-              <span>Techxcelerate, Ranbhoomi, Utopia, Squid Game, Rangmanch, Tech KBC, Treasure Hunt</span>
-            </div>
-            <div className="portal-brochure-strip__lineup-item">
-              <p>Format</p>
-              <span>Technical competitions, esports, and flagship showcases with a premium registration flow.</span>
-            </div>
-          </div>
-
-          <div className="portal-brochure-strip__actions">
-            <a href="#registration-panel" className="portal-premium-button portal-premium-button--primary">
-              Register For Events
-              <ArrowRight size={15} />
-            </a>
-            <a href="#department" className="portal-premium-button portal-premium-button--secondary">
-              View CEAS Profile
-            </a>
-          </div>
-        </div>
-
-        <div className="portal-brochure-strip__aside portal-brochure-strip__aside--right">
-          <div className="portal-brochure-strip__event-stack">
-            {rightPods.map((pod) => (
-              <article key={pod.title} className="portal-brochure-strip__event-pod">
-                <div className="portal-brochure-strip__event-pod-cap">
-                  <p>{pod.title}</p>
-                  <span>{pod.subtitle}</span>
-                </div>
-                <div className="portal-brochure-strip__event-pod-body">
-                  {pod.contacts.map((contact) => (
-                    <div key={contact} className="portal-brochure-strip__event-contact">
-                      <CheckCircle2 size={14} />
-                      <span>{contact}</span>
-                    </div>
-                  ))}
-                </div>
-              </article>
-            ))}
-          </div>
-
-          <a href="#registration-panel" className="portal-brochure-strip__qr-card">
-            <div className="portal-brochure-strip__qr-frame">
-              <img src="/images/ceasposter.jpeg" alt="CEAS access mark" loading="lazy" decoding="async" />
-            </div>
-            <div>
-              <p className="portal-brochure-strip__qr-title">Official Access</p>
-              <span className="portal-brochure-strip__qr-copy">Open the live portal and move from brochure feel to verified registration in one click.</span>
-            </div>
+        <div className="portal-brochure-strip__actions">
+          <a href="#registration-panel" className="portal-premium-button portal-premium-button--primary">
+            Register For Events
+            <ArrowRight size={15} />
           </a>
+          <a href="#department" className="portal-premium-button portal-premium-button--secondary">
+            View CEAS Profile
+          </a>
+        </div>
+      </div>
+
+      <div className="portal-brochure-poster-frame">
+        <div className="portal-brochure-poster-frame__glow" aria-hidden="true" />
+        <div className="portal-brochure-poster-frame__inner">
+          <img
+            src="/images/cognotsav-poster.png"
+            alt="Cognotsav 2026 official event poster"
+            loading="lazy"
+            decoding="async"
+            className="portal-brochure-poster-frame__image"
+          />
+        </div>
+      </div>
+
+      <div className="portal-brochure-strip__footer">
+        <div className="portal-brochure-strip__footer-chip">
+          <Trophy size={16} />
+          <span>Prize pool up to Rs 1 Lakh</span>
+        </div>
+        <div className="portal-brochure-strip__footer-chip">
+          <Clock3 size={16} />
+          <span>07-08 April 2026 / 10 AM</span>
+        </div>
+        <div className="portal-brochure-strip__footer-chip">
+          <Building2 size={16} />
+          <span>DVVPCOE, Ahilyanagar</span>
         </div>
       </div>
     </section>

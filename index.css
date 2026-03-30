@@ -117,7 +117,9 @@ body {
   position: relative;
   overflow: hidden;
   background:
-    linear-gradient(90deg, rgba(244, 248, 255, 0.96) 0%, rgba(235, 244, 255, 0.9) 20%, rgba(9, 34, 76, 0.96) 20%, rgba(17, 66, 136, 0.96) 80%, rgba(244, 248, 255, 0.96) 80%, rgba(235, 244, 255, 0.9) 100%);
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.14), transparent 20%),
+    radial-gradient(circle at bottom right, rgba(251, 191, 36, 0.12), transparent 24%),
+    linear-gradient(145deg, rgba(7, 16, 29, 0.96), rgba(12, 24, 41, 0.92));
 }
 
 .portal-brochure-strip::before {
@@ -125,407 +127,107 @@ body {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 8% 8%, rgba(37, 99, 235, 0.12), transparent 18%),
-    radial-gradient(circle at 92% 88%, rgba(37, 99, 235, 0.12), transparent 18%),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.06), transparent 24%, transparent 76%, rgba(255, 255, 255, 0.06));
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05), transparent 20%, transparent 80%, rgba(255, 255, 255, 0.05)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 18%, transparent 82%, rgba(255, 255, 255, 0.03));
   pointer-events: none;
 }
 
-.portal-brochure-strip__layout {
+.portal-brochure-strip__header {
   position: relative;
-  display: grid;
-  gap: 1.1rem;
-  grid-template-columns: 0.88fr 1.44fr 0.88fr;
   z-index: 1;
-}
-
-.portal-brochure-strip__aside,
-.portal-brochure-strip__center {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.portal-brochure-strip__prize-card,
-.portal-brochure-strip__qr-card,
-.portal-brochure-strip__mini-card,
-.portal-brochure-strip__center {
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 18px 40px rgba(2, 8, 23, 0.14);
-}
-
-.portal-brochure-strip__prize-card,
-.portal-brochure-strip__qr-card {
-  border-radius: 1.5rem;
-  padding: 1.1rem;
-}
-
-.portal-brochure-strip__prize-badge,
-.portal-brochure-strip__feature,
-.portal-brochure-strip__mini-card {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-}
-
-.portal-brochure-strip__prize-badge {
-  width: fit-content;
-  border-radius: 999px;
-  border: 1px solid rgba(251, 191, 36, 0.28);
-  background: rgba(251, 191, 36, 0.12);
-  padding: 0.55rem 0.85rem;
-  color: #fde68a;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
-
-.portal-brochure-strip__prize-value {
-  margin-top: 1rem;
-  font-family: 'Orbitron', 'Inter', sans-serif;
-  font-size: clamp(1.85rem, 4vw, 2.8rem);
-  font-weight: 900;
-  line-height: 1.04;
-  color: #fff7cc;
-  text-transform: uppercase;
-}
-
-.portal-brochure-strip__prize-copy,
-.portal-brochure-strip__brand-copy p,
-.portal-brochure-strip__qr-copy,
-.portal-brochure-strip__event-contact span,
-.portal-brochure-strip__lineup-item span {
-  color: #cbd5e1;
-  line-height: 1.7;
-}
-
-.portal-brochure-strip__mini-grid {
-  display: grid;
-  gap: 0.8rem;
-}
-
-.portal-brochure-strip__prize-card,
-.portal-brochure-strip__mini-card {
-  border: 1px solid rgba(37, 99, 235, 0.2);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(225, 238, 255, 0.78));
-  color: #0f172a;
-}
-
-.portal-brochure-strip__mini-card {
-  border-radius: 1.2rem;
-  padding: 0.95rem 1rem;
-}
-
-.portal-brochure-strip__mini-card p,
-.portal-brochure-strip__qr-title {
-  margin: 0;
-  color: #0f172a;
-  font-weight: 700;
-}
-
-.portal-brochure-strip__mini-card span {
-  display: block;
-  margin-top: 0.2rem;
-  color: #475569;
-  font-size: 0.76rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
-.portal-brochure-strip__center {
-  position: relative;
-  border-radius: 1.8rem;
-  padding: 1.3rem;
-  justify-content: space-between;
-  border: 1px solid rgba(191, 219, 254, 0.28);
-  background: linear-gradient(180deg, rgba(42, 101, 184, 0.96), rgba(21, 61, 123, 0.98));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.2),
-    0 24px 54px rgba(2, 8, 23, 0.24);
-}
-
-.portal-brochure-strip__center::after {
-  content: '';
-  position: absolute;
-  inset: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 1.35rem;
-  pointer-events: none;
-}
-
-.portal-brochure-strip__center-topline {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.55rem;
-}
-
-.portal-brochure-strip__center-topline span {
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  background: rgba(255, 255, 255, 0.08);
-  padding: 0.5rem 0.8rem;
-  color: #dbeafe;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
-.portal-brochure-strip__brand-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-end;
+  justify-content: space-between;
   gap: 1rem;
-  text-align: center;
-  flex-direction: column;
-}
-
-.portal-brochure-strip__brand-badge {
-  flex: 0 0 auto;
-  width: 5.2rem;
-  height: 5.2rem;
-  border-radius: 1.45rem;
-  padding: 0.45rem;
-  background: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.06));
-  border: 1px solid rgba(255,255,255,0.14);
-}
-
-.portal-brochure-strip__brand-badge img,
-.portal-brochure-strip__qr-frame img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: inherit;
 }
 
 .portal-brochure-strip__eyebrow {
   margin: 0;
-  color: #dbeafe;
+  color: #93c5fd;
   font-size: 0.72rem;
-  letter-spacing: 0.26em;
+  letter-spacing: 0.28em;
   text-transform: uppercase;
 }
 
-.portal-brochure-strip__brand-copy h3 {
+.portal-brochure-strip__title {
   margin: 0.45rem 0 0;
-  font-family: 'Orbitron', 'Inter', sans-serif;
-  font-size: clamp(1.35rem, 2.8vw, 2.35rem);
-  line-height: 1.08;
-  letter-spacing: 0.03em;
   color: #ffffff;
-  text-transform: uppercase;
-}
-
-.portal-brochure-strip__brand-copy p:last-child {
-  margin: 0.55rem 0 0;
-  color: #e0ecff;
-  font-size: 0.94rem;
-}
-
-.portal-brochure-strip__ribbon {
-  display: flex;
-  justify-content: center;
-}
-
-.portal-brochure-strip__ribbon span {
-  border-radius: 999px;
-  border: 1px solid rgba(191, 219, 254, 0.38);
-  background: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.08));
-  padding: 0.7rem 1.4rem;
-  color: #f8fbff;
   font-family: 'Orbitron', 'Inter', sans-serif;
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.22em;
+  font-size: clamp(1.4rem, 3vw, 2.25rem);
+  line-height: 1.06;
   text-transform: uppercase;
 }
 
-.portal-brochure-strip__feature-grid {
+.portal-brochure-strip__intro {
+  margin: 0.7rem 0 0;
+  max-width: 42rem;
+  color: #cbd5e1;
+  line-height: 1.7;
+}
+
+.portal-brochure-poster-frame {
+  position: relative;
+  margin-top: 1.25rem;
+  border-radius: 1.7rem;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.5), rgba(255, 255, 255, 0.18) 35%, rgba(251, 191, 36, 0.4));
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 24px 56px rgba(2, 8, 23, 0.3),
+    0 0 28px rgba(34, 211, 238, 0.12);
+}
+
+.portal-brochure-poster-frame__glow {
+  position: absolute;
+  inset: -18px;
+  border-radius: 2rem;
+  background:
+    radial-gradient(circle at top, rgba(34, 211, 238, 0.18), transparent 35%),
+    radial-gradient(circle at bottom, rgba(251, 191, 36, 0.12), transparent 30%);
+  filter: blur(18px);
+  pointer-events: none;
+}
+
+.portal-brochure-poster-frame__inner {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  border-radius: 1.65rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(145deg, rgba(7, 16, 29, 0.96), rgba(12, 24, 41, 0.9));
+  padding: 0.7rem;
+}
+
+.portal-brochure-poster-frame__image {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 1.2rem;
+  background: #ffffff;
+}
+
+.portal-brochure-strip__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.portal-brochure-strip__footer {
+  margin-top: 1rem;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.8rem;
 }
 
-.portal-brochure-strip__feature {
-  border-radius: 1.15rem;
-  padding: 0.95rem 1rem;
-  background: rgba(255, 255, 255, 0.08);
-  color: #f8fbff;
-  font-size: 0.8rem;
-  font-weight: 600;
-  line-height: 1.45;
-}
-
-.portal-brochure-strip__lineup {
-  display: grid;
-  gap: 0.8rem;
-}
-
-.portal-brochure-strip__lineup-item {
-  border-top: 1px solid rgba(255, 255, 255, 0.18);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 0.8rem 0;
-  text-align: center;
-}
-
-.portal-brochure-strip__lineup-item p {
-  margin: 0;
-  color: #ffffff;
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-}
-
-.portal-brochure-strip__lineup-item span {
-  display: block;
-  margin-top: 0.45rem;
-  color: #dbeafe;
-}
-
-.portal-brochure-strip__actions {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 0.8rem;
-}
-
-.portal-brochure-strip__event-stack {
-  display: grid;
-  gap: 0.8rem;
-}
-
-.portal-brochure-strip__event-pod {
-  overflow: hidden;
-  border-radius: 1.45rem;
-  border: 1px solid rgba(37, 99, 235, 0.24);
-  background: linear-gradient(180deg, rgba(239, 247, 255, 0.96), rgba(220, 236, 255, 0.84));
-  box-shadow: 0 16px 34px rgba(2, 8, 23, 0.12);
-}
-
-.portal-brochure-strip__event-pod-cap {
-  border-bottom: 1px solid rgba(37, 99, 235, 0.18);
-  padding: 0.95rem 1rem 0.8rem;
-  background: linear-gradient(180deg, rgba(255,255,255,0.5), rgba(255,255,255,0.12));
-  text-align: center;
-}
-
-.portal-brochure-strip__event-pod-cap p {
-  margin: 0;
-  color: #0f172a;
-  font-family: 'Orbitron', 'Inter', sans-serif;
-  font-size: 1rem;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
-.portal-brochure-strip__event-pod-cap span {
-  display: block;
-  margin-top: 0.25rem;
-  color: #2563eb;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
-
-.portal-brochure-strip__event-pod-body {
-  display: grid;
-  gap: 0.55rem;
-  padding: 0.9rem 1rem 1rem;
-}
-
-.portal-brochure-strip__event-contact {
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 0.5rem;
-  color: #0f172a;
-  font-size: 0.88rem;
-  font-weight: 600;
-}
-
-.portal-brochure-strip__event-contact span {
-  color: #0f172a;
-}
-
-.portal-brochure-strip__event-contact svg {
-  color: #2563eb;
-  flex: 0 0 auto;
-}
-
-.portal-brochure-strip__qr-card {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  border: 1px solid rgba(37, 99, 235, 0.22);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(225, 238, 255, 0.84));
-  text-decoration: none;
-  transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
-}
-
-.portal-brochure-strip__qr-card:hover {
-  transform: translateY(-2px);
-  border-color: rgba(34, 211, 238, 0.28);
-  box-shadow: 0 22px 44px rgba(2, 8, 23, 0.22), 0 0 18px rgba(34, 211, 238, 0.08);
-}
-
-.portal-brochure-strip__qr-copy {
-  color: #475569;
-}
-
-.portal-brochure-strip__qr-frame {
-  flex: 0 0 auto;
-  width: 4.6rem;
-  height: 4.6rem;
-  border-radius: 1.15rem;
-  background: #fff;
-  padding: 0.35rem;
-}
-
-@media (max-width: 1400px) {
-  .portal-brochure-strip__layout {
-    grid-template-columns: 0.9fr 1.25fr 0.9fr;
-  }
-
-  .portal-brochure-strip__feature-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .portal-brochure-strip__brand-copy h3 {
-    font-size: clamp(1.25rem, 2.5vw, 1.9rem);
-  }
-
-  .portal-brochure-strip__brand-copy p:last-child {
-    font-size: 0.88rem;
-  }
-}
-
 @media (max-width: 1100px) {
-  .portal-brochure-strip__layout {
+  .portal-brochure-strip__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .portal-brochure-strip__footer {
     grid-template-columns: 1fr;
-  }
-
-  .portal-brochure-strip__feature-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .portal-brochure-strip {
-    background:
-      linear-gradient(180deg, rgba(244, 248, 255, 0.96) 0%, rgba(235, 244, 255, 0.9) 34%, rgba(21, 61, 123, 0.96) 34%, rgba(17, 66, 136, 0.96) 66%, rgba(244, 248, 255, 0.96) 66%, rgba(235, 244, 255, 0.9) 100%);
-  }
-}
-
-@media (max-width: 1280px) {
-  .portal-brochure-strip__brand-copy h3 {
-    font-size: clamp(1.18rem, 2.6vw, 1.75rem);
-  }
-
-  .portal-brochure-strip__feature {
-    font-size: 0.76rem;
-    padding: 0.85rem 0.8rem;
   }
 }
 
