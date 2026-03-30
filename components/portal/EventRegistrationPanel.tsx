@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
   ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Clock3, Copy, CreditCard, ExternalLink,
-  Info, MapPin, Phone, QrCode, Save, Smartphone, Sparkles, Trophy, Upload, Users, Volume2, VolumeX,
+  Info, MapPin, Phone, QrCode, Save, Smartphone, Sparkles, Trophy, Upload, Users,
 } from 'lucide-react';
 import type { EventRecord, ParticipantDraft, RegistrationReceipt } from './types';
 import { formatCurrency, getEventLiveState, getTeamLabel } from './utils';
@@ -205,11 +205,9 @@ export const EventRegistrationPanel: React.FC<Props> = ({
 }) => {
   const passCardRef = useRef<HTMLDivElement | null>(null);
   const eventTopRef = useRef<HTMLDivElement | null>(null);
-  const detailVideoRef = useRef<HTMLVideoElement | null>(null);
   const [codeCopied, setCodeCopied] = useState(false);
   const [paymentCopyState, setPaymentCopyState] = useState<'upi' | 'amount' | 'link' | null>(null);
   const [now, setNow] = useState(() => new Date());
-  const [detailVideoMuted, setDetailVideoMuted] = useState(true);
   const showError = (field: string) => (touchedFields[field] ? validationErrors[field] : '');
   const selectedTheme = selectedEvent ? categoryThemes[selectedEvent.category] || categoryThemes.Technical : categoryThemes.Technical;
   const selectedHandbook = selectedEvent ? handbookBySlug[selectedEvent.slug] : null;
@@ -241,13 +239,6 @@ export const EventRegistrationPanel: React.FC<Props> = ({
     const timer = window.setInterval(() => setNow(new Date()), 60 * 1000);
     return () => window.clearInterval(timer);
   }, []);
-
-  useEffect(() => {
-    setDetailVideoMuted(true);
-    if (detailVideoRef.current) {
-      detailVideoRef.current.muted = true;
-    }
-  }, [selectedEvent?.slug]);
 
   useEffect(() => {
     setCodeCopied(false);
@@ -307,57 +298,32 @@ export const EventRegistrationPanel: React.FC<Props> = ({
         <div className="portal-event-layout__details space-y-5">
           <section className={`portal-event-showcase portal-glow-card portal-glass ${selectedTheme.glow}`}>
             <div className="portal-event-showcase__poster">
-              {selectedEvent.intro_video_url ? (
-                <>
-                  <video
-                    ref={detailVideoRef}
-                    src={selectedEvent.intro_video_url}
-                    poster={selectedEvent.poster_path}
-                    className="h-full w-full object-cover"
-                    preload="metadata"
-                    autoPlay
-                    muted={detailVideoMuted}
-                    loop
-                    playsInline
-                    controls
-                    controlsList="nodownload noplaybackrate"
-                  >
-                    Your browser does not support the event intro video.
-                  </video>
-                  <button
-                    type="button"
-                    className="portal-event-showcase__sound-toggle"
-                    onClick={() => {
-                      const nextMuted = !detailVideoMuted;
-                      setDetailVideoMuted(nextMuted);
-                      if (detailVideoRef.current) {
-                        detailVideoRef.current.muted = nextMuted;
-                        if (!nextMuted) {
-                          void detailVideoRef.current.play().catch(() => {});
-                        }
-                      }
-                    }}
-                    aria-label={detailVideoMuted ? 'Turn event video sound on' : 'Turn event video sound off'}
-                  >
-                    {detailVideoMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
-                    <span>{detailVideoMuted ? 'Sound Off' : 'Sound On'}</span>
-                  </button>
-                </>
-              ) : (
-                <img src={selectedEvent.poster_path} alt={selectedEvent.name} loading="eager" decoding="async" className="h-full w-full object-cover" />
-              )}
+              <img src={selectedEvent.poster_path} alt={selectedEvent.name} loading="eager" decoding="async" className="h-full w-full object-cover" />
               <div className="portal-event-showcase__poster-overlay" />
             </div>
             <div className="px-5 pt-5 md:px-5 md:pt-5">
-              <button
-                type="button"
-                onClick={scrollToRegistrationForm}
-                disabled={registrationPaused}
-                className="portal-register-cta inline-flex w-full items-center justify-center gap-2"
-              >
-                {registrationPaused ? 'Registration Paused' : 'Register Now'}
-                <ArrowRight size={16} />
-              </button>
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <button
+                  type="button"
+                  onClick={scrollToRegistrationForm}
+                  disabled={registrationPaused}
+                  className="portal-register-cta inline-flex w-full items-center justify-center gap-2"
+                >
+                  {registrationPaused ? 'Registration Paused' : 'Register Now'}
+                  <ArrowRight size={16} />
+                </button>
+                {selectedEvent.intro_video_url ? (
+                  <a
+                    href={selectedEvent.intro_video_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={`inline-flex w-full items-center justify-center gap-2 rounded-[1.2rem] border px-4 py-3 text-sm font-bold transition sm:max-w-[220px] ${selectedTheme.button}`}
+                  >
+                    <ExternalLink size={16} />
+                    Watch Trailer
+                  </a>
+                ) : null}
+              </div>
             </div>
             <div className="portal-event-showcase__content">
               <div className="flex flex-wrap items-center gap-3">
