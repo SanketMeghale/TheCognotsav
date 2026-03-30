@@ -2691,24 +2691,12 @@ app.get('/api/admin/export.csv', requireAdmin, async (req, res) => {
         e.name AS event_name,
         r.team_name,
         r.college_name,
-        r.department_name,
-        r.year_of_study,
         r.contact_name,
-        r.contact_email,
         r.contact_phone,
-        r.payment_method,
         r.payment_reference,
-        r.payment_screenshot_path,
-        r.payment_provider_payment_id,
         r.total_amount,
         r.status,
-        r.review_note,
-        r.attendance_status,
-        r.attendance_marked_at,
         r.created_at,
-        latest_notification.delivery_status AS latest_notification_delivery_status,
-        latest_notification.created_at AS latest_notification_created_at,
-        latest_notification.error_message AS latest_notification_error_message,
         COALESCE(string_agg(
           p.full_name || ' <' || p.email || '> (' || p.phone || ')',
           ' | '
@@ -2716,17 +2704,9 @@ app.get('/api/admin/export.csv', requireAdmin, async (req, res) => {
         ), '') AS participants
       FROM registrations r
       JOIN events e ON e.slug = r.event_slug
-      LEFT JOIN LATERAL (
-        SELECT delivery_status, created_at, error_message
-        FROM registration_notifications n
-        WHERE n.registration_id = r.id
-          AND n.notification_type = 'status-update'
-        ORDER BY n.created_at DESC
-        LIMIT 1
-      ) latest_notification ON TRUE
       LEFT JOIN registration_participants p ON p.registration_id = r.id
       ${scopeClause}
-      GROUP BY r.id, e.name, latest_notification.delivery_status, latest_notification.created_at, latest_notification.error_message
+      GROUP BY r.id, e.name
       ORDER BY r.created_at DESC
     `,
     scopeParams,
@@ -2737,25 +2717,13 @@ app.get('/api/admin/export.csv', requireAdmin, async (req, res) => {
     'event_name',
     'team_name',
     'college_name',
-    'department_name',
-    'year_of_study',
     'contact_name',
-    'contact_email',
     'contact_phone',
-    'payment_method',
     'payment_reference',
-    'payment_screenshot_path',
-    'payment_provider_payment_id',
+    'participants',
     'total_amount',
     'status',
-    'review_note',
-    'attendance_status',
-    'attendance_marked_at',
     'created_at',
-    'latest_notification_delivery_status',
-    'latest_notification_created_at',
-    'latest_notification_error_message',
-    'participants',
   ];
 
   const csvRows = [
@@ -2781,33 +2749,22 @@ app.get('/api/admin/export.xlsx', requireAdmin, async (req, res) => {
         e.name AS "Event",
         r.team_name AS "Team Name",
         r.college_name AS "College",
-        r.department_name AS "Department",
-        r.year_of_study AS "Year",
         r.contact_name AS "Contact Name",
-        r.contact_email AS "Contact Email",
         r.contact_phone AS "Contact Phone",
-        r.payment_method AS "Payment Method",
         r.payment_reference AS "Payment Reference",
-        r.payment_provider_payment_id AS "Razorpay Payment ID",
-        r.status AS "Status",
-        r.review_note AS "Review Note",
-        r.attendance_status AS "Attendance",
+        COALESCE(string_agg(
+          p.full_name || ' <' || p.email || '> (' || p.phone || ')',
+          ' | '
+          ORDER BY p.id
+        ), '') AS "Participants",
         r.total_amount AS "Amount",
+        r.status AS "Status",
         r.created_at AS "Created At",
-        latest_notification.delivery_status AS "Latest Notification",
-        latest_notification.created_at AS "Notification At",
-        latest_notification.error_message AS "Notification Error"
       FROM registrations r
       JOIN events e ON e.slug = r.event_slug
-      LEFT JOIN LATERAL (
-        SELECT delivery_status, created_at, error_message
-        FROM registration_notifications n
-        WHERE n.registration_id = r.id
-          AND n.notification_type = 'status-update'
-        ORDER BY n.created_at DESC
-        LIMIT 1
-      ) latest_notification ON TRUE
+      LEFT JOIN registration_participants p ON p.registration_id = r.id
       ${scopeClause}
+      GROUP BY r.id, e.name
       ORDER BY r.created_at DESC
     `,
     scopeParams,
