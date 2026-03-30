@@ -2759,7 +2759,7 @@ app.get('/api/admin/export.xlsx', requireAdmin, async (req, res) => {
         ), '') AS "Participants",
         r.total_amount AS "Amount",
         r.status AS "Status",
-        r.created_at AS "Created At",
+        r.created_at AS "Created At"
       FROM registrations r
       JOIN events e ON e.slug = r.event_slug
       LEFT JOIN registration_participants p ON p.registration_id = r.id
