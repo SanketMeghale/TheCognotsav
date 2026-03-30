@@ -1655,7 +1655,8 @@ img {
 @media (max-width: 767px) {
   .portal-brand-card--nav {
     gap: 0.7rem;
-    padding: 0.55rem 0.8rem;
+    width: 100%;
+    padding: 0.62rem 0.9rem;
   }
 
   .portal-brand-card--nav .portal-brand-copy {
@@ -1673,8 +1674,8 @@ img {
   }
 
   .portal-brand-card--nav .portal-brand-mark--nav {
-    font-size: 0.8rem;
-    letter-spacing: 0.08em;
+    font-size: 0.96rem;
+    letter-spacing: 0.1em;
     white-space: nowrap;
   }
 
@@ -1713,12 +1714,12 @@ img {
 @media (max-width: 420px) {
   .portal-brand-card--nav {
     gap: 0.55rem;
-    padding: 0.5rem 0.68rem;
+    padding: 0.56rem 0.76rem;
   }
 
   .portal-brand-card--nav .portal-brand-mark--nav {
-    font-size: 0.66rem;
-    letter-spacing: 0.05em;
+    font-size: 0.78rem;
+    letter-spacing: 0.07em;
   }
 
   .portal-brand-card--nav .portal-brand-logo-frame {

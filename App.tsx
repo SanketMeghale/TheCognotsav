@@ -2134,7 +2134,7 @@ export const App: React.FC = () => {
         <div className={`${shellClassName} portal-nav-shell ${navScrolled ? 'is-scrolled' : ''}`}>
           <a
             href="#overview"
-            className="portal-brand-card portal-brand-card--nav flex min-w-0 items-center gap-3 rounded-[1.4rem] px-3 py-2 transition hover:border-slate-200/18 hover:bg-white/[0.06]"
+            className="portal-brand-card portal-brand-card--nav flex min-w-0 flex-1 items-center gap-3 rounded-[1.4rem] px-3 py-2 transition hover:border-slate-200/18 hover:bg-white/[0.06] lg:flex-none"
             onDoubleClick={(event) => {
               event.preventDefault();
               handleSecretAdminTap();
