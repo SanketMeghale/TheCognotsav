@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
-import { CalendarDays, ChevronDown, CreditCard, ExternalLink, Hourglass, Play, Trophy, Users } from 'lucide-react';
+import { CalendarDays, ChevronDown, CreditCard, ExternalLink, Hourglass, Maximize2, Play, Trophy, Users } from 'lucide-react';
 import type { EventRecord } from './types';
 import { formatCurrency, getEventLiveState, getTeamLabel } from './utils';
 
@@ -59,6 +59,23 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
   const [activeVideoSlug, setActiveVideoSlug] = useState<string | null>(null);
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
   const videoShellRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      if (document.fullscreenElement) {
+        return;
+      }
+
+      Object.values(videoRefs.current).forEach((video) => {
+        if (video) {
+          video.controls = false;
+        }
+      });
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
 
   const visibleEvents = useMemo(
     () => (activeFilter === 'All' ? events : events.filter((event) => getDisplayCategory(event) === activeFilter)),
@@ -124,6 +141,33 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
 
   const toggleVideoPreview = (slug: string) => {
     setActiveVideoSlug((current) => (current === slug ? null : slug));
+  };
+
+  const openVideoFullscreen = async (slug: string) => {
+    const video = videoRefs.current[slug];
+    if (!video) {
+      return;
+    }
+
+    setActiveVideoSlug(slug);
+    video.muted = false;
+    video.volume = 1;
+    video.controls = true;
+    video.loop = true;
+
+    try {
+      await video.play();
+    } catch {
+      // Ignore autoplay failures and still attempt fullscreen.
+    }
+
+    if (document.fullscreenElement !== video && typeof video.requestFullscreen === 'function') {
+      try {
+        await video.requestFullscreen();
+      } catch {
+        // Fullscreen is optional enhancement.
+      }
+    }
   };
 
   return (
@@ -228,6 +272,18 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
                         tabIndex={0}
                         aria-label={`${event.name} intro video preview. ${videoInstruction}.`}
                       >
+                        <button
+                          type="button"
+                          className="portal-competition-card__video-fullscreen"
+                          onClick={(clickEvent) => {
+                            clickEvent.stopPropagation();
+                            void openVideoFullscreen(event.slug);
+                          }}
+                          aria-label={`Open ${event.name} intro video in fullscreen`}
+                        >
+                          <Maximize2 size={16} />
+                          <span>Fullscreen</span>
+                        </button>
                         <img
                           src={event.poster_path}
                           alt={event.name}
@@ -248,6 +304,12 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
                           <source src={event.intro_video_url} type="video/mp4" />
                           Your browser does not support the event intro video.
                         </video>
+                        <div className="portal-competition-card__video-spotlight" aria-hidden="true">
+                          <span className="portal-competition-card__video-spotlight-ring" />
+                          <span className="portal-competition-card__video-spotlight-core">
+                            <Play size={22} />
+                          </span>
+                        </div>
                         <div className="portal-competition-card__video-hint" aria-hidden="true">
                           <span className="portal-competition-card__video-hint-icon">
                             <Play size={16} />

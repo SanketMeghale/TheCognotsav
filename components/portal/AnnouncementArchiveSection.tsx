@@ -16,6 +16,8 @@ export const AnnouncementArchiveSection: React.FC<Props> = ({ announcements, eve
   const featured = announcements.slice(0, 4);
   const lead = featured[0] ?? null;
   const secondary = featured.slice(1, 4);
+  const pinnedCount = announcements.filter((announcement) => announcement.is_pinned).length;
+  const latestUpdateTime = announcements[0]?.created_at ? new Date(announcements[0].created_at).toLocaleString() : 'Waiting for the first notice';
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(new Date()), 60 * 1000);
@@ -67,6 +69,40 @@ export const AnnouncementArchiveSection: React.FC<Props> = ({ announcements, eve
         </div>
         <div className="rounded-full border border-white/10 bg-white/6 px-4 py-2 text-xs uppercase tracking-[0.2em] text-slate-200">
           {announcements.length} notices
+        </div>
+      </div>
+
+      <div className="portal-updates-hero mt-5">
+        <div className="portal-updates-hero__copy">
+          <p className="portal-kicker">Control Room</p>
+          <h4 className="mt-3 portal-title-lg font-black text-white">Track the latest organizer pulse in one glance</h4>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300">
+            Priority announcements, countdown-sensitive reminders, and event-specific notices stay grouped here so participants can catch the most important changes fast.
+          </p>
+          <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-[11px] uppercase tracking-[0.18em] text-slate-200">
+            <CalendarClock size={12} />
+            Latest activity: {latestUpdateTime}
+          </div>
+        </div>
+
+        <div className="portal-updates-hero__stats">
+          <div className="portal-updates-stat-card">
+            <span className="portal-updates-stat-card__label">Live Right Now</span>
+            <strong className="portal-updates-stat-card__value">{liveCount}</strong>
+            <span className="portal-updates-stat-card__meta">Events currently in live mode</span>
+          </div>
+          <div className="portal-updates-stat-card">
+            <span className="portal-updates-stat-card__label">Pinned Notices</span>
+            <strong className="portal-updates-stat-card__value">{pinnedCount}</strong>
+            <span className="portal-updates-stat-card__meta">Priority organizer updates</span>
+          </div>
+          <div className="portal-updates-stat-card">
+            <span className="portal-updates-stat-card__label">Next Countdown</span>
+            <strong className="portal-updates-stat-card__value portal-updates-stat-card__value--compact">
+              {nextEvent ? getEventLiveState(nextEvent, now).countdown : 'Syncing'}
+            </strong>
+            <span className="portal-updates-stat-card__meta">{nextEvent ? nextEvent.name : 'Schedule data pending'}</span>
+          </div>
         </div>
       </div>
 
@@ -140,9 +176,15 @@ export const AnnouncementArchiveSection: React.FC<Props> = ({ announcements, eve
               </div>
               <h4 className="mt-4 portal-title-lg font-bold text-white">{lead.title}</h4>
               <p className="mt-3 text-sm leading-7 text-slate-300">{lead.message}</p>
-              <div className="mt-4 inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-slate-500">
-                <CalendarClock size={12} />
-                {new Date(lead.created_at).toLocaleString()}
+              <div className="portal-update-lead__footer mt-5">
+                <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-slate-500">
+                  <CalendarClock size={12} />
+                  {new Date(lead.created_at).toLocaleString()}
+                </div>
+                <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/18 bg-cyan-400/10 px-3 py-1 text-[11px] uppercase tracking-[0.16em] text-cyan-100">
+                  <BellRing size={12} />
+                  Latest highlight
+                </div>
               </div>
             </article>
 

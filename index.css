@@ -1328,6 +1328,73 @@ img {
   transition: opacity 180ms ease, transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
 }
 
+.portal-competition-card__video-fullscreen {
+  position: absolute;
+  right: 1rem;
+  top: 1.1rem;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: linear-gradient(145deg, rgba(8, 14, 26, 0.84), rgba(12, 20, 36, 0.94));
+  padding: 0.58rem 0.88rem;
+  color: #f8fafc;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  box-shadow:
+    0 16px 32px rgba(2, 8, 23, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.portal-competition-card__video-fullscreen:hover {
+  transform: translateY(-2px);
+  border-color: rgba(103, 232, 249, 0.42);
+  background: linear-gradient(145deg, rgba(9, 20, 40, 0.92), rgba(15, 26, 46, 0.98));
+}
+
+.portal-competition-card__video-spotlight {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.portal-competition-card__video-spotlight-ring,
+.portal-competition-card__video-spotlight-core {
+  position: absolute;
+  border-radius: 999px;
+}
+
+.portal-competition-card__video-spotlight-ring {
+  width: 5.8rem;
+  height: 5.8rem;
+  border: 1px solid rgba(255, 196, 86, 0.32);
+  background: radial-gradient(circle, rgba(255, 180, 0, 0.2), rgba(255, 122, 0, 0.04) 62%, transparent 72%);
+  animation: portalVideoBeacon 1.8s ease-out infinite;
+}
+
+.portal-competition-card__video-spotlight-core {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  background: linear-gradient(135deg, #ffcf55, #ff7a00);
+  color: #fff;
+  box-shadow:
+    0 22px 40px rgba(255, 122, 0, 0.34),
+    0 0 34px rgba(255, 180, 0, 0.22);
+  animation: portalVideoButtonFloat 2.6s ease-in-out infinite;
+}
+
 .portal-competition-card__video-shell:hover .portal-competition-card__video-hint,
 .portal-competition-card__video-shell:focus-visible .portal-competition-card__video-hint {
   border-color: rgba(255, 180, 0, 0.42);
@@ -1345,6 +1412,11 @@ img {
 
 .portal-competition-card__video-shell .portal-competition-card__video.is-visible ~ .portal-competition-card__video-hint {
   opacity: 0.92;
+}
+
+.portal-competition-card__video-shell .portal-competition-card__video.is-visible ~ .portal-competition-card__video-spotlight {
+  opacity: 0;
+  transform: scale(0.96);
 }
 
 .portal-competition-card__video-hint-icon {
@@ -1400,9 +1472,27 @@ img {
     letter-spacing: 0.07em;
   }
 
+  .portal-competition-card__video-fullscreen {
+    right: 0.85rem;
+    top: 0.85rem;
+    padding: 0.5rem 0.72rem;
+    font-size: 0.56rem;
+    letter-spacing: 0.07em;
+  }
+
   .portal-competition-card__video-hint-icon {
     width: 1.8rem;
     height: 1.8rem;
+  }
+
+  .portal-competition-card__video-spotlight-ring {
+    width: 4.9rem;
+    height: 4.9rem;
+  }
+
+  .portal-competition-card__video-spotlight-core {
+    width: 3.4rem;
+    height: 3.4rem;
   }
 }
 
@@ -1732,6 +1822,70 @@ img {
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
 }
 
+.portal-updates-hero {
+  position: relative;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  align-items: stretch;
+}
+
+.portal-updates-hero__copy,
+.portal-updates-stat-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background:
+    radial-gradient(circle at top right, rgba(34, 211, 238, 0.12), transparent 32%),
+    linear-gradient(145deg, rgba(8, 14, 26, 0.94), rgba(15, 24, 41, 0.9));
+  padding: 1.15rem 1.2rem;
+}
+
+.portal-updates-hero__copy::before,
+.portal-updates-stat-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 34%);
+  pointer-events: none;
+}
+
+.portal-updates-hero__stats {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.portal-updates-stat-card__label {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(191, 219, 254, 0.8);
+}
+
+.portal-updates-stat-card__value {
+  display: block;
+  margin-top: 0.6rem;
+  font-size: 2rem;
+  line-height: 1;
+  font-weight: 900;
+  color: #fff;
+}
+
+.portal-updates-stat-card__value--compact {
+  font-size: 1.15rem;
+  line-height: 1.2;
+}
+
+.portal-updates-stat-card__meta {
+  display: block;
+  margin-top: 0.55rem;
+  font-size: 0.82rem;
+  color: rgba(226, 232, 240, 0.7);
+}
+
 .portal-update-lead {
   position: relative;
   overflow: hidden;
@@ -1740,6 +1894,14 @@ img {
   background: linear-gradient(145deg, rgba(10, 16, 30, 0.98), rgba(16, 24, 44, 0.9));
   padding: 1.15rem 1.15rem 1.15rem 1.3rem;
   box-shadow: 0 22px 48px rgba(2, 8, 23, 0.24);
+}
+
+.portal-update-lead__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
 }
 
 .portal-update-lead::before,
@@ -1977,6 +2139,10 @@ img {
   }
 
   .portal-update-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .portal-updates-hero {
     grid-template-columns: minmax(0, 1fr);
   }
 
@@ -3872,6 +4038,31 @@ select.floating-field-input option {
   50% {
     opacity: 0.68;
     transform: scale(0.86);
+  }
+}
+
+@keyframes portalVideoBeacon {
+  0% {
+    opacity: 0.85;
+    transform: scale(0.8);
+  }
+  70% {
+    opacity: 0;
+    transform: scale(1.18);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.24);
+  }
+}
+
+@keyframes portalVideoButtonFloat {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-4px) scale(1.04);
   }
 }
 
