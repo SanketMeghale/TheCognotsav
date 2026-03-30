@@ -3000,20 +3000,17 @@ select.floating-field-input option {
 }
 
 .portal-bottom-dock__logo-slot {
-  position: absolute;
-  left: 50%;
-  top: 0;
+  position: relative;
   z-index: 3;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  transform: translateX(-50%);
-  pointer-events: none;
+  min-height: 3.5rem;
 }
 
 .portal-bottom-dock__logo {
-  position: absolute;
-  top: -2.75rem;
+  position: relative;
+  top: -2.05rem;
   display: grid;
   height: 4.15rem;
   width: 4.15rem;
@@ -3021,7 +3018,6 @@ select.floating-field-input option {
   border-radius: 999px;
   text-decoration: none;
   animation: none;
-  pointer-events: auto;
 }
 
 .portal-bottom-dock__logo::before {

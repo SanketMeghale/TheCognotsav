@@ -2278,14 +2278,6 @@ export const App: React.FC = () => {
                 <Trophy size={18} />
                 <span>Events</span>
               </a>
-              <a
-                href="#timeline"
-                className={`portal-bottom-dock__item ${activeBottomDock === 'timeline' ? 'is-active' : ''}`}
-              >
-                <Clock3 size={18} />
-                <span>Timeline</span>
-              </a>
-
               <div className="portal-bottom-dock__logo-slot">
                 <a href="#overview" className="portal-bottom-dock__logo">
                   <span className="portal-bottom-dock__logo-core">
@@ -2293,7 +2285,13 @@ export const App: React.FC = () => {
                   </span>
                 </a>
               </div>
-
+              <a
+                href="#timeline"
+                className={`portal-bottom-dock__item ${activeBottomDock === 'timeline' ? 'is-active' : ''}`}
+              >
+                <Clock3 size={18} />
+                <span>Timeline</span>
+              </a>
               <a
                 href="#tracker"
                 className={`portal-bottom-dock__item ${activeBottomDock === 'tracker' ? 'is-active' : ''}`}
