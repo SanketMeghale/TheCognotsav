@@ -310,8 +310,9 @@ body {
 .portal-brochure-strip__brand-copy h3 {
   margin: 0.45rem 0 0;
   font-family: 'Orbitron', 'Inter', sans-serif;
-  font-size: clamp(1.7rem, 4vw, 2.9rem);
-  line-height: 1.05;
+  font-size: clamp(1.45rem, 3.2vw, 2.55rem);
+  line-height: 1.08;
+  letter-spacing: 0.03em;
   color: #ffffff;
   text-transform: uppercase;
 }
@@ -351,8 +352,9 @@ body {
   padding: 0.95rem 1rem;
   background: rgba(255, 255, 255, 0.08);
   color: #f8fbff;
-  font-size: 0.9rem;
+  font-size: 0.84rem;
   font-weight: 600;
+  line-height: 1.45;
 }
 
 .portal-brochure-strip__lineup {
@@ -444,6 +446,15 @@ body {
   font-weight: 600;
 }
 
+.portal-brochure-strip__event-contact span {
+  color: #0f172a;
+}
+
+.portal-brochure-strip__event-contact svg {
+  color: #2563eb;
+  flex: 0 0 auto;
+}
+
 .portal-brochure-strip__qr-card {
   display: flex;
   align-items: center;
@@ -458,6 +469,10 @@ body {
   transform: translateY(-2px);
   border-color: rgba(34, 211, 238, 0.28);
   box-shadow: 0 22px 44px rgba(2, 8, 23, 0.22), 0 0 18px rgba(34, 211, 238, 0.08);
+}
+
+.portal-brochure-strip__qr-copy {
+  color: #475569;
 }
 
 .portal-brochure-strip__qr-frame {
@@ -481,6 +496,17 @@ body {
   .portal-brochure-strip {
     background:
       linear-gradient(180deg, rgba(244, 248, 255, 0.96) 0%, rgba(235, 244, 255, 0.9) 34%, rgba(21, 61, 123, 0.96) 34%, rgba(17, 66, 136, 0.96) 66%, rgba(244, 248, 255, 0.96) 66%, rgba(235, 244, 255, 0.9) 100%);
+  }
+}
+
+@media (max-width: 1280px) {
+  .portal-brochure-strip__brand-copy h3 {
+    font-size: clamp(1.3rem, 3vw, 2.1rem);
+  }
+
+  .portal-brochure-strip__feature {
+    font-size: 0.78rem;
+    padding: 0.85rem 0.8rem;
   }
 }
 
