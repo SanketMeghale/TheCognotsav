@@ -18,6 +18,8 @@ import { makeParticipants, shellClassName } from './components/portal/utils.ts';
 
 const CHUNK_RELOAD_STORAGE_KEY = 'cognotsav_chunk_reload_attempt_ts';
 const CHUNK_RELOAD_COOLDOWN_MS = 60_000;
+const SECRET_ADMIN_CLICK_WINDOW_MS = 1600;
+const SECRET_ADMIN_CLICK_COUNT = 5;
 
 function getChunkErrorMessage(error: unknown) {
   if (error instanceof Error) {
@@ -893,6 +895,8 @@ export const App: React.FC = () => {
   const [navScrolled, setNavScrolled] = useState(false);
   const [navigationLoading, setNavigationLoading] = useState(false);
   const navScrollFrameRef = useRef<number | null>(null);
+  const secretAdminClickCountRef = useRef(0);
+  const secretAdminClickTimerRef = useRef<number | null>(null);
   const [form, setForm] = useState<FormState>({
     teamName: '',
     collegeName: '',
@@ -1190,6 +1194,58 @@ export const App: React.FC = () => {
         : hashRoute.startsWith('#tracker')
           ? 'tracker'
           : 'home';
+
+  const openAdminPanel = () => {
+    if (typeof window === 'undefined') return;
+
+    const nextHash = '#admin-registrations';
+    if (window.location.hash !== nextHash) {
+      window.location.hash = nextHash;
+    }
+    setHashRoute(nextHash);
+  };
+
+  const handleSecretAdminClick = () => {
+    if (typeof window === 'undefined') return;
+
+    secretAdminClickCountRef.current += 1;
+
+    if (secretAdminClickTimerRef.current !== null) {
+      window.clearTimeout(secretAdminClickTimerRef.current);
+    }
+
+    if (secretAdminClickCountRef.current >= SECRET_ADMIN_CLICK_COUNT) {
+      secretAdminClickCountRef.current = 0;
+      secretAdminClickTimerRef.current = null;
+      openAdminPanel();
+      return;
+    }
+
+    secretAdminClickTimerRef.current = window.setTimeout(() => {
+      secretAdminClickCountRef.current = 0;
+      secretAdminClickTimerRef.current = null;
+    }, SECRET_ADMIN_CLICK_WINDOW_MS);
+  };
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+
+    const handleKeydown = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key.toLowerCase() === 'a') {
+        event.preventDefault();
+        openAdminPanel();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeydown);
+    return () => window.removeEventListener('keydown', handleKeydown);
+  }, []);
+
+  useEffect(() => () => {
+    if (secretAdminClickTimerRef.current !== null) {
+      window.clearTimeout(secretAdminClickTimerRef.current);
+    }
+  }, []);
 
   useEffect(() => {
     if (!isEventPage || !eventPageSlug || !events.some((event) => event.slug === eventPageSlug)) {
@@ -2093,7 +2149,12 @@ export const App: React.FC = () => {
 
       <header className="sticky top-0 z-30 px-3 pt-3 sm:px-4 md:px-0">
         <div className={`${shellClassName} portal-nav-shell ${navScrolled ? 'is-scrolled' : ''}`}>
-          <a href="#overview" className="portal-brand-card portal-brand-card--nav flex min-w-0 items-center gap-3 rounded-[1.4rem] px-3 py-2 transition hover:border-slate-200/18 hover:bg-white/[0.06]">
+          <a
+            href="#overview"
+            className="portal-brand-card portal-brand-card--nav flex min-w-0 items-center gap-3 rounded-[1.4rem] px-3 py-2 transition hover:border-slate-200/18 hover:bg-white/[0.06]"
+            onClick={handleSecretAdminClick}
+            title="Home"
+          >
             <div className="portal-brand-logo-frame">
               <img src="/images/ceasposter.jpeg" alt="CEAS COGNOTSAV logo" className="portal-brand-logo-image" />
             </div>
