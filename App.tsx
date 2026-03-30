@@ -19,7 +19,7 @@ import { makeParticipants, shellClassName } from './components/portal/utils.ts';
 const CHUNK_RELOAD_STORAGE_KEY = 'cognotsav_chunk_reload_attempt_ts';
 const CHUNK_RELOAD_COOLDOWN_MS = 60_000;
 const SECRET_ADMIN_CLICK_WINDOW_MS = 1600;
-const SECRET_ADMIN_CLICK_COUNT = 5;
+const SECRET_ADMIN_CLICK_COUNT = 2;
 
 function getChunkErrorMessage(error: unknown) {
   if (error instanceof Error) {
