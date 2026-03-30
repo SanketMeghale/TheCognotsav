@@ -314,11 +314,13 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                     src={selectedEvent.intro_video_url}
                     poster={selectedEvent.poster_path}
                     className="h-full w-full object-cover"
+                    preload="metadata"
                     autoPlay
                     muted={detailVideoMuted}
                     loop
                     playsInline
                     controls
+                    controlsList="nodownload noplaybackrate"
                   >
                     Your browser does not support the event intro video.
                   </video>

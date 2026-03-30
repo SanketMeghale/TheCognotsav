@@ -1,3 +1,9 @@
+function optimizeCloudinaryVideo(url) {
+  return String(url || '').includes('/video/upload/')
+    ? String(url).replace('/video/upload/', '/video/upload/f_auto,q_auto:good,vc_auto,so_0/')
+    : url;
+}
+
 export const eventSeed = [
   {
     slug: 'tech-kbc',
@@ -16,7 +22,7 @@ export const eventSeed = [
     max_slots: 60,
     is_team_event: true,
     poster_path: '/images/techkbc.jpg',
-    intro_video_url: 'https://res.cloudinary.com/dkxddhawc/video/upload/v1774094978/techKBC_dixjux.mp4',
+    intro_video_url: optimizeCloudinaryVideo('https://res.cloudinary.com/dkxddhawc/video/upload/v1774094978/techKBC_dixjux.mp4'),
     payment_upi: 'abhijitsaykad@oksbi',
     payment_payee: 'Abhijit Saykad',
     payment_qr_image_path: '/images/tech-kbc-payment-qr.jpg',
@@ -42,7 +48,7 @@ export const eventSeed = [
     max_slots: 25,
     is_team_event: true,
     poster_path: '/images/bgmi.jpg',
-    intro_video_url: 'https://res.cloudinary.com/dkxddhawc/video/upload/v1774094883/esport_kcmujl.mp4',
+    intro_video_url: optimizeCloudinaryVideo('https://res.cloudinary.com/dkxddhawc/video/upload/v1774094883/esport_kcmujl.mp4'),
     payment_upi: 'sanketmeghale@ibl',
     payment_payee: 'Mr. Sanket Popat Meghale',
     coordinators: [
@@ -67,7 +73,7 @@ export const eventSeed = [
     max_slots: 25,
     is_team_event: true,
     poster_path: '/images/freefire.jpg',
-    intro_video_url: 'https://res.cloudinary.com/dkxddhawc/video/upload/v1774094883/esport_kcmujl.mp4',
+    intro_video_url: optimizeCloudinaryVideo('https://res.cloudinary.com/dkxddhawc/video/upload/v1774094883/esport_kcmujl.mp4'),
     payment_upi: 'sanketmeghale@ibl',
     payment_payee: 'Mr. Sanket Popat Meghale',
     coordinators: [
@@ -92,7 +98,7 @@ export const eventSeed = [
     max_slots: 150,
     is_team_event: false,
     poster_path: '/images/squidgame.jpg',
-    intro_video_url: 'https://res.cloudinary.com/dkxddhawc/video/upload/v1774094901/squid_game_i2l62h.mp4',
+    intro_video_url: optimizeCloudinaryVideo('https://res.cloudinary.com/dkxddhawc/video/upload/v1774094901/squid_game_i2l62h.mp4'),
     payment_upi: null,
     payment_payee: 'Tejaswini Sunil Gangurde',
     payment_qr_image_path: '/images/squid-game-payment-qr.jpg',
@@ -118,7 +124,7 @@ export const eventSeed = [
     max_slots: 35,
     is_team_event: true,
     poster_path: '/images/rangmanch.jpg',
-    intro_video_url: 'https://res.cloudinary.com/dkxddhawc/video/upload/v1774094878/rangmunch_y3w7dw.mp4',
+    intro_video_url: optimizeCloudinaryVideo('https://res.cloudinary.com/dkxddhawc/video/upload/v1774094878/rangmunch_y3w7dw.mp4'),
     payment_upi: 'chaitanyamagar418@okhdfcbank',
     payment_payee: 'Chaitanya Magar',
     coordinators: [
@@ -143,7 +149,7 @@ export const eventSeed = [
     max_slots: 30,
     is_team_event: true,
     poster_path: '/images/techtreasurehunt.jpg',
-    intro_video_url: 'https://res.cloudinary.com/dkxddhawc/video/upload/v1774094899/googler_qpsklm.mp4',
+    intro_video_url: optimizeCloudinaryVideo('https://res.cloudinary.com/dkxddhawc/video/upload/v1774094899/googler_qpsklm.mp4'),
     payment_upi: '7558394479-2@axl',
     payment_payee: 'Aditya Santosh Gagare',
     payment_qr_image_path: '/images/aditya-payment-qr.jpg',
@@ -169,7 +175,7 @@ export const eventSeed = [
     max_slots: 40,
     is_team_event: true,
     poster_path: '/images/projectexpo.jpg',
-    intro_video_url: 'https://res.cloudinary.com/dkxddhawc/video/upload/v1774094887/techacclerate_eopgpp.mp4',
+    intro_video_url: optimizeCloudinaryVideo('https://res.cloudinary.com/dkxddhawc/video/upload/v1774094887/techacclerate_eopgpp.mp4'),
     payment_upi: 'kawadeakshay23@okaxis',
     payment_payee: 'Akshay Kawade',
     payment_qr_image_path: '/images/akshay-payment-qr.jpg',
@@ -195,7 +201,7 @@ export const eventSeed = [
     max_slots: 80,
     is_team_event: true,
     poster_path: '/images/hackathon.jpg',
-    intro_video_url: 'https://res.cloudinary.com/dkxddhawc/video/upload/v1774094875/utopia_am7x4t.mp4',
+    intro_video_url: optimizeCloudinaryVideo('https://res.cloudinary.com/dkxddhawc/video/upload/v1774094875/utopia_am7x4t.mp4'),
     payment_upi: 'kawadeakshay23@okaxis',
     payment_payee: 'Akshay Kawade',
     payment_qr_image_path: '/images/akshay-payment-qr.jpg',
