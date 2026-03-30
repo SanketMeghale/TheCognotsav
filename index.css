@@ -33,22 +33,24 @@
   --portal-shadow: 0 24px 80px rgba(2, 8, 23, 0.38);
   --portal-shadow-soft: 0 16px 40px rgba(2, 8, 23, 0.18);
   --portal-glow-transition: 300ms ease;
-  --portal-neon-primary: rgba(34, 211, 238, 0.2);
-  --portal-neon-secondary: rgba(56, 189, 248, 0.14);
-  --portal-neon-tertiary: rgba(168, 85, 247, 0.12);
-  --portal-neon-edge: rgba(34, 211, 238, 0.16);
-  --portal-surface-border: linear-gradient(135deg, rgba(0, 209, 255, 0.42), rgba(0, 255, 255, 0.16) 42%, rgba(138, 43, 226, 0.24) 78%, rgba(255, 77, 141, 0.08) 100%);
+  --portal-neon-primary: rgba(125, 211, 252, 0.34);
+  --portal-neon-secondary: rgba(244, 114, 182, 0.28);
+  --portal-neon-tertiary: rgba(163, 230, 53, 0.24);
+  --portal-neon-edge: rgba(250, 204, 21, 0.28);
+  --portal-surface-border: linear-gradient(135deg, rgba(125, 211, 252, 0.68), rgba(244, 114, 182, 0.34) 34%, rgba(163, 230, 53, 0.3) 68%, rgba(250, 204, 21, 0.34) 100%);
   --portal-surface-shadow-glow:
-    0 22px 56px rgba(2, 8, 23, 0.34),
-    0 0 18px var(--portal-neon-primary),
-    0 0 38px var(--portal-neon-secondary),
-    0 0 72px var(--portal-neon-tertiary),
+    0 24px 60px rgba(2, 8, 23, 0.38),
+    0 0 26px var(--portal-neon-primary),
+    0 0 48px var(--portal-neon-secondary),
+    0 0 82px var(--portal-neon-tertiary),
+    0 0 108px rgba(250, 204, 21, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
   --portal-surface-shadow-hover:
-    0 26px 64px rgba(2, 8, 23, 0.4),
-    0 0 28px var(--portal-neon-primary),
-    0 0 58px var(--portal-neon-secondary),
-    0 0 112px var(--portal-neon-tertiary),
+    0 28px 68px rgba(2, 8, 23, 0.42),
+    0 0 36px var(--portal-neon-primary),
+    0 0 70px var(--portal-neon-secondary),
+    0 0 126px var(--portal-neon-tertiary),
+    0 0 154px rgba(250, 204, 21, 0.16),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
   --portal-cta-border: linear-gradient(135deg, rgba(255, 253, 229, 0.9), rgba(255, 215, 0, 0.58) 56%, rgba(138, 43, 226, 0.22) 100%);
   --portal-cta-shadow:
