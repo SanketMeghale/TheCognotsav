@@ -135,7 +135,6 @@ const NAV_LINKS = [
   { href: '#overview', label: 'Home' },
   { href: '#registration-panel', label: 'Competitions' },
   { href: '#tracker', label: 'Tracker' },
-  { href: '#announcement-archive', label: 'Updates' },
   { href: '#timeline', label: 'Timeline' },
   { href: '#admin-registrations', label: 'Admin' },
 ];
@@ -1102,7 +1101,6 @@ export const App: React.FC = () => {
   }, [navigationLoading, hashRoute]);
 
   useEffect(() => scheduleBrowserIdleTask(() => {
-    void loadAnnouncementArchiveSection();
     void loadEventRegistrationPanel();
     void loadFAQSection();
     void loadTrackerAdminPanel();
@@ -1121,13 +1119,11 @@ export const App: React.FC = () => {
       ? 'home'
       : hashRoute.startsWith('#registration-panel')
         ? 'events'
-        : hashRoute === '#timeline'
+      : hashRoute === '#timeline'
           ? 'timeline'
         : hashRoute.startsWith('#tracker')
           ? 'tracker'
-          : hashRoute.startsWith('#announcement-archive')
-            ? 'updates'
-            : 'home';
+          : 'home';
 
   useEffect(() => {
     if (!isEventPage || !eventPageSlug || !events.some((event) => event.slug === eventPageSlug)) {
@@ -2159,17 +2155,6 @@ export const App: React.FC = () => {
 
             <div className={`${shellClassName} portal-section-divider`} aria-hidden="true" />
 
-            <DeferredSection className="portal-deferred-section" fallback={<PortalSectionFallback label="Loading updates..." />}>
-              <Suspense fallback={<PortalSectionFallback label="Loading updates..." />}>
-                <AnnouncementArchiveSection
-                  announcements={visibleAnnouncements}
-                  events={events}
-                  alerts={portalAlerts}
-                  loading={loadingAnnouncements}
-                />
-              </Suspense>
-            </DeferredSection>
-
             <div className={`${shellClassName} portal-section-divider portal-section-divider--angled`} aria-hidden="true" />
 
             <CompetitionGridSection
@@ -2254,13 +2239,6 @@ export const App: React.FC = () => {
               >
                 <Search size={18} />
                 <span>Tracker</span>
-              </a>
-              <a
-                href="#announcement-archive"
-                className={`portal-bottom-dock__item ${activeBottomDock === 'updates' ? 'is-active' : ''}`}
-              >
-                <Bell size={18} />
-                <span>Updates</span>
               </a>
             </nav>
           </div>
