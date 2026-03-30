@@ -18,8 +18,7 @@ import { makeParticipants, shellClassName } from './components/portal/utils.ts';
 
 const CHUNK_RELOAD_STORAGE_KEY = 'cognotsav_chunk_reload_attempt_ts';
 const CHUNK_RELOAD_COOLDOWN_MS = 60_000;
-const SECRET_ADMIN_CLICK_WINDOW_MS = 1600;
-const SECRET_ADMIN_CLICK_COUNT = 2;
+const SECRET_ADMIN_DOUBLE_TAP_WINDOW_MS = 360;
 
 function getChunkErrorMessage(error: unknown) {
   if (error instanceof Error) {
@@ -895,8 +894,7 @@ export const App: React.FC = () => {
   const [navScrolled, setNavScrolled] = useState(false);
   const [navigationLoading, setNavigationLoading] = useState(false);
   const navScrollFrameRef = useRef<number | null>(null);
-  const secretAdminClickCountRef = useRef(0);
-  const secretAdminClickTimerRef = useRef<number | null>(null);
+  const secretAdminLastTapRef = useRef(0);
   const [form, setForm] = useState<FormState>({
     teamName: '',
     collegeName: '',
@@ -1205,26 +1203,17 @@ export const App: React.FC = () => {
     setHashRoute(nextHash);
   };
 
-  const handleSecretAdminClick = () => {
+  const handleSecretAdminTap = () => {
     if (typeof window === 'undefined') return;
 
-    secretAdminClickCountRef.current += 1;
-
-    if (secretAdminClickTimerRef.current !== null) {
-      window.clearTimeout(secretAdminClickTimerRef.current);
-    }
-
-    if (secretAdminClickCountRef.current >= SECRET_ADMIN_CLICK_COUNT) {
-      secretAdminClickCountRef.current = 0;
-      secretAdminClickTimerRef.current = null;
+    const now = Date.now();
+    if (now - secretAdminLastTapRef.current <= SECRET_ADMIN_DOUBLE_TAP_WINDOW_MS) {
+      secretAdminLastTapRef.current = 0;
       openAdminPanel();
       return;
     }
 
-    secretAdminClickTimerRef.current = window.setTimeout(() => {
-      secretAdminClickCountRef.current = 0;
-      secretAdminClickTimerRef.current = null;
-    }, SECRET_ADMIN_CLICK_WINDOW_MS);
+    secretAdminLastTapRef.current = now;
   };
 
   useEffect(() => {
@@ -1239,12 +1228,6 @@ export const App: React.FC = () => {
 
     window.addEventListener('keydown', handleKeydown);
     return () => window.removeEventListener('keydown', handleKeydown);
-  }, []);
-
-  useEffect(() => () => {
-    if (secretAdminClickTimerRef.current !== null) {
-      window.clearTimeout(secretAdminClickTimerRef.current);
-    }
   }, []);
 
   useEffect(() => {
@@ -2152,7 +2135,16 @@ export const App: React.FC = () => {
           <a
             href="#overview"
             className="portal-brand-card portal-brand-card--nav flex min-w-0 items-center gap-3 rounded-[1.4rem] px-3 py-2 transition hover:border-slate-200/18 hover:bg-white/[0.06]"
-            onClick={handleSecretAdminClick}
+            onDoubleClick={(event) => {
+              event.preventDefault();
+              handleSecretAdminTap();
+            }}
+            onTouchEnd={(event) => {
+              handleSecretAdminTap();
+              if (secretAdminLastTapRef.current === 0) {
+                event.preventDefault();
+              }
+            }}
             title="Home"
           >
             <div className="portal-brand-logo-frame">
