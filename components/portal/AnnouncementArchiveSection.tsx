@@ -16,8 +16,6 @@ export const AnnouncementArchiveSection: React.FC<Props> = ({ announcements, eve
   const featured = announcements.slice(0, 4);
   const lead = featured[0] ?? null;
   const secondary = featured.slice(1, 4);
-  const pinnedCount = announcements.filter((announcement) => announcement.is_pinned).length;
-  const latestUpdateTime = announcements[0]?.created_at ? new Date(announcements[0].created_at).toLocaleString() : 'Waiting for the first notice';
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(new Date()), 60 * 1000);
@@ -72,39 +70,9 @@ export const AnnouncementArchiveSection: React.FC<Props> = ({ announcements, eve
         </div>
       </div>
 
-      <div className="portal-updates-hero mt-5">
-        <div className="portal-updates-hero__copy">
-          <p className="portal-kicker">Control Room</p>
-          <h4 className="mt-3 portal-title-lg font-black text-white">Catch every key update fast</h4>
-          <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300">
-            Priority notices, live reminders, and the next countdown in one place.
-          </p>
-          <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-[11px] uppercase tracking-[0.18em] text-slate-200">
-            <CalendarClock size={12} />
-            Latest: {latestUpdateTime}
-          </div>
-        </div>
-
-        <div className="portal-updates-hero__stats">
-          <div className="portal-updates-stat-card">
-            <span className="portal-updates-stat-card__label">Live Now</span>
-            <strong className="portal-updates-stat-card__value">{liveCount}</strong>
-            <span className="portal-updates-stat-card__meta">Events running live</span>
-          </div>
-          <div className="portal-updates-stat-card">
-            <span className="portal-updates-stat-card__label">Pinned</span>
-            <strong className="portal-updates-stat-card__value">{pinnedCount}</strong>
-            <span className="portal-updates-stat-card__meta">Priority updates</span>
-          </div>
-          <div className="portal-updates-stat-card">
-            <span className="portal-updates-stat-card__label">Next Up</span>
-            <strong className="portal-updates-stat-card__value portal-updates-stat-card__value--compact">
-              {nextEvent ? getEventLiveState(nextEvent, now).countdown : 'Syncing'}
-            </strong>
-            <span className="portal-updates-stat-card__meta">{nextEvent ? nextEvent.name : 'Schedule syncing'}</span>
-          </div>
-        </div>
-      </div>
+      <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300">
+        Latest organizer notices, live reminders, and countdown highlights.
+      </p>
 
       <div className="mt-4 portal-live-strip">
         <div className="portal-live-strip__track">
