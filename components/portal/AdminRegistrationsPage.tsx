@@ -196,7 +196,6 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
   }, [adminRows, eventFilter, events, searchQuery, statusFilter]);
   const totalParticipants = adminRows.reduce((sum, row) => sum + row.participants.length, 0);
   const busiestEvent = useMemo(() => Object.entries(adminRows.reduce<Record<string, number>>((collection, row) => ({ ...collection, [row.event_name]: (collection[row.event_name] || 0) + 1 }), {})).sort((left, right) => right[1] - left[1])[0] || null, [adminRows]);
-  const approvalRate = counts.all ? Math.round((counts.verified / counts.all) * 100) : 0;
   const topTrackedEvents = useMemo(() => [...eventBuckets].sort((left, right) => right.total - left.total).slice(0, 4), [eventBuckets]);
   const eventControlRows = useMemo(() => events.map((event) => {
     const registrationsCount = Number(event.registrations_count || 0);
@@ -297,13 +296,7 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
 
       <section id="admin-analytics" className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
         <div data-reveal="up" className="portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-6">
-          <div className="flex items-center gap-3"><BarChart3 size={18} className="text-cyan-200" /><div><h3 className="text-xl font-bold text-white">Admin analytics</h3><p className="text-sm text-slate-400">Short overview for approvals and event load.</p></div></div>
-          <div className="mt-5 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-[1.4rem] border border-amber-300/16 bg-amber-400/10 p-4"><p className="text-xs uppercase tracking-[0.2em] text-amber-100/80">Pending</p><p className="mt-2 text-2xl font-bold text-white">{counts.pending}</p></div>
-            <div className="rounded-[1.4rem] border border-fuchsia-300/16 bg-fuchsia-400/10 p-4"><p className="text-xs uppercase tracking-[0.2em] text-fuchsia-100/80">Waitlisted</p><p className="mt-2 text-2xl font-bold text-white">{counts.waitlisted}</p></div>
-            <div className="rounded-[1.4rem] border border-rose-300/16 bg-rose-400/10 p-4"><p className="text-xs uppercase tracking-[0.2em] text-rose-100/80">Rejected</p><p className="mt-2 text-2xl font-bold text-white">{counts.rejected}</p></div>
-            <div className="rounded-[1.4rem] border border-cyan-300/16 bg-cyan-400/10 p-4"><p className="text-xs uppercase tracking-[0.2em] text-cyan-100/80">Approval rate</p><p className="mt-2 text-2xl font-bold text-white">{approvalRate}%</p></div>
-          </div>
+          <div className="flex items-center gap-3"><BarChart3 size={18} className="text-cyan-200" /><div><h3 className="text-xl font-bold text-white">Admin analytics</h3><p className="text-sm text-slate-400">Event-wise registration totals.</p></div></div>
           <div className="mt-5 rounded-[1.4rem] border border-white/10 bg-black/20 p-4">
             <div className="flex items-center justify-between gap-3">
               <p className="text-sm font-semibold text-white">Top competitions</p>
@@ -318,7 +311,6 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
                   </div>
                   <div className="text-right text-xs uppercase tracking-[0.16em] text-slate-300">
                     <p>{event.total} total</p>
-                    <p className="mt-1 text-slate-500">{event.pending} pending / {event.verified} verified</p>
                   </div>
                 </div>
               )) : <div className="rounded-[1.15rem] border border-dashed border-white/10 bg-black/10 px-4 py-4 text-sm text-slate-400">Analytics will appear after records load.</div>}
