@@ -1347,8 +1347,8 @@ img {
 .portal-competition-card__video-spotlight-ring {
   width: 5.8rem;
   height: 5.8rem;
-  border: 1px solid rgba(255, 196, 86, 0.32);
-  background: radial-gradient(circle, rgba(255, 180, 0, 0.2), rgba(255, 122, 0, 0.04) 62%, transparent 72%);
+  border: 1px solid rgba(255, 214, 102, 0.5);
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.28), rgba(255, 122, 0, 0.1) 62%, transparent 72%);
   animation: portalVideoBeacon 1.8s ease-out infinite;
 }
 
@@ -1357,14 +1357,14 @@ img {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-width: 6.6rem;
-  min-height: 6.6rem;
-  padding: 0.72rem 0.78rem 0.66rem;
-  background: linear-gradient(135deg, #ffcf55, #ff7a00);
+  min-width: 5.8rem;
+  min-height: 5.8rem;
+  padding: 0.62rem 0.68rem 0.58rem;
+  background: linear-gradient(135deg, #fff06a, #ff9a00 58%, #ff5c00);
   color: #fff;
   box-shadow:
-    0 22px 40px rgba(255, 122, 0, 0.34),
-    0 0 34px rgba(255, 180, 0, 0.22);
+    0 22px 40px rgba(255, 122, 0, 0.38),
+    0 0 40px rgba(255, 196, 0, 0.28);
   animation: portalVideoButtonFloat 2.6s ease-in-out infinite;
 }
 
@@ -1382,26 +1382,27 @@ img {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.35rem;
-  height: 2.35rem;
+  width: 1.95rem;
+  height: 1.95rem;
   border-radius: 999px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0.08));
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0.14));
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.28),
-    0 10px 24px rgba(0, 0, 0, 0.18);
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    0 10px 24px rgba(0, 0, 0, 0.22);
 }
 
 .portal-competition-card__video-spotlight-label {
   display: block;
-  margin-top: 0.42rem;
-  max-width: 6rem;
+  margin-top: 0.34rem;
+  max-width: 5.2rem;
   text-align: center;
-  font-size: 0.56rem;
+  font-size: 0.5rem;
   font-weight: 800;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   line-height: 1.3;
-  color: #fff7ed;
+  color: #fffef7;
+  text-shadow: 0 1px 10px rgba(91, 37, 0, 0.24);
 }
 
 @media (max-width: 767px) {
@@ -1444,21 +1445,21 @@ img {
   }
 
   .portal-competition-card__video-spotlight-core {
-    min-width: 5.5rem;
-    min-height: 5.5rem;
-    padding: 0.62rem 0.62rem 0.56rem;
+    min-width: 5rem;
+    min-height: 5rem;
+    padding: 0.55rem 0.56rem 0.5rem;
   }
 
   .portal-competition-card__video-spotlight-icon {
-    width: 2.05rem;
-    height: 2.05rem;
+    width: 1.75rem;
+    height: 1.75rem;
   }
 
   .portal-competition-card__video-spotlight-label {
-    max-width: 5.1rem;
-    margin-top: 0.36rem;
-    font-size: 0.48rem;
-    letter-spacing: 0.07em;
+    max-width: 4.4rem;
+    margin-top: 0.28rem;
+    font-size: 0.43rem;
+    letter-spacing: 0.06em;
   }
 }
 
