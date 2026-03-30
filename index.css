@@ -1773,9 +1773,9 @@ img {
 
 @media (max-width: 767px) {
   .portal-brand-card--nav {
-    gap: 0.62rem;
+    gap: 0.56rem;
     width: 100%;
-    padding: 0.72rem 0.9rem;
+    padding: 0.7rem 0.88rem;
   }
 
   .portal-brand-card--nav .portal-brand-copy {
@@ -1785,9 +1785,9 @@ img {
   }
 
   .portal-brand-card--nav .portal-brand-logo-frame {
-    height: 2.65rem;
-    width: 2.65rem;
-    border-radius: 0.9rem;
+    height: 2.5rem;
+    width: 2.5rem;
+    border-radius: 0.86rem;
   }
 
   .portal-brand-card--nav .portal-brand-overline {
@@ -1796,10 +1796,10 @@ img {
 
   .portal-brand-card--nav .portal-brand-mark--nav {
     align-items: center;
-    gap: 0.22rem;
-    font-size: 1.2rem;
+    gap: 0.18rem;
+    font-size: clamp(1.16rem, 3.85vw, 1.32rem);
     font-weight: 800;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.03em;
     line-height: 1.05;
     white-space: nowrap;
     text-shadow:
@@ -1819,10 +1819,15 @@ img {
     -webkit-background-clip: text;
     background-clip: text;
     font-family: 'Oxanium', 'Orbitron', 'Inter', sans-serif;
-    font-size: 0.82em;
+    font-size: 0.7em;
     font-weight: 800;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     text-shadow: none;
+  }
+
+  .portal-brand-card--nav .portal-brand-mark__title {
+    font-size: 1.08em;
+    letter-spacing: 0.05em;
   }
 
   .portal-brand-card--nav .portal-brand-mark__year {
@@ -1837,9 +1842,9 @@ img {
     -webkit-background-clip: text;
     background-clip: text;
     font-family: 'Oxanium', 'Orbitron', 'Inter', sans-serif;
-    font-size: 0.82em;
+    font-size: 0.7em;
     font-weight: 800;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
   }
 
   .portal-brand-card--nav .portal-brand-mark__title,
@@ -1883,29 +1888,34 @@ img {
 @media (max-width: 420px) {
   .portal-brand-card--nav {
     gap: 0.48rem;
-    padding: 0.64rem 0.74rem;
+    padding: 0.62rem 0.7rem;
   }
 
   .portal-brand-card--nav .portal-brand-mark--nav {
     gap: 0.16rem;
-    font-size: 1.02rem;
-    letter-spacing: 0.025em;
+    font-size: clamp(1.02rem, 4.15vw, 1.14rem);
+    letter-spacing: 0.02em;
   }
 
   .portal-brand-card--nav .portal-brand-mark__prefix {
-    font-size: 0.76em;
-    letter-spacing: 0.07em;
+    font-size: 0.68em;
+    letter-spacing: 0.06em;
+  }
+
+  .portal-brand-card--nav .portal-brand-mark__title {
+    font-size: 1.06em;
+    letter-spacing: 0.04em;
   }
 
   .portal-brand-card--nav .portal-brand-mark__year {
-    font-size: 0.76em;
-    letter-spacing: 0.07em;
+    font-size: 0.68em;
+    letter-spacing: 0.06em;
   }
 
   .portal-brand-card--nav .portal-brand-logo-frame {
-    height: 2.4rem;
-    width: 2.4rem;
-    border-radius: 0.8rem;
+    height: 2.28rem;
+    width: 2.28rem;
+    border-radius: 0.76rem;
   }
 
   .portal-competition-card__video-hint {
