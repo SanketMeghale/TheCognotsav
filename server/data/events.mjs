@@ -201,7 +201,7 @@ export const eventSeed = [
     payment_qr_image_path: '/images/akshay-payment-qr.jpg',
     coordinators: [
       { name: 'Trupti J.', phone: '9850560091' },
-      { name: 'Dipika N.', phone: '7276062774' },
+      { name: 'Dipika N.', phone: '7276062794' },
     ],
   },
 ];
