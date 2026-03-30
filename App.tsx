@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, memo, useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowRight, ArrowLeft, Bell, Building2, CheckCircle2, Clock3, GraduationCap, House, Search, ShieldCheck, Sparkles, Trophy } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Bell, Building2, CheckCircle2, Clock3, GraduationCap, House, Search, Sparkles, Trophy } from 'lucide-react';
 import { HeroSection } from './components/portal/HeroSection.tsx';
 import { CompetitionGridSection } from './components/portal/CompetitionGridSection.tsx';
 import type {
@@ -136,7 +136,6 @@ const NAV_LINKS = [
   { href: '#registration-panel', label: 'Competitions' },
   { href: '#tracker', label: 'Tracker' },
   { href: '#timeline', label: 'Timeline' },
-  { href: '#admin-registrations', label: 'Admin' },
 ];
 const GALLERY_PHOTOS = [
   {
@@ -2116,20 +2115,6 @@ export const App: React.FC = () => {
             <a href="#registration-panel" className="portal-premium-button portal-premium-button--primary portal-nav-cta">
               Register
               <ArrowRight size={14} />
-            </a>
-          </div>
-
-          <div className="flex items-center gap-2 lg:hidden">
-            <a
-              href="#admin-registrations"
-              className="portal-mobile-admin-trigger"
-              aria-label="Open admin panel"
-            >
-              <span className="portal-mobile-admin-trigger__core">
-                <span className="portal-mobile-admin-trigger__icon">
-                  <ShieldCheck size={14} />
-                </span>
-              </span>
             </a>
           </div>
         </div>
