@@ -248,6 +248,123 @@ function DepartmentIntroStripBase() {
 
 const DepartmentIntroStrip = memo(DepartmentIntroStripBase);
 
+const BROCHURE_COORDINATOR_GROUPS = [
+  {
+    title: 'Ranbhoomi / Tech Treasure / Tech KBC',
+    contacts: ['Sanket M.', 'Harshal G.', 'Sahil B.'],
+  },
+  {
+    title: 'Techxcelerate / Squid Game / Rangmanch',
+    contacts: ['Prerana C.', 'Tejaswini G.', 'Sayli A.'],
+  },
+  {
+    title: 'Utopia / Student Coordination',
+    contacts: ['Trupti J.', 'Deepika N.', 'CEAS Core Team'],
+  },
+];
+
+function PremiumBrochureStripBase() {
+  return (
+    <section className="portal-brochure-strip portal-glow-card portal-glass rounded-[1.8rem] p-4 md:rounded-[2rem] md:p-6" data-reveal="fade-up">
+      <div className="portal-brochure-strip__layout">
+        <div className="portal-brochure-strip__aside">
+          <div className="portal-brochure-strip__prize-card">
+            <div className="portal-brochure-strip__prize-badge">
+              <Trophy size={18} />
+              <span>Prize Pool</span>
+            </div>
+            <div className="portal-brochure-strip__prize-value">Up to Rs 1 Lakh</div>
+            <p className="portal-brochure-strip__prize-copy">
+              Premium technical events, esports energy, and flagship CEAS recognition across the full Cognotsav lineup.
+            </p>
+          </div>
+
+          <div className="portal-brochure-strip__mini-grid">
+            <div className="portal-brochure-strip__mini-card">
+              <Clock3 size={16} />
+              <div>
+                <p>07-08 April 2026</p>
+                <span>Starts at 10 AM</span>
+              </div>
+            </div>
+            <div className="portal-brochure-strip__mini-card">
+              <Building2 size={16} />
+              <div>
+                <p>DVVPCOE, Ahilyanagar</p>
+                <span>Official CEAS venue</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="portal-brochure-strip__center">
+          <div className="portal-brochure-strip__brand-row">
+            <div className="portal-brochure-strip__brand-badge">
+              <img src="/images/ceasposter.jpeg" alt="CEAS crest" loading="lazy" decoding="async" />
+            </div>
+            <div className="portal-brochure-strip__brand-copy">
+              <p className="portal-brochure-strip__eyebrow">Official Event Snapshot</p>
+              <h3>CEAS COGNOTSAV 2026</h3>
+              <p>State-level technical events presented by the Department of Computer Engineering.</p>
+            </div>
+          </div>
+
+          <div className="portal-brochure-strip__feature-grid">
+            <div className="portal-brochure-strip__feature">
+              <Sparkles size={16} />
+              <span>Curated event experience</span>
+            </div>
+            <div className="portal-brochure-strip__feature">
+              <CheckCircle2 size={16} />
+              <span>Fast registration workflow</span>
+            </div>
+            <div className="portal-brochure-strip__feature">
+              <GraduationCap size={16} />
+              <span>Department-backed credibility</span>
+            </div>
+          </div>
+
+          <div className="portal-brochure-strip__actions">
+            <a href="#registration-panel" className="portal-premium-button portal-premium-button--primary">
+              Register For Events
+              <ArrowRight size={15} />
+            </a>
+            <a href="#department" className="portal-premium-button portal-premium-button--secondary">
+              View CEAS Profile
+            </a>
+          </div>
+        </div>
+
+        <div className="portal-brochure-strip__aside portal-brochure-strip__aside--right">
+          <div className="portal-brochure-strip__coordinator-card">
+            <p className="portal-brochure-strip__coordinator-kicker">Coordinator Highlights</p>
+            <div className="portal-brochure-strip__coordinator-groups">
+              {BROCHURE_COORDINATOR_GROUPS.map((group) => (
+                <div key={group.title} className="portal-brochure-strip__coordinator-group">
+                  <p>{group.title}</p>
+                  <span>{group.contacts.join(' / ')}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <a href="#registration-panel" className="portal-brochure-strip__qr-card">
+            <div className="portal-brochure-strip__qr-frame">
+              <img src="/images/ceasposter.jpeg" alt="CEAS access mark" loading="lazy" decoding="async" />
+            </div>
+            <div>
+              <p className="portal-brochure-strip__qr-title">Official Access</p>
+              <span className="portal-brochure-strip__qr-copy">Move from brochure feel to live registration in one click.</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+const PremiumBrochureStrip = memo(PremiumBrochureStripBase);
+
 function DepartmentPageBase() {
   return (
     <main className={`${shellClassName} space-y-5 pb-10 pt-4 md:space-y-8 md:pb-14`}>
@@ -2100,6 +2217,8 @@ export const App: React.FC = () => {
         <>
           <main className={`${shellClassName} space-y-5 pb-8 md:space-y-8 md:pb-12`}>
             <HeroSection />
+
+            <PremiumBrochureStrip />
 
             <DepartmentIntroStrip />
 
