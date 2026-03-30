@@ -134,8 +134,8 @@ body {
 .portal-brochure-strip__layout {
   position: relative;
   display: grid;
-  gap: 1rem;
-  grid-template-columns: 0.95fr 1.2fr 0.95fr;
+  gap: 1.1rem;
+  grid-template-columns: 0.88fr 1.44fr 0.88fr;
   z-index: 1;
 }
 
@@ -278,6 +278,7 @@ body {
   justify-content: center;
   gap: 1rem;
   text-align: center;
+  flex-direction: column;
 }
 
 .portal-brochure-strip__brand-badge {
@@ -310,7 +311,7 @@ body {
 .portal-brochure-strip__brand-copy h3 {
   margin: 0.45rem 0 0;
   font-family: 'Orbitron', 'Inter', sans-serif;
-  font-size: clamp(1.45rem, 3.2vw, 2.55rem);
+  font-size: clamp(1.35rem, 2.8vw, 2.35rem);
   line-height: 1.08;
   letter-spacing: 0.03em;
   color: #ffffff;
@@ -320,7 +321,7 @@ body {
 .portal-brochure-strip__brand-copy p:last-child {
   margin: 0.55rem 0 0;
   color: #e0ecff;
-  font-size: 1rem;
+  font-size: 0.94rem;
 }
 
 .portal-brochure-strip__ribbon {
@@ -352,7 +353,7 @@ body {
   padding: 0.95rem 1rem;
   background: rgba(255, 255, 255, 0.08);
   color: #f8fbff;
-  font-size: 0.84rem;
+  font-size: 0.8rem;
   font-weight: 600;
   line-height: 1.45;
 }
@@ -439,10 +440,10 @@ body {
 .portal-brochure-strip__event-contact {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 0.5rem;
   color: #0f172a;
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   font-weight: 600;
 }
 
@@ -484,6 +485,24 @@ body {
   padding: 0.35rem;
 }
 
+@media (max-width: 1400px) {
+  .portal-brochure-strip__layout {
+    grid-template-columns: 0.9fr 1.25fr 0.9fr;
+  }
+
+  .portal-brochure-strip__feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .portal-brochure-strip__brand-copy h3 {
+    font-size: clamp(1.25rem, 2.5vw, 1.9rem);
+  }
+
+  .portal-brochure-strip__brand-copy p:last-child {
+    font-size: 0.88rem;
+  }
+}
+
 @media (max-width: 1100px) {
   .portal-brochure-strip__layout {
     grid-template-columns: 1fr;
@@ -501,11 +520,11 @@ body {
 
 @media (max-width: 1280px) {
   .portal-brochure-strip__brand-copy h3 {
-    font-size: clamp(1.3rem, 3vw, 2.1rem);
+    font-size: clamp(1.18rem, 2.6vw, 1.75rem);
   }
 
   .portal-brochure-strip__feature {
-    font-size: 0.78rem;
+    font-size: 0.76rem;
     padding: 0.85rem 0.8rem;
   }
 }
