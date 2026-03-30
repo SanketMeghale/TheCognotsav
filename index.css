@@ -1301,7 +1301,7 @@ img {
 
 .portal-competition-card__video-fullscreen {
   position: absolute;
-  right: 1rem;
+  left: 1rem;
   top: 1.1rem;
   z-index: 3;
   display: inline-flex;
@@ -1357,9 +1357,9 @@ img {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-width: 8.75rem;
-  min-height: 8.75rem;
-  padding: 1rem 1.05rem 0.9rem;
+  min-width: 7.5rem;
+  min-height: 7.5rem;
+  padding: 0.9rem 0.95rem 0.82rem;
   background: linear-gradient(135deg, #ffcf55, #ff7a00);
   color: #fff;
   box-shadow:
@@ -1382,8 +1382,8 @@ img {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 3.25rem;
-  height: 3.25rem;
+  width: 2.9rem;
+  height: 2.9rem;
   border-radius: 999px;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0.08));
   box-shadow:
@@ -1393,14 +1393,14 @@ img {
 
 .portal-competition-card__video-spotlight-label {
   display: block;
-  margin-top: 0.7rem;
-  max-width: 9.5rem;
+  margin-top: 0.55rem;
+  max-width: 7rem;
   text-align: center;
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   font-weight: 800;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.11em;
   text-transform: uppercase;
-  line-height: 1.4;
+  line-height: 1.3;
   color: #fff7ed;
 }
 
@@ -1431,7 +1431,7 @@ img {
   }
 
   .portal-competition-card__video-fullscreen {
-    right: 0.85rem;
+    left: 0.85rem;
     top: 0.85rem;
     padding: 0.5rem 0.72rem;
     font-size: 0.56rem;
@@ -1444,21 +1444,21 @@ img {
   }
 
   .portal-competition-card__video-spotlight-core {
-    min-width: 7.4rem;
-    min-height: 7.4rem;
-    padding: 0.8rem 0.8rem 0.72rem;
+    min-width: 6.2rem;
+    min-height: 6.2rem;
+    padding: 0.72rem 0.72rem 0.64rem;
   }
 
   .portal-competition-card__video-spotlight-icon {
-    width: 2.8rem;
-    height: 2.8rem;
+    width: 2.45rem;
+    height: 2.45rem;
   }
 
   .portal-competition-card__video-spotlight-label {
-    max-width: 8.25rem;
-    margin-top: 0.52rem;
-    font-size: 0.58rem;
-    letter-spacing: 0.09em;
+    max-width: 5.8rem;
+    margin-top: 0.45rem;
+    font-size: 0.52rem;
+    letter-spacing: 0.08em;
   }
 }
 
