@@ -117,9 +117,7 @@ body {
   position: relative;
   overflow: hidden;
   background:
-    radial-gradient(circle at top left, rgba(34, 211, 238, 0.14), transparent 20%),
-    radial-gradient(circle at bottom right, rgba(251, 191, 36, 0.14), transparent 24%),
-    linear-gradient(145deg, rgba(7, 16, 29, 0.95), rgba(12, 24, 41, 0.9));
+    linear-gradient(90deg, rgba(244, 248, 255, 0.96) 0%, rgba(235, 244, 255, 0.9) 20%, rgba(9, 34, 76, 0.96) 20%, rgba(17, 66, 136, 0.96) 80%, rgba(244, 248, 255, 0.96) 80%, rgba(235, 244, 255, 0.9) 100%);
 }
 
 .portal-brochure-strip::before {
@@ -127,8 +125,9 @@ body {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.04), transparent 24%, transparent 76%, rgba(255, 255, 255, 0.04)),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 18%, transparent 82%, rgba(255, 255, 255, 0.02));
+    radial-gradient(circle at 8% 8%, rgba(37, 99, 235, 0.12), transparent 18%),
+    radial-gradient(circle at 92% 88%, rgba(37, 99, 235, 0.12), transparent 18%),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06), transparent 24%, transparent 76%, rgba(255, 255, 255, 0.06));
   pointer-events: none;
 }
 
@@ -148,17 +147,13 @@ body {
 }
 
 .portal-brochure-strip__prize-card,
-.portal-brochure-strip__coordinator-card,
 .portal-brochure-strip__qr-card,
 .portal-brochure-strip__mini-card,
 .portal-brochure-strip__center {
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.03));
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 18px 40px rgba(2, 8, 23, 0.18);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 18px 40px rgba(2, 8, 23, 0.14);
 }
 
 .portal-brochure-strip__prize-card,
-.portal-brochure-strip__coordinator-card,
 .portal-brochure-strip__qr-card {
   border-radius: 1.5rem;
   padding: 1.1rem;
@@ -198,7 +193,8 @@ body {
 .portal-brochure-strip__prize-copy,
 .portal-brochure-strip__brand-copy p,
 .portal-brochure-strip__qr-copy,
-.portal-brochure-strip__coordinator-group span {
+.portal-brochure-strip__event-contact span,
+.portal-brochure-strip__lineup-item span {
   color: #cbd5e1;
   line-height: 1.7;
 }
@@ -208,40 +204,80 @@ body {
   gap: 0.8rem;
 }
 
+.portal-brochure-strip__prize-card,
+.portal-brochure-strip__mini-card {
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(225, 238, 255, 0.78));
+  color: #0f172a;
+}
+
 .portal-brochure-strip__mini-card {
   border-radius: 1.2rem;
   padding: 0.95rem 1rem;
-  color: #dbeafe;
 }
 
 .portal-brochure-strip__mini-card p,
-.portal-brochure-strip__coordinator-group p,
 .portal-brochure-strip__qr-title {
   margin: 0;
-  color: #ffffff;
+  color: #0f172a;
   font-weight: 700;
 }
 
-.portal-brochure-strip__mini-card span,
-.portal-brochure-strip__coordinator-kicker {
+.portal-brochure-strip__mini-card span {
   display: block;
   margin-top: 0.2rem;
-  color: #94a3b8;
+  color: #475569;
   font-size: 0.76rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
 .portal-brochure-strip__center {
+  position: relative;
   border-radius: 1.8rem;
-  padding: 1.2rem;
+  padding: 1.3rem;
   justify-content: space-between;
+  border: 1px solid rgba(191, 219, 254, 0.28);
+  background: linear-gradient(180deg, rgba(42, 101, 184, 0.96), rgba(21, 61, 123, 0.98));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 24px 54px rgba(2, 8, 23, 0.24);
+}
+
+.portal-brochure-strip__center::after {
+  content: '';
+  position: absolute;
+  inset: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 1.35rem;
+  pointer-events: none;
+}
+
+.portal-brochure-strip__center-topline {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.55rem;
+}
+
+.portal-brochure-strip__center-topline span {
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.08);
+  padding: 0.5rem 0.8rem;
+  color: #dbeafe;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
 }
 
 .portal-brochure-strip__brand-row {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 1rem;
+  text-align: center;
 }
 
 .portal-brochure-strip__brand-badge {
@@ -265,7 +301,7 @@ body {
 
 .portal-brochure-strip__eyebrow {
   margin: 0;
-  color: #93c5fd;
+  color: #dbeafe;
   font-size: 0.72rem;
   letter-spacing: 0.26em;
   text-transform: uppercase;
@@ -274,7 +310,7 @@ body {
 .portal-brochure-strip__brand-copy h3 {
   margin: 0.45rem 0 0;
   font-family: 'Orbitron', 'Inter', sans-serif;
-  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  font-size: clamp(1.7rem, 4vw, 2.9rem);
   line-height: 1.05;
   color: #ffffff;
   text-transform: uppercase;
@@ -282,6 +318,26 @@ body {
 
 .portal-brochure-strip__brand-copy p:last-child {
   margin: 0.55rem 0 0;
+  color: #e0ecff;
+  font-size: 1rem;
+}
+
+.portal-brochure-strip__ribbon {
+  display: flex;
+  justify-content: center;
+}
+
+.portal-brochure-strip__ribbon span {
+  border-radius: 999px;
+  border: 1px solid rgba(191, 219, 254, 0.38);
+  background: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.08));
+  padding: 0.7rem 1.4rem;
+  color: #f8fbff;
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
 }
 
 .portal-brochure-strip__feature-grid {
@@ -293,39 +349,107 @@ body {
 .portal-brochure-strip__feature {
   border-radius: 1.15rem;
   padding: 0.95rem 1rem;
-  background: rgba(255, 255, 255, 0.04);
-  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8fbff;
   font-size: 0.9rem;
   font-weight: 600;
 }
 
-.portal-brochure-strip__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.8rem;
-}
-
-.portal-brochure-strip__coordinator-card {
-  height: 100%;
-}
-
-.portal-brochure-strip__coordinator-groups {
-  margin-top: 1rem;
+.portal-brochure-strip__lineup {
   display: grid;
   gap: 0.8rem;
 }
 
-.portal-brochure-strip__coordinator-group {
-  border-radius: 1.05rem;
-  border: 1px solid rgba(255,255,255,0.08);
-  background: rgba(255,255,255,0.04);
-  padding: 0.9rem 1rem;
+.portal-brochure-strip__lineup-item {
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 0.8rem 0;
+  text-align: center;
+}
+
+.portal-brochure-strip__lineup-item p {
+  margin: 0;
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.portal-brochure-strip__lineup-item span {
+  display: block;
+  margin-top: 0.45rem;
+  color: #dbeafe;
+}
+
+.portal-brochure-strip__actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.portal-brochure-strip__event-stack {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.portal-brochure-strip__event-pod {
+  overflow: hidden;
+  border-radius: 1.45rem;
+  border: 1px solid rgba(37, 99, 235, 0.24);
+  background: linear-gradient(180deg, rgba(239, 247, 255, 0.96), rgba(220, 236, 255, 0.84));
+  box-shadow: 0 16px 34px rgba(2, 8, 23, 0.12);
+}
+
+.portal-brochure-strip__event-pod-cap {
+  border-bottom: 1px solid rgba(37, 99, 235, 0.18);
+  padding: 0.95rem 1rem 0.8rem;
+  background: linear-gradient(180deg, rgba(255,255,255,0.5), rgba(255,255,255,0.12));
+  text-align: center;
+}
+
+.portal-brochure-strip__event-pod-cap p {
+  margin: 0;
+  color: #0f172a;
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.portal-brochure-strip__event-pod-cap span {
+  display: block;
+  margin-top: 0.25rem;
+  color: #2563eb;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.portal-brochure-strip__event-pod-body {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.9rem 1rem 1rem;
+}
+
+.portal-brochure-strip__event-contact {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: #0f172a;
+  font-size: 0.92rem;
+  font-weight: 600;
 }
 
 .portal-brochure-strip__qr-card {
   display: flex;
   align-items: center;
   gap: 1rem;
+  border: 1px solid rgba(37, 99, 235, 0.22);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(225, 238, 255, 0.84));
   text-decoration: none;
   transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
 }
@@ -352,6 +476,11 @@ body {
 
   .portal-brochure-strip__feature-grid {
     grid-template-columns: 1fr;
+  }
+
+  .portal-brochure-strip {
+    background:
+      linear-gradient(180deg, rgba(244, 248, 255, 0.96) 0%, rgba(235, 244, 255, 0.9) 34%, rgba(21, 61, 123, 0.96) 34%, rgba(17, 66, 136, 0.96) 66%, rgba(244, 248, 255, 0.96) 66%, rgba(235, 244, 255, 0.9) 100%);
   }
 }
 

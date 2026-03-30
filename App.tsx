@@ -248,22 +248,43 @@ function DepartmentIntroStripBase() {
 
 const DepartmentIntroStrip = memo(DepartmentIntroStripBase);
 
-const BROCHURE_COORDINATOR_GROUPS = [
+const BROCHURE_EVENT_PODS = [
   {
-    title: 'Ranbhoomi / Tech Treasure / Tech KBC',
-    contacts: ['Sanket M.', 'Harshal G.', 'Sahil B.'],
+    side: 'left',
+    title: 'Ranbhoomi',
+    subtitle: 'E-Sport',
+    contacts: ['Sanket M.', 'Harshal G.'],
   },
   {
-    title: 'Techxcelerate / Squid Game / Rangmanch',
-    contacts: ['Prerana C.', 'Tejaswini G.', 'Sayli A.'],
+    side: 'left',
+    title: 'Tech KBC / Treasure',
+    subtitle: 'Quiz + Hunt',
+    contacts: ['Sahil B.', 'Harshal G.'],
   },
   {
-    title: 'Utopia / Student Coordination',
-    contacts: ['Trupti J.', 'Deepika N.', 'CEAS Core Team'],
+    side: 'right',
+    title: 'Techxcelerate',
+    subtitle: 'Presentation',
+    contacts: ['Prerana C.', 'Akashy K.'],
+  },
+  {
+    side: 'right',
+    title: 'Squid Game / Rangmanch',
+    subtitle: 'Crowd Favorites',
+    contacts: ['Tejaswini G.', 'Sayli A.'],
+  },
+  {
+    side: 'right',
+    title: 'Utopia',
+    subtitle: 'Hackathon',
+    contacts: ['Trupti J.', 'Deepika N.'],
   },
 ];
 
 function PremiumBrochureStripBase() {
+  const leftPods = BROCHURE_EVENT_PODS.filter((pod) => pod.side === 'left');
+  const rightPods = BROCHURE_EVENT_PODS.filter((pod) => pod.side === 'right');
+
   return (
     <section className="portal-brochure-strip portal-glow-card portal-glass rounded-[1.8rem] p-4 md:rounded-[2rem] md:p-6" data-reveal="fade-up">
       <div className="portal-brochure-strip__layout">
@@ -275,7 +296,7 @@ function PremiumBrochureStripBase() {
             </div>
             <div className="portal-brochure-strip__prize-value">Up to Rs 1 Lakh</div>
             <p className="portal-brochure-strip__prize-copy">
-              Premium technical events, esports energy, and flagship CEAS recognition across the full Cognotsav lineup.
+              Flagship CEAS events, esports intensity, and a sharper official event presence across the portal.
             </p>
           </div>
 
@@ -295,32 +316,72 @@ function PremiumBrochureStripBase() {
               </div>
             </div>
           </div>
+
+          <div className="portal-brochure-strip__event-stack">
+            {leftPods.map((pod) => (
+              <article key={pod.title} className="portal-brochure-strip__event-pod">
+                <div className="portal-brochure-strip__event-pod-cap">
+                  <p>{pod.title}</p>
+                  <span>{pod.subtitle}</span>
+                </div>
+                <div className="portal-brochure-strip__event-pod-body">
+                  {pod.contacts.map((contact) => (
+                    <div key={contact} className="portal-brochure-strip__event-contact">
+                      <CheckCircle2 size={14} />
+                      <span>{contact}</span>
+                    </div>
+                  ))}
+                </div>
+              </article>
+            ))}
+          </div>
         </div>
 
         <div className="portal-brochure-strip__center">
+          <div className="portal-brochure-strip__center-topline">
+            <span>DVVPCOE, Ahilyanagar</span>
+            <span>Department of Computer Engineering</span>
+            <span>CEAS Presents</span>
+          </div>
+
           <div className="portal-brochure-strip__brand-row">
             <div className="portal-brochure-strip__brand-badge">
               <img src="/images/ceasposter.jpeg" alt="CEAS crest" loading="lazy" decoding="async" />
             </div>
             <div className="portal-brochure-strip__brand-copy">
-              <p className="portal-brochure-strip__eyebrow">Official Event Snapshot</p>
-              <h3>CEAS COGNOTSAV 2026</h3>
-              <p>State-level technical events presented by the Department of Computer Engineering.</p>
+              <p className="portal-brochure-strip__eyebrow">State-Level Technical Events</p>
+              <h3>COGNOTSAV 2026</h3>
+              <p>"Where intellect shines, and ideas rise."</p>
             </div>
+          </div>
+
+          <div className="portal-brochure-strip__ribbon">
+            <span>Official Event Brochure</span>
           </div>
 
           <div className="portal-brochure-strip__feature-grid">
             <div className="portal-brochure-strip__feature">
               <Sparkles size={16} />
-              <span>Curated event experience</span>
+              <span>Premium event experience</span>
             </div>
             <div className="portal-brochure-strip__feature">
               <CheckCircle2 size={16} />
-              <span>Fast registration workflow</span>
+              <span>Live registration and tracker</span>
             </div>
             <div className="portal-brochure-strip__feature">
               <GraduationCap size={16} />
-              <span>Department-backed credibility</span>
+              <span>Institution-backed credibility</span>
+            </div>
+          </div>
+
+          <div className="portal-brochure-strip__lineup">
+            <div className="portal-brochure-strip__lineup-item">
+              <p>Events</p>
+              <span>Techxcelerate, Ranbhoomi, Utopia, Squid Game, Rangmanch, Tech KBC, Treasure Hunt</span>
+            </div>
+            <div className="portal-brochure-strip__lineup-item">
+              <p>Format</p>
+              <span>Technical competitions, esports, and flagship showcases with a premium registration flow.</span>
             </div>
           </div>
 
@@ -336,16 +397,23 @@ function PremiumBrochureStripBase() {
         </div>
 
         <div className="portal-brochure-strip__aside portal-brochure-strip__aside--right">
-          <div className="portal-brochure-strip__coordinator-card">
-            <p className="portal-brochure-strip__coordinator-kicker">Coordinator Highlights</p>
-            <div className="portal-brochure-strip__coordinator-groups">
-              {BROCHURE_COORDINATOR_GROUPS.map((group) => (
-                <div key={group.title} className="portal-brochure-strip__coordinator-group">
-                  <p>{group.title}</p>
-                  <span>{group.contacts.join(' / ')}</span>
+          <div className="portal-brochure-strip__event-stack">
+            {rightPods.map((pod) => (
+              <article key={pod.title} className="portal-brochure-strip__event-pod">
+                <div className="portal-brochure-strip__event-pod-cap">
+                  <p>{pod.title}</p>
+                  <span>{pod.subtitle}</span>
                 </div>
-              ))}
-            </div>
+                <div className="portal-brochure-strip__event-pod-body">
+                  {pod.contacts.map((contact) => (
+                    <div key={contact} className="portal-brochure-strip__event-contact">
+                      <CheckCircle2 size={14} />
+                      <span>{contact}</span>
+                    </div>
+                  ))}
+                </div>
+              </article>
+            ))}
           </div>
 
           <a href="#registration-panel" className="portal-brochure-strip__qr-card">
@@ -354,7 +422,7 @@ function PremiumBrochureStripBase() {
             </div>
             <div>
               <p className="portal-brochure-strip__qr-title">Official Access</p>
-              <span className="portal-brochure-strip__qr-copy">Move from brochure feel to live registration in one click.</span>
+              <span className="portal-brochure-strip__qr-copy">Open the live portal and move from brochure feel to verified registration in one click.</span>
             </div>
           </a>
         </div>
