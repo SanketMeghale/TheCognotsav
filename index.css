@@ -72,7 +72,7 @@
 html {
   background: #05070d;
   overflow-x: clip;
-  scroll-behavior: auto;
+  scroll-behavior: smooth;
   scroll-padding-top: 5.5rem;
 }
 
@@ -92,6 +92,18 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+.portal-deferred-section,
+.portal-content-visibility-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 720px;
 }
 
 .portal-brand-mark,

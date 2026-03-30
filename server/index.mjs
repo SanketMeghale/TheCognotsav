@@ -37,6 +37,10 @@ const smtpUser = String(process.env.SMTP_USER || '').trim();
 const smtpPass = String(process.env.SMTP_PASS || '').trim();
 const smtpFromEmail = String(process.env.SMTP_FROM_EMAIL || smtpUser || '').trim();
 const smtpFromName = String(process.env.SMTP_FROM_NAME || 'CEAS COGNOTSAV').trim();
+const registrationAlertRecipients = String(process.env.REGISTRATION_ALERT_EMAILS || '')
+  .split(',')
+  .map((value) => normalizeEmail(value))
+  .filter(Boolean);
 const publicAppUrl = String(process.env.PUBLIC_APP_URL || 'https://cognotsav.up.railway.app').trim().replace(/\/+$/, '');
 const resendApiKey = String(process.env.RESEND_API_KEY || '').trim();
 const brevoApiKey = String(process.env.BREVO_API_KEY || '').trim();
@@ -880,6 +884,119 @@ function buildStatusEmail(registration) {
     html,
     preview: text.slice(0, 280),
   };
+}
+
+function buildAdminRegistrationAlertEmail(registration) {
+  const eventLine = `${registration.event_name} / ${registration.date_label} / ${registration.time_label}`;
+  const statusLabel = getPaymentStatusLabel(registration.status);
+  const participantsSummary = Array.isArray(registration.participants) && registration.participants.length > 0
+    ? registration.participants
+      .map((participant, index) => `${index + 1}. ${participant.fullName} / ${participant.email} / ${participant.phone}`)
+      .join('\n')
+    : 'Participant details unavailable.';
+  const participantsHtml = Array.isArray(registration.participants) && registration.participants.length > 0
+    ? registration.participants
+      .map(
+        (participant, index) => `
+          <div style="padding:12px 0;border-top:${index === 0 ? 'none' : '1px solid rgba(255,255,255,0.08)'};">
+            <div style="font-weight:700;color:#ffffff;">${index + 1}. ${escapeHtml(participant.fullName)}</div>
+            <div style="margin-top:4px;color:#cbd5e1;font-size:13px;line-height:1.7;">
+              ${escapeHtml(participant.email)}<br />
+              ${escapeHtml(participant.phone)}
+            </div>
+          </div>
+        `,
+      )
+      .join('')
+    : '<div style="color:#cbd5e1;">Participant details unavailable.</div>';
+  const subject = `New registration received - ${registration.event_name} - ${registration.registration_code}`;
+  const text = [
+    'New participant registration received.',
+    '',
+    `Registration code: ${registration.registration_code}`,
+    `Status: ${statusLabel}`,
+    `Event: ${registration.event_name}`,
+    `Schedule: ${eventLine}`,
+    `Venue: ${registration.venue}`,
+    `Team name: ${registration.team_name}`,
+    `College: ${registration.college_name}`,
+    `Department / Year: ${registration.department_name} / ${registration.year_of_study}`,
+    `Contact: ${registration.contact_name}`,
+    `Email: ${registration.contact_email}`,
+    `Phone: ${registration.contact_phone}`,
+    `Amount: INR ${registration.total_amount}`,
+    `Payment reference: ${registration.payment_reference || 'Not provided'}`,
+    registration.notes ? `Notes: ${registration.notes}` : null,
+    '',
+    'Participants:',
+    participantsSummary,
+    '',
+    `Admin panel: ${publicAppUrl}/#admin-registrations`,
+  ].filter(Boolean).join('\n');
+  const gridSections = buildEmailInfoGrid([
+    { label: 'Registration code', value: escapeHtml(registration.registration_code) },
+    { label: 'Status', value: escapeHtml(statusLabel), valueColor: '#67e8f9' },
+    { label: 'Event', value: escapeHtml(registration.event_name) },
+    { label: 'Schedule', value: escapeHtml(eventLine), compact: true },
+    { label: 'Team name', value: escapeHtml(registration.team_name) },
+    { label: 'Amount', value: escapeHtml(`INR ${registration.total_amount}`) },
+    { label: 'Contact', value: escapeHtml(registration.contact_name) },
+    { label: 'Email', value: escapeHtml(registration.contact_email), compact: true },
+    { label: 'Phone', value: escapeHtml(registration.contact_phone) },
+    { label: 'Payment ref', value: escapeHtml(registration.payment_reference || 'Not provided'), compact: true },
+    { label: 'College', value: escapeHtml(registration.college_name), compact: true },
+    { label: 'Department / Year', value: escapeHtml(`${registration.department_name} / ${registration.year_of_study}`), compact: true },
+  ]);
+  const html = buildPortalEmailHtml({
+    overline: 'Organizer Alert',
+    title: 'New Registration Received',
+    intro: `A new participant registration was submitted for <strong>${escapeHtml(registration.event_name)}</strong>. Review the details below and open the admin panel if follow-up is needed.`,
+    accentGradient: 'linear-gradient(90deg,rgba(34,211,238,0.18),rgba(59,130,246,0.18),rgba(251,191,36,0.18))',
+    accentTone: '#67e8f9',
+    badgeLabel: escapeHtml(statusLabel),
+    sections: [gridSections],
+    notice: registration.notes ? `Participant note: ${escapeHtml(registration.notes)}` : '',
+    bodyAfterGrid: `
+      <div style="margin-top:8px;">
+        <div style="font-size:12px;letter-spacing:0.22em;text-transform:uppercase;color:#93c5fd;font-weight:700;">Participants</div>
+        <div style="margin-top:12px;border-radius:18px;padding:16px;background:linear-gradient(180deg,rgba(15,23,42,0.78),rgba(255,255,255,0.04));border:1px solid rgba(255,255,255,0.08);">
+          ${participantsHtml}
+        </div>
+        <div style="margin-top:16px;text-align:center;">
+          <a href="${publicAppUrl}/#admin-registrations" style="display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:linear-gradient(90deg,#67e8f9,#fbbf24);color:#041018;text-decoration:none;padding:13px 22px;font-size:13px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;">Open Admin Panel</a>
+        </div>
+      </div>
+    `,
+    footerCopy: 'This alert was generated automatically by the CEAS COGNOTSAV registration portal.',
+  });
+
+  return {
+    subject,
+    text,
+    html,
+  };
+}
+
+async function sendAdminRegistrationAlert(registration) {
+  if (!registration || registrationAlertRecipients.length === 0 || !emailConfigured) {
+    return null;
+  }
+
+  const email = buildAdminRegistrationAlertEmail(registration);
+
+  try {
+    await sendPortalMail({
+      from: smtpFromName ? `"${smtpFromName}" <${smtpFromEmail}>` : smtpFromEmail,
+      to: registrationAlertRecipients,
+      subject: email.subject,
+      text: email.text,
+      html: email.html,
+    });
+  } catch (error) {
+    console.error('Admin registration alert failed', error);
+  }
+
+  return null;
 }
 
 async function logRegistrationNotification({
@@ -2250,22 +2367,34 @@ app.post('/api/registrations', async (req, res) => {
     }
 
     await client.query('COMMIT');
-    const notification = await sendStatusNotification({
+    const notificationRegistration = {
       id: registrationId,
+      event_slug: eventSlug,
       registration_code: registrationCode,
       team_name: String(teamName).trim(),
+      college_name: String(collegeName).trim(),
+      department_name: String(departmentName).trim(),
+      year_of_study: String(yearOfStudy).trim(),
       contact_name: String(contactName).trim(),
       contact_email: normalizeEmail(contactEmail),
       contact_phone: String(contactPhone).trim(),
       payment_reference: paymentReference ? String(paymentReference).trim() : null,
       total_amount: totalAmount,
       status: initialStatus,
+      notes: notes ? String(notes).trim() : null,
+      participants: participants.map((participant) => ({
+        fullName: String(participant.fullName).trim(),
+        email: normalizeEmail(participant.email),
+        phone: String(participant.phone).trim(),
+      })),
       review_note: null,
       event_name: event.name,
       date_label: event.date_label,
       time_label: event.time_label,
       venue: event.venue,
-    });
+    };
+    const notification = await sendStatusNotification(notificationRegistration);
+    await sendAdminRegistrationAlert(notificationRegistration);
 
     return res.status(201).json({
       success: true,

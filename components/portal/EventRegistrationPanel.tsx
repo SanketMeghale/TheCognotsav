@@ -224,6 +224,9 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const canOpenPaymentApp = typeof window !== 'undefined' && /Android|iPhone|iPad|iPod/i.test(window.navigator.userAgent);
   const isSoloEvent = selectedEvent.min_members === 1 && !selectedEvent.is_team_event;
   const registrationPaused = selectedEvent.registration_enabled === false;
+  const scrollBehavior = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    ? 'auto'
+    : 'smooth';
   const scrollToRegistrationForm = () => {
     if (typeof window === 'undefined') return;
 
@@ -231,7 +234,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
     if (!formSection) return;
 
     const top = formSection.getBoundingClientRect().top + window.scrollY - 96;
-    window.scrollTo({ top: Math.max(top, 0), behavior: 'auto' });
+    window.scrollTo({ top: Math.max(top, 0), behavior: scrollBehavior });
   };
 
   useEffect(() => {
@@ -261,12 +264,12 @@ export const EventRegistrationPanel: React.FC<Props> = ({
     if (!successReceipt || !passCardRef.current || typeof window === 'undefined') return;
 
     const animationFrame = window.requestAnimationFrame(() => {
-      passCardRef.current?.scrollIntoView({ behavior: 'auto', block: 'start' });
+      passCardRef.current?.scrollIntoView({ behavior: scrollBehavior, block: 'start' });
       passCardRef.current?.focus({ preventScroll: true });
     });
 
     return () => window.cancelAnimationFrame(animationFrame);
-  }, [successReceipt]);
+  }, [scrollBehavior, successReceipt]);
 
   const handleCopyCode = async (code: string) => {
     try {

@@ -79,6 +79,36 @@ const FAQSection = lazy(() => loadLazyModule(loadFAQSection).then((module) => ({
 const TrackerAdminPanel = lazy(() => loadLazyModule(loadTrackerAdminPanel).then((module) => ({ default: module.TrackerAdminPanel })));
 const PortalFooter = lazy(() => loadLazyModule(loadPortalFooter).then((module) => ({ default: module.PortalFooter })));
 
+function scrollToViewportTop() {
+  if (typeof window === 'undefined') return;
+  window.scrollTo({ top: 0, behavior: 'auto' });
+}
+
+function scheduleBrowserIdleTask(task: () => void) {
+  if (typeof window === 'undefined') {
+    return () => undefined;
+  }
+
+  type IdleWindow = Window & typeof globalThis & {
+    requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
+    cancelIdleCallback?: (id: number) => void;
+  };
+
+  const idleWindow = window as IdleWindow;
+
+  if (typeof idleWindow.requestIdleCallback === 'function') {
+    const idleId = idleWindow.requestIdleCallback(task, { timeout: 1500 });
+    return () => {
+      if (typeof idleWindow.cancelIdleCallback === 'function') {
+        idleWindow.cancelIdleCallback(idleId);
+      }
+    };
+  }
+
+  const timeoutId = window.setTimeout(task, 350);
+  return () => window.clearTimeout(timeoutId);
+}
+
 type FormState = {
   teamName: string;
   collegeName: string;
@@ -330,7 +360,7 @@ function DeferredSectionBase({
   className?: string;
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const [shouldRender, setShouldRender] = useState(false);
+  const [shouldRender, setShouldRender] = useState(() => typeof window !== 'undefined' && !('IntersectionObserver' in window));
 
   useEffect(() => {
     if (shouldRender || typeof window === 'undefined') {
@@ -339,7 +369,6 @@ function DeferredSectionBase({
 
     const node = containerRef.current;
     if (!node || !('IntersectionObserver' in window)) {
-      setShouldRender(true);
       return undefined;
     }
 
@@ -1020,6 +1049,15 @@ export const App: React.FC = () => {
     return () => window.clearTimeout(timer);
   }, [navigationLoading, hashRoute]);
 
+  useEffect(() => scheduleBrowserIdleTask(() => {
+    void loadAnnouncementArchiveSection();
+    void loadEventRegistrationPanel();
+    void loadFAQSection();
+    void loadTrackerAdminPanel();
+    void loadPortalFooter();
+    void loadTimelinePage();
+  }), []);
+
   const eventPageSlug = hashRoute.startsWith('#events/') ? hashRoute.slice('#events/'.length) : '';
   const isAdminPage = hashRoute.startsWith('#admin-registrations');
   const isTimelinePage = hashRoute === '#timeline';
@@ -1056,9 +1094,7 @@ export const App: React.FC = () => {
       if (document.activeElement instanceof HTMLElement) {
         document.activeElement.blur();
       }
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-      window.scrollTo({ top: 0, behavior: 'auto' });
+      scrollToViewportTop();
     });
 
     return () => window.cancelAnimationFrame(animationFrame);
@@ -1069,7 +1105,7 @@ export const App: React.FC = () => {
       return;
     }
 
-    window.scrollTo({ top: 0, behavior: 'auto' });
+    scrollToViewportTop();
   }, [isAdminPage, hashRoute]);
 
   useEffect(() => {
@@ -1077,7 +1113,7 @@ export const App: React.FC = () => {
       return;
     }
 
-    window.scrollTo({ top: 0, behavior: 'auto' });
+    scrollToViewportTop();
   }, [isDepartmentPage, hashRoute]);
 
   useEffect(() => {
@@ -1089,9 +1125,7 @@ export const App: React.FC = () => {
       if (document.activeElement instanceof HTMLElement) {
         document.activeElement.blur();
       }
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-      window.scrollTo({ top: 0, behavior: 'auto' });
+      scrollToViewportTop();
     });
 
     return () => window.cancelAnimationFrame(animationFrame);
@@ -1128,9 +1162,7 @@ export const App: React.FC = () => {
       if (window.location.hash.toLowerCase() !== nextHash.toLowerCase()) {
         window.history.pushState(null, '', nextHash);
       }
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-      window.scrollTo({ top: 0, behavior: 'auto' });
+      scrollToViewportTop();
       setHashRoute(nextHash.toLowerCase());
     }
   };
@@ -1147,8 +1179,7 @@ export const App: React.FC = () => {
       if (window.location.hash.toLowerCase() !== nextHash) {
         window.history.pushState(null, '', nextHash);
       }
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
+      scrollToViewportTop();
       setHashRoute(nextHash);
     }
   };
@@ -2074,7 +2105,7 @@ export const App: React.FC = () => {
 
             <div className={`${shellClassName} portal-section-divider`} aria-hidden="true" />
 
-            <DeferredSection fallback={<PortalSectionFallback label="Loading updates..." />}>
+            <DeferredSection className="portal-deferred-section" fallback={<PortalSectionFallback label="Loading updates..." />}>
               <Suspense fallback={<PortalSectionFallback label="Loading updates..." />}>
                 <AnnouncementArchiveSection
                   announcements={visibleAnnouncements}
@@ -2094,7 +2125,7 @@ export const App: React.FC = () => {
               onSelectEvent={handleSelectEvent}
             />
 
-            <DeferredSection fallback={<PortalSectionFallback label="Loading tracker..." />}>
+            <DeferredSection className="portal-deferred-section" fallback={<PortalSectionFallback label="Loading tracker..." />}>
               <Suspense fallback={<PortalSectionFallback label="Loading tracker..." />}>
                 <TrackerAdminPanel
                   lookupQuery={lookupQuery}
@@ -2119,7 +2150,7 @@ export const App: React.FC = () => {
               </Suspense>
             </DeferredSection>
 
-            <DeferredSection fallback={<PortalSectionFallback label="Loading FAQs..." />}>
+            <DeferredSection className="portal-deferred-section" fallback={<PortalSectionFallback label="Loading FAQs..." />}>
               <Suspense fallback={<PortalSectionFallback label="Loading FAQs..." />}>
                 <FAQSection />
               </Suspense>
@@ -2182,7 +2213,7 @@ export const App: React.FC = () => {
         </>
       ) : null}
 
-      <DeferredSection fallback={<PortalSectionFallback label="Loading footer..." />} rootMargin="220px 0px">
+      <DeferredSection className="portal-deferred-section" fallback={<PortalSectionFallback label="Loading footer..." />} rootMargin="220px 0px">
         <Suspense fallback={<PortalSectionFallback label="Loading footer..." />}>
           <PortalFooter />
         </Suspense>
