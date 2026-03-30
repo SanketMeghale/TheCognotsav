@@ -255,9 +255,6 @@ function PremiumBrochureStripBase() {
         <div>
           <p className="portal-brochure-strip__eyebrow">Official Event Poster</p>
           <h3 className="portal-brochure-strip__title">Cognotsav 2026 Snapshot</h3>
-          <p className="portal-brochure-strip__intro">
-            A direct poster view between the hero and competitions for a cleaner, more premium presentation on mobile and desktop.
-          </p>
         </div>
         <div className="portal-brochure-strip__actions">
           <a href="#registration-panel" className="portal-premium-button portal-premium-button--primary">
