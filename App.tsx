@@ -248,6 +248,19 @@ function DepartmentIntroStripBase() {
 const DepartmentIntroStrip = memo(DepartmentIntroStripBase);
 
 function PremiumBrochureStripBase() {
+  const posterSlides = [
+    {
+      src: '/images/cognotsav-poster.png',
+      alt: 'Cognotsav 2026 official event poster',
+      label: 'Official Event Poster',
+    },
+    {
+      src: '/images/cognotsav-rules-poster.png',
+      alt: 'Cognotsav 2026 rules and regulations poster',
+      label: 'Rules and Regulations',
+    },
+  ];
+
   return (
     <section className="portal-brochure-strip portal-glow-card portal-glass rounded-[1.8rem] p-4 md:rounded-[2rem] md:p-6" data-reveal="fade-up">
       <div className="portal-brochure-strip__header">
@@ -266,17 +279,24 @@ function PremiumBrochureStripBase() {
         </div>
       </div>
 
-      <div className="portal-brochure-poster-frame">
-        <div className="portal-brochure-poster-frame__glow" aria-hidden="true" />
-        <div className="portal-brochure-poster-frame__inner">
-          <img
-            src="/images/cognotsav-poster.png"
-            alt="Cognotsav 2026 official event poster"
-            loading="lazy"
-            decoding="async"
-            className="portal-brochure-poster-frame__image"
-          />
-        </div>
+      <div className="portal-brochure-poster-stack">
+        {posterSlides.map((poster) => (
+          <div key={poster.src} className="portal-brochure-poster-block">
+            <p className="portal-brochure-poster-block__label">{poster.label}</p>
+            <div className="portal-brochure-poster-frame">
+              <div className="portal-brochure-poster-frame__glow" aria-hidden="true" />
+              <div className="portal-brochure-poster-frame__inner">
+                <img
+                  src={poster.src}
+                  alt={poster.alt}
+                  loading="lazy"
+                  decoding="async"
+                  className="portal-brochure-poster-frame__image"
+                />
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
 
       <div className="portal-brochure-strip__footer">

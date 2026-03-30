@@ -168,7 +168,6 @@ body {
 
 .portal-brochure-poster-frame {
   position: relative;
-  margin-top: 1.25rem;
   border-radius: 1.7rem;
   padding: 1px;
   background: linear-gradient(135deg, rgba(34, 211, 238, 0.5), rgba(255, 255, 255, 0.18) 35%, rgba(251, 191, 36, 0.4));
@@ -205,6 +204,25 @@ body {
   height: auto;
   border-radius: 1.2rem;
   background: #ffffff;
+}
+
+.portal-brochure-poster-stack {
+  margin-top: 1.25rem;
+  display: grid;
+  gap: 1.15rem;
+}
+
+.portal-brochure-poster-block {
+  position: relative;
+}
+
+.portal-brochure-poster-block__label {
+  margin: 0 0 0.65rem;
+  color: #dbeafe;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
 }
 
 .portal-brochure-strip__actions {
