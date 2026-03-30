@@ -216,13 +216,68 @@ body {
   position: relative;
 }
 
+.portal-brochure-poster-block__topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-bottom: 0.65rem;
+}
+
 .portal-brochure-poster-block__label {
-  margin: 0 0 0.65rem;
+  margin: 0;
   color: #dbeafe;
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.22em;
   text-transform: uppercase;
+}
+
+.portal-brochure-poster-block__controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.portal-brochure-poster-block__nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  color: #e2e8f0;
+  transition: background 180ms ease, border-color 180ms ease, transform 180ms ease;
+}
+
+.portal-brochure-poster-block__nav:hover {
+  background: rgba(34, 211, 238, 0.12);
+  border-color: rgba(34, 211, 238, 0.28);
+  transform: translateY(-1px);
+}
+
+.portal-brochure-poster-block__dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+}
+
+.portal-brochure-poster-block__dot {
+  width: 0.72rem;
+  height: 0.72rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.14);
+  transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+}
+
+.portal-brochure-poster-block__dot.is-active {
+  background: #22d3ee;
+  border-color: rgba(34, 211, 238, 0.8);
+  transform: scale(1.08);
 }
 
 .portal-brochure-strip__actions {
@@ -242,6 +297,11 @@ body {
   .portal-brochure-strip__header {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .portal-brochure-poster-block__topbar {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .portal-brochure-strip__footer {

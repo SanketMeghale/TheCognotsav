@@ -260,6 +260,17 @@ function PremiumBrochureStripBase() {
       label: 'Rules and Regulations',
     },
   ];
+  const [activePosterIndex, setActivePosterIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setActivePosterIndex((current) => (current + 1) % posterSlides.length);
+    }, 4500);
+
+    return () => window.clearInterval(timer);
+  }, [posterSlides.length]);
+
+  const activePoster = posterSlides[activePosterIndex];
 
   return (
     <section className="portal-brochure-strip portal-glow-card portal-glass rounded-[1.8rem] p-4 md:rounded-[2rem] md:p-6" data-reveal="fade-up">
@@ -280,23 +291,53 @@ function PremiumBrochureStripBase() {
       </div>
 
       <div className="portal-brochure-poster-stack">
-        {posterSlides.map((poster) => (
-          <div key={poster.src} className="portal-brochure-poster-block">
-            <p className="portal-brochure-poster-block__label">{poster.label}</p>
-            <div className="portal-brochure-poster-frame">
-              <div className="portal-brochure-poster-frame__glow" aria-hidden="true" />
-              <div className="portal-brochure-poster-frame__inner">
-                <img
-                  src={poster.src}
-                  alt={poster.alt}
-                  loading="lazy"
-                  decoding="async"
-                  className="portal-brochure-poster-frame__image"
-                />
-              </div>
+        <div className="portal-brochure-poster-block">
+          <div className="portal-brochure-poster-block__topbar">
+            <p className="portal-brochure-poster-block__label">{activePoster.label}</p>
+            <div className="portal-brochure-poster-block__controls">
+              <button
+                type="button"
+                onClick={() => setActivePosterIndex((current) => (current - 1 + posterSlides.length) % posterSlides.length)}
+                className="portal-brochure-poster-block__nav"
+                aria-label="Show previous poster"
+              >
+                <ArrowLeft size={16} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setActivePosterIndex((current) => (current + 1) % posterSlides.length)}
+                className="portal-brochure-poster-block__nav"
+                aria-label="Show next poster"
+              >
+                <ArrowRight size={16} />
+              </button>
             </div>
           </div>
-        ))}
+          <div className="portal-brochure-poster-frame">
+            <div className="portal-brochure-poster-frame__glow" aria-hidden="true" />
+            <div className="portal-brochure-poster-frame__inner">
+              <img
+                key={activePoster.src}
+                src={activePoster.src}
+                alt={activePoster.alt}
+                loading="lazy"
+                decoding="async"
+                className="portal-brochure-poster-frame__image"
+              />
+            </div>
+          </div>
+          <div className="portal-brochure-poster-block__dots" aria-label="Poster slides">
+            {posterSlides.map((poster, index) => (
+              <button
+                key={poster.src}
+                type="button"
+                onClick={() => setActivePosterIndex(index)}
+                className={`portal-brochure-poster-block__dot ${index === activePosterIndex ? 'is-active' : ''}`}
+                aria-label={`Show ${poster.label}`}
+              />
+            ))}
+          </div>
+        </div>
       </div>
 
       <div className="portal-brochure-strip__footer">
