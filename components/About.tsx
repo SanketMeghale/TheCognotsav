@@ -70,7 +70,7 @@ const About: React.FC = () => {
 
         {/* Counters Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <StatBox label="Mega Rewards" value="₹1 LAKH+" sublabel="Prize Pool🏆" />
+          <StatBox label="Mega Rewards" value="Up to ₹5,000" sublabel="Prize Pool" />
           <StatBox label="Total Competitions" value="SIX" sublabel="Categories" />
           <StatBox label="Expected Reach" value="1500+" sublabel="Participants" />
         </div>

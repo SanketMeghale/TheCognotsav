@@ -8,7 +8,7 @@ export const eventSeed = [
     venue: 'CE Department',
     description:
       'A fast-paced technical quiz for students who enjoy sharp thinking, buzzer pressure, and team strategy.',
-    prize: 'INR 10,000',
+    prize: 'INR 5,000',
     registration_fee: 100,
     registration_fee_label: 'INR 100 per team',
     min_members: 2,
@@ -84,7 +84,7 @@ export const eventSeed = [
     venue: 'NASA Point',
     description:
       'A solo fun event with high participant volume, built for quick on-site filtering and export.',
-    prize: 'INR 7,000',
+    prize: 'INR 5,000',
     registration_fee: 50,
     registration_fee_label: 'INR 50 per person',
     min_members: 1,
@@ -110,7 +110,7 @@ export const eventSeed = [
     venue: 'Seminar Hall',
     description:
       'Performance event with flexible team size, ideal for a participant portal that handles solo to group entries cleanly.',
-    prize: 'INR 8,000',
+    prize: 'INR 5,000',
     registration_fee: 50,
     registration_fee_label: 'INR 50 per participant',
     min_members: 1,
@@ -161,7 +161,7 @@ export const eventSeed = [
     venue: 'CE Department',
     description:
       'Project showcase portal entry for prototype teams, with structured records for organizers and judges.',
-    prize: 'INR 12,000',
+    prize: 'INR 5,000',
     registration_fee: 100,
     registration_fee_label: 'INR 100 - INR 200',
     min_members: 1,
@@ -187,7 +187,7 @@ export const eventSeed = [
     venue: 'CE Department',
     description:
       'Flagship coding challenge with flexible squad formation and a review-friendly registration pipeline.',
-    prize: 'INR 15,000',
+    prize: 'INR 5,000',
     registration_fee: 250,
     registration_fee_label: 'INR 250 per registration',
     min_members: 1,

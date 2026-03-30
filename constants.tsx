@@ -35,7 +35,7 @@ export const COMPETITIONS: Competition[] = [
     minMembers: 2,
     maxMembers: 2,
     pricing: { team: 100 },
-    prize: '\u20B910,000',
+    prize: '\u20B95,000',
     registrationFee: '\u20B9100 per team',
     maxSlots: 60,
     category: EventCategory.TECHNICAL,
@@ -89,7 +89,7 @@ export const COMPETITIONS: Competition[] = [
     minMembers: 1,
     maxMembers: 1,
     pricing: { person: 50 },
-    prize: '\u20B97,000',
+    prize: '\u20B95,000',
     registrationFee: '\u20B950 per person',
     maxSlots: 150,
     category: EventCategory.FUN,
@@ -113,7 +113,7 @@ export const COMPETITIONS: Competition[] = [
       4: 200,
       5: 200
     },
-    prize: '\u20B98,000',
+    prize: '\u20B95,000',
     registrationFee: '\u20B950 - \u20B9200',
     maxSlots: 35,
     category: EventCategory.FUN,
@@ -154,7 +154,7 @@ export const COMPETITIONS: Competition[] = [
       3: 200,
       4: 200
     },
-    prize: '\u20B912,000',
+    prize: '\u20B95,000',
     registrationFee: '\u20B9100 - \u20B9200',
     maxSlots: 40,
     category: EventCategory.TECHNICAL,
@@ -172,7 +172,7 @@ export const COMPETITIONS: Competition[] = [
     minMembers: 1,
     maxMembers: 5,
     pricing: { team: 250 },
-    prize: '\u20B915,000',
+    prize: '\u20B95,000',
     registrationFee: '\u20B9250 per registration',
     maxSlots: 80,
     category: EventCategory.TECHNICAL,
@@ -203,7 +203,7 @@ export const FAQS: FAQItem[] = [
 export const ANNOUNCEMENTS = [
   'Registrations for TechKBC are now LIVE!',
   'Esports slots for Ranbhoomi are filling up fast.',
-  'Exciting cash prizes worth \u20B91 Lakh+ up for grabs!',
+  'Cash prizes up to \u20B95,000 available across events!',
   'Showcase your innovation at TECHXCELERATE 2026.',
   'Join the 5-hour UTOPIA challenge!'
 ];
