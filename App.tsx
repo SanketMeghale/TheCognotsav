@@ -2214,10 +2214,6 @@ export const App: React.FC = () => {
 
             <DepartmentIntroStrip />
 
-            <div className={`${shellClassName} portal-section-divider`} aria-hidden="true" />
-
-            <div className={`${shellClassName} portal-section-divider portal-section-divider--angled`} aria-hidden="true" />
-
             <CompetitionGridSection
               events={events}
               loadingEvents={loadingEvents}
