@@ -1299,35 +1299,6 @@ img {
   opacity: 1;
 }
 
-.portal-competition-card__video-hint {
-  position: absolute;
-  left: 1rem;
-  top: 1.1rem;
-  z-index: 2;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.55rem;
-  min-width: max-content;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 999px;
-  background:
-    linear-gradient(135deg, rgba(13, 22, 38, 0.88), rgba(7, 13, 24, 0.84));
-  backdrop-filter: blur(16px);
-  box-shadow:
-    0 18px 34px rgba(2, 8, 23, 0.38),
-    0 0 0 1px rgba(255, 255, 255, 0.04) inset,
-    0 0 28px rgba(255, 180, 0, 0.16);
-  padding: 0.56rem 0.96rem 0.56rem 0.7rem;
-  color: #f8fafc;
-  font-size: 0.67rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  transform: translateX(0);
-  transition: opacity 180ms ease, transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
-}
-
 .portal-competition-card__video-fullscreen {
   position: absolute;
   right: 1rem;
@@ -1383,10 +1354,12 @@ img {
 
 .portal-competition-card__video-spotlight-core {
   display: inline-flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 4rem;
-  height: 4rem;
+  min-width: 8.75rem;
+  min-height: 8.75rem;
+  padding: 1rem 1.05rem 0.9rem;
   background: linear-gradient(135deg, #ffcf55, #ff7a00);
   color: #fff;
   box-shadow:
@@ -1395,23 +1368,9 @@ img {
   animation: portalVideoButtonFloat 2.6s ease-in-out infinite;
 }
 
-.portal-competition-card__video-shell:hover .portal-competition-card__video-hint,
-.portal-competition-card__video-shell:focus-visible .portal-competition-card__video-hint {
-  border-color: rgba(255, 180, 0, 0.42);
-  transform: translateX(0) translateY(-2px) scale(1.01);
-  box-shadow:
-    0 18px 36px rgba(2, 8, 23, 0.42),
-    0 0 0 1px rgba(255, 255, 255, 0.06) inset,
-    0 0 32px rgba(255, 122, 0, 0.2);
-}
-
 .portal-competition-card__video-shell:focus-visible {
   outline: 2px solid rgba(103, 232, 249, 0.45);
   outline-offset: -2px;
-}
-
-.portal-competition-card__video-shell .portal-competition-card__video.is-visible ~ .portal-competition-card__video-hint {
-  opacity: 0.92;
 }
 
 .portal-competition-card__video-shell .portal-competition-card__video.is-visible ~ .portal-competition-card__video-spotlight {
@@ -1419,23 +1378,30 @@ img {
   transform: scale(0.96);
 }
 
-.portal-competition-card__video-hint-icon {
+.portal-competition-card__video-spotlight-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2rem;
-  height: 2rem;
+  width: 3.25rem;
+  height: 3.25rem;
   border-radius: 999px;
-  background: linear-gradient(135deg, #ffb400, #ff7a00);
-  color: #f8fafc;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0.08));
   box-shadow:
-    0 10px 18px rgba(255, 122, 0, 0.32),
-    0 0 20px rgba(255, 180, 0, 0.22);
-  flex: 0 0 auto;
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 10px 24px rgba(0, 0, 0, 0.18);
 }
 
-.portal-competition-card__video-hint svg {
-  flex: 0 0 auto;
+.portal-competition-card__video-spotlight-label {
+  display: block;
+  margin-top: 0.7rem;
+  max-width: 9.5rem;
+  text-align: center;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1.4;
+  color: #fff7ed;
 }
 
 @media (max-width: 767px) {
@@ -1464,14 +1430,6 @@ img {
     white-space: nowrap;
   }
 
-  .portal-competition-card__video-hint {
-    left: 0.85rem;
-    top: 0.85rem;
-    padding: 0.52rem 0.82rem 0.52rem 0.62rem;
-    font-size: 0.6rem;
-    letter-spacing: 0.07em;
-  }
-
   .portal-competition-card__video-fullscreen {
     right: 0.85rem;
     top: 0.85rem;
@@ -1480,19 +1438,27 @@ img {
     letter-spacing: 0.07em;
   }
 
-  .portal-competition-card__video-hint-icon {
-    width: 1.8rem;
-    height: 1.8rem;
-  }
-
   .portal-competition-card__video-spotlight-ring {
     width: 4.9rem;
     height: 4.9rem;
   }
 
   .portal-competition-card__video-spotlight-core {
-    width: 3.4rem;
-    height: 3.4rem;
+    min-width: 7.4rem;
+    min-height: 7.4rem;
+    padding: 0.8rem 0.8rem 0.72rem;
+  }
+
+  .portal-competition-card__video-spotlight-icon {
+    width: 2.8rem;
+    height: 2.8rem;
+  }
+
+  .portal-competition-card__video-spotlight-label {
+    max-width: 8.25rem;
+    margin-top: 0.52rem;
+    font-size: 0.58rem;
+    letter-spacing: 0.09em;
   }
 }
 

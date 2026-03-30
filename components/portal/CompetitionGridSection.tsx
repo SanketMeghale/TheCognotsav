@@ -143,6 +143,25 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
     setActiveVideoSlug((current) => (current === slug ? null : slug));
   };
 
+  const requestFullscreenForVideo = async (video: HTMLVideoElement) => {
+    const fullscreenTarget = video.parentElement ?? video;
+    const fullscreenApi = (
+      fullscreenTarget.requestFullscreen
+      || (fullscreenTarget as HTMLElement & { webkitRequestFullscreen?: () => Promise<void> | void }).webkitRequestFullscreen
+      || (video as HTMLVideoElement & { webkitEnterFullscreen?: () => void }).webkitEnterFullscreen
+    );
+
+    if (typeof fullscreenApi !== 'function') {
+      return;
+    }
+
+    await fullscreenApi.call(
+      fullscreenApi === (video as HTMLVideoElement & { webkitEnterFullscreen?: () => void }).webkitEnterFullscreen
+        ? video
+        : fullscreenTarget,
+    );
+  };
+
   const openVideoFullscreen = async (slug: string) => {
     const video = videoRefs.current[slug];
     if (!video) {
@@ -161,12 +180,10 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
       // Ignore autoplay failures and still attempt fullscreen.
     }
 
-    if (document.fullscreenElement !== video && typeof video.requestFullscreen === 'function') {
-      try {
-        await video.requestFullscreen();
-      } catch {
-        // Fullscreen is optional enhancement.
-      }
+    try {
+      await requestFullscreenForVideo(video);
+    } catch {
+      // Fullscreen is optional enhancement.
     }
   };
 
@@ -279,6 +296,9 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
                             clickEvent.stopPropagation();
                             void openVideoFullscreen(event.slug);
                           }}
+                          onKeyDown={(keyEvent) => {
+                            keyEvent.stopPropagation();
+                          }}
                           aria-label={`Open ${event.name} intro video in fullscreen`}
                         >
                           <Maximize2 size={16} />
@@ -307,14 +327,11 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
                         <div className="portal-competition-card__video-spotlight" aria-hidden="true">
                           <span className="portal-competition-card__video-spotlight-ring" />
                           <span className="portal-competition-card__video-spotlight-core">
-                            <Play size={22} />
+                            <span className="portal-competition-card__video-spotlight-icon">
+                              <Play size={20} />
+                            </span>
+                            <span className="portal-competition-card__video-spotlight-label">{videoInstruction}</span>
                           </span>
-                        </div>
-                        <div className="portal-competition-card__video-hint" aria-hidden="true">
-                          <span className="portal-competition-card__video-hint-icon">
-                            <Play size={16} />
-                          </span>
-                          <span>{videoInstruction}</span>
                         </div>
                       </div>
                     ) : (
