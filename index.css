@@ -1775,11 +1775,13 @@ img {
   .portal-brand-card--nav {
     gap: 0.7rem;
     width: 100%;
-    padding: 0.72rem 0.95rem;
+    padding: 0.74rem 0.95rem;
   }
 
   .portal-brand-card--nav .portal-brand-copy {
     display: grid;
+    align-content: center;
+    gap: 0;
   }
 
   .portal-brand-card--nav .portal-brand-logo-frame {
@@ -1789,29 +1791,61 @@ img {
   }
 
   .portal-brand-card--nav .portal-brand-overline {
-    display: block;
-    font-size: 0.48rem;
-    letter-spacing: 0.18em;
-    white-space: nowrap;
+    display: none;
   }
 
   .portal-brand-card--nav .portal-brand-mark--nav {
-    gap: 0.32rem;
-    font-size: 1.04rem;
-    letter-spacing: 0.06em;
-    white-space: normal;
+    align-items: center;
+    gap: 0.26rem;
+    font-size: 1.08rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    line-height: 1.05;
+    white-space: nowrap;
+    text-shadow:
+      0 0 18px rgba(125, 211, 252, 0.16),
+      0 0 26px rgba(250, 204, 21, 0.08);
   }
 
   .portal-brand-card--nav .portal-brand-mark__prefix {
-    padding: 0.14rem 0.4rem 0.11rem;
-    font-size: 0.46em;
-    letter-spacing: 0.18em;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    color: transparent;
+    background-image: linear-gradient(135deg, #9ee7ff 0%, #5eead4 55%, #a5b4fc 100%);
+    background-size: 180% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    font-family: 'Oxanium', 'Orbitron', 'Inter', sans-serif;
+    font-size: 0.78em;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-shadow: none;
   }
 
   .portal-brand-card--nav .portal-brand-mark__year {
-    padding: 0.15rem 0.34rem 0.12rem;
-    font-size: 0.56em;
-    letter-spacing: 0.14em;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    color: transparent;
+    background-image: linear-gradient(135deg, #fde68a 0%, #fbbf24 45%, #fb7185 100%);
+    background-size: 180% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    font-family: 'Oxanium', 'Orbitron', 'Inter', sans-serif;
+    font-size: 0.78em;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+  }
+
+  .portal-brand-card--nav .portal-brand-mark__title,
+  .portal-brand-card--nav .portal-brand-mark__prefix,
+  .portal-brand-card--nav .portal-brand-mark__year {
+    animation: portalBrandSpectrum 5.6s ease-in-out infinite;
   }
 
   .portal-competition-card__video-fullscreen {
@@ -1849,28 +1883,23 @@ img {
 @media (max-width: 420px) {
   .portal-brand-card--nav {
     gap: 0.55rem;
-    padding: 0.68rem 0.8rem;
+    padding: 0.66rem 0.78rem;
   }
 
   .portal-brand-card--nav .portal-brand-mark--nav {
-    gap: 0.24rem;
+    gap: 0.2rem;
     font-size: 0.92rem;
-    letter-spacing: 0.04em;
-  }
-
-  .portal-brand-card--nav .portal-brand-overline {
-    font-size: 0.43rem;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.03em;
   }
 
   .portal-brand-card--nav .portal-brand-mark__prefix {
-    padding: 0.12rem 0.32rem 0.1rem;
-    font-size: 0.42em;
+    font-size: 0.72em;
+    letter-spacing: 0.08em;
   }
 
   .portal-brand-card--nav .portal-brand-mark__year {
-    padding: 0.12rem 0.28rem 0.1rem;
-    font-size: 0.52em;
+    font-size: 0.72em;
+    letter-spacing: 0.08em;
   }
 
   .portal-brand-card--nav .portal-brand-logo-frame {
