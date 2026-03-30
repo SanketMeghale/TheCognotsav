@@ -295,7 +295,22 @@ export const EventRegistrationPanel: React.FC<Props> = ({
         <div className="portal-event-layout__details space-y-5">
           <section className={`portal-event-showcase portal-glow-card portal-glass ${selectedTheme.glow}`}>
             <div className="portal-event-showcase__poster">
-              <img src={selectedEvent.poster_path} alt={selectedEvent.name} loading="eager" decoding="async" className="h-full w-full object-cover" />
+              {selectedEvent.intro_video_url ? (
+                <video
+                  src={selectedEvent.intro_video_url}
+                  poster={selectedEvent.poster_path}
+                  className="h-full w-full object-cover"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  controls
+                >
+                  Your browser does not support the event intro video.
+                </video>
+              ) : (
+                <img src={selectedEvent.poster_path} alt={selectedEvent.name} loading="eager" decoding="async" className="h-full w-full object-cover" />
+              )}
               <div className="portal-event-showcase__poster-overlay" />
             </div>
             <div className="px-5 pt-5 md:px-5 md:pt-5">
