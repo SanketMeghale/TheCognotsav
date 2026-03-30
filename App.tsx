@@ -263,6 +263,13 @@ function PremiumBrochureStripBase() {
   const [activePosterIndex, setActivePosterIndex] = useState(0);
 
   useEffect(() => {
+    posterSlides.forEach((poster) => {
+      const image = new Image();
+      image.src = poster.src;
+    });
+  }, []);
+
+  useEffect(() => {
     const timer = window.setInterval(() => {
       setActivePosterIndex((current) => (current + 1) % posterSlides.length);
     }, 4500);
@@ -317,11 +324,10 @@ function PremiumBrochureStripBase() {
             <div className="portal-brochure-poster-frame__glow" aria-hidden="true" />
             <div className="portal-brochure-poster-frame__inner">
               <img
-                key={activePoster.src}
                 src={activePoster.src}
                 alt={activePoster.alt}
-                loading="lazy"
-                decoding="async"
+                loading="eager"
+                decoding="sync"
                 className="portal-brochure-poster-frame__image"
               />
             </div>
