@@ -8779,16 +8779,19 @@ body {
   z-index: 1;
   padding-inline: 0.08em;
   background-size: 220% auto;
-  -webkit-text-stroke: 0.018em rgba(255, 255, 255, 0.06);
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 0.014em rgba(255, 255, 255, 0.035);
+  filter: saturate(1.18) brightness(1.04);
 }
 
 .portal-summit-hero__title-line--main {
   letter-spacing: -0.085em;
   line-height: 0.86;
+  background-image: linear-gradient(90deg, #22d37d 0%, #1ad9c3 18%, #27c7ff 36%, #3d8bff 56%, #705bff 70%, #ffcc45 86%, #ff8f3a 100%);
   transform: perspective(920px) rotateX(18deg) skewX(-10deg) scaleX(1.03);
   transform-origin: center bottom;
   text-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.18),
+    0 1px 0 rgba(255, 255, 255, 0.12),
     0 2px 0 rgba(4, 8, 18, 0.3),
     0 4px 0 rgba(4, 8, 18, 0.26),
     0 6px 0 rgba(4, 8, 18, 0.22),
@@ -8809,9 +8812,9 @@ body {
 }
 
 .portal-summit-hero__title-line--main::after {
-  color: rgba(255, 248, 220, 0.18);
+  color: rgba(255, 173, 72, 0.12);
   transform: translate(0.012em, 0.04em);
-  filter: blur(0.8px);
+  filter: blur(1px);
 }
 
 .portal-summit-hero__title-line--year {
@@ -8821,10 +8824,11 @@ body {
   font-size: 0.56em;
   letter-spacing: -0.08em;
   line-height: 0.92;
+  background-image: linear-gradient(90deg, #ffe36a 0%, #ffbf32 20%, #ff9255 42%, #ff54b3 66%, #9e68ff 86%, #58b6ff 100%);
   transform: perspective(760px) rotateX(17deg) skewX(-10deg) scaleX(1.02);
   transform-origin: center top;
   text-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.18),
+    0 1px 0 rgba(255, 255, 255, 0.12),
     0 2px 0 rgba(4, 8, 18, 0.28),
     0 4px 0 rgba(4, 8, 18, 0.24),
     0 7px 0 rgba(4, 8, 18, 0.18),
@@ -8837,9 +8841,9 @@ body {
 }
 
 .portal-summit-hero__title-line--year::after {
-  color: rgba(250, 204, 21, 0.22);
+  color: rgba(255, 184, 51, 0.15);
   transform: translate(0.012em, 0.04em);
-  filter: blur(0.8px);
+  filter: blur(1px);
 }
 
 @keyframes portalHeroTitleFloat {
