@@ -441,13 +441,13 @@ export const EventRegistrationPanel: React.FC<Props> = ({
               </div>
             </div>
             {quickDetails.length || eventStoryPoints.length ? (
-              <div className="portal-event-prep-grid">
+              <div className="portal-event-prep-layout">
                 {quickDetails.length ? (
-                  <div className="portal-event-prep-card">
-                    <p className="portal-event-prep-card__label">Event Essentials</p>
-                    <div className="portal-event-mini-grid mt-4">
+                  <div className="portal-event-prep-panel">
+                    <p className="portal-event-prep-panel__label">Event Essentials</p>
+                    <div className="portal-event-prep-list">
                       {quickDetails.map((item) => (
-                        <div key={item} className="portal-event-mini-grid__item">
+                        <div key={item} className="portal-event-prep-list__item">
                           <Trophy size={14} className="text-amber-200" />
                           <span>{item}</span>
                         </div>
@@ -456,11 +456,11 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                   </div>
                 ) : null}
                 {eventStoryPoints.length ? (
-                  <div className="portal-event-prep-card">
-                    <p className="portal-event-prep-card__label">Highlights</p>
-                    <div className="portal-event-note-list mt-4">
+                  <div className="portal-event-prep-panel">
+                    <p className="portal-event-prep-panel__label">Highlights</p>
+                    <div className="portal-event-prep-list">
                       {eventStoryPoints.map((item) => (
-                        <div key={item} className="portal-event-note-list__item">
+                        <div key={item} className="portal-event-prep-list__item">
                           <CheckCircle2 size={15} className="mt-0.5 shrink-0 text-cyan-200" />
                           <span>{item}</span>
                         </div>

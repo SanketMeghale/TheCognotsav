@@ -1339,6 +1339,13 @@ img {
   grid-template-columns: minmax(0, 1fr);
 }
 
+.portal-event-prep-layout {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 1rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .portal-event-prep-card {
   border-radius: 1.25rem;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -1352,6 +1359,41 @@ img {
   font-weight: 800;
   letter-spacing: 0.2em;
   text-transform: uppercase;
+}
+
+.portal-event-prep-panel {
+  border-radius: 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(155deg, rgba(7, 16, 31, 0.86), rgba(9, 23, 43, 0.72));
+  padding: 0.9rem 1rem;
+}
+
+.portal-event-prep-panel__label {
+  color: #93c5fd;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.portal-event-prep-list {
+  display: grid;
+  gap: 0;
+  margin-top: 0.55rem;
+}
+
+.portal-event-prep-list__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 0.72rem 0;
+  color: #dbeafe;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.portal-event-prep-list__item + .portal-event-prep-list__item {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .portal-event-story-card {
@@ -3663,6 +3705,10 @@ select.floating-field-input option {
 
   .portal-event-prep-grid {
     grid-template-columns: minmax(0, 1.12fr) minmax(18rem, 0.88fr);
+  }
+
+  .portal-event-prep-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
 
   .portal-bottom-dock-spacer {
@@ -6370,6 +6416,21 @@ footer {
 
   .portal-event-prep-grid {
     gap: 0.75rem;
+  }
+
+  .portal-event-prep-layout {
+    gap: 0.75rem;
+  }
+
+  .portal-event-prep-panel {
+    padding: 0.78rem 0.85rem;
+  }
+
+  .portal-event-prep-list__item {
+    gap: 0.55rem;
+    padding: 0.56rem 0;
+    font-size: 0.84rem;
+    line-height: 1.42;
   }
 
   .portal-event-mini-grid {
