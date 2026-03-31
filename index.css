@@ -6554,24 +6554,34 @@ footer {
 }
 
 .portal-front-hero__visual-logo-frame--editorial {
-  height: 9.8rem;
-  width: 9.8rem;
-  border-radius: 50%;
-  padding: 0.9rem;
-  background:
-    radial-gradient(circle at center, rgba(255, 255, 255, 0.22), rgba(148, 163, 184, 0.08)),
-    linear-gradient(180deg, rgba(15, 23, 42, 0.94), rgba(15, 23, 42, 0.82));
-  box-shadow:
-    0 18px 38px rgba(2, 8, 23, 0.28),
-    0 0 24px rgba(59, 130, 246, 0.1);
+  height: auto;
+  width: min(100%, 18rem);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
 }
 
 .portal-front-hero__visual-logo-frame--editorial .portal-front-hero__visual-image {
   min-height: 0;
   max-height: none;
-  border-radius: 50%;
+  border-radius: 0;
   object-fit: contain;
   object-position: center;
+}
+
+.portal-front-hero__visual-image--editorial {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  max-height: none;
+  object-fit: contain;
+  object-position: center;
+  filter:
+    drop-shadow(0 18px 34px rgba(0, 0, 0, 0.28))
+    drop-shadow(0 0 26px rgba(250, 204, 21, 0.14));
 }
 
 .portal-front-hero__visual-copy--editorial {
@@ -6685,9 +6695,7 @@ footer {
   }
 
   .portal-front-hero__visual-logo-frame--editorial {
-    height: min(42vw, 8.1rem);
-    width: min(42vw, 8.1rem);
-    padding: 0.72rem;
+    width: min(100%, 14.5rem);
   }
 
   .portal-front-hero__visual-copy--editorial .portal-front-hero__visual-title {

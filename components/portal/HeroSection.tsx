@@ -76,11 +76,11 @@ export const HeroSection: React.FC<Props> = memo(() => {
               <div className="portal-front-hero__visual-aura" aria-hidden="true" />
               <div className="portal-front-hero__visual-logo-frame portal-front-hero__visual-logo-frame--editorial">
                 <img
-                  src="/images/ceasposter.jpeg"
+                  src="/images/ceas-hero-emblem.png"
                   alt="CEAS COGNOTSAV crest"
                   loading="eager"
                   decoding="async"
-                  className="portal-front-hero__visual-image"
+                  className="portal-front-hero__visual-image portal-front-hero__visual-image--editorial"
                 />
               </div>
               <div className="portal-front-hero__visual-copy portal-front-hero__visual-copy--editorial">
