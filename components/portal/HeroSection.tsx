@@ -52,6 +52,23 @@ const heroBackdropAccents: BackdropAccent[] = [
   { Icon: Zap, tone: 'violet', style: { right: '22%', bottom: '31%' } },
 ];
 
+const heroMobileBackdropMarks: BackdropMark[] = [
+  { label: 'HTML5', Icon: FileCode2, tone: 'orange', variant: 'compact', style: { left: '5.5%', top: '76%', transform: 'rotate(-8deg)' } },
+  { label: 'BGMI', Icon: Gamepad2, tone: 'cyan', variant: 'compact', style: { left: '4.8%', bottom: '27%', transform: 'rotate(-8deg)' } },
+  { label: 'REACT', Icon: Orbit, tone: 'cyan', variant: 'compact', style: { left: '7.4%', top: '43%', transform: 'rotate(-10deg)' } },
+  { label: 'AI', Icon: Bot, tone: 'pink', variant: 'emblem', style: { right: '7.4%', top: '46%' } },
+  { label: 'GITHUB', Icon: Github, tone: 'violet', variant: 'compact', style: { right: '7.8%', bottom: '28%', transform: 'rotate(6deg)' } },
+  { label: 'FREE FIRE', Icon: Flame, tone: 'orange', variant: 'compact', style: { right: '11.4%', bottom: '11.5%', transform: 'rotate(-3deg)' } },
+  { label: 'HACK', Icon: MonitorUp, tone: 'violet', variant: 'compact', style: { left: '14%', bottom: '10.5%', transform: 'rotate(8deg)' } },
+];
+
+const heroMobileBackdropAccents: BackdropAccent[] = [
+  { Icon: Sparkles, tone: 'violet', style: { left: '12.5%', top: '28%' } },
+  { Icon: Zap, tone: 'orange', style: { right: '17%', top: '33%' } },
+  { Icon: ShieldCheck, tone: 'cyan', style: { left: '9%', bottom: '38%' } },
+  { Icon: Zap, tone: 'violet', style: { right: '14.5%', bottom: '39%' } },
+];
+
 const heroFeatureBadges = [
   { label: 'Certificates', Icon: Award, tone: 'cyan' },
   { label: 'Goodies', Icon: Gift, tone: 'amber' },
@@ -166,6 +183,27 @@ export const HeroSection: React.FC<Props> = memo(() => {
                 style={style}
               >
                 <Icon size={18} />
+              </span>
+            ))}
+            {heroMobileBackdropMarks.map(({ label, Icon, tone, variant, style }) => (
+              <div
+                key={`mobile-${label}`}
+                className={`portal-summit-hero__backdrop-mark portal-summit-hero__backdrop-mark--${tone} portal-summit-hero__backdrop-mark--${variant} portal-summit-hero__backdrop-mark--mobile-only`}
+                style={style}
+              >
+                <span className="portal-summit-hero__backdrop-mark-icon">
+                  <Icon size={variant === 'emblem' ? 16 : 15} />
+                </span>
+                <span className="portal-summit-hero__backdrop-mark-label">{label}</span>
+              </div>
+            ))}
+            {heroMobileBackdropAccents.map(({ Icon, tone, style }, index) => (
+              <span
+                key={`mobile-${tone}-${index}`}
+                className={`portal-summit-hero__backdrop-accent portal-summit-hero__backdrop-accent--${tone} portal-summit-hero__backdrop-accent--mobile-only`}
+                style={style}
+              >
+                <Icon size={16} />
               </span>
             ))}
           </div>

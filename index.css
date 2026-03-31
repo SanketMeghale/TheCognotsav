@@ -10161,6 +10161,11 @@ body {
     drop-shadow(0 0 24px var(--hero-backdrop-glow));
 }
 
+.portal-summit-hero__backdrop-mark--mobile-only,
+.portal-summit-hero__backdrop-accent--mobile-only {
+  display: none;
+}
+
 .portal-summit-hero__backdrop-pill--amber,
 .portal-summit-hero__backdrop-mark--amber,
 .portal-summit-hero__backdrop-accent--amber {
@@ -10536,29 +10541,97 @@ body {
   }
 
   .portal-summit-hero__backdrop {
-    opacity: 0.64;
+    opacity: 1;
+    background:
+      radial-gradient(circle at 14% 18%, rgba(255, 104, 219, 0.82) 0 1.2px, transparent 1.9px),
+      radial-gradient(circle at 34% 22%, rgba(107, 235, 255, 0.7) 0 1px, transparent 1.7px),
+      radial-gradient(circle at 74% 15%, rgba(255, 187, 92, 0.82) 0 1.2px, transparent 1.8px),
+      radial-gradient(circle at 86% 28%, rgba(115, 145, 255, 0.72) 0 1.1px, transparent 1.8px),
+      radial-gradient(circle at 10% 56%, rgba(107, 235, 255, 0.68) 0 1px, transparent 1.7px),
+      radial-gradient(circle at 89% 52%, rgba(255, 111, 214, 0.72) 0 1.2px, transparent 1.9px),
+      radial-gradient(circle at 20% 82%, rgba(255, 187, 92, 0.8) 0 1.15px, transparent 1.9px),
+      radial-gradient(circle at 78% 86%, rgba(106, 229, 255, 0.72) 0 1.1px, transparent 1.8px),
+      linear-gradient(125deg, transparent 0%, rgba(107, 235, 255, 0.08) 20%, transparent 27%),
+      linear-gradient(62deg, transparent 0%, rgba(255, 95, 210, 0.08) 18%, transparent 25%);
   }
 
   .portal-summit-hero__backdrop::before {
-    top: -9.4rem;
-    height: 11.4rem;
+    left: -22%;
+    top: -9.8rem;
+    width: 144%;
+    height: 12rem;
+    border: 0;
+    background: linear-gradient(
+      96deg,
+      rgba(82, 232, 255, 0) 0%,
+      rgba(82, 232, 255, 0.96) 18%,
+      rgba(97, 143, 255, 0.92) 38%,
+      rgba(239, 87, 255, 0.95) 62%,
+      rgba(255, 155, 86, 0.94) 80%,
+      rgba(255, 196, 92, 0) 100%
+    );
+    clip-path: ellipse(43% 23% at 50% 100%);
+    box-shadow:
+      0 0 18px rgba(82, 232, 255, 0.22),
+      0 0 32px rgba(239, 87, 255, 0.14);
+    opacity: 0.96;
   }
 
   .portal-summit-hero__backdrop::after {
-    top: -8.4rem;
-    height: 9.8rem;
+    left: -18%;
+    top: auto;
+    bottom: -8.8rem;
+    width: 136%;
+    height: 11.2rem;
+    border: 0;
+    background: linear-gradient(
+      96deg,
+      rgba(82, 232, 255, 0) 0%,
+      rgba(82, 232, 255, 0.84) 16%,
+      rgba(110, 132, 255, 0.86) 36%,
+      rgba(239, 87, 255, 0.9) 62%,
+      rgba(255, 146, 86, 0.9) 80%,
+      rgba(255, 196, 92, 0) 100%
+    );
+    clip-path: ellipse(44% 22% at 50% 0%);
+    box-shadow:
+      0 0 16px rgba(82, 232, 255, 0.18),
+      0 0 28px rgba(239, 87, 255, 0.14);
+    opacity: 0.88;
   }
 
   .portal-summit-hero__backdrop-pill {
-    min-height: 2.55rem;
-    padding: 0.62rem 0.92rem;
-    font-size: 0.78rem;
+    display: none;
   }
 
-  .portal-summit-hero__backdrop-pill--secondary,
   .portal-summit-hero__backdrop-mark,
   .portal-summit-hero__backdrop-accent {
     display: none;
+  }
+
+  .portal-summit-hero__backdrop-mark--mobile-only {
+    display: inline-flex;
+  }
+
+  .portal-summit-hero__backdrop-accent--mobile-only {
+    display: inline-flex;
+    opacity: 0.8;
+  }
+
+  .portal-summit-hero__backdrop-mark--mobile-only.portal-summit-hero__backdrop-mark--compact {
+    padding: 0.34rem 0.56rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+  }
+
+  .portal-summit-hero__backdrop-mark--mobile-only.portal-summit-hero__backdrop-mark--compact .portal-summit-hero__backdrop-mark-icon {
+    width: 1.45rem;
+    height: 1.45rem;
+  }
+
+  .portal-summit-hero__backdrop-mark--mobile-only.portal-summit-hero__backdrop-mark--emblem {
+    width: 2.4rem;
+    height: 2.4rem;
   }
 
   .portal-summit-hero__eyebrow--immersive {
