@@ -6801,3 +6801,540 @@ footer {
     font-size: 0.76rem;
   }
 }
+
+.portal-summit-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(circle at top, rgba(56, 189, 248, 0.12), transparent 24%),
+    radial-gradient(circle at bottom center, rgba(59, 130, 246, 0.1), transparent 30%),
+    linear-gradient(180deg, rgba(7, 10, 20, 0.98), rgba(9, 13, 25, 0.99));
+  padding: 1.35rem;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 26px 64px rgba(2, 8, 23, 0.42);
+}
+
+.portal-summit-hero::before,
+.portal-summit-hero::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  width: 140%;
+  height: 22rem;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.portal-summit-hero::before {
+  top: -16.5rem;
+  border: 2px solid rgba(88, 126, 255, 0.54);
+  box-shadow:
+    0 0 24px rgba(96, 165, 250, 0.3),
+    inset 0 0 20px rgba(34, 211, 238, 0.06);
+}
+
+.portal-summit-hero::after {
+  top: -12rem;
+  width: 118%;
+  border: 2px solid rgba(74, 222, 255, 0.42);
+  box-shadow:
+    0 0 22px rgba(74, 222, 255, 0.22),
+    inset 0 0 18px rgba(59, 130, 246, 0.05);
+}
+
+.portal-summit-hero__rail {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1rem 1.2rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(circle at top center, rgba(96, 165, 250, 0.12), transparent 62%),
+    linear-gradient(180deg, rgba(13, 18, 32, 0.92), rgba(10, 14, 26, 0.86));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 20px 42px rgba(2, 8, 23, 0.28);
+}
+
+.portal-summit-hero__rail::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(148, 163, 184, 0.24) 1px, transparent 1px);
+  background-size: 12px 12px;
+  opacity: 0.16;
+  pointer-events: none;
+}
+
+.portal-summit-hero__brand,
+.portal-summit-hero__nav-link,
+.portal-summit-hero__rail-cta,
+.portal-summit-hero__action {
+  text-decoration: none;
+}
+
+.portal-summit-hero__brand {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  min-width: 0;
+  color: #eef4ff;
+}
+
+.portal-summit-hero__brand-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.85rem;
+  height: 2.85rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(148, 163, 184, 0.06));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 12px 24px rgba(2, 8, 23, 0.2);
+}
+
+.portal-summit-hero__brand-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0.82rem;
+}
+
+.portal-summit-hero__brand-copy {
+  display: grid;
+  min-width: 0;
+  gap: 0.1rem;
+}
+
+.portal-summit-hero__brand-kicker {
+  color: rgba(191, 219, 254, 0.7);
+  font-size: 0.52rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.portal-summit-hero__brand-title {
+  font-family: 'Oxanium', 'Orbitron', 'Inter', sans-serif;
+  font-size: 1.38rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.portal-summit-hero__nav {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.7rem;
+}
+
+.portal-summit-hero__nav-link {
+  color: rgba(226, 232, 240, 0.78);
+  font-size: 0.96rem;
+  font-weight: 500;
+  transition: color 180ms ease, transform 180ms ease;
+}
+
+.portal-summit-hero__nav-link:hover {
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.portal-summit-hero__rail-cta {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-width: 8.7rem;
+  border-radius: 999px;
+  border: 1px solid rgba(246, 196, 86, 0.5);
+  padding: 0.82rem 1.2rem;
+  color: #f6cf71;
+  font-size: 0.92rem;
+  font-weight: 700;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 14px 26px rgba(0, 0, 0, 0.18);
+  transition: transform 180ms ease, border-color 180ms ease, color 180ms ease;
+}
+
+.portal-summit-hero__rail-cta:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 214, 102, 0.72);
+  color: #ffe6ac;
+}
+
+.portal-summit-hero__content {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  padding: 4.4rem 1rem 2.9rem;
+  text-align: center;
+}
+
+.portal-summit-hero__content::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(148, 163, 184, 0.22) 1px, transparent 1px);
+  background-size: 16px 16px;
+  opacity: 0.18;
+  pointer-events: none;
+  mask-image: radial-gradient(circle at center, black 42%, transparent 92%);
+}
+
+.portal-summit-hero__eyebrow,
+.portal-summit-hero__title,
+.portal-summit-hero__subtitle,
+.portal-summit-hero__description,
+.portal-summit-hero__actions,
+.portal-summit-hero__prize-card {
+  position: relative;
+  z-index: 1;
+}
+
+.portal-summit-hero__eyebrow {
+  margin: 0;
+  color: #d7ba74;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+
+.portal-summit-hero__title {
+  margin: 0;
+  color: #f8fafc;
+  font-family: 'Oxanium', 'Orbitron', 'Inter', sans-serif;
+  font-size: clamp(3rem, 5.4vw, 5.3rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+}
+
+.portal-summit-hero__subtitle {
+  margin: 0;
+  color: rgba(241, 245, 249, 0.9);
+  font-size: clamp(1.25rem, 2vw, 2rem);
+  font-weight: 500;
+}
+
+.portal-summit-hero__description {
+  max-width: 40rem;
+  margin: 0;
+  color: rgba(191, 219, 254, 0.68);
+  font-size: 1.1rem;
+  line-height: 1.7;
+}
+
+.portal-summit-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.9rem;
+}
+
+.portal-summit-hero__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-width: 10.4rem;
+  border-radius: 999px;
+  padding: 0.92rem 1.4rem;
+  font-size: 0.98rem;
+  font-weight: 700;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.portal-summit-hero__action--primary {
+  background: linear-gradient(135deg, #ffd54f, #facc15 56%, #f59e0b);
+  color: #0b1220;
+  box-shadow:
+    0 18px 38px rgba(250, 204, 21, 0.22),
+    0 0 24px rgba(250, 204, 21, 0.12);
+}
+
+.portal-summit-hero__action--ghost {
+  border: 1px solid rgba(88, 126, 255, 0.34);
+  color: #dce9ff;
+  background: rgba(14, 20, 36, 0.78);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 14px 28px rgba(2, 8, 23, 0.2);
+}
+
+.portal-summit-hero__action:hover {
+  transform: translateY(-2px);
+}
+
+.portal-summit-hero__prize-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 1.2rem;
+  min-width: min(100%, 32rem);
+  margin-top: 1.65rem;
+  padding: 1.2rem 1.4rem;
+  border-radius: 1.4rem;
+  border: 1px solid rgba(74, 222, 255, 0.3);
+  background:
+    linear-gradient(135deg, rgba(246, 196, 86, 0.08), transparent 38%),
+    linear-gradient(180deg, rgba(15, 21, 36, 0.94), rgba(10, 14, 24, 0.98));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 0 28px rgba(74, 222, 255, 0.12),
+    0 18px 42px rgba(2, 8, 23, 0.24);
+  animation: portalHeroPrizeFloat 4.8s ease-in-out infinite;
+}
+
+.portal-summit-hero__prize-card::after {
+  content: '';
+  position: absolute;
+  inset: auto 16% -18px;
+  height: 34px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(250, 204, 21, 0.42), transparent 72%);
+  filter: blur(18px);
+  pointer-events: none;
+}
+
+.portal-summit-hero__prize-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.9rem;
+  height: 4.9rem;
+  border-radius: 1.3rem;
+  color: #ffd44a;
+  background:
+    radial-gradient(circle at center, rgba(246, 196, 86, 0.18), rgba(246, 196, 86, 0.02)),
+    linear-gradient(180deg, rgba(17, 24, 39, 0.96), rgba(9, 13, 22, 0.98));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 14px 26px rgba(2, 8, 23, 0.18);
+}
+
+.portal-summit-hero__prize-copy {
+  display: grid;
+  gap: 0.62rem;
+  justify-items: start;
+}
+
+.portal-summit-hero__prize-title {
+  margin: 0;
+  color: #f6f7fb;
+  font-family: 'Oxanium', 'Orbitron', 'Inter', sans-serif;
+  font-size: clamp(1.5rem, 2.5vw, 2.2rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.portal-summit-hero__prize-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+}
+
+.portal-summit-hero__prize-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: rgba(226, 232, 240, 0.86);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.portal-summit-hero__prize-meta-item svg {
+  color: #e5e7eb;
+}
+
+@keyframes portalHeroPrizeFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@media (max-width: 1024px) {
+  .portal-summit-hero {
+    padding: 1rem;
+  }
+
+  .portal-summit-hero__rail {
+    grid-template-columns: auto auto;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .portal-summit-hero__nav {
+    grid-column: 1 / -1;
+    order: 3;
+    justify-content: flex-start;
+    gap: 1.2rem;
+    padding-top: 0.2rem;
+  }
+
+  .portal-summit-hero__content {
+    padding-top: 3.4rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .portal-summit-hero {
+    width: calc(100% + 0.55rem);
+    margin-left: -0.275rem;
+    padding: 0.82rem;
+    border-radius: 1.7rem;
+  }
+
+  .portal-summit-hero__rail {
+    gap: 0.85rem;
+    padding: 0.82rem 0.92rem;
+    border-radius: 1.25rem;
+  }
+
+  .portal-summit-hero__brand-badge {
+    width: 2.45rem;
+    height: 2.45rem;
+    border-radius: 0.82rem;
+  }
+
+  .portal-summit-hero__brand-kicker {
+    font-size: 0.46rem;
+    letter-spacing: 0.12em;
+  }
+
+  .portal-summit-hero__brand-title {
+    font-size: 1.08rem;
+  }
+
+  .portal-summit-hero__nav {
+    display: none;
+  }
+
+  .portal-summit-hero__rail-cta {
+    min-width: 0;
+    padding: 0.72rem 0.94rem;
+    font-size: 0.84rem;
+  }
+
+  .portal-summit-hero__content {
+    gap: 0.85rem;
+    padding: 2.6rem 0.35rem 1.85rem;
+  }
+
+  .portal-summit-hero__eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+  }
+
+  .portal-summit-hero__title {
+    font-size: clamp(2.2rem, 11vw, 3.6rem);
+  }
+
+  .portal-summit-hero__subtitle {
+    font-size: clamp(1.06rem, 4.9vw, 1.5rem);
+  }
+
+  .portal-summit-hero__description {
+    font-size: 0.94rem;
+    line-height: 1.6;
+  }
+
+  .portal-summit-hero__actions {
+    width: 100%;
+    gap: 0.72rem;
+  }
+
+  .portal-summit-hero__action {
+    flex: 1 1 13rem;
+    min-width: 0;
+    padding: 0.84rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .portal-summit-hero__prize-card {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 0.9rem;
+    width: 100%;
+    padding: 1.05rem 1rem;
+    border-radius: 1.2rem;
+  }
+
+  .portal-summit-hero__prize-copy {
+    justify-items: center;
+    text-align: center;
+  }
+
+  .portal-summit-hero__prize-title {
+    font-size: clamp(1.28rem, 6vw, 1.72rem);
+  }
+
+  .portal-summit-hero__prize-meta {
+    justify-content: center;
+    gap: 0.75rem 1rem;
+  }
+
+  .portal-summit-hero__prize-meta-item {
+    font-size: 0.92rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .portal-summit-hero {
+    padding: 0.68rem;
+  }
+
+  .portal-summit-hero__rail {
+    padding: 0.72rem 0.8rem;
+  }
+
+  .portal-summit-hero__brand-copy {
+    gap: 0.02rem;
+  }
+
+  .portal-summit-hero__content {
+    padding-top: 2.3rem;
+  }
+
+  .portal-summit-hero__title {
+    font-size: clamp(2rem, 12vw, 3rem);
+  }
+
+  .portal-summit-hero__description {
+    font-size: 0.88rem;
+  }
+
+  .portal-summit-hero__prize-card {
+    padding: 0.92rem 0.88rem;
+  }
+
+  .portal-summit-hero__prize-icon {
+    width: 4.25rem;
+    height: 4.25rem;
+  }
+}
