@@ -1,8 +1,8 @@
 import React, { memo, useEffect, useState } from 'react';
 import type { CSSProperties } from 'react';
 import {
-  ArrowRight, Award, Binary, Bot, Braces, Clock3, Code2, Cpu, Database, Figma, FileCode2, Flame, Gamepad2, Gift,
-  Github, Globe2, MapPin, MonitorUp, Orbit, Rocket, ShieldCheck, Sparkles, Trophy, Twitch, Users, Youtube, Zap,
+  ArrowRight, Award, Bot, Clock3, FileCode2, Flame, Gamepad2, Gift, Github, MapPin, MonitorUp, Orbit, Rocket,
+  ShieldCheck, Sparkles, Trophy, Users, Zap,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { parsePortalEventDate } from './utils';
@@ -35,33 +35,21 @@ const heroEndDate = parsePortalEventDate('8 Apr 2026', '10:00 AM');
 const heroBackdropPills: BackdropPill[] = [
   { label: 'BGMI', Icon: Gamepad2, tone: 'cyan', tier: 'primary', style: { left: '8.5%', top: '8.5%' } },
   { label: 'Hackathon', Icon: MonitorUp, tone: 'violet', tier: 'primary', style: { right: '8.5%', top: '8.5%' } },
-  { label: 'Tech Quiz', Icon: Cpu, tone: 'amber', tier: 'secondary', style: { left: '4.5%', top: '20%' } },
-  { label: 'C Coding', Icon: Code2, tone: 'violet', tier: 'secondary', style: { right: '4.5%', top: '21%' } },
 ];
 
 const heroBackdropMarks: BackdropMark[] = [
-  { label: 'PYTHON', Icon: Code2, tone: 'amber', variant: 'compact', style: { left: '3.4%', top: '29%', transform: 'rotate(-12deg)' } },
-  { label: 'HTML5', Icon: FileCode2, tone: 'orange', variant: 'compact', style: { left: '8.6%', top: '37%', transform: 'rotate(-6deg)' } },
-  { label: 'CSS3', Icon: Braces, tone: 'cyan', variant: 'compact', style: { left: '9.7%', top: '47%', transform: 'rotate(6deg)' } },
-  { label: 'JAVA', Icon: Binary, tone: 'violet', variant: 'compact', style: { left: '4.8%', top: '57%', transform: 'rotate(-5deg)' } },
-  { label: 'REACT', Icon: Orbit, tone: 'cyan', variant: 'wordmark', style: { left: '7.8%', top: '69%', transform: 'rotate(-8deg)' } },
-  { label: 'NODE', Icon: Database, tone: 'emerald', variant: 'compact', style: { left: '3.2%', bottom: '18%', transform: 'rotate(4deg)' } },
-  { label: 'FIGMA', Icon: Figma, tone: 'pink', variant: 'compact', style: { left: '9.4%', bottom: '8.5%', transform: 'rotate(-4deg)' } },
-  { label: 'AI', Icon: Bot, tone: 'amber', variant: 'emblem', style: { right: '12.6%', top: '29%' } },
-  { label: 'DEVOPS', Icon: Globe2, tone: 'blue', variant: 'compact', style: { right: '7.4%', top: '39%', transform: 'rotate(6deg)' } },
-  { label: 'GITHUB', Icon: Github, tone: 'violet', variant: 'wordmark', style: { right: '15.5%', top: '58%', transform: 'rotate(-8deg)' } },
-  { label: 'TWITCH', Icon: Twitch, tone: 'violet', variant: 'compact', style: { right: '7.8%', top: '69%', transform: 'rotate(-5deg)' } },
-  { label: 'YOUTUBE', Icon: Youtube, tone: 'rose', variant: 'wordmark', style: { right: '4.4%', bottom: '18%', transform: 'rotate(-4deg)' } },
-  { label: 'FREE FIRE', Icon: Flame, tone: 'orange', variant: 'wordmark', style: { right: '21.5%', bottom: '18%', transform: 'rotate(-2deg)' } },
+  { label: 'HTML5', Icon: FileCode2, tone: 'orange', variant: 'compact', style: { left: '8.4%', top: '35.5%', transform: 'rotate(-6deg)' } },
+  { label: 'REACT', Icon: Orbit, tone: 'cyan', variant: 'wordmark', style: { left: '8.8%', top: '66%', transform: 'rotate(-7deg)' } },
+  { label: 'AI', Icon: Bot, tone: 'amber', variant: 'emblem', style: { right: '11.6%', top: '33%' } },
+  { label: 'GITHUB', Icon: Github, tone: 'violet', variant: 'wordmark', style: { right: '12.5%', top: '58%', transform: 'rotate(-6deg)' } },
+  { label: 'FREE FIRE', Icon: Flame, tone: 'orange', variant: 'wordmark', style: { right: '16.5%', bottom: '18%', transform: 'rotate(-2deg)' } },
 ];
 
 const heroBackdropAccents: BackdropAccent[] = [
   { Icon: Sparkles, tone: 'violet', style: { left: '21%', top: '17%' } },
   { Icon: Zap, tone: 'orange', style: { right: '26%', top: '18%' } },
-  { Icon: ShieldCheck, tone: 'cyan', style: { left: '3.8%', top: '47%' } },
-  { Icon: Gamepad2, tone: 'cyan', style: { left: '11.8%', bottom: '11.2%' } },
-  { Icon: Cpu, tone: 'amber', style: { right: '18.6%', top: '31%' } },
-  { Icon: Zap, tone: 'violet', style: { right: '23.4%', bottom: '29.5%' } },
+  { Icon: ShieldCheck, tone: 'cyan', style: { left: '6.6%', bottom: '16%' } },
+  { Icon: Zap, tone: 'violet', style: { right: '22%', bottom: '31%' } },
 ];
 
 const heroFeatureBadges = [
