@@ -2122,11 +2122,10 @@ export const App: React.FC = () => {
                 <img src="/images/ceasposter.jpeg" alt="CEAS COGNOTSAV logo" className="portal-brand-logo-image" />
               </div>
               <div className="portal-brand-copy portal-brand-copy--nav min-w-0">
-                <p className="portal-brand-overline portal-brand-overline--nav truncate">Computer Engineering Association of Students</p>
-                <h1 className="portal-brand-mark portal-brand-mark--nav" aria-label="CEAS Cognotsav 2026">
+                <h1 className="portal-brand-mark portal-brand-mark--nav" aria-label="CEAS Cognotsav 2K26">
                   <span className="portal-brand-mark__prefix">CEAS</span>
                   <span className="portal-brand-mark__title">COGNOTSAV</span>
-                  <span className="portal-brand-mark__year">2026</span>
+                  <span className="portal-brand-mark__year">2K26</span>
                 </h1>
               </div>
             </a>
