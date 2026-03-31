@@ -176,7 +176,11 @@ export const HeroSection: React.FC<Props> = memo(() => {
               </div>
             ))}
           </div>
-          <p className="portal-summit-hero__subtitle portal-summit-hero__subtitle--immersive">State-Level Technical &amp; Esports Event</p>
+          <p className="portal-summit-hero__subtitle portal-summit-hero__subtitle--immersive">
+            State-Level Technical
+            <br className="portal-summit-hero__subtitle-break" />
+            &amp; Esports Event
+          </p>
           <p className="portal-summit-hero__description portal-summit-hero__description--immersive">
             Where ideas turn into impact through competitions, esports &amp; innovation.
           </p>
