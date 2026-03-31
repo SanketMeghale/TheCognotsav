@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
   AlertTriangle, ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Clock3, Copy, CreditCard, Download, ExternalLink,
-  Eye, Info, MapPin, Phone, QrCode, Save, Smartphone, Sparkles, Trophy, Upload, Users,
+  Eye, Info, MapPin, Phone, QrCode, Smartphone, Sparkles, Trophy, Upload, Users,
 } from 'lucide-react';
 import type { EventRecord, ParticipantDraft, RegistrationReceipt } from './types';
 import { formatCurrency, getEventLiveState, getTeamLabel } from './utils';
@@ -198,9 +198,9 @@ function resolveCustomQrScale(eventSlug: string) {
 }
 
 export const EventRegistrationPanel: React.FC<Props> = ({
-  selectedEvent, teamSize, form, submitting, successMessage, errorMessage, successReceipt, draftRecovered,
+  selectedEvent, teamSize, form, submitting, successMessage, errorMessage, successReceipt,
   validationErrors, touchedFields, paymentScreenshotName, paymentScreenshotReady, onDownloadPass,
-  onDismissDraftRecovered, onFieldBlur, onPaymentScreenshotChange, onTeamSizeChange,
+  onFieldBlur, onPaymentScreenshotChange, onTeamSizeChange,
   onBackToEvents, onFormFieldChange, onParticipantChange, onSubmit,
 }) => {
   const passCardRef = useRef<HTMLDivElement | null>(null);
@@ -292,6 +292,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
 
   const liveState = getEventLiveState(selectedEvent, now);
   const handbookCtaLabel = selectedHandbook?.handbookUrl?.toLowerCase().endsWith('.pdf') ? 'Download PDF' : 'Download Handbook';
+  const quickDetails = selectedHandbook?.quickDetails?.slice(0, 3) || [];
   const eventStoryPoints = selectedHandbook?.highlights?.slice(0, 3) || [];
   const rulePreview = selectedHandbook?.rules?.slice(0, 3) || [];
   const handbookReady = Boolean(selectedHandbook?.handbookUrl);
@@ -408,84 +409,53 @@ export const EventRegistrationPanel: React.FC<Props> = ({
             </div>
           </section>
 
-          <section className="portal-event-section portal-glow-card portal-glass" data-reveal="up">
-            <div className="portal-event-section__head">
-              <Info size={17} className="text-amber-200" />
-              <div>
-                <p className="text-xs uppercase tracking-[0.22em] text-slate-400">About Event</p>
-                <h3 className="mt-1 text-lg font-semibold text-white">Quick overview</h3>
-              </div>
-            </div>
-            <div className="portal-event-overview-grid mt-5">
-              <div>
-                <p className="text-sm leading-7 text-slate-300">
-                  {selectedEvent.description}
-                </p>
-                {selectedHandbook?.quickDetails?.length ? (
-                  <div className="portal-event-mini-grid mt-5">
-                    {selectedHandbook.quickDetails.slice(0, 3).map((item) => (
-                      <div key={item} className="portal-event-mini-grid__item">
-                        <Trophy size={14} className="text-amber-200" />
-                        <span>{item}</span>
-                      </div>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-              {eventStoryPoints.length ? (
-                <div className="portal-event-story-card">
-                  <p className="portal-event-story-card__label">Spotlight</p>
-                  <div className="portal-event-note-list">
-                    {eventStoryPoints.map((item) => (
-                      <div key={item} className="portal-event-note-list__item">
-                        <CheckCircle2 size={15} className="mt-0.5 shrink-0 text-cyan-200" />
-                        <span>{item}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ) : null}
-            </div>
-          </section>
         </div>
 
         <aside className="portal-event-page__sidebar" data-reveal="right">
-          <div className="portal-event-sidebar-note portal-event-sidebar-note--info">
-            <div className="portal-event-sidebar-note__icon">
-              <Save size={18} />
+          <section className="portal-event-section portal-event-section--prep portal-glow-card portal-glass">
+            <div className="portal-event-warning-banner">
+              <AlertTriangle size={18} className="shrink-0" />
+              <span>Please read the handbook before you register.</span>
             </div>
-            <div className="min-w-0 flex-1">
-              <p className="font-semibold text-white">Draft restore</p>
-              <p className="mt-1 text-sm text-slate-300">
-                {draftRecovered ? 'Your saved details are back on this device.' : 'Details auto-save on this device while you fill the form.'}
-              </p>
-            </div>
-            {draftRecovered ? (
-              <button type="button" onClick={onDismissDraftRecovered} className="portal-event-sidebar-note__action">
-                Dismiss
-              </button>
-            ) : null}
-          </div>
-
-          <div className="portal-event-sidebar-note portal-event-sidebar-note--warning">
-            <div className="portal-event-sidebar-note__icon">
-              <AlertTriangle size={18} />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="font-semibold text-white">Please read handbook before registering</p>
-            </div>
-          </div>
-
-          <section className="portal-event-section portal-event-section--handbook portal-glow-card portal-glass">
             <div className="portal-event-section__head">
               <BookOpen size={18} className="text-cyan-200" />
               <div>
-                <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Event Handbook</p>
-                <h3 className="mt-1 text-lg font-semibold text-cyan-100">Everything you need before registering</h3>
+                <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Before You Register</p>
+                <h3 className="mt-1 text-lg font-semibold text-cyan-100">Rules, format, and event essentials</h3>
               </div>
             </div>
+            {quickDetails.length || eventStoryPoints.length ? (
+              <div className="portal-event-prep-grid">
+                {quickDetails.length ? (
+                  <div className="portal-event-prep-card">
+                    <p className="portal-event-prep-card__label">Event Essentials</p>
+                    <div className="portal-event-mini-grid mt-4">
+                      {quickDetails.map((item) => (
+                        <div key={item} className="portal-event-mini-grid__item">
+                          <Trophy size={14} className="text-amber-200" />
+                          <span>{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
+                {eventStoryPoints.length ? (
+                  <div className="portal-event-prep-card">
+                    <p className="portal-event-prep-card__label">Highlights</p>
+                    <div className="portal-event-note-list mt-4">
+                      {eventStoryPoints.map((item) => (
+                        <div key={item} className="portal-event-note-list__item">
+                          <CheckCircle2 size={15} className="mt-0.5 shrink-0 text-cyan-200" />
+                          <span>{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
             {rulePreview.length ? (
-              <div className="portal-event-handbook-list">
+              <div className="portal-event-handbook-list portal-event-handbook-list--framed">
                 {rulePreview.map((rule) => (
                   <div key={rule} className="portal-event-handbook-list__item">
                     <CheckCircle2 size={15} className="text-cyan-200" />
@@ -523,6 +493,28 @@ export const EventRegistrationPanel: React.FC<Props> = ({
           </section>
 
           <form id="portal-registration-form" onSubmit={onSubmit} className="portal-event-form-shell space-y-4">
+              <div className="portal-event-form-intro">
+                <p className="portal-event-form-intro__kicker">Registration Desk</p>
+                <h3 className="portal-event-form-intro__title">Secure your slot for {selectedEvent.name}</h3>
+                <p className="portal-event-form-intro__text">
+                  Submit your team details and payment proof once. Organizers review it manually and confirm your entry.
+                </p>
+                <div className="portal-event-form-intro__grid">
+                  <div className="portal-event-form-intro__metric">
+                    <span>Entry Fee</span>
+                    <strong>{formatCurrency(payableAmount)}</strong>
+                  </div>
+                  <div className="portal-event-form-intro__metric">
+                    <span>Team Format</span>
+                    <strong>{getTeamLabel(selectedEvent)}</strong>
+                  </div>
+                  <div className="portal-event-form-intro__metric">
+                    <span>Review</span>
+                    <strong>Manual verification</strong>
+                  </div>
+                </div>
+              </div>
+
               <SectionCard title="Start with the basics" subtitle="Team Setup">
                 <div className="grid gap-3 sm:grid-cols-2">
                   {!isSoloEvent && selectedEvent.max_members > selectedEvent.min_members ? (
