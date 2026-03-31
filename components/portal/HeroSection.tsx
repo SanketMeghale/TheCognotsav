@@ -85,8 +85,10 @@ export const HeroSection: React.FC<Props> = memo(() => {
               </div>
               <div className="portal-front-hero__visual-copy portal-front-hero__visual-copy--editorial">
                 <p className="portal-front-hero__visual-overline">Computer Engineering Association</p>
-                <h2 className="portal-front-hero__visual-title">COGNOTSAV 2026</h2>
-                <p className="portal-front-hero__visual-note">Premium event registration portal</p>
+                <h2 className="portal-front-hero__visual-title">
+                  <span>COGNOTSAV</span>
+                  <span>2026</span>
+                </h2>
               </div>
             </div>
           </div>
