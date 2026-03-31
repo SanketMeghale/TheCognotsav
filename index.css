@@ -9562,11 +9562,17 @@ body {
 }
 
 .portal-summit-hero--immersive {
+  width: 100%;
+  max-width: min(100%, calc(100vw - 1rem));
+  margin-inline: auto;
   padding: clamp(1rem, 2.2vw, 1.5rem);
 }
 
 .portal-summit-hero--immersive .portal-summit-hero__content--immersive {
   position: relative;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   min-height: 28.5rem;
   gap: 0.72rem;
   padding: clamp(2rem, 4.2vw, 3rem) 1rem clamp(0.8rem, 1.8vw, 1.2rem);
@@ -9601,6 +9607,15 @@ body {
 
 .portal-summit-hero__mobile-topics {
   display: none;
+}
+
+.portal-summit-hero__mobile-topics,
+.portal-summit-hero__countdown-pill,
+.portal-summit-hero__actions--mobile,
+.portal-summit-hero__benefit-row,
+.portal-summit-hero__stats-bar {
+  max-width: 100%;
+  min-width: 0;
 }
 
 .portal-summit-hero__orbit-pill {
@@ -9935,7 +9950,7 @@ body {
 @media (max-width: 720px) {
   .portal-summit-hero--immersive .portal-summit-hero__content--immersive {
     gap: 0.62rem;
-    padding-top: 1.35rem;
+    padding: 1.35rem 0.9rem 0.8rem;
   }
 
   .portal-summit-hero__orbit {
@@ -9968,6 +9983,7 @@ body {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0.45rem;
     width: min(100%, 18rem);
+    margin-inline: auto;
   }
 
   .portal-summit-hero__mobile-topic-pill {
@@ -10008,6 +10024,7 @@ body {
     min-height: 2.7rem;
     gap: 0.38rem;
     padding: 0.6rem 1rem;
+    max-width: 100%;
   }
 
   .portal-summit-hero__countdown-label,
@@ -10038,7 +10055,9 @@ body {
     flex-wrap: nowrap;
     justify-content: flex-start;
     overflow-x: auto;
+    padding-inline: 0.02rem;
     padding-bottom: 0.15rem;
+    scroll-padding-inline: 0.02rem;
     scrollbar-width: none;
   }
 
@@ -10047,6 +10066,7 @@ body {
   }
 
   .portal-summit-hero__benefit-pill {
+    flex: 0 0 auto;
     min-width: max-content;
     min-height: 2.45rem;
     padding: 0.58rem 0.82rem;
@@ -10056,6 +10076,7 @@ body {
 
   .portal-summit-hero__stats-bar {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
   }
 
   .portal-summit-hero__stat-card {
@@ -10070,8 +10091,13 @@ body {
 
 @media (max-width: 520px) {
   .portal-summit-hero--immersive {
-    padding: 0.82rem;
+    max-width: min(100%, calc(100vw - 0.75rem));
+    padding: 0.78rem;
     border-radius: 1.6rem;
+  }
+
+  .portal-summit-hero--immersive .portal-summit-hero__content--immersive {
+    padding-inline: 0.78rem;
   }
 
   .portal-summit-hero__orbit-pill {
