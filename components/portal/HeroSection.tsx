@@ -13,7 +13,6 @@ const heroOrbitBadges = [
   { label: 'Hackathon', Icon: MonitorUp, tone: 'violet', position: 'top-right' },
   { label: 'Tech Quiz', Icon: Cpu, tone: 'amber', position: 'middle-left' },
   { label: 'C coding', Icon: Code2, tone: 'violet', position: 'middle-right' },
-  { label: 'Tech Quiz', Icon: Cpu, tone: 'amber', position: 'bottom-right' },
 ] as const;
 
 const heroFeatureBadges = [
