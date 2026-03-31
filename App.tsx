@@ -214,31 +214,30 @@ const PortalBackgroundCanvas = memo(PortalBackgroundCanvasBase);
 
 function DepartmentIntroStripBase() {
   return (
-    <section className="portal-department-strip rounded-[1.8rem] border border-white/10 p-4 md:rounded-[2rem] md:p-6">
+    <section className="portal-department-strip rounded-[1.8rem] border border-white/10 p-4 md:rounded-[2rem] md:p-5">
       <div className="portal-department-strip__layout">
         <div className="portal-department-strip__brand">
           <div className="portal-department-strip__logo-frame">
             <img src="/images/ceasposter.jpeg" alt="CEAS logo" loading="lazy" decoding="async" className="portal-department-strip__logo" />
           </div>
-          <div>
+          <div className="portal-department-strip__brand-copy">
             <p className="portal-department-strip__kicker">About CEAS / Department</p>
-            <h3 className="portal-department-strip__title">Computer Engineering Association of Students</h3>
+            <h3 className="portal-department-strip__title">CEAS Student Culture Hub</h3>
           </div>
         </div>
 
         <p className="portal-department-strip__copy">
-          CEAS drives the department’s flagship student culture through technical initiatives, collaborative learning,
-          and platforms like Cognotsav that connect innovation with real campus energy.
+          CEAS powers student-led tech culture, flagship events, and Cognotsav energy across the department.
         </p>
 
         <div className="portal-department-strip__chips">
-          <span className="portal-department-strip__chip"><Building2 size={14} />Department-led culture</span>
-          <span className="portal-department-strip__chip"><GraduationCap size={14} />Student-first ecosystem</span>
-          <span className="portal-department-strip__chip"><Sparkles size={14} />Flagship CEAS events</span>
+          <span className="portal-department-strip__chip"><Building2 size={14} />Tech-Led</span>
+          <span className="portal-department-strip__chip"><GraduationCap size={14} />Student-Run</span>
+          <span className="portal-department-strip__chip"><Sparkles size={14} />Cognotsav</span>
         </div>
 
         <a href="#department" className="portal-premium-button portal-premium-button--secondary portal-department-strip__button">
-          Know More
+          Explore CEAS
           <ArrowRight size={15} />
         </a>
       </div>
