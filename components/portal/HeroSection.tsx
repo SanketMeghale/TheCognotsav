@@ -1,19 +1,68 @@
 import React, { memo, useEffect, useState } from 'react';
+import type { CSSProperties } from 'react';
 import {
-  ArrowRight, Award, Clock3, Code2, Cpu, Flame, Gamepad2, Gift, MapPin, MonitorUp, Rocket, Trophy, Users,
+  ArrowRight, Award, Binary, Bot, Braces, Clock3, Code2, Cpu, Database, Figma, FileCode2, Flame, Gamepad2, Gift,
+  Github, Globe2, MapPin, MonitorUp, Orbit, Rocket, ShieldCheck, Sparkles, Trophy, Twitch, Users, Youtube, Zap,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { parsePortalEventDate } from './utils';
 
 type Props = {};
+type HeroTone = 'amber' | 'blue' | 'cyan' | 'emerald' | 'orange' | 'pink' | 'rose' | 'violet';
+type BackdropPill = {
+  label: string;
+  Icon: LucideIcon;
+  style: CSSProperties;
+  tier: 'primary' | 'secondary';
+  tone: HeroTone;
+};
+type BackdropMark = {
+  label: string;
+  Icon: LucideIcon;
+  style: CSSProperties;
+  tone: HeroTone;
+  variant: 'compact' | 'emblem' | 'wordmark';
+};
+type BackdropAccent = {
+  Icon: LucideIcon;
+  style: CSSProperties;
+  tone: HeroTone;
+};
 
 const heroStartDate = parsePortalEventDate('7 Apr 2026', '10:00 AM');
 const heroEndDate = parsePortalEventDate('8 Apr 2026', '10:00 AM');
-const heroOrbitBadges = [
-  { label: 'BGMI', Icon: Gamepad2, tone: 'cyan', position: 'top-left' },
-  { label: 'Hackathon', Icon: MonitorUp, tone: 'violet', position: 'top-right' },
-  { label: 'Tech Quiz', Icon: Cpu, tone: 'amber', position: 'middle-left' },
-  { label: 'C coding', Icon: Code2, tone: 'violet', position: 'middle-right' },
-] as const;
+
+const heroBackdropPills: BackdropPill[] = [
+  { label: 'BGMI', Icon: Gamepad2, tone: 'cyan', tier: 'primary', style: { left: '8.5%', top: '8.5%' } },
+  { label: 'Hackathon', Icon: MonitorUp, tone: 'violet', tier: 'primary', style: { right: '8.5%', top: '8.5%' } },
+  { label: 'Tech Quiz', Icon: Cpu, tone: 'amber', tier: 'secondary', style: { left: '4.5%', top: '20%' } },
+  { label: 'C Coding', Icon: Code2, tone: 'violet', tier: 'secondary', style: { right: '4.5%', top: '21%' } },
+];
+
+const heroBackdropMarks: BackdropMark[] = [
+  { label: 'PYTHON', Icon: Code2, tone: 'amber', variant: 'compact', style: { left: '3.4%', top: '29%', transform: 'rotate(-12deg)' } },
+  { label: 'HTML5', Icon: FileCode2, tone: 'orange', variant: 'compact', style: { left: '8.6%', top: '37%', transform: 'rotate(-6deg)' } },
+  { label: 'CSS3', Icon: Braces, tone: 'cyan', variant: 'compact', style: { left: '9.7%', top: '47%', transform: 'rotate(6deg)' } },
+  { label: 'JAVA', Icon: Binary, tone: 'violet', variant: 'compact', style: { left: '4.8%', top: '57%', transform: 'rotate(-5deg)' } },
+  { label: 'REACT', Icon: Orbit, tone: 'cyan', variant: 'wordmark', style: { left: '7.8%', top: '69%', transform: 'rotate(-8deg)' } },
+  { label: 'NODE', Icon: Database, tone: 'emerald', variant: 'compact', style: { left: '3.2%', bottom: '18%', transform: 'rotate(4deg)' } },
+  { label: 'FIGMA', Icon: Figma, tone: 'pink', variant: 'compact', style: { left: '9.4%', bottom: '8.5%', transform: 'rotate(-4deg)' } },
+  { label: 'AI', Icon: Bot, tone: 'amber', variant: 'emblem', style: { right: '12.6%', top: '29%' } },
+  { label: 'DEVOPS', Icon: Globe2, tone: 'blue', variant: 'compact', style: { right: '7.4%', top: '39%', transform: 'rotate(6deg)' } },
+  { label: 'GITHUB', Icon: Github, tone: 'violet', variant: 'wordmark', style: { right: '15.5%', top: '58%', transform: 'rotate(-8deg)' } },
+  { label: 'TWITCH', Icon: Twitch, tone: 'violet', variant: 'compact', style: { right: '7.8%', top: '69%', transform: 'rotate(-5deg)' } },
+  { label: 'YOUTUBE', Icon: Youtube, tone: 'rose', variant: 'wordmark', style: { right: '4.4%', bottom: '18%', transform: 'rotate(-4deg)' } },
+  { label: 'FREE FIRE', Icon: Flame, tone: 'orange', variant: 'wordmark', style: { right: '21.5%', bottom: '18%', transform: 'rotate(-2deg)' } },
+];
+
+const heroBackdropAccents: BackdropAccent[] = [
+  { Icon: Sparkles, tone: 'violet', style: { left: '21%', top: '17%' } },
+  { Icon: Zap, tone: 'orange', style: { right: '26%', top: '18%' } },
+  { Icon: ShieldCheck, tone: 'cyan', style: { left: '3.8%', top: '47%' } },
+  { Icon: Gamepad2, tone: 'cyan', style: { left: '11.8%', bottom: '11.2%' } },
+  { Icon: Cpu, tone: 'amber', style: { right: '18.6%', top: '31%' } },
+  { Icon: Zap, tone: 'violet', style: { right: '23.4%', bottom: '29.5%' } },
+];
 
 const heroFeatureBadges = [
   { label: 'Certificates', Icon: Award, tone: 'cyan' },
@@ -21,15 +70,9 @@ const heroFeatureBadges = [
   { label: 'Networking', Icon: Rocket, tone: 'pink' },
 ] as const;
 
-const heroMobileTopicBadges = [
-  { label: 'BGMI', Icon: Gamepad2, tone: 'cyan' },
-  { label: 'Hackathon', Icon: MonitorUp, tone: 'violet' },
-  { label: 'Tech Quiz', Icon: Cpu, tone: 'amber' },
-] as const;
-
 const heroStatItems = [
   { value: '1200+', label: 'Participants', Icon: Users, tone: 'cyan' },
-  { value: '₹1,00,000', label: 'Prize Pool', Icon: Trophy, tone: 'amber' },
+  { value: 'Rs 1,00,000', label: 'Prize Pool', Icon: Trophy, tone: 'amber' },
   { value: '8', label: 'Events', Icon: MapPin, tone: 'pink' },
   { value: 'Live', label: 'Competitions', Icon: Flame, tone: 'orange' },
 ] as const;
@@ -105,58 +148,38 @@ export const HeroSection: React.FC<Props> = memo(() => {
     <section id="overview" className="mx-auto w-full max-w-[1320px] px-0 pt-0 pb-2 sm:px-5 lg:px-8 md:pt-0 md:pb-4">
       <div className="portal-summit-hero portal-summit-hero--immersive">
         <div className="portal-summit-hero__content portal-summit-hero__content--immersive" data-reveal="fade-up">
-          <div className="portal-summit-hero__orbit" aria-hidden="true">
-            {heroOrbitBadges.map(({ label, Icon, tone, position }) => (
+          <div className="portal-summit-hero__backdrop" aria-hidden="true">
+            {heroBackdropPills.map(({ label, Icon, tone, tier, style }) => (
               <div
-                key={`${position}-${label}`}
-                className={`portal-summit-hero__orbit-pill portal-summit-hero__orbit-pill--${tone} portal-summit-hero__orbit-pill--${position}`}
+                key={label}
+                className={`portal-summit-hero__backdrop-pill portal-summit-hero__backdrop-pill--${tone} portal-summit-hero__backdrop-pill--${tier}`}
+                style={style}
               >
                 <Icon size={15} />
                 <span>{label}</span>
               </div>
             ))}
-          </div>
-          <div className="portal-summit-hero__curve-lines" aria-hidden="true">
-            <svg viewBox="0 0 1440 420" preserveAspectRatio="none" role="presentation">
-              <defs>
-                <linearGradient id="portalHeroCurvePrimary" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#53e7ff" stopOpacity="0" />
-                  <stop offset="18%" stopColor="#53e7ff" stopOpacity="0.95" />
-                  <stop offset="55%" stopColor="#7392ff" stopOpacity="0.9" />
-                  <stop offset="82%" stopColor="#b97eff" stopOpacity="0.94" />
-                  <stop offset="100%" stopColor="#b97eff" stopOpacity="0" />
-                </linearGradient>
-                <linearGradient id="portalHeroCurveSecondary" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#ffc15c" stopOpacity="0" />
-                  <stop offset="20%" stopColor="#ffc15c" stopOpacity="0.74" />
-                  <stop offset="48%" stopColor="#66e9ff" stopOpacity="0.72" />
-                  <stop offset="80%" stopColor="#8467ff" stopOpacity="0.82" />
-                  <stop offset="100%" stopColor="#8467ff" stopOpacity="0" />
-                </linearGradient>
-                <linearGradient id="portalHeroCurveAccent" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#ffffff" stopOpacity="0" />
-                  <stop offset="24%" stopColor="#ffffff" stopOpacity="0.44" />
-                  <stop offset="56%" stopColor="#84e1ff" stopOpacity="0.34" />
-                  <stop offset="82%" stopColor="#ffd77f" stopOpacity="0.38" />
-                  <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
-                </linearGradient>
-              </defs>
-              <path
-                className="portal-summit-hero__curve-line portal-summit-hero__curve-line--primary"
-                d="M-60 178C178 16 438 18 658 104S1118 280 1502 70"
-                stroke="url(#portalHeroCurvePrimary)"
-              />
-              <path
-                className="portal-summit-hero__curve-line portal-summit-hero__curve-line--secondary"
-                d="M-88 244C196 122 456 92 716 170S1188 350 1518 168"
-                stroke="url(#portalHeroCurveSecondary)"
-              />
-              <path
-                className="portal-summit-hero__curve-line portal-summit-hero__curve-line--accent"
-                d="M92 334C320 232 526 220 744 270S1178 414 1452 294"
-                stroke="url(#portalHeroCurveAccent)"
-              />
-            </svg>
+            {heroBackdropMarks.map(({ label, Icon, tone, variant, style }) => (
+              <div
+                key={label}
+                className={`portal-summit-hero__backdrop-mark portal-summit-hero__backdrop-mark--${tone} portal-summit-hero__backdrop-mark--${variant}`}
+                style={style}
+              >
+                <span className="portal-summit-hero__backdrop-mark-icon">
+                  <Icon size={variant === 'emblem' ? 18 : 16} />
+                </span>
+                <span className="portal-summit-hero__backdrop-mark-label">{label}</span>
+              </div>
+            ))}
+            {heroBackdropAccents.map(({ Icon, tone, style }, index) => (
+              <span
+                key={`${tone}-${index}`}
+                className={`portal-summit-hero__backdrop-accent portal-summit-hero__backdrop-accent--${tone}`}
+                style={style}
+              >
+                <Icon size={18} />
+              </span>
+            ))}
           </div>
 
           <p className="portal-summit-hero__eyebrow portal-summit-hero__eyebrow--immersive">CEAS PRESENTS</p>
@@ -168,14 +191,6 @@ export const HeroSection: React.FC<Props> = memo(() => {
               2K26
             </span>
           </h1>
-          <div className="portal-summit-hero__mobile-topics" aria-hidden="true">
-            {heroMobileTopicBadges.map(({ label, Icon, tone }) => (
-              <div key={label} className={`portal-summit-hero__mobile-topic-pill portal-summit-hero__mobile-topic-pill--${tone}`}>
-                <Icon size={14} />
-                <span>{label}</span>
-              </div>
-            ))}
-          </div>
           <p className="portal-summit-hero__subtitle portal-summit-hero__subtitle--immersive">
             State-Level Technical
             <br className="portal-summit-hero__subtitle-break" />
@@ -231,3 +246,5 @@ export const HeroSection: React.FC<Props> = memo(() => {
     </section>
   );
 });
+
+export default HeroSection;
