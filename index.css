@@ -656,7 +656,7 @@ body {
   z-index: 1;
   display: grid;
   gap: 1rem;
-  grid-template-columns: minmax(0, 1.32fr) minmax(11.75rem, 0.72fr) minmax(0, 0.96fr) minmax(11rem, 0.72fr);
+  grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr) minmax(11rem, 0.78fr);
   padding-top: 0.35rem;
   padding-bottom: 1.3rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -779,14 +779,12 @@ body {
   text-transform: uppercase;
 }
 
-.portal-footer-links,
 .portal-footer-contact {
   display: grid;
   gap: 0.72rem;
   margin-top: 1rem;
 }
 
-.portal-footer-link,
 .portal-footer-contact__item {
   display: flex;
   align-items: center;
@@ -809,7 +807,6 @@ body {
     box-shadow 180ms ease;
 }
 
-.portal-footer-link:hover,
 .portal-footer-contact__item[href]:hover {
   transform: translateY(-1px);
   border-color: rgba(74, 222, 255, 0.16);

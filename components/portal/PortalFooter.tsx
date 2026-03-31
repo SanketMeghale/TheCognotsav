@@ -53,16 +53,6 @@ export const PortalFooter: React.FC = () => {
               </div>
             </section>
 
-            <section className="portal-footer-card portal-footer-card--nav">
-              <p className="portal-footer-card__title">Navigation</p>
-              <nav className="portal-footer-links" aria-label="Footer navigation">
-                <a href="#overview" className="portal-footer-link">Home</a>
-                <a href="#registration-panel" className="portal-footer-link">Events</a>
-                <a href="#announcement-archive" className="portal-footer-link">Updates</a>
-                <a href="#faq" className="portal-footer-link">FAQ</a>
-              </nav>
-            </section>
-
             <section className="portal-footer-card portal-footer-card--reach">
               <p className="portal-footer-card__title">Reach Us</p>
               <div className="portal-footer-contact">
