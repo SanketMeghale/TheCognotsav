@@ -207,7 +207,7 @@ body {
 }
 
 .portal-brochure-poster-stack {
-  margin-top: 1.25rem;
+  margin-top: 0;
   display: grid;
   gap: 1.15rem;
 }

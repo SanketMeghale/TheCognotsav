@@ -281,22 +281,6 @@ function PremiumBrochureStripBase() {
 
   return (
     <section className="portal-brochure-strip portal-glow-card portal-glass rounded-[1.8rem] p-4 md:rounded-[2rem] md:p-6" data-reveal="fade-up">
-      <div className="portal-brochure-strip__header">
-        <div>
-          <p className="portal-brochure-strip__eyebrow">Official Event Poster</p>
-          <h3 className="portal-brochure-strip__title">Cognotsav 2026 Snapshot</h3>
-        </div>
-        <div className="portal-brochure-strip__actions">
-          <a href="#registration-panel" className="portal-premium-button portal-premium-button--primary">
-            Register For Events
-            <ArrowRight size={15} />
-          </a>
-          <a href="#department" className="portal-premium-button portal-premium-button--secondary">
-            View CEAS Profile
-          </a>
-        </div>
-      </div>
-
       <div className="portal-brochure-poster-stack">
         <div className="portal-brochure-poster-block">
           <div className="portal-brochure-poster-block__topbar">
