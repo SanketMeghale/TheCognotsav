@@ -43,6 +43,8 @@ type Props = {
   onSubmit: (event: React.FormEvent) => void;
 };
 
+type EventPanelTab = 'overview' | 'handbook' | 'rules' | 'contact' | 'register';
+
 const categoryThemes: Record<string, { badge: string; button: string; surface: string; glow: string }> = {
   Technical: {
     badge: 'border-sky-300/20 bg-sky-400/14 text-sky-100',
@@ -207,6 +209,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const eventTopRef = useRef<HTMLDivElement | null>(null);
   const [codeCopied, setCodeCopied] = useState(false);
   const [paymentCopyState, setPaymentCopyState] = useState<'upi' | 'amount' | 'link' | null>(null);
+  const [activeTab, setActiveTab] = useState<EventPanelTab>('overview');
   const [now, setNow] = useState(() => new Date());
   const showError = (field: string) => (touchedFields[field] ? validationErrors[field] : '');
   const selectedTheme = selectedEvent ? categoryThemes[selectedEvent.category] || categoryThemes.Technical : categoryThemes.Technical;
@@ -225,30 +228,33 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const scrollBehavior = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
     ? 'auto'
     : 'smooth';
-  const scrollToRegistrationForm = () => {
+  const openRegisterTab = () => {
+    setActiveTab('register');
     if (typeof window === 'undefined') return;
 
-    const formSection = document.getElementById('portal-registration-form');
-    if (!formSection) return;
+    window.setTimeout(() => {
+      const formSection = document.getElementById('portal-registration-form');
+      if (!formSection) return;
 
-    const top = formSection.getBoundingClientRect().top + window.scrollY - 96;
-    window.scrollTo({ top: Math.max(top, 0), behavior: scrollBehavior });
-  };
-
-  const scrollToPanelSection = (sectionId: string) => {
-    if (typeof window === 'undefined') return;
-
-    const targetSection = document.getElementById(sectionId);
-    if (!targetSection) return;
-
-    const top = targetSection.getBoundingClientRect().top + window.scrollY - 108;
-    window.scrollTo({ top: Math.max(top, 0), behavior: scrollBehavior });
+      const top = formSection.getBoundingClientRect().top + window.scrollY - 96;
+      window.scrollTo({ top: Math.max(top, 0), behavior: scrollBehavior });
+    }, 60);
   };
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(new Date()), 60 * 1000);
     return () => window.clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    setActiveTab('overview');
+  }, [selectedEvent?.id]);
+
+  useEffect(() => {
+    if (successReceipt) {
+      setActiveTab('register');
+    }
+  }, [successReceipt?.registrationCode]);
 
   useEffect(() => {
     setCodeCopied(false);
@@ -312,10 +318,11 @@ export const EventRegistrationPanel: React.FC<Props> = ({
     });
   const prizeLabel = selectedEvent.prize.replace(/^INR\s*/i, '\u20B9');
   const toolbarTabs = [
-    { id: 'event-overview', label: 'Overview', icon: Info },
-    { id: 'event-handbook', label: 'Handbook', icon: BookOpen },
-    { id: 'event-rules', label: 'Rules', icon: CheckCircle2 },
-    { id: 'event-contact', label: 'Contact', icon: Phone },
+    { id: 'overview' as EventPanelTab, label: 'Overview', icon: Info },
+    { id: 'handbook' as EventPanelTab, label: 'Handbook', icon: BookOpen },
+    { id: 'rules' as EventPanelTab, label: 'Rules', icon: CheckCircle2 },
+    { id: 'contact' as EventPanelTab, label: 'Contact', icon: Phone },
+    { id: 'register' as EventPanelTab, label: 'Register', icon: CreditCard },
   ];
   const spotlightMeta = [
     { icon: Clock3, label: 'Event Date', value: selectedEvent.date_label, detail: selectedEvent.time_label },
@@ -339,6 +346,10 @@ export const EventRegistrationPanel: React.FC<Props> = ({
       'Any unfair practice, abusive conduct, or disruption can lead to disqualification.',
       'Venue or schedule updates announced by organizers are final for event flow.',
     ];
+  const registerLabel = isSoloEvent ? 'Register Now' : 'Register Your Team';
+  const sidebarSummaryItems = selectedHandbook?.highlights?.length
+    ? selectedHandbook.highlights.slice(0, 4)
+    : overviewHighlights.slice(0, 4);
 
   return (
     <section id="registration-panel">
@@ -346,11 +357,11 @@ export const EventRegistrationPanel: React.FC<Props> = ({
         <div className="portal-event-toolbar" data-reveal="fade-up">
           <button
             type="button"
-            onClick={scrollToRegistrationForm}
+            onClick={openRegisterTab}
             disabled={registrationPaused}
             className="portal-event-toolbar__primary"
           >
-            {registrationPaused ? 'Registration Paused' : 'Register Now'}
+            {registrationPaused ? 'Registration Paused' : registerLabel}
             <ArrowRight size={16} />
           </button>
           <div className="portal-event-toolbar__tabs">
@@ -360,8 +371,8 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                 <button
                   key={tab.id}
                   type="button"
-                  onClick={() => scrollToPanelSection(tab.id)}
-                  className="portal-event-toolbar__tab"
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`portal-event-toolbar__tab ${activeTab === tab.id ? 'portal-event-toolbar__tab--active' : ''}`}
                 >
                   <Icon size={15} />
                   {tab.label}
@@ -434,6 +445,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
               </div>
             </section>
 
+            {activeTab === 'overview' ? (
             <section id="event-overview" className="portal-event-section portal-glow-card portal-glass" data-reveal="up">
               <div className="portal-event-section__head">
                 <Info size={17} className="text-amber-200" />
@@ -453,8 +465,42 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                   </div>
                 ))}
               </div>
+              <div className="portal-event-overview-handbook mt-5">
+                <div className="portal-event-overview-handbook__icon">
+                  <BookOpen size={24} />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-white">Event Handbook</p>
+                  <p className="mt-2 text-sm leading-7 text-slate-300">
+                    Keep the format, rounds, rules, and coordinator instructions ready before event day.
+                  </p>
+                </div>
+                <div className="portal-event-overview-handbook__actions">
+                  {selectedHandbook?.handbookUrl ? (
+                    <a
+                      href={selectedHandbook.handbookUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="portal-event-tab-action"
+                    >
+                      <ExternalLink size={15} />
+                      Download PDF
+                    </a>
+                  ) : null}
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('handbook')}
+                    className="portal-event-tab-action portal-event-tab-action--secondary"
+                  >
+                    <BookOpen size={15} />
+                    View Guide
+                  </button>
+                </div>
+              </div>
             </section>
+            ) : null}
 
+            {activeTab === 'handbook' ? (
             <section id="event-handbook" className="portal-event-section portal-glow-card portal-glass" data-reveal="up">
               <div className="portal-event-section__head">
                 <BookOpen size={17} className="text-amber-200" />
@@ -508,7 +554,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                   )}
                   <button
                     type="button"
-                    onClick={() => scrollToPanelSection('event-rules')}
+                    onClick={() => setActiveTab('rules')}
                     className="portal-event-handbook-card portal-event-handbook-card--secondary"
                   >
                     <div>
@@ -520,7 +566,9 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                 </div>
               </div>
             </section>
+            ) : null}
 
+            {activeTab === 'rules' ? (
             <section id="event-rules" className="portal-event-section portal-glow-card portal-glass" data-reveal="up">
               <div className="portal-event-section__head">
                 <CheckCircle2 size={17} className="text-emerald-200" />
@@ -538,8 +586,9 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                 ))}
               </div>
             </section>
+            ) : null}
 
-            {coordinatorContacts.length ? (
+            {activeTab === 'contact' ? (
               <section id="event-contact" className="portal-event-section portal-glow-card portal-glass" data-reveal="up">
                 <div className="portal-event-section__head">
                   <Phone size={17} className="text-emerald-200" />
@@ -548,26 +597,35 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                     <h3 className="mt-1 text-lg font-semibold text-white">Reach the event team fast</h3>
                   </div>
                 </div>
-                <div className="portal-event-contact-grid mt-5">
-                  {coordinatorContacts.map((coordinator) => {
-                    const telValue = coordinator.phone.replace(/\D+/g, '');
-                    return (
-                      <div key={`${selectedEvent.slug}-${coordinator.name}-${coordinator.phone}`} className="portal-event-contact-card">
-                        <div>
-                          <p className="text-sm font-semibold text-white">{coordinator.name}</p>
-                          <p className="mt-2 text-sm text-slate-300">{coordinator.phone}</p>
+                {coordinatorContacts.length ? (
+                  <div className="portal-event-contact-grid mt-5">
+                    {coordinatorContacts.map((coordinator) => {
+                      const telValue = coordinator.phone.replace(/\D+/g, '');
+                      return (
+                        <div key={`${selectedEvent.slug}-${coordinator.name}-${coordinator.phone}`} className="portal-event-contact-card">
+                          <div>
+                            <p className="text-sm font-semibold text-white">{coordinator.name}</p>
+                            <p className="mt-2 text-sm text-slate-300">{coordinator.phone}</p>
+                          </div>
+                          <a
+                            href={`tel:${telValue}`}
+                            className="magnetic-button inline-flex items-center gap-2 rounded-full border border-emerald-300/18 bg-emerald-400/10 px-4 py-2 text-sm font-semibold text-emerald-100"
+                          >
+                            <Phone size={15} />
+                            Call
+                          </a>
                         </div>
-                        <a
-                          href={`tel:${telValue}`}
-                          className="magnetic-button inline-flex items-center gap-2 rounded-full border border-emerald-300/18 bg-emerald-400/10 px-4 py-2 text-sm font-semibold text-emerald-100"
-                        >
-                          <Phone size={15} />
-                          Call
-                        </a>
-                      </div>
-                    );
-                  })}
-                </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="portal-event-note-list mt-5">
+                    <div className="portal-event-note-list__item">
+                      <Info size={15} className="mt-0.5 shrink-0 text-amber-200" />
+                      <span>Coordinator contacts will appear here when they are attached for this event.</span>
+                    </div>
+                  </div>
+                )}
               </section>
             ) : null}
           </div>
@@ -603,13 +661,45 @@ export const EventRegistrationPanel: React.FC<Props> = ({
               </div>
               <button
                 type="button"
-                onClick={scrollToRegistrationForm}
+                onClick={openRegisterTab}
                 disabled={registrationPaused}
                 className="portal-register-cta mt-5 inline-flex w-full items-center justify-center gap-2"
               >
-                {registrationPaused ? 'Registration Paused' : 'Register Now'}
+                {registrationPaused ? 'Registration Paused' : registerLabel}
                 <ArrowRight size={16} />
               </button>
+            </section>
+
+            <section className="portal-event-sidebar-card portal-glow-card portal-glass">
+              <p className="text-[10px] uppercase tracking-[0.24em] text-slate-400">Event Handbook</p>
+              <div className="portal-event-sidebar-card__handbook">
+                <div className="portal-event-sidebar-card__handbook-visual">
+                  <BookOpen size={28} />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-white">{selectedHandbook?.theme || 'Official event guide'}</p>
+                  <div className="mt-4 space-y-2">
+                    {sidebarSummaryItems.map((item) => (
+                      <div key={`sidebar-summary-${item}`} className="portal-event-sidebar-card__bullet">
+                        <CheckCircle2 size={14} />
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="portal-event-sidebar-card__actions">
+                {selectedHandbook?.handbookUrl ? (
+                  <a href={selectedHandbook.handbookUrl} target="_blank" rel="noreferrer" className="portal-event-tab-action">
+                    <ExternalLink size={15} />
+                    Download PDF
+                  </a>
+                ) : null}
+                <button type="button" onClick={() => setActiveTab('handbook')} className="portal-event-tab-action portal-event-tab-action--secondary">
+                  <BookOpen size={15} />
+                  View Guide
+                </button>
+              </div>
             </section>
 
             {coordinatorContacts.length ? (
@@ -637,6 +727,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
           </aside>
         </div>
 
+        {activeTab === 'register' ? (
         <form id="portal-registration-form" onSubmit={onSubmit} className="portal-event-form-shell space-y-4">
           <div className="portal-event-form-shell__head">
             <div>
@@ -901,6 +992,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                 </p>
               </div>
         </form>
+        ) : null}
       </div>
 
     </section>
