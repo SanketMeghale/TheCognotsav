@@ -409,10 +409,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
             </div>
           </section>
 
-        </div>
-
-        <aside className="portal-event-page__sidebar" data-reveal="right">
-          <section className="portal-event-section portal-event-section--prep portal-glow-card portal-glass">
+          <section className="portal-event-section portal-event-section--prep portal-glow-card portal-glass" data-reveal="up">
             <div className="portal-event-warning-banner">
               <AlertTriangle size={18} className="shrink-0" />
               <span>Please read the handbook before you register.</span>
@@ -492,6 +489,9 @@ export const EventRegistrationPanel: React.FC<Props> = ({
             )}
           </section>
 
+        </div>
+
+        <aside className="portal-event-page__sidebar" data-reveal="right">
           <form id="portal-registration-form" onSubmit={onSubmit} className="portal-event-form-shell space-y-4">
               <div className="portal-event-form-intro">
                 <p className="portal-event-form-intro__kicker">Registration Desk</p>
