@@ -165,8 +165,8 @@ function FloatingField({ label, value, onChange, onBlur, error, type = 'text', t
 function SectionCard({ title, subtitle, children }: { title: string; subtitle: string; children: React.ReactNode }) {
   return (
     <div className="portal-form-card">
-      <p className="portal-form-card__eyebrow">{subtitle}</p>
-      <p className="portal-form-card__title">{title}</p>
+      <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">{subtitle}</p>
+      <p className="mt-1 text-base font-semibold text-white">{title}</p>
       <div className="mt-4">{children}</div>
     </div>
   );
@@ -469,9 +469,9 @@ export const EventRegistrationPanel: React.FC<Props> = ({
         </div>
 
         <aside className="portal-event-page__sidebar" data-reveal="right">
-          <form id="portal-registration-form" onSubmit={onSubmit} className="portal-event-form-shell portal-event-form-shell--compact">
+          <form id="portal-registration-form" onSubmit={onSubmit} className="portal-event-form-shell space-y-4">
               <SectionCard title="Start with the basics" subtitle="Team Setup">
-                <div className="portal-form-grid grid sm:grid-cols-2">
+                <div className="grid gap-3 sm:grid-cols-2">
                   {!isSoloEvent && selectedEvent.max_members > selectedEvent.min_members ? (
                     <label className="block">
                       <span className="mb-2 block text-sm text-slate-200">Team size</span>
@@ -480,11 +480,11 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                       </select>
                     </label>
                   ) : !isSoloEvent ? (
-                    <div className="portal-form-note">
+                    <div className="rounded-[1.15rem] border border-white/10 bg-white/[0.05] px-4 py-4 text-sm text-slate-200">
                       Fixed team size: {selectedEvent.min_members}
                     </div>
                   ) : null}
-                  <div className="portal-form-note">
+                  <div className="rounded-[1.15rem] border border-white/10 bg-white/[0.05] px-4 py-4 text-sm text-slate-200">
                     Review flow: payment proof is checked by admins after submission.
                   </div>
                   {isSoloEvent ? null : (
@@ -497,7 +497,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
               </SectionCard>
 
               <SectionCard title={isSoloEvent ? 'Participant details' : 'Who should organizers reach?'} subtitle={isSoloEvent ? 'Contact' : 'Lead Contact'}>
-                <div className="portal-form-grid grid sm:grid-cols-2">
+                <div className="grid gap-3 sm:grid-cols-2">
                   <FloatingField label={isSoloEvent ? 'Full name' : 'Leader name'} value={form.contactName} onChange={(value) => onFormFieldChange('contactName', value)} onBlur={() => onFieldBlur('contactName')} error={showError('contactName')} required />
                   <FloatingField label={isSoloEvent ? 'Phone number' : 'Leader phone'} value={form.contactPhone} onChange={(value) => onFormFieldChange('contactPhone', value)} onBlur={() => onFieldBlur('contactPhone')} error={showError('contactPhone')} required />
                   <div className="sm:col-span-2">
@@ -508,12 +508,12 @@ export const EventRegistrationPanel: React.FC<Props> = ({
 
               {!isSoloEvent ? (
                 <SectionCard title="Add team members" subtitle="Member Names">
-                  <div className="mb-3 inline-flex rounded-full border border-white/10 bg-white/[0.05] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-200">{teamSize} total</div>
-                  <div className="portal-form-stack">
+                  <div className="mb-4 inline-flex rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-200">{teamSize} total</div>
+                  <div className="space-y-3">
                     {form.participants.slice(1).map((participant, index) => (
-                      <div key={index + 1} className="portal-form-member-card">
+                      <div key={index + 1} className="rounded-[1.35rem] border border-white/10 bg-white/[0.04] p-4">
                         <p className="text-sm font-semibold text-white">Member {index + 2} name</p>
-                        <div className="portal-form-member-card__body">
+                        <div className="mt-4">
                           <FloatingField label="Full name" value={participant.fullName} onChange={(value) => onParticipantChange(index + 1, 'fullName', value)} onBlur={() => onFieldBlur(`participants.${index + 1}.fullName`)} error={showError(`participants.${index + 1}.fullName`)} required />
                         </div>
                       </div>
@@ -523,7 +523,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
               ) : null}
 
               <SectionCard title="Pay and upload proof" subtitle="Payment">
-                <div className="portal-form-stack">
+                <div className="grid gap-3.5">
                   <div className="portal-payment-method-card">
                     <div className="portal-payment-method-card__head">
                       <Smartphone size={16} className="text-cyan-200" />
@@ -618,9 +618,9 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                 </div>
               </SectionCard>
 
-              {successMessage && !successReceipt ? <div className="portal-form-alert portal-form-alert--success">{successMessage}</div> : null}
-              {errorMessage ? <div className="portal-form-alert portal-form-alert--error">{errorMessage}</div> : null}
-              {registrationPaused ? <div className="portal-form-alert portal-form-alert--warn">Registration is currently stopped for this event by the organizer. Please check updates or contact the coordinators before trying again.</div> : null}
+              {successMessage && !successReceipt ? <div className="rounded-[1.35rem] border border-emerald-300/20 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-100">{successMessage}</div> : null}
+              {errorMessage ? <div className="rounded-[1.35rem] border border-rose-300/20 bg-rose-400/10 px-4 py-3 text-sm text-rose-100">{errorMessage}</div> : null}
+              {registrationPaused ? <div className="rounded-[1.35rem] border border-amber-300/20 bg-amber-400/10 px-4 py-3 text-sm text-amber-100">Registration is currently stopped for this event by the organizer. Please check updates or contact the coordinators before trying again.</div> : null}
 
               <button type="submit" disabled={submitting || registrationPaused} className="animated-gradient-button inline-flex w-full items-center justify-center rounded-2xl px-6 py-4 text-base font-bold text-slate-950 disabled:opacity-60">
                 {submitting ? 'Submitting registration...' : 'Submit registration'}
@@ -671,7 +671,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                 </div>
               ) : null}
 
-              <div className="portal-form-footnote">
+              <div className="rounded-[1.35rem] border border-white/10 bg-black/20 p-4 text-sm text-slate-300">
                 <div className="flex items-center gap-2 text-white">
                   <Sparkles size={16} className="text-yellow-200" />
                   <p className="font-semibold">Verification flow</p>
