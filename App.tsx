@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, memo, useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowRight, ArrowLeft, Bell, Building2, CheckCircle2, Clock3, GraduationCap, House, Search, Sparkles, Trophy } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Bell, Building2, CheckCircle2, Clock3, GraduationCap, House, ImageIcon, Search, Sparkles, Trophy } from 'lucide-react';
 import { HeroSection } from './components/portal/HeroSection.tsx';
 import { CompetitionGridSection } from './components/portal/CompetitionGridSection.tsx';
 import type {
@@ -246,6 +246,55 @@ function DepartmentIntroStripBase() {
 }
 
 const DepartmentIntroStrip = memo(DepartmentIntroStripBase);
+
+const LAST_YEAR_PHOTO_SLOTS = [
+  { label: 'Feature Frame', title: 'Crowd Energy', note: 'Keep your best stage or crowd photo here later.', tone: 'cyan', featured: true },
+  { label: 'Campus Vibes', title: 'Walkthrough Shot', note: 'Perfect spot for an ambient candid from last year.', tone: 'violet', featured: false },
+  { label: 'Team Moment', title: 'Student Highlights', note: 'Drop a participant or winner photo into this frame.', tone: 'amber', featured: false },
+  { label: 'Closing Scene', title: 'Legacy Capture', note: 'Use this for one last memorable Cognotsav moment.', tone: 'pink', featured: false },
+] as const;
+
+function LastYearPhotosStripBase() {
+  return (
+    <section className="portal-memory-showcase portal-glow-card portal-glass rounded-[1.8rem] p-4 md:rounded-[2rem] md:p-6" data-reveal="fade-up">
+      <div className="portal-memory-showcase__header">
+        <div>
+          <p className="portal-memory-showcase__kicker">Last Year / Archive</p>
+          <h3 className="portal-memory-showcase__title">Last Year at Cognotsav</h3>
+        </div>
+        <p className="portal-memory-showcase__copy">
+          Photo-ready slots are reserved here. Share the images later and I&apos;ll swap them in.
+        </p>
+      </div>
+
+      <div className="portal-memory-showcase__grid">
+        {LAST_YEAR_PHOTO_SLOTS.map(({ label, title, note, tone, featured }, index) => (
+          <article
+            key={title}
+            className={`portal-memory-showcase__card portal-memory-showcase__card--${tone} ${featured ? 'is-featured' : ''}`}
+          >
+            <div className="portal-memory-showcase__card-head">
+              <span className="portal-memory-showcase__card-tag">{label}</span>
+              <span className="portal-memory-showcase__card-index">{String(index + 1).padStart(2, '0')}</span>
+            </div>
+
+            <div className="portal-memory-showcase__placeholder" aria-hidden="true">
+              <ImageIcon size={featured ? 30 : 24} />
+              <span>{featured ? 'Main photo slot' : 'Photo slot'}</span>
+            </div>
+
+            <div className="portal-memory-showcase__card-copy">
+              <h4>{title}</h4>
+              <p>{note}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+const LastYearPhotosStrip = memo(LastYearPhotosStripBase);
 
 function PremiumBrochureStripBase() {
   const posterSlides = [
@@ -2283,6 +2332,8 @@ export const App: React.FC = () => {
             <PremiumBrochureStrip />
 
             <DepartmentIntroStrip />
+
+            <LastYearPhotosStrip />
 
             <CompetitionGridSection
               events={events}
