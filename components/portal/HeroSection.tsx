@@ -34,45 +34,48 @@ export const HeroSection: React.FC<Props> = memo(() => {
                 Register Now
                 <ArrowRight size={16} />
               </a>
-              <a href="#registration-panel" className="portal-front-hero__inline-link">
+              <a href="#registration-panel" className="portal-front-hero__ghost-cta">
                 Explore Events
                 <ArrowRight size={15} />
               </a>
             </div>
 
             <div className="portal-prize-pool-card portal-prize-pool-card--editorial" data-reveal="fade-up">
-              <div className="portal-prize-pool-card__header">
-                <div className="portal-prize-pool-card__badge" aria-hidden="true">
-                  <Trophy size={18} />
+              <div className="portal-prize-pool-card__hero">
+                <div className="portal-prize-pool-card__badge portal-prize-pool-card__badge--editorial" aria-hidden="true">
+                  <Trophy size={22} />
                 </div>
-                <p className="portal-prize-pool-card__kicker">Prize Pool</p>
+                <div className="portal-prize-pool-card__copy">
+                  <p className="portal-prize-pool-card__kicker">Prize Pool</p>
+                  <p className="portal-prize-pool-card__value">
+                    <span>Up to &#8377;1,00,000</span>
+                  </p>
+                  <div className="portal-prize-pool-card__meta portal-prize-pool-card__meta--editorial">
+                    <strong>Cash Rewards</strong>
+                    <span aria-hidden="true" />
+                    <strong>Participation Certificates</strong>
+                  </div>
+                </div>
               </div>
-              <p className="portal-prize-pool-card__value">
-                <span>Up to &#8377;1,00,000</span>
-              </p>
+              <div className="portal-prize-pool-card__footer">
+                <div className="portal-prize-pool-card__fact">
+                  <CalendarDays size={18} />
+                  <div>
+                    <strong>07 - 08 April 2026</strong>
+                    <span>Event Dates.</span>
+                  </div>
+                </div>
+                <div className="portal-prize-pool-card__fact">
+                  <MapPin size={18} />
+                  <div>
+                    <strong>Dr. Vithalrao Vikhe Patil COE</strong>
+                    <span>Ahilyanagar</span>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div className="portal-front-hero__fact-list" data-reveal="fade-up">
-              <div className="portal-front-hero__fact-item">
-                <CalendarDays size={16} />
-                <span>7-8 April 2026</span>
-              </div>
-              <div className="portal-front-hero__fact-item">
-                <MapPin size={16} />
-                <span>Ahilyanagar</span>
-              </div>
-            </div>
-
-            <div className="portal-front-hero__section-rule" aria-hidden="true" />
-
-            <a href="#registration-panel" className="portal-front-hero__inline-link portal-front-hero__inline-link--secondary" data-reveal="fade-up">
-              Explore Events
-              <ArrowRight size={15} />
-            </a>
-          </div>
-
-          <div className="portal-front-hero__panel portal-front-hero__panel--premium portal-front-hero__panel--editorial" data-reveal="fade-up">
-            <div className="portal-front-hero__visual-card portal-front-hero__visual-card--editorial">
+            <div className="portal-front-hero__visual-card portal-front-hero__visual-card--editorial" data-reveal="fade-up">
               <div className="portal-front-hero__visual-aura" aria-hidden="true" />
               <div className="portal-front-hero__visual-logo-frame portal-front-hero__visual-logo-frame--editorial">
                 <img
@@ -90,7 +93,7 @@ export const HeroSection: React.FC<Props> = memo(() => {
                   <span>2026</span>
                 </h2>
               </div>
-            </div>
+            </div>            
           </div>
         </div>
       </div>
