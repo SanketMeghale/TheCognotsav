@@ -206,6 +206,15 @@ export const HeroSection: React.FC<Props> = memo(() => {
             ))}
           </div>
 
+          <div className="portal-summit-hero__crest" aria-hidden="true">
+            <img
+              src="/images/ceas-hero-badge-crop.png"
+              alt=""
+              className="portal-summit-hero__crest-image"
+              loading="eager"
+              decoding="async"
+            />
+          </div>
           <p className="portal-summit-hero__eyebrow portal-summit-hero__eyebrow--immersive">CEAS PRESENTS</p>
           <h1 className="portal-summit-hero__title portal-summit-hero__title--immersive" aria-label="COGNOTSAV 2K26">
             <span className="portal-summit-hero__title-line portal-summit-hero__title-line--main" data-text="COGNOTSAV">
