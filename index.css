@@ -1633,6 +1633,142 @@ img {
   padding: 1rem;
 }
 
+.portal-event-form-shell--compact {
+  display: grid;
+  gap: 0.82rem;
+  padding: 0.85rem;
+}
+
+.portal-event-form-shell--compact .portal-form-card {
+  border-radius: 1.25rem;
+  padding: 0.82rem;
+}
+
+.portal-event-form-shell--compact .floating-field-input {
+  border-radius: 1rem;
+  padding: 1.1rem 0.88rem 0.64rem;
+}
+
+.portal-event-form-shell--compact .floating-field-label {
+  left: 0.88rem;
+  top: 0.88rem;
+  font-size: 0.9rem;
+}
+
+.portal-event-form-shell--compact .floating-field-input:focus + .floating-field-label,
+.portal-event-form-shell--compact .floating-field-input:not(:placeholder-shown) + .floating-field-label {
+  top: 0.46rem;
+  font-size: 0.68rem;
+}
+
+.portal-form-card__eyebrow {
+  color: #94a3b8;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.portal-form-card__title {
+  margin-top: 0.24rem;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.portal-form-grid {
+  gap: 0.7rem;
+}
+
+.portal-form-stack {
+  display: grid;
+  gap: 0.78rem;
+}
+
+.portal-form-note {
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.78rem 0.88rem;
+  color: #e2e8f0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.portal-form-member-card {
+  border-radius: 1.1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.82rem;
+}
+
+.portal-form-member-card__body {
+  margin-top: 0.62rem;
+}
+
+.portal-form-alert {
+  border-radius: 1.05rem;
+  padding: 0.78rem 0.9rem;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.portal-form-alert--success {
+  border: 1px solid rgba(110, 231, 183, 0.2);
+  background: rgba(52, 211, 153, 0.1);
+  color: #bbf7d0;
+}
+
+.portal-form-alert--error {
+  border: 1px solid rgba(251, 113, 133, 0.2);
+  background: rgba(244, 63, 94, 0.1);
+  color: #fecdd3;
+}
+
+.portal-form-alert--warn {
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  background: rgba(251, 191, 36, 0.1);
+  color: #fde68a;
+}
+
+.portal-form-footnote {
+  border-radius: 1.15rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0.84rem 0.92rem;
+  color: #cbd5e1;
+  font-size: 0.88rem;
+}
+
+.portal-form-footnote p:last-child {
+  margin-top: 0.55rem;
+  line-height: 1.6;
+}
+
+.portal-event-form-shell--compact .portal-payment-method-card {
+  padding: 0.84rem;
+}
+
+.portal-event-form-shell--compact .portal-payment-method-card__open {
+  min-height: 2.9rem;
+  margin-top: 0.66rem;
+}
+
+.portal-event-form-shell--compact .portal-payment-method-card__apps {
+  margin-top: 0.6rem;
+  gap: 0.4rem;
+}
+
+.portal-event-form-shell--compact .portal-payment-method-card__note {
+  margin-top: 0.6rem;
+}
+
+.portal-event-form-shell--compact .portal-event-upload-box {
+  padding-top: 0.9rem;
+  padding-bottom: 0.9rem;
+}
+
 .portal-event-form-intro {
   border-radius: 1.35rem;
   border: 1px solid rgba(255, 255, 255, 0.08);
