@@ -53,19 +53,19 @@ const heroBackdropAccents: BackdropAccent[] = [
 ];
 
 const heroMobileBackdropMarks: BackdropMark[] = [
-  { label: 'GAMES', Icon: Gamepad2, tone: 'cyan', variant: 'emblem', style: { left: '6.6%', top: '37.5%' } },
-  { label: 'REACT', Icon: Orbit, tone: 'cyan', variant: 'emblem', style: { left: '6.1%', top: '47%' } },
-  { label: 'HTML5', Icon: FileCode2, tone: 'orange', variant: 'emblem', style: { left: '7.4%', top: '77%' } },
-  { label: 'AI', Icon: Bot, tone: 'pink', variant: 'emblem', style: { right: '7.2%', top: '46.5%' } },
-  { label: 'GITHUB', Icon: Github, tone: 'violet', variant: 'emblem', style: { right: '7%', top: '60%' } },
-  { label: 'FREE', Icon: Flame, tone: 'orange', variant: 'compact', style: { right: '8.8%', top: '77.5%', transform: 'rotate(-4deg)' } },
+  { label: 'GAMES', Icon: Gamepad2, tone: 'cyan', variant: 'emblem', style: { left: '2.8%', top: '35.5%' } },
+  { label: 'REACT', Icon: Orbit, tone: 'cyan', variant: 'emblem', style: { left: '2.4%', top: '45%' } },
+  { label: 'HTML5', Icon: FileCode2, tone: 'orange', variant: 'emblem', style: { left: '1.8%', top: '81.5%' } },
+  { label: 'AI', Icon: Bot, tone: 'pink', variant: 'emblem', style: { right: '3.6%', top: '43.5%' } },
+  { label: 'GITHUB', Icon: Github, tone: 'violet', variant: 'emblem', style: { right: '2.8%', top: '57.5%' } },
+  { label: 'FREE', Icon: Flame, tone: 'orange', variant: 'compact', style: { right: '2.8%', top: '81.5%', transform: 'rotate(-4deg)' } },
 ];
 
 const heroMobileBackdropAccents: BackdropAccent[] = [
-  { Icon: Sparkles, tone: 'violet', style: { left: '11%', top: '29%' } },
-  { Icon: Zap, tone: 'orange', style: { right: '15.5%', top: '37.5%' } },
-  { Icon: ShieldCheck, tone: 'cyan', style: { left: '8.4%', top: '69%' } },
-  { Icon: Zap, tone: 'violet', style: { right: '11.5%', top: '72%' } },
+  { Icon: Sparkles, tone: 'violet', style: { left: '5.6%', top: '29.5%' } },
+  { Icon: Zap, tone: 'orange', style: { right: '8.4%', top: '35.5%' } },
+  { Icon: ShieldCheck, tone: 'cyan', style: { left: '4.8%', top: '72%' } },
+  { Icon: Zap, tone: 'violet', style: { right: '5.8%', top: '73.5%' } },
 ];
 
 const heroFeatureBadges = [
