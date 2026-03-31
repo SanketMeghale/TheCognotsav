@@ -8707,3 +8707,30 @@ body {
     opacity: 0.86;
   }
 }
+
+@media (min-width: 1024px) and (max-width: 1399px) {
+  .portal-competition-group__grid {
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 16.1rem));
+    justify-content: center;
+  }
+
+  .portal-brochure-poster-block {
+    max-width: 54rem;
+    margin-inline: auto;
+  }
+
+  .portal-brochure-poster-frame {
+    max-width: 50rem;
+    margin-inline: auto;
+  }
+
+  .portal-brochure-poster-block__topbar,
+  .portal-brochure-poster-block__dots {
+    max-width: 50rem;
+    margin-inline: auto;
+  }
+
+  .portal-brochure-poster-frame__inner {
+    padding: 0.56rem;
+  }
+}
