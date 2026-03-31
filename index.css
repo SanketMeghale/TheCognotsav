@@ -7929,66 +7929,6 @@ body {
 }
 
 /* Hero and event card refinement pass */
-.portal-summit-hero__title-shell {
-  position: relative;
-  display: grid;
-  justify-items: center;
-  width: min(100%, 58rem);
-  padding: 2.55rem 1rem 0.15rem;
-}
-
-.portal-summit-hero__title-shell::before,
-.portal-summit-hero__title-shell::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  border-bottom: 0;
-  border-radius: 999px 999px 0 0;
-  pointer-events: none;
-}
-
-.portal-summit-hero__title-shell::before {
-  top: 0;
-  width: min(92%, 44rem);
-  height: 8.9rem;
-  border: 1.5px solid rgba(74, 222, 255, 0.24);
-  box-shadow:
-    0 0 26px rgba(74, 222, 255, 0.1),
-    inset 0 0 24px rgba(59, 130, 246, 0.03);
-}
-
-.portal-summit-hero__title-shell::after {
-  top: 0.92rem;
-  width: min(72%, 30rem);
-  height: 5.9rem;
-  border: 1px solid rgba(250, 204, 21, 0.22);
-  opacity: 0.78;
-}
-
-.portal-summit-hero__title-arc {
-  position: absolute;
-  left: 50%;
-  top: 1.55rem;
-  width: min(76%, 28rem);
-  height: 6.4rem;
-  transform: translateX(-50%);
-  border-radius: 999px;
-  background:
-    radial-gradient(circle at center, rgba(74, 222, 255, 0.18), rgba(59, 130, 246, 0.1) 42%, transparent 72%);
-  filter: blur(18px);
-  pointer-events: none;
-}
-
-.portal-summit-hero__title {
-  font-size: clamp(3.8rem, 7vw, 6.65rem);
-  line-height: 0.82;
-  letter-spacing: -0.065em;
-  text-shadow:
-    0 10px 32px rgba(4, 8, 18, 0.38),
-    0 0 28px rgba(59, 130, 246, 0.08);
-}
-
 .portal-summit-hero__prize-copy {
   width: 100%;
 }
@@ -8271,29 +8211,54 @@ body {
   letter-spacing: 0.1em;
 }
 
+@media (min-width: 1024px) and (max-width: 1399px) {
+  .portal-competition-group__grid {
+    gap: 0.9rem;
+  }
+
+  .portal-competition-card--showcase .portal-competition-card__media {
+    aspect-ratio: 16 / 8.8;
+  }
+
+  .portal-competition-card__hero-caption--roster {
+    inset: auto 0.72rem 0.72rem;
+    padding: 0.62rem 0.72rem 0.66rem;
+  }
+
+  .portal-competition-card__hero-caption--roster .portal-competition-card__hero-title {
+    font-size: 1.14rem;
+  }
+
+  .portal-competition-card__hero-subtitle {
+    display: none;
+  }
+
+  .portal-competition-card__body--roster {
+    gap: 0.72rem;
+    padding: 0.82rem 0.86rem 0.86rem;
+  }
+
+  .portal-competition-card__prize-value {
+    font-size: 1rem;
+  }
+
+  .portal-competition-card__category-chip {
+    padding: 0.32rem 0.58rem;
+    font-size: 0.54rem;
+  }
+
+  .portal-competition-card__info-row {
+    font-size: 0.69rem;
+  }
+
+  .portal-register-cta--card-compact {
+    min-width: 7.95rem;
+    padding: 0.72rem 0.82rem;
+    font-size: 0.62rem;
+  }
+}
+
 @media (max-width: 767px) {
-  .portal-summit-hero__title-shell {
-    padding-top: 2.1rem;
-  }
-
-  .portal-summit-hero__title-shell::before {
-    height: 6.9rem;
-  }
-
-  .portal-summit-hero__title-shell::after {
-    top: 0.72rem;
-    height: 4.6rem;
-  }
-
-  .portal-summit-hero__title-arc {
-    top: 1.2rem;
-    height: 4.8rem;
-  }
-
-  .portal-summit-hero__title {
-    font-size: clamp(2.8rem, 13vw, 4.6rem);
-  }
-
   .portal-summit-hero__timer {
     gap: 0.58rem;
   }
@@ -8378,22 +8343,6 @@ body {
 }
 
 @media (max-width: 420px) {
-  .portal-summit-hero__title-shell {
-    padding-top: 1.8rem;
-  }
-
-  .portal-summit-hero__title-shell::before {
-    height: 5.9rem;
-  }
-
-  .portal-summit-hero__title-shell::after {
-    height: 3.8rem;
-  }
-
-  .portal-summit-hero__title {
-    font-size: clamp(2.55rem, 14vw, 3.75rem);
-  }
-
   .portal-summit-hero__timer-grid {
     gap: 0.42rem;
   }

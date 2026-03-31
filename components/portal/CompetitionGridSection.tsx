@@ -15,10 +15,6 @@ const categoryThemes: Record<string, { glow: string; badge: string }> = {
     glow: 'shadow-[0_18px_45px_rgba(56,189,248,0.18)]',
     badge: 'bg-sky-400/14 text-sky-100',
   },
-  Sports: {
-    glow: 'shadow-[0_18px_45px_rgba(52,211,153,0.18)]',
-    badge: 'bg-emerald-400/14 text-emerald-100',
-  },
   Gaming: {
     glow: 'shadow-[0_18px_45px_rgba(217,70,239,0.18)]',
     badge: 'bg-fuchsia-400/14 text-fuchsia-100',
@@ -29,22 +25,17 @@ const categoryThemes: Record<string, { glow: string; badge: string }> = {
   },
 };
 
-const filterOrder = ['All', 'Gaming', 'Technical', 'Fun', 'Sports'] as const;
+const filterOrder = ['All', 'Gaming', 'Technical', 'Fun'] as const;
 const categoryOrder = filterOrder.filter((filter): filter is Exclude<(typeof filterOrder)[number], 'All'> => filter !== 'All');
 const categoryTaglines: Record<string, string> = {
   Technical: 'Innovate - Present - Accelerate',
-  Sports: 'Compete - Perform - Triumph',
   Gaming: 'Squad up - Survive - Dominate',
   Fun: 'Play - Laugh - Conquer',
 };
 
 function getDisplayCategory(event: EventRecord) {
   const name = `${event.name} ${event.description}`.toLowerCase();
-  if (event.category.toLowerCase() === 'sports' || /sport/i.test(name)) {
-    return 'Sports';
-  }
-
-  if (event.category.toLowerCase() === 'gaming' || /runbhumi|esport|bgmi|free fire/i.test(name)) {
+  if (event.category.toLowerCase() === 'sports' || event.category.toLowerCase() === 'gaming' || /runbhumi|esport|bgmi|free fire|sport/i.test(name)) {
     return 'Gaming';
   }
 

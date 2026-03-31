@@ -105,10 +105,7 @@ export const HeroSection: React.FC<Props> = memo(() => {
 
         <div className="portal-summit-hero__content" data-reveal="fade-up">
           <p className="portal-summit-hero__eyebrow">CEAS Presents</p>
-          <div className="portal-summit-hero__title-shell">
-            <span className="portal-summit-hero__title-arc" aria-hidden="true" />
-            <h1 className="portal-summit-hero__title">COGNOTSAV 2026</h1>
-          </div>
+          <h1 className="portal-summit-hero__title">COGNOTSAV 2026</h1>
           <p className="portal-summit-hero__subtitle">A State-Level Technical &amp; Esports Event</p>
           <p className="portal-summit-hero__description">
             Where ideas turn into impact through competitions, esports &amp; innovation.
