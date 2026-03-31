@@ -53,20 +53,19 @@ const heroBackdropAccents: BackdropAccent[] = [
 ];
 
 const heroMobileBackdropMarks: BackdropMark[] = [
-  { label: 'HTML5', Icon: FileCode2, tone: 'orange', variant: 'compact', style: { left: '5.5%', top: '76%', transform: 'rotate(-8deg)' } },
-  { label: 'BGMI', Icon: Gamepad2, tone: 'cyan', variant: 'compact', style: { left: '4.8%', bottom: '27%', transform: 'rotate(-8deg)' } },
-  { label: 'REACT', Icon: Orbit, tone: 'cyan', variant: 'compact', style: { left: '7.4%', top: '43%', transform: 'rotate(-10deg)' } },
-  { label: 'AI', Icon: Bot, tone: 'pink', variant: 'emblem', style: { right: '7.4%', top: '46%' } },
-  { label: 'GITHUB', Icon: Github, tone: 'violet', variant: 'compact', style: { right: '7.8%', bottom: '28%', transform: 'rotate(6deg)' } },
-  { label: 'FREE FIRE', Icon: Flame, tone: 'orange', variant: 'compact', style: { right: '11.4%', bottom: '11.5%', transform: 'rotate(-3deg)' } },
-  { label: 'HACK', Icon: MonitorUp, tone: 'violet', variant: 'compact', style: { left: '14%', bottom: '10.5%', transform: 'rotate(8deg)' } },
+  { label: 'BGMI', Icon: Gamepad2, tone: 'cyan', variant: 'compact', style: { left: '4.8%', top: '36%', transform: 'rotate(-7deg)' } },
+  { label: 'REACT', Icon: Orbit, tone: 'cyan', variant: 'compact', style: { left: '4.2%', top: '51%', transform: 'rotate(-8deg)' } },
+  { label: 'HTML5', Icon: FileCode2, tone: 'orange', variant: 'emblem', style: { left: '7.4%', top: '77%' } },
+  { label: 'AI', Icon: Bot, tone: 'pink', variant: 'emblem', style: { right: '7.2%', top: '46.5%' } },
+  { label: 'GITHUB', Icon: Github, tone: 'violet', variant: 'emblem', style: { right: '7%', top: '60%' } },
+  { label: 'FREE', Icon: Flame, tone: 'orange', variant: 'compact', style: { right: '8.8%', top: '77.5%', transform: 'rotate(-4deg)' } },
 ];
 
 const heroMobileBackdropAccents: BackdropAccent[] = [
-  { Icon: Sparkles, tone: 'violet', style: { left: '12.5%', top: '28%' } },
-  { Icon: Zap, tone: 'orange', style: { right: '17%', top: '33%' } },
-  { Icon: ShieldCheck, tone: 'cyan', style: { left: '9%', bottom: '38%' } },
-  { Icon: Zap, tone: 'violet', style: { right: '14.5%', bottom: '39%' } },
+  { Icon: Sparkles, tone: 'violet', style: { left: '11%', top: '29%' } },
+  { Icon: Zap, tone: 'orange', style: { right: '15.5%', top: '37.5%' } },
+  { Icon: ShieldCheck, tone: 'cyan', style: { left: '8.4%', top: '69%' } },
+  { Icon: Zap, tone: 'violet', style: { right: '11.5%', top: '72%' } },
 ];
 
 const heroFeatureBadges = [
@@ -232,6 +231,13 @@ export const HeroSection: React.FC<Props> = memo(() => {
               {countdown.state === 'countdown' ? 'Starts in:' : 'Status:'}
             </span>
             <strong className="portal-summit-hero__countdown-value">{countdownSummary}</strong>
+          </div>
+
+          <div className="portal-summit-hero__actions portal-summit-hero__actions--desktop">
+            <a href="#registration-panel" className="portal-summit-hero__action portal-summit-hero__action--primary">
+              Register Now
+              <ArrowRight size={16} />
+            </a>
           </div>
 
           <div className="portal-summit-hero__actions portal-summit-hero__actions--mobile">

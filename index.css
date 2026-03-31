@@ -10009,6 +10009,7 @@ body {
 }
 
 .portal-summit-hero__countdown-pill,
+.portal-summit-hero__actions--desktop,
 .portal-summit-hero__actions--mobile,
 .portal-summit-hero__benefit-row,
 .portal-summit-hero__stats-bar {
@@ -10334,6 +10335,14 @@ body {
   letter-spacing: 0.02em;
 }
 
+.portal-summit-hero__actions--desktop {
+  display: flex;
+}
+
+.portal-summit-hero__actions--desktop .portal-summit-hero__action--primary {
+  min-width: 12.2rem;
+}
+
 .portal-summit-hero__actions--mobile {
   display: none;
 }
@@ -10611,27 +10620,37 @@ body {
 
   .portal-summit-hero__backdrop-mark--mobile-only {
     display: inline-flex;
+    opacity: 0.94;
   }
 
   .portal-summit-hero__backdrop-accent--mobile-only {
     display: inline-flex;
-    opacity: 0.8;
+    opacity: 0.88;
   }
 
   .portal-summit-hero__backdrop-mark--mobile-only.portal-summit-hero__backdrop-mark--compact {
-    padding: 0.34rem 0.56rem;
-    font-size: 0.6rem;
-    letter-spacing: 0.08em;
+    gap: 0.32rem;
+    padding: 0.28rem 0.46rem;
+    border-radius: 0.86rem;
+    font-size: 0.52rem;
+    letter-spacing: 0.07em;
   }
 
   .portal-summit-hero__backdrop-mark--mobile-only.portal-summit-hero__backdrop-mark--compact .portal-summit-hero__backdrop-mark-icon {
-    width: 1.45rem;
-    height: 1.45rem;
+    width: 1.18rem;
+    height: 1.18rem;
   }
 
   .portal-summit-hero__backdrop-mark--mobile-only.portal-summit-hero__backdrop-mark--emblem {
-    width: 2.4rem;
-    height: 2.4rem;
+    width: 1.92rem;
+    height: 1.92rem;
+    border-radius: 0.8rem;
+  }
+
+  .portal-summit-hero__backdrop-mark--mobile-only.portal-summit-hero__backdrop-mark--emblem .portal-summit-hero__backdrop-mark-icon svg,
+  .portal-summit-hero__backdrop-mark--mobile-only.portal-summit-hero__backdrop-mark--compact .portal-summit-hero__backdrop-mark-icon svg {
+    width: 0.84rem;
+    height: 0.84rem;
   }
 
   .portal-summit-hero__eyebrow--immersive {
@@ -10670,6 +10689,10 @@ body {
   .portal-summit-hero__countdown-label,
   .portal-summit-hero__countdown-value {
     font-size: 0.96rem;
+  }
+
+  .portal-summit-hero__actions--desktop {
+    display: none;
   }
 
   .portal-summit-hero__actions--mobile {
