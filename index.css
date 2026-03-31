@@ -8714,24 +8714,34 @@ body {
     justify-content: center;
   }
 
+  .portal-brochure-strip {
+    max-width: 58rem;
+    margin-inline: auto;
+    padding: 1.1rem;
+  }
+
+  .portal-brochure-strip__header {
+    gap: 0.9rem;
+  }
+
   .portal-brochure-poster-block {
-    max-width: 54rem;
+    max-width: 46rem;
     margin-inline: auto;
   }
 
   .portal-brochure-poster-frame {
-    max-width: 50rem;
+    max-width: 43rem;
     margin-inline: auto;
   }
 
   .portal-brochure-poster-block__topbar,
   .portal-brochure-poster-block__dots {
-    max-width: 50rem;
+    max-width: 43rem;
     margin-inline: auto;
   }
 
   .portal-brochure-poster-frame__inner {
-    padding: 0.56rem;
+    padding: 0.45rem;
   }
 }
 

@@ -345,21 +345,6 @@ function PremiumBrochureStripBase() {
           </div>
         </div>
       </div>
-
-      <div className="portal-brochure-strip__footer">
-        <div className="portal-brochure-strip__footer-chip">
-          <Trophy size={16} />
-          <span>Prize pool up to Rs 1 Lakh</span>
-        </div>
-        <div className="portal-brochure-strip__footer-chip">
-          <Clock3 size={16} />
-          <span>07-08 April 2026 / 10 AM</span>
-        </div>
-        <div className="portal-brochure-strip__footer-chip">
-          <Building2 size={16} />
-          <span>DVVPCOE, Ahilyanagar</span>
-        </div>
-      </div>
     </section>
   );
 }
