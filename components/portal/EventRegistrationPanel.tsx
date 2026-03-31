@@ -204,6 +204,21 @@ function resolveCustomQrScale(eventSlug: string) {
   }
 }
 
+function getCompactPosterDate(dateLabel: string) {
+  return dateLabel.replace(/\s+\d{4}$/, '');
+}
+
+function getCompactPosterStatus(statusLabel: string) {
+  if (/registration open/i.test(statusLabel)) return 'Open';
+  if (/registration paused/i.test(statusLabel)) return 'Paused';
+  if (/registration closed/i.test(statusLabel)) return 'Closed';
+  return statusLabel;
+}
+
+function getCompactPosterCountdown(countdownLabel: string) {
+  return countdownLabel.replace(/^starts in\s+/i, '').trim();
+}
+
 export const EventRegistrationPanel: React.FC<Props> = ({
   selectedEvent, teamSize, form, submitting, successMessage, errorMessage, successReceipt,
   validationErrors, touchedFields, paymentScreenshotName, paymentScreenshotReady, onDownloadPass,
@@ -306,12 +321,12 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const eventStoryPoints = selectedHandbook?.highlights?.slice(0, 3) || [];
   const handbookReady = Boolean(selectedHandbook?.handbookUrl);
   const posterMetaItems = [
-    { label: 'Date', value: selectedEvent.date_label, Icon: Clock3 },
+    { label: 'Date', value: getCompactPosterDate(selectedEvent.date_label), Icon: Clock3 },
     { label: 'Team', value: getTeamLabel(selectedEvent), Icon: Users },
     { label: 'Fee', value: formatCurrency(payableAmount), Icon: CreditCard },
     { label: 'Venue', value: selectedEvent.venue, Icon: MapPin },
-    { label: 'Status', value: liveState.label, Icon: Clock3 },
-    { label: 'Countdown', value: liveState.countdown, Icon: Sparkles },
+    { label: 'Status', value: getCompactPosterStatus(liveState.label), Icon: Clock3 },
+    { label: 'Countdown', value: getCompactPosterCountdown(liveState.countdown), Icon: Sparkles },
   ];
 
   return (
