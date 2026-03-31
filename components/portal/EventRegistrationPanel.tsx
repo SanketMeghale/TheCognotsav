@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  AlertTriangle, ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Clock3, Copy, CreditCard, Download, ExternalLink,
+  AlertTriangle, ArrowLeft, ArrowRight, CheckCircle2, Clock3, Copy, CreditCard, ExternalLink,
   Eye, Info, MapPin, Phone, QrCode, Smartphone, Sparkles, Trophy, Upload, Users,
 } from 'lucide-react';
 import type { EventRecord, ParticipantDraft, RegistrationReceipt } from './types';
@@ -140,6 +140,13 @@ const handbookBySlug: Record<string, {
     quickDetails: ['Format: Hackathon / MVP sprint', 'Fee: Rs 250 per team', 'Duration: 3 hr build + 2 hr showdown'],
   },
 };
+
+const prepDetailIcons = [Trophy, Sparkles, Clock3] as const;
+
+function formatPrepDetail(detail: string) {
+  const value = detail.includes(':') ? detail.split(':').slice(1).join(':').trim() : detail.trim();
+  return value.replace(/kill\s*\+\s*placement/i, 'Kill & Placement');
+}
 
 function FloatingField({ label, value, onChange, onBlur, error, type = 'text', textarea = false, required = false }: { label: string; value: string; onChange: (value: string) => void; onBlur: () => void; error?: string; type?: string; textarea?: boolean; required?: boolean }) {
   return (
@@ -291,8 +298,11 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   }
 
   const liveState = getEventLiveState(selectedEvent, now);
-  const handbookCtaLabel = selectedHandbook?.handbookUrl?.toLowerCase().endsWith('.pdf') ? 'Download PDF' : 'Download Handbook';
   const quickDetails = selectedHandbook?.quickDetails?.slice(0, 3) || [];
+  const prepEssentials = quickDetails.map((item, index) => ({
+    label: formatPrepDetail(item),
+    Icon: prepDetailIcons[index % prepDetailIcons.length],
+  }));
   const eventStoryPoints = selectedHandbook?.highlights?.slice(0, 3) || [];
   const handbookReady = Boolean(selectedHandbook?.handbookUrl);
   const posterMetaItems = [
@@ -432,34 +442,33 @@ export const EventRegistrationPanel: React.FC<Props> = ({
               <AlertTriangle size={18} className="shrink-0" />
               <span>Please read the handbook before you register.</span>
             </div>
-            <div className="portal-event-section__head">
-              <BookOpen size={18} className="text-cyan-200" />
+            <div className="portal-event-section__head portal-event-section__head--prep">
               <div>
-                <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Before You Register</p>
-                <h3 className="mt-1 text-lg font-semibold text-cyan-100">Rules, format, and event essentials</h3>
+                <p className="portal-event-section__eyebrow">Before You Register</p>
+                <h3 className="portal-event-section__title">Rules, format &amp; essentials</h3>
               </div>
             </div>
-            {quickDetails.length || eventStoryPoints.length ? (
-              <div className="portal-event-prep-layout">
-                {quickDetails.length ? (
-                  <div className="portal-event-prep-group">
-                    <p className="portal-event-prep-group__label">Event Essentials</p>
-                    <div className="portal-event-prep-chip-wrap">
-                      {quickDetails.map((item) => (
-                        <div key={item} className="portal-event-prep-chip">
-                          <Trophy size={14} className="text-amber-200" />
-                          <span>{item}</span>
-                        </div>
-                      ))}
-                    </div>
+            {prepEssentials.length || eventStoryPoints.length ? (
+              <div className="portal-event-prep-layout portal-event-prep-layout--compact">
+                {prepEssentials.length ? (
+                  <div className="portal-event-prep-essentials">
+                    {prepEssentials.map(({ label, Icon }) => (
+                      <div key={label} className="portal-event-prep-essentials__item">
+                        <Icon size={15} />
+                        <span>{label}</span>
+                      </div>
+                    ))}
                   </div>
                 ) : null}
                 {eventStoryPoints.length ? (
-                  <div className="portal-event-prep-group">
-                    <p className="portal-event-prep-group__label">Highlights</p>
-                    <div className="portal-event-prep-list portal-event-prep-list--compact">
+                  <div className="portal-event-prep-highlights">
+                    <div className="portal-event-prep-highlights__label">
+                      <Sparkles size={15} />
+                      <span>Highlights</span>
+                    </div>
+                    <div className="portal-event-prep-list portal-event-prep-list--plain">
                       {eventStoryPoints.map((item) => (
-                        <div key={item} className="portal-event-prep-list__item">
+                        <div key={item} className="portal-event-prep-list__item portal-event-prep-list__item--plain">
                           <CheckCircle2 size={15} className="mt-0.5 shrink-0 text-cyan-200" />
                           <span>{item}</span>
                         </div>
@@ -470,23 +479,18 @@ export const EventRegistrationPanel: React.FC<Props> = ({
               </div>
             ) : null}
             {handbookReady ? (
-              <div className="portal-event-handbook-actions">
+              <div className="portal-event-handbook-actions portal-event-handbook-actions--single">
                 <a
                   href={selectedHandbook?.handbookUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="portal-event-handbook-button portal-event-handbook-button--ghost"
+                  className="portal-event-handbook-button portal-event-handbook-button--wide"
                 >
-                  <Eye size={16} />
-                  View Online
-                </a>
-                <a
-                  href={selectedHandbook?.handbookUrl}
-                  download
-                  className="portal-event-handbook-button portal-event-handbook-button--primary"
-                >
-                  <Download size={16} />
-                  {handbookCtaLabel}
+                  <span className="portal-event-handbook-button__main">
+                    <Eye size={16} />
+                    View Rules
+                  </span>
+                  <ArrowRight size={16} className="portal-event-handbook-button__arrow" />
                 </a>
               </div>
             ) : (
