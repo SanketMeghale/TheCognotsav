@@ -116,6 +116,48 @@ export const HeroSection: React.FC<Props> = memo(() => {
               </div>
             ))}
           </div>
+          <div className="portal-summit-hero__curve-lines" aria-hidden="true">
+            <svg viewBox="0 0 1440 420" preserveAspectRatio="none" role="presentation">
+              <defs>
+                <linearGradient id="portalHeroCurvePrimary" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#53e7ff" stopOpacity="0" />
+                  <stop offset="18%" stopColor="#53e7ff" stopOpacity="0.95" />
+                  <stop offset="55%" stopColor="#7392ff" stopOpacity="0.9" />
+                  <stop offset="82%" stopColor="#b97eff" stopOpacity="0.94" />
+                  <stop offset="100%" stopColor="#b97eff" stopOpacity="0" />
+                </linearGradient>
+                <linearGradient id="portalHeroCurveSecondary" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#ffc15c" stopOpacity="0" />
+                  <stop offset="20%" stopColor="#ffc15c" stopOpacity="0.74" />
+                  <stop offset="48%" stopColor="#66e9ff" stopOpacity="0.72" />
+                  <stop offset="80%" stopColor="#8467ff" stopOpacity="0.82" />
+                  <stop offset="100%" stopColor="#8467ff" stopOpacity="0" />
+                </linearGradient>
+                <linearGradient id="portalHeroCurveAccent" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#ffffff" stopOpacity="0" />
+                  <stop offset="24%" stopColor="#ffffff" stopOpacity="0.44" />
+                  <stop offset="56%" stopColor="#84e1ff" stopOpacity="0.34" />
+                  <stop offset="82%" stopColor="#ffd77f" stopOpacity="0.38" />
+                  <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+                </linearGradient>
+              </defs>
+              <path
+                className="portal-summit-hero__curve-line portal-summit-hero__curve-line--primary"
+                d="M-60 178C178 16 438 18 658 104S1118 280 1502 70"
+                stroke="url(#portalHeroCurvePrimary)"
+              />
+              <path
+                className="portal-summit-hero__curve-line portal-summit-hero__curve-line--secondary"
+                d="M-88 244C196 122 456 92 716 170S1188 350 1518 168"
+                stroke="url(#portalHeroCurveSecondary)"
+              />
+              <path
+                className="portal-summit-hero__curve-line portal-summit-hero__curve-line--accent"
+                d="M92 334C320 232 526 220 744 270S1178 414 1452 294"
+                stroke="url(#portalHeroCurveAccent)"
+              />
+            </svg>
+          </div>
 
           <p className="portal-summit-hero__eyebrow portal-summit-hero__eyebrow--immersive">CEAS PRESENTS</p>
           <h1 className="portal-summit-hero__title portal-summit-hero__title--immersive" aria-label="COGNOTSAV 2K26">
