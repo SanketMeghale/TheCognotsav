@@ -443,11 +443,11 @@ export const EventRegistrationPanel: React.FC<Props> = ({
             {quickDetails.length || eventStoryPoints.length ? (
               <div className="portal-event-prep-layout">
                 {quickDetails.length ? (
-                  <div className="portal-event-prep-panel">
-                    <p className="portal-event-prep-panel__label">Event Essentials</p>
-                    <div className="portal-event-prep-list">
+                  <div className="portal-event-prep-group">
+                    <p className="portal-event-prep-group__label">Event Essentials</p>
+                    <div className="portal-event-prep-chip-wrap">
                       {quickDetails.map((item) => (
-                        <div key={item} className="portal-event-prep-list__item">
+                        <div key={item} className="portal-event-prep-chip">
                           <Trophy size={14} className="text-amber-200" />
                           <span>{item}</span>
                         </div>
@@ -456,9 +456,9 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                   </div>
                 ) : null}
                 {eventStoryPoints.length ? (
-                  <div className="portal-event-prep-panel">
-                    <p className="portal-event-prep-panel__label">Highlights</p>
-                    <div className="portal-event-prep-list">
+                  <div className="portal-event-prep-group">
+                    <p className="portal-event-prep-group__label">Highlights</p>
+                    <div className="portal-event-prep-list portal-event-prep-list--compact">
                       {eventStoryPoints.map((item) => (
                         <div key={item} className="portal-event-prep-list__item">
                           <CheckCircle2 size={15} className="mt-0.5 shrink-0 text-cyan-200" />

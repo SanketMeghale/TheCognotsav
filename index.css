@@ -1341,7 +1341,7 @@ img {
 
 .portal-event-prep-layout {
   display: grid;
-  gap: 0.9rem;
+  gap: 0.75rem;
   margin-top: 1rem;
   grid-template-columns: minmax(0, 1fr);
 }
@@ -1361,14 +1361,11 @@ img {
   text-transform: uppercase;
 }
 
-.portal-event-prep-panel {
-  border-radius: 1.2rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: linear-gradient(155deg, rgba(7, 16, 31, 0.86), rgba(9, 23, 43, 0.72));
-  padding: 0.9rem 1rem;
+.portal-event-prep-group {
+  min-width: 0;
 }
 
-.portal-event-prep-panel__label {
+.portal-event-prep-group__label {
   color: #93c5fd;
   font-size: 0.66rem;
   font-weight: 800;
@@ -1378,22 +1375,47 @@ img {
 
 .portal-event-prep-list {
   display: grid;
-  gap: 0;
-  margin-top: 0.55rem;
+  gap: 0.42rem;
+  margin-top: 0.5rem;
+}
+
+.portal-event-prep-list--compact {
+  gap: 0.34rem;
+}
+
+.portal-event-prep-chip-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.portal-event-prep-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.48rem;
+  min-height: 2.35rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.46rem 0.78rem;
+  color: #dbeafe;
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.35;
 }
 
 .portal-event-prep-list__item {
   display: flex;
   align-items: flex-start;
   gap: 0.7rem;
-  padding: 0.72rem 0;
+  border-radius: 0.95rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 0.62rem 0.78rem;
   color: #dbeafe;
-  font-size: 0.92rem;
-  line-height: 1.5;
-}
-
-.portal-event-prep-list__item + .portal-event-prep-list__item {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.88rem;
+  line-height: 1.42;
 }
 
 .portal-event-story-card {
@@ -6422,15 +6444,21 @@ footer {
     gap: 0.75rem;
   }
 
-  .portal-event-prep-panel {
-    padding: 0.78rem 0.85rem;
+  .portal-event-prep-chip-wrap {
+    gap: 0.42rem;
   }
 
   .portal-event-prep-list__item {
     gap: 0.55rem;
-    padding: 0.56rem 0;
-    font-size: 0.84rem;
+    padding: 0.54rem 0.68rem;
+    font-size: 0.82rem;
     line-height: 1.42;
+  }
+
+  .portal-event-prep-chip {
+    min-height: 2.1rem;
+    padding: 0.4rem 0.64rem;
+    font-size: 0.78rem;
   }
 
   .portal-event-mini-grid {
