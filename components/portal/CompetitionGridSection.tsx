@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
-import { CalendarDays, ChevronDown, CreditCard, ExternalLink, Hourglass, Maximize2, Play, Trophy, Users } from 'lucide-react';
+import { CalendarDays, CreditCard, ExternalLink, Play, Trophy, Users } from 'lucide-react';
 import type { EventRecord } from './types';
 import { formatCurrency, getEventLiveState, getTeamLabel } from './utils';
 
@@ -10,30 +10,32 @@ type Props = {
   onSelectEvent: (slug: string) => void;
 };
 
-const categoryThemes: Record<string, { button: string; glow: string; badge: string }> = {
+const categoryThemes: Record<string, { glow: string; badge: string }> = {
   Technical: {
-    button: 'from-sky-400 to-cyan-300 text-slate-950',
     glow: 'shadow-[0_18px_45px_rgba(56,189,248,0.18)]',
     badge: 'bg-sky-400/14 text-sky-100',
   },
+  Sports: {
+    glow: 'shadow-[0_18px_45px_rgba(52,211,153,0.18)]',
+    badge: 'bg-emerald-400/14 text-emerald-100',
+  },
   Gaming: {
-    button: 'from-fuchsia-400 to-pink-300 text-slate-950',
     glow: 'shadow-[0_18px_45px_rgba(217,70,239,0.18)]',
     badge: 'bg-fuchsia-400/14 text-fuchsia-100',
   },
   Fun: {
-    button: 'from-amber-300 to-orange-300 text-slate-950',
     glow: 'shadow-[0_18px_45px_rgba(251,191,36,0.18)]',
     badge: 'bg-amber-400/14 text-amber-100',
   },
 };
 
-const filterOrder = ['All', 'Technical', 'Sports', 'Gaming', 'Fun'] as const;
+const filterOrder = ['All', 'Gaming', 'Technical', 'Fun', 'Sports'] as const;
+const categoryOrder = filterOrder.filter((filter): filter is Exclude<(typeof filterOrder)[number], 'All'> => filter !== 'All');
 const categoryTaglines: Record<string, string> = {
-  Technical: 'Innovate • Present • Accelerate',
-  Sports: 'Compete • Perform • Triumph',
-  Gaming: 'Squad Up • Survive • Dominate',
-  Fun: 'Play • Laugh • Conquer',
+  Technical: 'Innovate - Present - Accelerate',
+  Sports: 'Compete - Perform - Triumph',
+  Gaming: 'Squad up - Survive - Dominate',
+  Fun: 'Play - Laugh - Conquer',
 };
 
 function getDisplayCategory(event: EventRecord) {
@@ -53,6 +55,24 @@ function getDisplayCategory(event: EventRecord) {
   return 'Technical';
 }
 
+function getSectionAvailability(events: EventRecord[], now: Date) {
+  const states = events.map((event) => getEventLiveState(event, now));
+
+  if (events.some((event, index) => event.registration_enabled !== false && states[index]?.label === 'Registration Open')) {
+    return 'Available now';
+  }
+
+  if (states.some((state) => /open/i.test(state.label) || /starts/i.test(state.countdown) || /left/i.test(state.countdown))) {
+    return 'Opening soon';
+  }
+
+  if (events.some((event) => event.registration_enabled !== false)) {
+    return 'Live updates';
+  }
+
+  return 'Updates soon';
+}
+
 export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEvents, selectedEventSlug, onSelectEvent }) => {
   const [activeFilter, setActiveFilter] = useState<(typeof filterOrder)[number]>('All');
   const [now, setNow] = useState(() => new Date());
@@ -60,32 +80,32 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
   const videoShellRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      if (document.fullscreenElement) {
-        return;
-      }
-
-      Object.values(videoRefs.current).forEach((video) => {
-        if (video) {
-          video.controls = false;
-        }
-      });
-    };
-
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
-  }, []);
-
   const visibleEvents = useMemo(
     () => (activeFilter === 'All' ? events : events.filter((event) => getDisplayCategory(event) === activeFilter)),
     [activeFilter, events],
   );
 
+  const groupedEvents = useMemo(() => {
+    if (activeFilter !== 'All') {
+      return [{ category: activeFilter, events: visibleEvents }];
+    }
+
+    return categoryOrder
+      .map((category) => ({
+        category,
+        events: visibleEvents.filter((event) => getDisplayCategory(event) === category),
+      }))
+      .filter((group) => group.events.length > 0);
+  }, [activeFilter, visibleEvents]);
+
   useEffect(() => {
     const timer = window.setInterval(() => setNow(new Date()), 60 * 1000);
     return () => window.clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    setActiveVideoSlug(null);
+  }, [activeFilter]);
 
   useEffect(() => {
     if (typeof window === 'undefined' || !activeVideoSlug) {
@@ -119,8 +139,8 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
       const shouldPlay = slug === activeVideoSlug;
 
       if (shouldPlay) {
-        video.muted = false;
-        video.volume = 1;
+        video.muted = true;
+        video.volume = 0;
         video.controls = false;
         video.loop = true;
         const playPromise = video.play();
@@ -132,59 +152,15 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
 
       video.controls = false;
       video.muted = true;
+      video.volume = 0;
       video.loop = true;
       video.pause();
       video.currentTime = 0;
-      video.muted = true;
     });
   }, [activeVideoSlug]);
 
   const toggleVideoPreview = (slug: string) => {
     setActiveVideoSlug((current) => (current === slug ? null : slug));
-  };
-
-  const requestFullscreenForVideo = async (video: HTMLVideoElement) => {
-    const fullscreenTarget = video.parentElement ?? video;
-    const fullscreenApi = (
-      fullscreenTarget.requestFullscreen
-      || (fullscreenTarget as HTMLElement & { webkitRequestFullscreen?: () => Promise<void> | void }).webkitRequestFullscreen
-      || (video as HTMLVideoElement & { webkitEnterFullscreen?: () => void }).webkitEnterFullscreen
-    );
-
-    if (typeof fullscreenApi !== 'function') {
-      return;
-    }
-
-    await fullscreenApi.call(
-      fullscreenApi === (video as HTMLVideoElement & { webkitEnterFullscreen?: () => void }).webkitEnterFullscreen
-        ? video
-        : fullscreenTarget,
-    );
-  };
-
-  const openVideoFullscreen = async (slug: string) => {
-    const video = videoRefs.current[slug];
-    if (!video) {
-      return;
-    }
-
-    setActiveVideoSlug(slug);
-    video.muted = false;
-    video.volume = 1;
-    video.controls = true;
-    video.loop = true;
-
-    try {
-      await video.play();
-    } catch {
-      // Ignore autoplay failures and still attempt fullscreen.
-    }
-
-    try {
-      await requestFullscreenForVideo(video);
-    } catch {
-      // Fullscreen is optional enhancement.
-    }
   };
 
   return (
@@ -205,7 +181,7 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
               onClick={() => setActiveFilter(filter)}
               className={`rounded-[1rem] px-4 py-3 text-xs font-semibold uppercase tracking-[0.22em] transition ${
                 activeFilter === filter
-                  ? 'bg-gradient-to-r from-cyan-400 to-sky-400 text-slate-950 shadow-[0_12px_30px_rgba(34,211,238,0.28)]'
+                  ? 'bg-gradient-to-r from-sky-400 to-blue-400 text-slate-950 shadow-[0_12px_30px_rgba(59,130,246,0.28)]'
                   : 'text-slate-300 hover:bg-white/[0.05] hover:text-white'
               }`}
             >
@@ -215,7 +191,7 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
         </div>
       </div>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="portal-competition-groups mt-6">
         {loadingEvents
           ? Array.from({ length: 6 }).map((_, index) => (
               <div key={index} className="rounded-[1.8rem] border border-white/10 bg-white/[0.04] p-4">
@@ -224,216 +200,179 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
                 <div className="mt-3 h-6 w-2/3 animate-pulse rounded-full bg-white/10" />
               </div>
             ))
-          : visibleEvents.map((event) => {
-              const active = event.slug === selectedEventSlug;
-              const displayCategory = getDisplayCategory(event);
-              const theme = categoryThemes[displayCategory] || categoryThemes.Technical;
-              const teamLabel = getTeamLabel(event);
-              const liveState = getEventLiveState(event, now);
-              const handleOpenEvent = () => onSelectEvent(event.slug);
-              const hasIntroVideo = Boolean(event.intro_video_url);
-              const isVideoActive = activeVideoSlug === event.slug;
-              const statusLabel = event.registration_enabled === false
-                ? 'REGISTRATION PAUSED'
-                : liveState.label === 'Registration Open'
-                  ? 'OPEN'
-                  : liveState.label.toUpperCase();
-              const tagline = categoryTaglines[displayCategory] || categoryTaglines.Technical;
-              const videoInstruction = isVideoActive ? 'Tap to stop preview' : 'Tap to play preview';
+          : groupedEvents.map((group) => {
+              const groupTheme = categoryThemes[group.category] || categoryThemes.Technical;
 
               return (
-                <article
-                  key={event.slug}
-                  role="link"
-                  tabIndex={0}
-                  onMouseLeave={() => {
-                    if (activeVideoSlug === event.slug) {
-                      setActiveVideoSlug(null);
-                    }
-                  }}
-                  onBlur={() => {
-                    if (activeVideoSlug === event.slug) {
-                      setActiveVideoSlug(null);
-                    }
-                  }}
-                  onClick={handleOpenEvent}
-                  onKeyDown={(eventKey) => {
-                    if (eventKey.key === 'Enter' || eventKey.key === ' ') {
-                      eventKey.preventDefault();
-                      handleOpenEvent();
-                    }
-                  }}
-                  className={`portal-competition-card group tilt-card h-full cursor-pointer overflow-hidden rounded-[1.9rem] border text-left transition duration-200 ${
-                    active ? 'border-cyan-300/36' : 'border-white/10 hover:border-white/18'
-                  } ${theme.glow}`}
-                >
-                  <div className="portal-competition-card__media relative overflow-hidden">
-                    {hasIntroVideo ? (
-                      <div
-                        ref={(node) => {
-                          videoShellRefs.current[event.slug] = node;
-                        }}
-                        className="portal-competition-card__video-shell"
-                        onClick={(clickEvent) => {
-                          clickEvent.stopPropagation();
-                          toggleVideoPreview(event.slug);
-                        }}
-                        onKeyDown={(keyEvent) => {
-                          if (keyEvent.key === 'Enter' || keyEvent.key === ' ') {
-                            keyEvent.preventDefault();
-                            keyEvent.stopPropagation();
-                            toggleVideoPreview(event.slug);
-                          }
-                        }}
-                        role="button"
-                        tabIndex={0}
-                        aria-label={`${event.name} intro video preview. ${videoInstruction}.`}
-                      >
-                        <button
-                          type="button"
-                          className="portal-competition-card__video-fullscreen"
-                          onClick={(clickEvent) => {
-                            clickEvent.stopPropagation();
-                            void openVideoFullscreen(event.slug);
-                          }}
-                          onKeyDown={(keyEvent) => {
-                            keyEvent.stopPropagation();
-                          }}
-                          aria-label={`Open ${event.name} intro video in fullscreen`}
-                        >
-                          <Maximize2 size={16} />
-                          <span>Fullscreen</span>
-                        </button>
-                        <img
-                          src={event.poster_path}
-                          alt={event.name}
-                          loading="lazy"
-                          decoding="async"
-                          className="portal-competition-card__video-poster"
-                        />
-                        <video
-                          ref={(node) => {
-                            videoRefs.current[event.slug] = node;
-                          }}
-                          className={`portal-competition-card__video ${isVideoActive ? 'is-visible' : ''}`}
-                          preload="metadata"
-                          playsInline
-                          loop
-                          poster={event.poster_path}
-                        >
-                          <source src={event.intro_video_url} type="video/mp4" />
-                          Your browser does not support the event intro video.
-                        </video>
-                        <div className="portal-competition-card__video-spotlight" aria-hidden="true">
-                          <span className="portal-competition-card__video-spotlight-ring" />
-                          <span className="portal-competition-card__video-spotlight-core">
-                            <span className="portal-competition-card__video-spotlight-icon">
-                              <Play size={20} />
-                            </span>
-                            <span className="portal-competition-card__video-spotlight-label">{videoInstruction}</span>
-                          </span>
-                        </div>
-                      </div>
-                    ) : (
-                      <img src={event.poster_path} alt={event.name} loading="lazy" decoding="async" className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.04]" />
-                    )}
-                    <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(7,10,21,0.02),rgba(7,10,21,0.44)_52%,rgba(7,10,21,0.9))]" />
-                    <div className="portal-competition-card__noise" aria-hidden="true" />
-                    <div className="absolute right-4 top-4 flex flex-wrap justify-end gap-2">
-                      <span className={`rounded-full px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] shadow-[0_10px_24px_rgba(2,8,23,0.24)] ${theme.badge}`}>{displayCategory}</span>
+                <div key={group.category} className="portal-competition-group">
+                  <div className="portal-competition-group__header">
+                    <div className="portal-competition-group__heading-wrap">
+                      <h4 className="portal-competition-group__title">{group.category}</h4>
+                      <span className="portal-competition-group__line" aria-hidden="true" />
                     </div>
-                    {!hasIntroVideo ? (
-                      <div className="absolute inset-x-4 bottom-4">
-                        <div className="portal-competition-card__hero-caption">
-                          <p className="portal-card-title portal-competition-card__hero-title text-white">{event.name}</p>
-                          <p className="mt-1 text-[11px] uppercase tracking-[0.18em] text-slate-200/88">{event.date_label} / {event.time_label}</p>
-                        </div>
-                      </div>
-                    ) : null}
+                    <span className={`portal-competition-group__badge ${groupTheme.badge}`}>
+                      {getSectionAvailability(group.events, now)}
+                    </span>
                   </div>
 
-                  <div className="portal-competition-card__body p-5">
-                    <div className="portal-competition-card__topline">
-                      <div className="min-w-0">
-                        <h4 className="portal-competition-card__title">{event.name}</h4>
-                        <p className="portal-competition-card__tagline">{tagline}</p>
-                      </div>
-                      <span className="portal-competition-card__status">{statusLabel}</span>
-                    </div>
+                  <div className="portal-competition-group__grid">
+                    {group.events.map((event) => {
+                      const active = event.slug === selectedEventSlug;
+                      const displayCategory = getDisplayCategory(event);
+                      const theme = categoryThemes[displayCategory] || categoryThemes.Technical;
+                      const liveState = getEventLiveState(event, now);
+                      const teamLabel = getTeamLabel(event);
+                      const handleOpenEvent = () => onSelectEvent(event.slug);
+                      const hasIntroVideo = Boolean(event.intro_video_url);
+                      const isVideoActive = activeVideoSlug === event.slug;
+                      const statusLabel = event.registration_enabled === false
+                        ? 'Registration paused'
+                        : liveState.label === 'Registration Open'
+                          ? 'Open now'
+                          : liveState.label;
+                      const subtitle = event.description || categoryTaglines[displayCategory] || categoryTaglines.Technical;
+                      const feeLabel = event.registration_fee_label || formatCurrency(event.registration_fee);
 
-                    <div className="portal-competition-card__schedule mt-5">
-                      <div className="portal-competition-card__schedule-row">
-                        <CalendarDays size={15} />
-                        <span>{event.date_label}</span>
-                        <span className="portal-competition-card__meta-dot" />
-                        <span>{event.time_label}</span>
-                      </div>
-                      <div className="portal-competition-card__countdown-pill">
-                        <Hourglass size={15} />
-                        <span>{liveState.countdown}</span>
-                      </div>
-                    </div>
+                      return (
+                        <article
+                          key={event.slug}
+                          role="link"
+                          tabIndex={0}
+                          onMouseLeave={() => {
+                            if (activeVideoSlug === event.slug) {
+                              setActiveVideoSlug(null);
+                            }
+                          }}
+                          onBlur={() => {
+                            if (activeVideoSlug === event.slug) {
+                              setActiveVideoSlug(null);
+                            }
+                          }}
+                          onClick={handleOpenEvent}
+                          onKeyDown={(eventKey) => {
+                            if (eventKey.key === 'Enter' || eventKey.key === ' ') {
+                              eventKey.preventDefault();
+                              handleOpenEvent();
+                            }
+                          }}
+                          className={`portal-competition-card portal-competition-card--showcase group tilt-card h-full cursor-pointer overflow-hidden rounded-[1.7rem] border text-left transition duration-200 ${
+                            active ? 'border-cyan-300/36' : 'border-white/10 hover:border-white/18'
+                          } ${theme.glow}`}
+                        >
+                          <div className="portal-competition-card__media relative overflow-hidden">
+                            {hasIntroVideo ? (
+                              <div
+                                ref={(node) => {
+                                  videoShellRefs.current[event.slug] = node;
+                                }}
+                                className="portal-competition-card__video-shell"
+                              >
+                                <img
+                                  src={event.poster_path}
+                                  alt={event.name}
+                                  loading="lazy"
+                                  decoding="async"
+                                  className={`portal-competition-card__video-poster ${isVideoActive ? 'is-hidden' : ''}`}
+                                />
+                                <video
+                                  ref={(node) => {
+                                    videoRefs.current[event.slug] = node;
+                                  }}
+                                  className={`portal-competition-card__video ${isVideoActive ? 'is-visible' : ''}`}
+                                  preload="metadata"
+                                  playsInline
+                                  loop
+                                  muted
+                                  poster={event.poster_path}
+                                >
+                                  <source src={event.intro_video_url} type="video/mp4" />
+                                  Your browser does not support the event intro video.
+                                </video>
+                              </div>
+                            ) : (
+                              <img
+                                src={event.poster_path}
+                                alt={event.name}
+                                loading="lazy"
+                                decoding="async"
+                                className="portal-competition-card__poster h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+                              />
+                            )}
 
-                    <p className="portal-competition-card__description mt-5 line-clamp-1 text-sm leading-7 text-slate-300">{event.description}</p>
-
-                    <div className="portal-competition-card__stats mt-5">
-                      <div className="portal-competition-card__stat-card">
-                        <div className="portal-competition-card__stat-label">
-                          <Trophy size={13} />
-                          <span>Prize Pool</span>
-                        </div>
-                        <div className="portal-competition-card__stat-value">{event.prize}</div>
-                      </div>
-                      <div className="portal-competition-card__stat-card">
-                        <div className="portal-competition-card__stat-label">
-                          <Users size={13} />
-                          <span>Team Size</span>
-                        </div>
-                        <div className="portal-competition-card__stat-value portal-competition-card__stat-value--accent">{teamLabel}</div>
-                      </div>
-                    </div>
-
-                    <div className="portal-competition-card__action-row mt-4">
-                      <div className="portal-competition-card__stat-card portal-competition-card__stat-card--action">
-                        <div className="portal-competition-card__stat-label">
-                          <CreditCard size={13} />
-                          <span>Fee</span>
-                        </div>
-                        <div className="portal-competition-card__action-split">
-                          <div className="portal-competition-card__stat-value portal-competition-card__stat-value--accent">
-                            {event.registration_fee_label || formatCurrency(event.registration_fee)}
+                            <div className="portal-competition-card__noise" aria-hidden="true" />
+                            <div className="portal-competition-card__media-overlay" aria-hidden="true" />
+                            <div className="portal-competition-card__media-top">
+                              <span className={`portal-competition-card__category-pill ${theme.badge}`}>{displayCategory}</span>
+                              {hasIntroVideo ? (
+                                <button
+                                  type="button"
+                                  className={`portal-competition-card__preview-toggle ${isVideoActive ? 'is-active' : ''}`}
+                                  onClick={(clickEvent) => {
+                                    clickEvent.stopPropagation();
+                                    toggleVideoPreview(event.slug);
+                                  }}
+                                  aria-label={`${isVideoActive ? 'Stop preview' : 'Preview'} for ${event.name}`}
+                                >
+                                  <Play size={14} />
+                                  <span>{isVideoActive ? 'Playing' : 'Preview'}</span>
+                                </button>
+                              ) : null}
+                            </div>
                           </div>
-                          <span className="portal-competition-card__link-text">View Details</span>
-                        </div>
-                      </div>
-                    </div>
 
-                    <div className="portal-competition-card__footer mt-5">
-                      <button
-                        type="button"
-                        onClick={(clickEvent) => {
-                          clickEvent.stopPropagation();
-                          handleOpenEvent();
-                        }}
-                        className="portal-register-cta portal-register-cta--compact w-full"
-                      >
-                        {event.registration_enabled === false ? 'Registration Paused' : 'Register Now'}
-                        <ExternalLink size={16} />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={(clickEvent) => {
-                          clickEvent.stopPropagation();
-                          handleOpenEvent();
-                        }}
-                        className="portal-competition-card__details-button"
-                      >
-                        <ChevronDown size={16} />
-                        View Details
-                      </button>
-                    </div>
+                          <div className="portal-competition-card__body portal-competition-card__body--compact p-5">
+                            <div className="portal-competition-card__topline">
+                              <span className="portal-competition-card__status">{statusLabel}</span>
+                              <span className="portal-competition-card__date-chip">
+                                <CalendarDays size={13} />
+                                <span>{event.date_label}</span>
+                              </span>
+                            </div>
+
+                            <div className="portal-competition-card__title-block">
+                              <h4 className="portal-competition-card__title">{event.name}</h4>
+                              <p className="portal-competition-card__tagline line-clamp-1">{subtitle}</p>
+                            </div>
+
+                            <div className="portal-competition-card__meta-list">
+                              <div className="portal-competition-card__meta-row portal-competition-card__meta-row--wide portal-competition-card__meta-row--highlight">
+                                <Trophy size={14} />
+                                <span>{event.prize}</span>
+                              </div>
+                              <div className="portal-competition-card__meta-row">
+                                <Users size={14} />
+                                <span>{teamLabel}</span>
+                              </div>
+                              <div className="portal-competition-card__meta-row">
+                                <CreditCard size={14} />
+                                <span>Fee {feeLabel}</span>
+                              </div>
+                              <div className="portal-competition-card__meta-row portal-competition-card__meta-row--wide">
+                                <CalendarDays size={14} />
+                                <span>{event.time_label}</span>
+                              </div>
+                            </div>
+
+                            <div className="portal-competition-card__footer portal-competition-card__footer--inline">
+                              <span className="portal-competition-card__link-text">Tap card for details</span>
+                              <button
+                                type="button"
+                                onClick={(clickEvent) => {
+                                  clickEvent.stopPropagation();
+                                  handleOpenEvent();
+                                }}
+                                className="portal-register-cta portal-register-cta--compact portal-register-cta--card"
+                              >
+                                {event.registration_enabled === false ? 'View Details' : 'Register Now'}
+                                <ExternalLink size={16} />
+                              </button>
+                            </div>
+                          </div>
+                        </article>
+                      );
+                    })}
                   </div>
-                </article>
+                </div>
               );
             })}
       </div>

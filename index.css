@@ -5913,3 +5913,416 @@ footer {
     filter: none;
   }
 }
+
+.portal-competition-groups {
+  display: grid;
+  gap: 2.4rem;
+}
+
+.portal-competition-group {
+  display: grid;
+  gap: 1rem;
+}
+
+.portal-competition-group__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.9rem;
+}
+
+.portal-competition-group__heading-wrap {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 1rem;
+}
+
+.portal-competition-group__title {
+  margin: 0;
+  color: #f8fbff;
+  font-family: 'Oxanium', 'Orbitron', 'Inter', sans-serif;
+  font-size: clamp(1.65rem, 2.7vw, 2.2rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.portal-competition-group__line {
+  display: block;
+  min-width: 3rem;
+  flex: 1 1 auto;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(125, 211, 252, 0.34), rgba(125, 211, 252, 0.08) 62%, transparent);
+}
+
+.portal-competition-group__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.46rem 0.82rem;
+  border-radius: 0.7rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.portal-competition-group__grid {
+  display: grid;
+  gap: 1.15rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.portal-competition-card--showcase {
+  border-radius: 1.45rem;
+  background:
+    radial-gradient(circle at top right, rgba(59, 130, 246, 0.12), transparent 32%),
+    linear-gradient(180deg, rgba(13, 19, 40, 0.98), rgba(9, 13, 29, 0.99));
+}
+
+.portal-competition-card--showcase .portal-competition-card__media {
+  min-height: auto;
+  aspect-ratio: 16 / 9;
+  background: #0a1022;
+}
+
+.portal-competition-card--showcase .portal-competition-card__media::after {
+  content: none;
+}
+
+.portal-competition-card--showcase .portal-competition-card__video-shell {
+  position: relative;
+  inset: auto;
+  height: 100%;
+}
+
+.portal-competition-card--showcase .portal-competition-card__video-poster,
+.portal-competition-card--showcase .portal-competition-card__poster {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.portal-competition-card--showcase .portal-competition-card__video-poster {
+  transition: opacity 180ms ease, transform 240ms ease;
+}
+
+.portal-competition-card--showcase .portal-competition-card__video-poster.is-hidden {
+  opacity: 0;
+}
+
+.portal-competition-card--showcase .portal-competition-card__video {
+  transition: opacity 180ms ease;
+}
+
+.portal-competition-card__media-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(6, 10, 24, 0.12), rgba(6, 10, 24, 0.02) 40%, rgba(6, 10, 24, 0.5)),
+    linear-gradient(180deg, transparent 55%, rgba(7, 10, 22, 0.66));
+}
+
+.portal-competition-card--showcase .portal-competition-card__noise {
+  opacity: 0.22;
+  mix-blend-mode: screen;
+}
+
+.portal-competition-card__media-top {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+  padding: 0.9rem;
+}
+
+.portal-competition-card__category-pill,
+.portal-competition-card__preview-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.42rem;
+  border-radius: 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.46rem 0.78rem;
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  box-shadow: 0 12px 24px rgba(2, 8, 23, 0.2);
+}
+
+.portal-competition-card__preview-toggle {
+  color: #eff6ff;
+  background: rgba(8, 14, 26, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: background 180ms ease, border-color 180ms ease, transform 180ms ease;
+}
+
+.portal-competition-card__preview-toggle:hover {
+  transform: translateY(-1px);
+  border-color: rgba(125, 211, 252, 0.24);
+  background: rgba(12, 22, 40, 0.88);
+}
+
+.portal-competition-card__preview-toggle.is-active {
+  border-color: rgba(250, 204, 21, 0.24);
+  background: rgba(120, 53, 15, 0.82);
+  color: #fff8d6;
+}
+
+.portal-competition-card--showcase .portal-competition-card__body {
+  background:
+    radial-gradient(circle at top right, rgba(59, 130, 246, 0.08), transparent 26%),
+    linear-gradient(180deg, rgba(10, 15, 30, 0.98), rgba(8, 12, 24, 0.99));
+}
+
+.portal-competition-card__body--compact {
+  display: grid;
+  align-content: start;
+  gap: 0.95rem;
+  padding: 1.1rem 1.05rem 1.05rem;
+}
+
+.portal-competition-card--showcase .portal-competition-card__topline {
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.portal-competition-card--showcase .portal-competition-card__status,
+.portal-competition-card__date-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  padding: 0.45rem 0.78rem;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.portal-competition-card--showcase .portal-competition-card__status {
+  border: 1px solid rgba(96, 165, 250, 0.24);
+  background: rgba(37, 99, 235, 0.16);
+  color: #dbeafe;
+  box-shadow: none;
+}
+
+.portal-competition-card__date-chip {
+  margin-left: auto;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(226, 232, 240, 0.84);
+}
+
+.portal-competition-card__title-block {
+  display: grid;
+  gap: 0.38rem;
+}
+
+.portal-competition-card--showcase .portal-competition-card__title {
+  margin: 0;
+  color: #ffffff;
+  font-family: 'Oxanium', 'Orbitron', 'Inter', sans-serif;
+  font-size: clamp(1.45rem, 2vw, 1.8rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.02;
+  text-shadow: none;
+}
+
+.portal-competition-card--showcase .portal-competition-card__tagline {
+  margin: 0;
+  color: rgba(203, 213, 225, 0.82);
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.portal-competition-card__meta-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.68rem;
+}
+
+.portal-competition-card__meta-row {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.48rem;
+  border-radius: 0.95rem;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.74rem 0.82rem;
+  color: rgba(226, 232, 240, 0.92);
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.35;
+  box-shadow: none;
+}
+
+.portal-competition-card__meta-row svg {
+  flex: 0 0 auto;
+  color: #facc15;
+}
+
+.portal-competition-card__meta-row--wide {
+  grid-column: 1 / -1;
+}
+
+.portal-competition-card__meta-row--highlight {
+  border-color: rgba(250, 204, 21, 0.18);
+  background: linear-gradient(135deg, rgba(250, 204, 21, 0.12), rgba(255, 255, 255, 0.03));
+  color: #fff8db;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.portal-competition-card__footer--inline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: auto;
+}
+
+.portal-competition-card--showcase .portal-competition-card__link-text {
+  color: rgba(191, 219, 254, 0.72);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.portal-register-cta--card {
+  min-width: 10.25rem;
+  padding-inline: 1.15rem;
+  box-shadow:
+    0 16px 30px rgba(255, 215, 0, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.32);
+}
+
+@media (min-width: 768px) {
+  .portal-competition-group__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1500px) {
+  .portal-competition-group__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .portal-competition-groups {
+    gap: 2rem;
+  }
+
+  .portal-competition-group__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .portal-competition-group__heading-wrap {
+    width: 100%;
+    gap: 0.75rem;
+  }
+
+  .portal-competition-group__title {
+    font-size: 1.6rem;
+  }
+
+  .portal-competition-group__badge {
+    padding: 0.4rem 0.72rem;
+    font-size: 0.6rem;
+  }
+
+  .portal-competition-card--showcase .portal-competition-card__media {
+    aspect-ratio: 15 / 9;
+  }
+
+  .portal-competition-card__media-top {
+    padding: 0.72rem;
+  }
+
+  .portal-competition-card__category-pill,
+  .portal-competition-card__preview-toggle {
+    padding: 0.4rem 0.64rem;
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+  }
+
+  .portal-competition-card__body--compact {
+    gap: 0.82rem;
+    padding: 0.92rem 0.9rem 0.95rem;
+  }
+
+  .portal-competition-card--showcase .portal-competition-card__topline {
+    flex-wrap: wrap;
+  }
+
+  .portal-competition-card__date-chip {
+    margin-left: 0;
+  }
+
+  .portal-competition-card--showcase .portal-competition-card__title {
+    font-size: 1.3rem;
+  }
+
+  .portal-competition-card--showcase .portal-competition-card__tagline {
+    font-size: 0.88rem;
+  }
+
+  .portal-competition-card__meta-list {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.56rem;
+  }
+
+  .portal-competition-card__meta-row,
+  .portal-competition-card__meta-row--wide {
+    grid-column: auto;
+  }
+
+  .portal-competition-card__footer--inline {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.78rem;
+  }
+
+  .portal-register-cta--card {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 420px) {
+  .portal-competition-group__title {
+    font-size: 1.42rem;
+  }
+
+  .portal-competition-card--showcase .portal-competition-card__media {
+    aspect-ratio: 14 / 9;
+  }
+
+  .portal-competition-card--showcase .portal-competition-card__title {
+    font-size: 1.18rem;
+  }
+
+  .portal-competition-card__meta-row {
+    padding: 0.66rem 0.72rem;
+    font-size: 0.78rem;
+  }
+}
