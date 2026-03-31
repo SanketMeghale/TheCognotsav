@@ -6326,3 +6326,377 @@ footer {
     font-size: 0.78rem;
   }
 }
+
+.portal-front-hero--editorial {
+  min-height: auto;
+  gap: 0;
+  padding: 1.3rem;
+  border-radius: 2rem;
+  background:
+    radial-gradient(circle at top left, rgba(56, 189, 248, 0.12), transparent 24%),
+    radial-gradient(circle at right center, rgba(59, 130, 246, 0.14), transparent 26%),
+    linear-gradient(180deg, rgba(8, 11, 24, 0.99), rgba(7, 10, 21, 1));
+}
+
+.portal-front-hero--editorial .portal-front-hero__main--editorial {
+  grid-template-columns: minmax(0, 1.02fr) minmax(300px, 0.78fr);
+  align-items: stretch;
+  gap: 1.35rem;
+}
+
+.portal-front-hero--editorial .portal-front-hero__content--premium,
+.portal-front-hero--editorial .portal-front-hero__panel--premium {
+  padding: 1rem;
+}
+
+.portal-front-hero__content--editorial {
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.portal-hero-badge--editorial {
+  padding: 0.52rem 0.94rem;
+  border-color: rgba(148, 163, 184, 0.16);
+  background: rgba(18, 25, 43, 0.82);
+  color: #d6ddf3;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 12px 24px rgba(2, 8, 23, 0.22);
+}
+
+.portal-front-hero__copy--editorial {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.portal-front-hero--editorial .portal-front-hero__wordmark {
+  margin: 0;
+  color: rgba(241, 245, 249, 0.94);
+  font-family: 'Oxanium', 'Orbitron', 'Inter', sans-serif;
+  font-size: clamp(1.02rem, 1.6vw, 1.25rem);
+  letter-spacing: 0.08em;
+}
+
+.portal-front-hero__headline--editorial {
+  max-width: 9.4ch;
+  font-family: 'Oxanium', 'Orbitron', 'Inter', sans-serif;
+  font-size: clamp(2.85rem, 5vw, 5rem);
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+}
+
+.portal-front-hero--editorial .portal-front-hero__headline-line {
+  color: #ffd54c;
+  text-shadow:
+    0 0 24px rgba(250, 204, 21, 0.08),
+    0 4px 18px rgba(0, 0, 0, 0.28);
+}
+
+.portal-front-hero__description--editorial {
+  max-width: 31rem;
+  color: rgba(203, 213, 225, 0.84);
+  font-size: 1.02rem;
+  line-height: 1.72;
+}
+
+.portal-front-hero__cta-stack {
+  display: grid;
+  justify-items: start;
+  gap: 0.95rem;
+}
+
+.portal-register-cta--hero {
+  min-width: 11.5rem;
+  justify-content: center;
+  padding: 0.92rem 1.5rem;
+  border-radius: 1rem;
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.portal-front-hero__inline-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #cdd8f5;
+  font-size: 1rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 180ms ease, transform 180ms ease;
+}
+
+.portal-front-hero__inline-link:hover {
+  color: #ffffff;
+  transform: translateX(2px);
+}
+
+.portal-front-hero__inline-link--secondary {
+  color: #dbe7ff;
+}
+
+.portal-prize-pool-card--editorial {
+  width: min(100%, 26rem);
+  display: grid;
+  gap: 0.55rem;
+  padding: 1rem 1.15rem 1.05rem;
+  border-radius: 1.2rem;
+  border: 1px solid rgba(73, 126, 255, 0.24);
+  background:
+    linear-gradient(90deg, rgba(74, 120, 255, 0.24), transparent 16%) border-box,
+    linear-gradient(180deg, rgba(11, 17, 34, 0.95), rgba(9, 14, 28, 0.98)) padding-box;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 18px 36px rgba(2, 8, 23, 0.22),
+    0 0 22px rgba(59, 130, 246, 0.08);
+}
+
+.portal-prize-pool-card__header {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.portal-prize-pool-card--editorial .portal-prize-pool-card__badge {
+  height: 2.5rem;
+  width: 2.5rem;
+  font-size: 1rem;
+  border-radius: 0.9rem;
+  background: linear-gradient(135deg, rgba(255, 214, 102, 0.18), rgba(255, 187, 46, 0.08));
+  color: #ffd54c;
+}
+
+.portal-prize-pool-card--editorial .portal-prize-pool-card__kicker {
+  margin: 0;
+  color: #ffd54c;
+  font-size: 0.8rem;
+  letter-spacing: 0.18em;
+}
+
+.portal-prize-pool-card--editorial .portal-prize-pool-card__value {
+  margin: 0;
+  font-family: 'Oxanium', 'Orbitron', 'Inter', sans-serif;
+  font-size: clamp(1.75rem, 3vw, 2.45rem);
+  line-height: 1;
+}
+
+.portal-prize-pool-card--editorial .portal-prize-pool-card__value span {
+  color: #f8fbff;
+  text-transform: uppercase;
+}
+
+.portal-front-hero__fact-list {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.portal-front-hero__fact-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.72rem;
+  color: rgba(226, 232, 240, 0.86);
+  font-size: 1.02rem;
+  font-weight: 500;
+}
+
+.portal-front-hero__fact-item svg {
+  color: #facc15;
+  flex: 0 0 auto;
+}
+
+.portal-front-hero__section-rule {
+  width: 100%;
+  max-width: 31rem;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(148, 163, 184, 0.18), rgba(148, 163, 184, 0.06), transparent);
+}
+
+.portal-front-hero__panel--editorial {
+  display: flex;
+  align-items: flex-end;
+}
+
+.portal-front-hero__visual-card--editorial {
+  position: relative;
+  width: 100%;
+  min-height: 100%;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 1rem;
+  overflow: hidden;
+  border-radius: 1.5rem;
+  border: 1px solid rgba(88, 126, 255, 0.2);
+  background:
+    radial-gradient(circle at top center, rgba(59, 130, 246, 0.14), transparent 32%),
+    linear-gradient(180deg, rgba(11, 17, 34, 0.98), rgba(8, 12, 24, 0.99));
+  padding: 1.7rem 1.2rem;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 22px 44px rgba(2, 8, 23, 0.24);
+}
+
+.portal-front-hero__visual-aura {
+  position: absolute;
+  inset: auto 10% -18% 10%;
+  height: 45%;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.22), transparent 72%);
+  filter: blur(26px);
+  pointer-events: none;
+}
+
+.portal-front-hero__visual-logo-frame--editorial {
+  height: 10.25rem;
+  width: 10.25rem;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center, rgba(255, 255, 255, 0.22), rgba(148, 163, 184, 0.08)),
+    linear-gradient(180deg, rgba(15, 23, 42, 0.94), rgba(15, 23, 42, 0.82));
+  box-shadow:
+    0 18px 38px rgba(2, 8, 23, 0.28),
+    0 0 24px rgba(59, 130, 246, 0.1);
+}
+
+.portal-front-hero__visual-copy--editorial {
+  display: grid;
+  gap: 0.4rem;
+  text-align: center;
+}
+
+.portal-front-hero__visual-copy--editorial .portal-front-hero__visual-overline {
+  color: rgba(176, 187, 223, 0.74);
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+}
+
+.portal-front-hero__visual-copy--editorial .portal-front-hero__visual-title {
+  margin: 0;
+  color: #e8eefc;
+  font-family: 'Oxanium', 'Orbitron', 'Inter', sans-serif;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  letter-spacing: 0.08em;
+}
+
+.portal-front-hero__visual-copy--editorial .portal-front-hero__visual-note {
+  margin: 0;
+  color: rgba(148, 163, 184, 0.86);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 1024px) {
+  .portal-front-hero--editorial .portal-front-hero__main--editorial {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .portal-front-hero__panel--editorial {
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 767px) {
+  .portal-front-hero--editorial {
+    width: calc(100% + 0.55rem);
+    margin-left: -0.275rem;
+    padding: 0.8rem;
+    border-radius: 1.7rem;
+  }
+
+  .portal-front-hero--editorial .portal-front-hero__content--premium,
+  .portal-front-hero--editorial .portal-front-hero__panel--premium {
+    padding: 0.85rem;
+  }
+
+  .portal-front-hero__content--editorial {
+    align-items: flex-start;
+    text-align: left;
+    gap: 0.9rem;
+  }
+
+  .portal-hero-badge--editorial {
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    padding: 0.45rem 0.76rem;
+  }
+
+  .portal-front-hero__headline--editorial {
+    max-width: 8.2ch;
+    font-size: clamp(2.5rem, 11vw, 3.4rem);
+    line-height: 0.92;
+  }
+
+  .portal-front-hero__description--editorial {
+    font-size: 0.96rem;
+    line-height: 1.65;
+  }
+
+  .portal-front-hero__cta-stack {
+    width: 100%;
+    justify-items: start;
+  }
+
+  .portal-register-cta--hero {
+    min-width: 9.9rem;
+    padding: 0.82rem 1.25rem;
+    font-size: 0.88rem;
+  }
+
+  .portal-front-hero__inline-link {
+    font-size: 0.98rem;
+  }
+
+  .portal-prize-pool-card--editorial {
+    width: 100%;
+    padding: 0.92rem 1rem;
+    border-radius: 1rem;
+  }
+
+  .portal-prize-pool-card--editorial .portal-prize-pool-card__value {
+    font-size: clamp(1.55rem, 8vw, 2rem);
+  }
+
+  .portal-front-hero__fact-item {
+    font-size: 0.98rem;
+  }
+
+  .portal-front-hero__visual-card--editorial {
+    padding: 1.3rem 1rem 1.4rem;
+    border-radius: 1.25rem;
+  }
+
+  .portal-front-hero__visual-logo-frame--editorial {
+    height: min(46vw, 8.8rem);
+    width: min(46vw, 8.8rem);
+  }
+
+  .portal-front-hero__visual-copy--editorial .portal-front-hero__visual-title {
+    font-size: clamp(1.45rem, 7vw, 1.9rem);
+  }
+}
+
+@media (max-width: 420px) {
+  .portal-front-hero--editorial {
+    padding: 0.68rem;
+  }
+
+  .portal-front-hero--editorial .portal-front-hero__content--premium,
+  .portal-front-hero--editorial .portal-front-hero__panel--premium {
+    padding: 0.72rem;
+  }
+
+  .portal-front-hero__headline--editorial {
+    font-size: clamp(2.28rem, 11.4vw, 3rem);
+  }
+
+  .portal-front-hero__description--editorial {
+    font-size: 0.9rem;
+  }
+
+  .portal-front-hero__fact-item {
+    gap: 0.6rem;
+    font-size: 0.92rem;
+  }
+}
