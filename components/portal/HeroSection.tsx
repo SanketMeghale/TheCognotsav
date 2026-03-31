@@ -103,7 +103,7 @@ export const HeroSection: React.FC<Props> = memo(() => {
   const countdownSummary = getHeroCountdownSummary(countdown);
 
   return (
-    <section id="overview" className="mx-auto w-full max-w-[1320px] px-2 pt-0 pb-2 sm:px-5 lg:px-8 md:pt-0 md:pb-4">
+    <section id="overview" className="mx-auto w-full max-w-[1320px] px-0 pt-0 pb-2 sm:px-5 lg:px-8 md:pt-0 md:pb-4">
       <div className="portal-summit-hero portal-summit-hero--immersive">
         <div className="portal-summit-hero__content portal-summit-hero__content--immersive" data-reveal="fade-up">
           <div className="portal-summit-hero__orbit" aria-hidden="true">

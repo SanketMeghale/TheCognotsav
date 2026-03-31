@@ -10116,9 +10116,35 @@ body {
 }
 
 @media (max-width: 720px) {
+  .portal-summit-hero {
+    border-radius: 0;
+    border: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+
+  .portal-summit-hero::before,
+  .portal-summit-hero::after {
+    width: 130vw;
+  }
+
+  .portal-summit-hero--immersive {
+    width: 100vw;
+    max-width: 100vw;
+    margin-inline: calc(50% - 50vw);
+    padding: 0;
+  }
+
   .portal-summit-hero--immersive .portal-summit-hero__content--immersive {
+    min-height: auto;
     gap: 0.62rem;
-    padding: 1.35rem 0.9rem 0.8rem;
+    padding: 1.35rem 1rem 0.9rem;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .portal-summit-hero--immersive .portal-summit-hero__content--immersive::before {
+    display: none;
   }
 
   .portal-summit-hero__orbit {
@@ -10150,7 +10176,7 @@ body {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0.45rem;
-    width: min(100%, 18rem);
+    width: min(100%, 19.75rem);
     margin-inline: auto;
   }
 
@@ -10192,6 +10218,7 @@ body {
     min-height: 2.7rem;
     gap: 0.38rem;
     padding: 0.6rem 1rem;
+    margin-inline: auto;
     max-width: 100%;
   }
 
@@ -10204,6 +10231,7 @@ body {
     display: grid;
     gap: 0.7rem;
     width: min(100%, 17.25rem);
+    margin-inline: auto;
   }
 
   .portal-summit-hero__actions--mobile .portal-summit-hero__action {
@@ -10216,16 +10244,16 @@ body {
   }
 
   .portal-summit-hero__benefit-row {
-    display: flex;
-    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: min(100%, 21.5rem);
     max-width: 100%;
     gap: 0.55rem;
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    overflow-x: auto;
-    padding-inline: 0.02rem;
+    justify-content: stretch;
+    overflow: visible;
+    margin-inline: auto;
+    padding-inline: 0;
     padding-bottom: 0.15rem;
-    scroll-padding-inline: 0.02rem;
     scrollbar-width: none;
   }
 
@@ -10234,17 +10262,18 @@ body {
   }
 
   .portal-summit-hero__benefit-pill {
-    flex: 0 0 auto;
-    min-width: max-content;
+    min-width: 0;
     min-height: 2.45rem;
-    padding: 0.58rem 0.82rem;
-    font-size: 0.84rem;
+    justify-content: center;
+    padding: 0.58rem 0.55rem;
+    font-size: 0.8rem;
     border-radius: 0.95rem;
   }
 
   .portal-summit-hero__stats-bar {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    width: 100%;
+    width: min(100%, 22rem);
+    margin-inline: auto;
   }
 
   .portal-summit-hero__stat-card {
@@ -10259,13 +10288,12 @@ body {
 
 @media (max-width: 520px) {
   .portal-summit-hero--immersive {
-    max-width: min(100%, calc(100vw - 0.75rem));
-    padding: 0.78rem;
-    border-radius: 1.6rem;
+    max-width: 100vw;
+    padding: 0;
   }
 
   .portal-summit-hero--immersive .portal-summit-hero__content--immersive {
-    padding-inline: 0.78rem;
+    padding-inline: 0.95rem;
   }
 
   .portal-summit-hero__orbit-pill {
@@ -10291,8 +10319,13 @@ body {
     width: 100%;
   }
 
+  .portal-summit-hero__benefit-row {
+    width: 100%;
+  }
+
   .portal-summit-hero__stats-bar {
     grid-template-columns: 1fr;
+    width: 100%;
   }
 
   .portal-summit-hero__stat-card {
