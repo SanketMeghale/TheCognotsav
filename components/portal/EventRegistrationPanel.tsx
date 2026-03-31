@@ -235,6 +235,16 @@ export const EventRegistrationPanel: React.FC<Props> = ({
     window.scrollTo({ top: Math.max(top, 0), behavior: scrollBehavior });
   };
 
+  const scrollToPanelSection = (sectionId: string) => {
+    if (typeof window === 'undefined') return;
+
+    const targetSection = document.getElementById(sectionId);
+    if (!targetSection) return;
+
+    const top = targetSection.getBoundingClientRect().top + window.scrollY - 108;
+    window.scrollTo({ top: Math.max(top, 0), behavior: scrollBehavior });
+  };
+
   useEffect(() => {
     const timer = window.setInterval(() => setNow(new Date()), 60 * 1000);
     return () => window.clearInterval(timer);
@@ -291,183 +301,356 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   }
 
   const liveState = getEventLiveState(selectedEvent, now);
+  const coordinatorContacts = selectedEvent.coordinators?.length
+    ? selectedEvent.coordinators
+    : (selectedHandbook?.contact ?? []).map((entry) => {
+      const [namePart, phonePart] = entry.split(/\s*-\s*/);
+      return {
+        name: namePart?.trim() || 'Coordinator',
+        phone: phonePart?.trim() || entry.trim(),
+      };
+    });
+  const prizeLabel = selectedEvent.prize.replace(/^INR\s*/i, '\u20B9');
+  const toolbarTabs = [
+    { id: 'event-overview', label: 'Overview', icon: Info },
+    { id: 'event-handbook', label: 'Handbook', icon: BookOpen },
+    { id: 'event-rules', label: 'Rules', icon: CheckCircle2 },
+    { id: 'event-contact', label: 'Contact', icon: Phone },
+  ];
+  const spotlightMeta = [
+    { icon: Clock3, label: 'Event Date', value: selectedEvent.date_label, detail: selectedEvent.time_label },
+    { icon: CreditCard, label: 'Entry Fee', value: selectedEvent.registration_fee_label || formatCurrency(payableAmount), detail: 'Per entry' },
+    { icon: Users, label: 'Team Format', value: getTeamLabel(selectedEvent), detail: selectedEvent.category },
+    { icon: MapPin, label: 'Venue', value: selectedEvent.venue, detail: liveState.label },
+  ];
+  const overviewHighlights = selectedHandbook?.quickDetails?.length
+    ? selectedHandbook.quickDetails.slice(0, 4)
+    : [
+      `Date: ${selectedEvent.date_label}`,
+      `Time: ${selectedEvent.time_label}`,
+      `Venue: ${selectedEvent.venue}`,
+      `Fee: ${selectedEvent.registration_fee_label || formatCurrency(payableAmount)}`,
+    ];
+  const rulesList = selectedHandbook?.rules?.length
+    ? selectedHandbook.rules
+    : [
+      'Report before the scheduled start time with valid registration proof.',
+      'Follow all organizer and coordinator instructions during the event.',
+      'Any unfair practice, abusive conduct, or disruption can lead to disqualification.',
+      'Venue or schedule updates announced by organizers are final for event flow.',
+    ];
 
   return (
     <section id="registration-panel">
-      <div ref={eventTopRef} className="portal-event-layout">
-        <div className="portal-event-layout__details space-y-5">
-          <section className={`portal-event-showcase portal-glow-card portal-glass ${selectedTheme.glow}`}>
-            <div className="portal-event-showcase__poster">
-              <img src={selectedEvent.poster_path} alt={selectedEvent.name} loading="eager" decoding="async" className="h-full w-full object-cover" />
-              <div className="portal-event-showcase__poster-overlay" />
-            </div>
-            <div className="px-5 pt-5 md:px-5 md:pt-5">
-              <div className="flex flex-col gap-3 sm:flex-row">
+      <div ref={eventTopRef} className="portal-event-shell">
+        <div className="portal-event-toolbar" data-reveal="fade-up">
+          <button
+            type="button"
+            onClick={scrollToRegistrationForm}
+            disabled={registrationPaused}
+            className="portal-event-toolbar__primary"
+          >
+            {registrationPaused ? 'Registration Paused' : 'Register Now'}
+            <ArrowRight size={16} />
+          </button>
+          <div className="portal-event-toolbar__tabs">
+            {toolbarTabs.map((tab) => {
+              const Icon = tab.icon;
+              return (
                 <button
+                  key={tab.id}
                   type="button"
-                  onClick={scrollToRegistrationForm}
-                  disabled={registrationPaused}
-                  className="portal-register-cta inline-flex w-full items-center justify-center gap-2"
+                  onClick={() => scrollToPanelSection(tab.id)}
+                  className="portal-event-toolbar__tab"
                 >
-                  {registrationPaused ? 'Registration Paused' : 'Register Now'}
-                  <ArrowRight size={16} />
+                  <Icon size={15} />
+                  {tab.label}
                 </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="portal-event-layout">
+          <div className="portal-event-layout__details space-y-5">
+            <section className={`portal-event-showcase portal-glow-card portal-glass ${selectedTheme.glow}`} data-reveal="fade-up">
+              <div className="portal-event-showcase__poster">
+                <img src={selectedEvent.poster_path} alt={selectedEvent.name} loading="eager" decoding="async" className="h-full w-full object-cover" />
+                <div className="portal-event-showcase__poster-overlay" />
+                <div className="portal-event-showcase__poster-head">
+                  <button
+                    type="button"
+                    onClick={onBackToEvents}
+                    className="magnetic-button inline-flex items-center gap-2 rounded-full border border-white/12 bg-black/35 px-4 py-2 text-sm font-semibold text-white backdrop-blur"
+                  >
+                    <ArrowLeft size={14} />
+                    Back
+                  </button>
+                  <div className="flex flex-wrap items-center justify-end gap-2">
+                    <span className={`inline-flex rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] ${selectedTheme.badge}`}>
+                      {selectedEvent.category}
+                    </span>
+                    <span className={`portal-event-live-pill portal-event-live-pill--${liveState.tone}`}>
+                      {liveState.label}
+                    </span>
+                  </div>
+                </div>
                 {selectedEvent.intro_video_url ? (
                   <a
                     href={selectedEvent.intro_video_url}
                     target="_blank"
                     rel="noreferrer"
-                    className={`inline-flex w-full items-center justify-center gap-2 rounded-[1.2rem] border px-4 py-3 text-sm font-bold transition sm:max-w-[220px] ${selectedTheme.button}`}
+                    className="portal-event-showcase__poster-action"
                   >
                     <ExternalLink size={16} />
                     Watch Trailer
                   </a>
                 ) : null}
               </div>
-            </div>
-            <div className="portal-event-showcase__content">
-              <div className="flex flex-wrap items-center gap-3">
-                <button
-                  type="button"
-                  onClick={onBackToEvents}
-                  className="magnetic-button inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-sm font-semibold text-white"
-                >
-                  <ArrowLeft size={14} />
-                  Back
-                </button>
-                <span className={`inline-flex rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] ${selectedTheme.badge}`}>
-                  {selectedEvent.category}
-                </span>
-              </div>
 
-              <div className="mt-5">
-                <p className="portal-kicker">{selectedHandbook?.theme || 'Event Details'}</p>
-                <h2 className="mt-3 portal-title-xl font-black text-white">{selectedEvent.name}</h2>
-                <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-200">
+              <div className="portal-event-showcase__content">
+                <div className="portal-event-showcase__eyebrow">
+                  <span className="portal-event-showcase__eyebrow-chip">Event Style</span>
+                  <span className="portal-event-showcase__eyebrow-text">{selectedHandbook?.theme || 'Official Event Brief'}</span>
+                </div>
+                <h2 className="portal-event-showcase__title">{selectedEvent.name}</h2>
+                <p className="portal-event-showcase__description">
                   {selectedHandbook?.overview || selectedEvent.description}
                 </p>
-              </div>
 
-              <div className="portal-event-inline-info mt-6">
-                <div className="portal-event-inline-info__item">
-                  <Clock3 size={15} className="text-amber-200" />
-                  <span className="portal-event-inline-info__label">Date</span>
-                  <span className="portal-event-inline-info__value">{selectedEvent.date_label}</span>
+                <div className="portal-event-inline-info portal-event-inline-info--spotlight">
+                  {spotlightMeta.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <div key={`${item.label}-${item.value}`} className="portal-event-inline-info__item">
+                        <Icon size={15} className="text-amber-200" />
+                        <span className="portal-event-inline-info__label">{item.label}</span>
+                        <span className="portal-event-inline-info__value">{item.value}</span>
+                        <span className="portal-event-inline-info__detail">{item.detail}</span>
+                      </div>
+                    );
+                  })}
                 </div>
-                <div className="portal-event-inline-info__item">
-                  <Users size={15} className="text-amber-200" />
-                  <span className="portal-event-inline-info__label">Team</span>
-                  <span className="portal-event-inline-info__value">{getTeamLabel(selectedEvent)}</span>
-                </div>
-                <div className="portal-event-inline-info__item">
-                  <CreditCard size={15} className="text-amber-200" />
-                  <span className="portal-event-inline-info__label">Fee</span>
-                  <span className="portal-event-inline-info__value">{formatCurrency(payableAmount)}</span>
-                </div>
-                <div className="portal-event-inline-info__item">
-                  <MapPin size={15} className="text-amber-200" />
-                  <span className="portal-event-inline-info__label">Venue</span>
-                  <span className="portal-event-inline-info__value">{selectedEvent.venue}</span>
-                </div>
-                <div className="portal-event-inline-info__item">
-                  <Clock3 size={15} className="text-amber-200" />
-                  <span className="portal-event-inline-info__label">Status</span>
-                  <span className="portal-event-inline-info__value">{liveState.label}</span>
-                </div>
-                <div className="portal-event-inline-info__item">
-                  <Sparkles size={15} className="text-amber-200" />
-                  <span className="portal-event-inline-info__label">Countdown</span>
-                  <span className="portal-event-inline-info__value">{liveState.countdown}</span>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {selectedEvent.coordinators?.length ? (
-            <section className="portal-event-section portal-glow-card portal-glass" data-reveal="up">
-              <div className="portal-event-section__head">
-                <Phone size={17} className="text-emerald-200" />
-                <div>
-                  <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Coordinator Contacts</p>
-                  <h3 className="mt-1 text-lg font-semibold text-white">Call the event team directly</h3>
-                </div>
-              </div>
-              <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                {selectedEvent.coordinators.map((coordinator) => {
-                  const telValue = coordinator.phone.replace(/\D+/g, '');
-                  return (
-                    <div key={`${selectedEvent.slug}-${coordinator.name}-${coordinator.phone}`} className="rounded-[1.25rem] border border-white/10 bg-white/[0.04] p-4">
-                      <p className="text-sm font-semibold text-white">{coordinator.name}</p>
-                      <p className="mt-2 text-sm text-slate-300">{coordinator.phone}</p>
-                      <a
-                        href={`tel:${telValue}`}
-                        className="magnetic-button mt-4 inline-flex items-center gap-2 rounded-full border border-emerald-300/18 bg-emerald-400/10 px-4 py-2 text-sm font-semibold text-emerald-100"
-                      >
-                        <Phone size={15} />
-                        Call now
-                      </a>
-                    </div>
-                  );
-                })}
               </div>
             </section>
-          ) : null}
 
-          <section className="portal-event-section portal-glow-card portal-glass" data-reveal="up">
-            <div className="portal-event-section__head">
-              <Info size={17} className="text-amber-200" />
-              <div>
-                <p className="text-xs uppercase tracking-[0.22em] text-slate-400">About Event</p>
-                <h3 className="mt-1 text-lg font-semibold text-white">Quick overview</h3>
+            <section id="event-overview" className="portal-event-section portal-glow-card portal-glass" data-reveal="up">
+              <div className="portal-event-section__head">
+                <Info size={17} className="text-amber-200" />
+                <div>
+                  <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Overview</p>
+                  <h3 className="mt-1 text-lg font-semibold text-white">Event briefing</h3>
+                </div>
               </div>
-            </div>
-            <p className="mt-4 text-sm leading-7 text-slate-300">
-              {selectedEvent.description}
-            </p>
-            {selectedHandbook?.quickDetails?.length ? (
+              <p className="mt-4 text-sm leading-7 text-slate-300">
+                {selectedEvent.description}
+              </p>
               <div className="portal-event-mini-grid mt-5">
-                {selectedHandbook.quickDetails.slice(0, 3).map((item) => (
+                {overviewHighlights.map((item) => (
                   <div key={item} className="portal-event-mini-grid__item">
                     <Trophy size={14} className="text-amber-200" />
                     <span>{item}</span>
                   </div>
                 ))}
               </div>
-            ) : null}
-          </section>
+            </section>
 
-          <section className="portal-event-section portal-glow-card portal-glass" data-reveal="up">
-            <div className="portal-event-section__head">
-              <BookOpen size={17} className="text-amber-200" />
-              <div>
-                <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Handbook</p>
-                <h3 className="mt-1 text-lg font-semibold text-white">Read the full event guide</h3>
-              </div>
-            </div>
-            {selectedHandbook?.handbookUrl ? (
-              <a
-                href={selectedHandbook.handbookUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="portal-event-handbook-card mt-5"
-              >
+            <section id="event-handbook" className="portal-event-section portal-glow-card portal-glass" data-reveal="up">
+              <div className="portal-event-section__head">
+                <BookOpen size={17} className="text-amber-200" />
                 <div>
-                  <p className="text-sm font-semibold text-white">For details click on this handbook</p>
-                  <p className="mt-2 text-sm text-slate-300">Open full rounds, judging flow, rules, coordinator notes, and reporting instructions.</p>
+                  <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Handbook</p>
+                  <h3 className="mt-1 text-lg font-semibold text-white">Rules, rounds, and event flow</h3>
                 </div>
-                <ExternalLink size={18} className="shrink-0 text-amber-200" />
-              </a>
-            ) : (
-              <div className="portal-event-note-list__item mt-5">
-                <Info size={15} className="mt-0.5 shrink-0 text-amber-200" />
-                <span>Full handbook is not attached for this event yet.</span>
               </div>
-            )}
-          </section>
+
+              <div className="portal-event-handbook-panel mt-5">
+                <div className="portal-event-handbook-panel__hero">
+                  <div className="portal-event-handbook-panel__icon">
+                    <BookOpen size={24} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-white">{selectedHandbook?.theme || 'Official event guide'}</p>
+                    <p className="mt-2 text-sm leading-7 text-slate-300">
+                      Open the handbook for rounds, judging, reporting notes, coordinator instructions, and final event-day guidance.
+                    </p>
+                  </div>
+                </div>
+                {selectedHandbook?.highlights?.length ? (
+                  <div className="portal-event-mini-grid mt-5">
+                    {selectedHandbook.highlights.slice(0, 4).map((item) => (
+                      <div key={item} className="portal-event-mini-grid__item">
+                        <CheckCircle2 size={14} className="text-amber-200" />
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+                <div className="portal-event-handbook-actions">
+                  {selectedHandbook?.handbookUrl ? (
+                    <a
+                      href={selectedHandbook.handbookUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="portal-event-handbook-card"
+                    >
+                      <div>
+                        <p className="text-sm font-semibold text-white">Download handbook</p>
+                        <p className="mt-2 text-sm text-slate-300">Open the official guide in a new tab.</p>
+                      </div>
+                      <ExternalLink size={18} className="shrink-0 text-amber-200" />
+                    </a>
+                  ) : (
+                    <div className="portal-event-note-list__item">
+                      <Info size={15} className="mt-0.5 shrink-0 text-amber-200" />
+                      <span>Full handbook is not attached for this event yet.</span>
+                    </div>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => scrollToPanelSection('event-rules')}
+                    className="portal-event-handbook-card portal-event-handbook-card--secondary"
+                  >
+                    <div>
+                      <p className="text-sm font-semibold text-white">View quick rules</p>
+                      <p className="mt-2 text-sm text-slate-300">Jump straight to the shortlist below.</p>
+                    </div>
+                    <ArrowRight size={18} className="shrink-0 text-cyan-200" />
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            <section id="event-rules" className="portal-event-section portal-glow-card portal-glass" data-reveal="up">
+              <div className="portal-event-section__head">
+                <CheckCircle2 size={17} className="text-emerald-200" />
+                <div>
+                  <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Rules</p>
+                  <h3 className="mt-1 text-lg font-semibold text-white">Quick rulebook</h3>
+                </div>
+              </div>
+              <div className="portal-event-note-list mt-5">
+                {rulesList.map((rule, index) => (
+                  <div key={rule} className="portal-event-note-list__item">
+                    <span className="portal-event-note-list__index">{String(index + 1).padStart(2, '0')}</span>
+                    <span>{rule}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {coordinatorContacts.length ? (
+              <section id="event-contact" className="portal-event-section portal-glow-card portal-glass" data-reveal="up">
+                <div className="portal-event-section__head">
+                  <Phone size={17} className="text-emerald-200" />
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Coordinator Contacts</p>
+                    <h3 className="mt-1 text-lg font-semibold text-white">Reach the event team fast</h3>
+                  </div>
+                </div>
+                <div className="portal-event-contact-grid mt-5">
+                  {coordinatorContacts.map((coordinator) => {
+                    const telValue = coordinator.phone.replace(/\D+/g, '');
+                    return (
+                      <div key={`${selectedEvent.slug}-${coordinator.name}-${coordinator.phone}`} className="portal-event-contact-card">
+                        <div>
+                          <p className="text-sm font-semibold text-white">{coordinator.name}</p>
+                          <p className="mt-2 text-sm text-slate-300">{coordinator.phone}</p>
+                        </div>
+                        <a
+                          href={`tel:${telValue}`}
+                          className="magnetic-button inline-flex items-center gap-2 rounded-full border border-emerald-300/18 bg-emerald-400/10 px-4 py-2 text-sm font-semibold text-emerald-100"
+                        >
+                          <Phone size={15} />
+                          Call
+                        </a>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            ) : null}
+          </div>
+
+          <aside className="portal-event-layout__sidebar space-y-5" data-reveal="right">
+            <section className="portal-event-summary-card portal-glow-card portal-glass">
+              <div className="portal-event-summary-card__head">
+                <div className="portal-event-summary-card__icon">
+                  <Trophy size={18} />
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.24em] text-amber-200/80">Event Summary</p>
+                  <p className="mt-2 text-3xl font-black text-white">{prizeLabel}</p>
+                </div>
+              </div>
+              <div className="portal-event-summary-card__list">
+                <div className="portal-event-summary-card__item">
+                  <Clock3 size={15} />
+                  <span>{selectedEvent.date_label} / {selectedEvent.time_label}</span>
+                </div>
+                <div className="portal-event-summary-card__item">
+                  <MapPin size={15} />
+                  <span>{selectedEvent.venue}</span>
+                </div>
+                <div className="portal-event-summary-card__item">
+                  <Users size={15} />
+                  <span>{getTeamLabel(selectedEvent)}</span>
+                </div>
+                <div className="portal-event-summary-card__item">
+                  <Sparkles size={15} />
+                  <span>{liveState.countdown}</span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={scrollToRegistrationForm}
+                disabled={registrationPaused}
+                className="portal-register-cta mt-5 inline-flex w-full items-center justify-center gap-2"
+              >
+                {registrationPaused ? 'Registration Paused' : 'Register Now'}
+                <ArrowRight size={16} />
+              </button>
+            </section>
+
+            {coordinatorContacts.length ? (
+              <section className="portal-event-sidebar-card portal-glow-card portal-glass">
+                <p className="text-[10px] uppercase tracking-[0.24em] text-slate-400">Coordinator Contacts</p>
+                <div className="mt-4 space-y-3">
+                  {coordinatorContacts.map((coordinator) => {
+                    const telValue = coordinator.phone.replace(/\D+/g, '');
+                    return (
+                      <div key={`sidebar-${selectedEvent.slug}-${coordinator.name}-${coordinator.phone}`} className="portal-event-sidebar-card__contact">
+                        <div>
+                          <p className="text-sm font-semibold text-white">{coordinator.name}</p>
+                          <p className="mt-1 text-sm text-slate-300">{coordinator.phone}</p>
+                        </div>
+                        <a href={`tel:${telValue}`} className="portal-event-sidebar-card__call">
+                          <Phone size={14} />
+                          Call
+                        </a>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            ) : null}
+          </aside>
         </div>
 
-        <div className="portal-event-layout__form" data-reveal="right">
-          <form id="portal-registration-form" onSubmit={onSubmit} className="portal-event-form-shell space-y-4">
+        <form id="portal-registration-form" onSubmit={onSubmit} className="portal-event-form-shell space-y-4">
+          <div className="portal-event-form-shell__head">
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.24em] text-slate-400">Registration</p>
+              <h3 className="mt-2 text-xl font-semibold text-white">Complete your event entry</h3>
+              <p className="mt-2 text-sm leading-6 text-slate-300">
+                Fill the form, make payment, upload proof, and organizers will verify your submission.
+              </p>
+            </div>
+            <div className="portal-event-form-shell__summary">
+              <span>{selectedEvent.name}</span>
+              <span>{selectedEvent.registration_fee_label || formatCurrency(payableAmount)}</span>
+            </div>
+          </div>
           {draftRecovered ? (
             <div className="flex items-start justify-between gap-3 rounded-[1.4rem] border border-sky-300/20 bg-sky-400/10 px-4 py-4 text-sm text-sky-100">
               <div className="flex items-start gap-3">
@@ -717,8 +900,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                   Once submitted, your entry is saved as <span className="font-semibold text-white">pending</span>. Organizers verify the payment proof and send the final update by email.
                 </p>
               </div>
-          </form>
-        </div>
+        </form>
       </div>
 
     </section>
