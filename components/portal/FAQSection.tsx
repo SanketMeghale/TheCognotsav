@@ -38,7 +38,7 @@ const faqItems: FaqItem[] = [
 ];
 
 export const FAQSection: React.FC = () => {
-  const [openQuestion, setOpenQuestion] = useState(faqItems[0].question);
+  const [openQuestion, setOpenQuestion] = useState('');
 
   return (
     <section id="faq" className={`${shellClassName} py-4 md:py-8`}>

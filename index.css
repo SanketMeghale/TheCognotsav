@@ -6235,14 +6235,15 @@ footer {
 
 .portal-faq-shell__title {
   margin: 0;
-  max-width: 15ch;
+  max-width: none;
   font-family: 'Space Grotesk', 'Orbitron', 'Inter', sans-serif;
-  font-size: clamp(1.9rem, 4vw, 3rem);
+  font-size: clamp(1.8rem, 3.7vw, 3rem);
   font-weight: 700;
   letter-spacing: -0.04em;
   line-height: 1.04;
   color: #f5fbff;
   text-shadow: 0 12px 24px rgba(2, 8, 23, 0.24);
+  white-space: nowrap;
 }
 
 .portal-faq-shell__title span {
@@ -6405,11 +6406,16 @@ footer {
 .portal-faq-shell__answer-shell {
   display: grid;
   grid-template-rows: 0fr;
-  transition: grid-template-rows 220ms ease;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    grid-template-rows 220ms ease,
+    opacity 160ms ease;
 }
 
 .portal-faq-shell__answer-shell.is-open {
   grid-template-rows: 1fr;
+  opacity: 1;
 }
 
 .portal-faq-shell__answer {
@@ -6451,6 +6457,8 @@ footer {
 
   .portal-faq-shell__title {
     font-size: clamp(1.65rem, 8vw, 2.2rem);
+    max-width: 11ch;
+    white-space: normal;
   }
 
   .portal-faq-shell__intro {
