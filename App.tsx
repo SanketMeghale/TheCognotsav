@@ -19,6 +19,7 @@ import { makeParticipants, shellClassName } from './components/portal/utils.ts';
 const CHUNK_RELOAD_STORAGE_KEY = 'cognotsav_chunk_reload_attempt_ts';
 const CHUNK_RELOAD_COOLDOWN_MS = 60_000;
 const SECRET_ADMIN_DOUBLE_TAP_WINDOW_MS = 360;
+const SECRET_ADMIN_HOLD_MS = 900;
 
 function getChunkErrorMessage(error: unknown) {
   if (error instanceof Error) {
@@ -864,6 +865,8 @@ export const App: React.FC = () => {
   const [navigationLoading, setNavigationLoading] = useState(false);
   const navScrollFrameRef = useRef<number | null>(null);
   const secretAdminLastTapRef = useRef(0);
+  const secretAdminHoldTimerRef = useRef<number | null>(null);
+  const secretAdminHoldTriggeredRef = useRef(false);
   const [form, setForm] = useState<FormState>({
     teamName: '',
     collegeName: '',
@@ -1186,6 +1189,52 @@ export const App: React.FC = () => {
     secretAdminLastTapRef.current = now;
   };
 
+  const clearSecretAdminHold = () => {
+    if (typeof window === 'undefined') return;
+
+    if (secretAdminHoldTimerRef.current !== null) {
+      window.clearTimeout(secretAdminHoldTimerRef.current);
+      secretAdminHoldTimerRef.current = null;
+    }
+  };
+
+  const startSecretAdminHold = () => {
+    if (typeof window === 'undefined') return;
+
+    clearSecretAdminHold();
+    secretAdminHoldTriggeredRef.current = false;
+    secretAdminHoldTimerRef.current = window.setTimeout(() => {
+      secretAdminHoldTimerRef.current = null;
+      secretAdminHoldTriggeredRef.current = true;
+      openAdminPanel();
+    }, SECRET_ADMIN_HOLD_MS);
+  };
+
+  const handleSecretAdminClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!secretAdminHoldTriggeredRef.current) return;
+
+    event.preventDefault();
+    secretAdminHoldTriggeredRef.current = false;
+  };
+
+  const handleSecretAdminDoubleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    handleSecretAdminTap();
+  };
+
+  const handleSecretAdminTouchEnd = (event: React.TouchEvent<HTMLAnchorElement>) => {
+    if (secretAdminHoldTriggeredRef.current) {
+      event.preventDefault();
+      secretAdminHoldTriggeredRef.current = false;
+      return;
+    }
+
+    handleSecretAdminTap();
+    if (secretAdminLastTapRef.current === 0) {
+      event.preventDefault();
+    }
+  };
+
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
 
@@ -1198,6 +1247,12 @@ export const App: React.FC = () => {
 
     window.addEventListener('keydown', handleKeydown);
     return () => window.removeEventListener('keydown', handleKeydown);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      clearSecretAdminHold();
+    };
   }, []);
 
   useEffect(() => {
@@ -2106,16 +2161,13 @@ export const App: React.FC = () => {
             <a
               href="#overview"
               className="portal-brand-card portal-brand-card--nav flex min-w-0 flex-1 items-center gap-3 rounded-[1.4rem] px-3 py-2 transition hover:border-slate-200/18 hover:bg-white/[0.06] lg:flex-none"
-              onDoubleClick={(event) => {
-                event.preventDefault();
-                handleSecretAdminTap();
-              }}
-              onTouchEnd={(event) => {
-                handleSecretAdminTap();
-                if (secretAdminLastTapRef.current === 0) {
-                  event.preventDefault();
-                }
-              }}
+              onClick={handleSecretAdminClick}
+              onDoubleClick={handleSecretAdminDoubleClick}
+              onTouchEnd={handleSecretAdminTouchEnd}
+              onPointerDown={startSecretAdminHold}
+              onPointerUp={clearSecretAdminHold}
+              onPointerLeave={clearSecretAdminHold}
+              onPointerCancel={clearSecretAdminHold}
               title="Home"
             >
               <div className="portal-brand-logo-frame">
@@ -2294,7 +2346,17 @@ export const App: React.FC = () => {
                 <span>Events</span>
               </a>
               <div className="portal-bottom-dock__logo-slot">
-                <a href="#overview" className="portal-bottom-dock__logo">
+                <a
+                  href="#overview"
+                  className="portal-bottom-dock__logo"
+                  onClick={handleSecretAdminClick}
+                  onDoubleClick={handleSecretAdminDoubleClick}
+                  onTouchEnd={handleSecretAdminTouchEnd}
+                  onPointerDown={startSecretAdminHold}
+                  onPointerUp={clearSecretAdminHold}
+                  onPointerLeave={clearSecretAdminHold}
+                  onPointerCancel={clearSecretAdminHold}
+                >
                   <span className="portal-bottom-dock__logo-core">
                     <img src="/images/ceasposter.jpeg" alt="CEAS logo" className="portal-bottom-dock__logo-image" />
                   </span>
