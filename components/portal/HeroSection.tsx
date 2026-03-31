@@ -1,7 +1,7 @@
 import React, { memo, useEffect, useState } from 'react';
 import type { CSSProperties } from 'react';
 import {
-  ArrowRight, Award, Bot, Clock3, FileCode2, Flame, Gamepad2, Gift, Github, MapPin, MonitorUp, Orbit, Rocket,
+  ArrowRight, Award, Bot, Clock3, Cpu, Flame, Gamepad2, Gift, Github, MapPin, MonitorUp, Orbit, Rocket,
   ShieldCheck, Sparkles, Trophy, Users, Zap,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -38,7 +38,7 @@ const heroBackdropPills: BackdropPill[] = [
 ];
 
 const heroBackdropMarks: BackdropMark[] = [
-  { label: 'HTML5', Icon: FileCode2, tone: 'orange', variant: 'compact', style: { left: '8.4%', top: '35.5%', transform: 'rotate(-6deg)' } },
+  { label: 'TECH QUIZ', Icon: Cpu, tone: 'amber', variant: 'compact', style: { left: '8.4%', top: '35.5%', transform: 'rotate(-6deg)' } },
   { label: 'REACT', Icon: Orbit, tone: 'cyan', variant: 'wordmark', style: { left: '8.8%', top: '66%', transform: 'rotate(-7deg)' } },
   { label: 'AI', Icon: Bot, tone: 'amber', variant: 'emblem', style: { right: '11.6%', top: '33%' } },
   { label: 'GITHUB', Icon: Github, tone: 'violet', variant: 'wordmark', style: { right: '12.5%', top: '58%', transform: 'rotate(-6deg)' } },
@@ -53,7 +53,7 @@ const heroBackdropAccents: BackdropAccent[] = [
 ];
 
 const heroMobileBackdropMarks: BackdropMark[] = [
-  { label: 'HTML5', Icon: FileCode2, tone: 'orange', variant: 'compact', style: { left: '5.5%', top: '76%', transform: 'rotate(-8deg)' } },
+  { label: 'TECH QUIZ', Icon: Cpu, tone: 'amber', variant: 'compact', style: { left: '5.5%', top: '76%', transform: 'rotate(-8deg)' } },
   { label: 'BGMI', Icon: Gamepad2, tone: 'cyan', variant: 'compact', style: { left: '4.8%', bottom: '27%', transform: 'rotate(-8deg)' } },
   { label: 'REACT', Icon: Orbit, tone: 'cyan', variant: 'compact', style: { left: '7.4%', top: '43%', transform: 'rotate(-10deg)' } },
   { label: 'AI', Icon: Bot, tone: 'pink', variant: 'emblem', style: { right: '7.4%', top: '46%' } },
