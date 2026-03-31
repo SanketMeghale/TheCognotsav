@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, memo, useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowRight, ArrowLeft, Bell, Building2, CheckCircle2, Clock3, GraduationCap, House, ImageIcon, Search, Sparkles, Trophy } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Bell, Building2, CheckCircle2, Clock3, GraduationCap, House, Search, Sparkles, Trophy } from 'lucide-react';
 import { HeroSection } from './components/portal/HeroSection.tsx';
 import { CompetitionGridSection } from './components/portal/CompetitionGridSection.tsx';
 import type {
@@ -254,6 +254,17 @@ const LAST_YEAR_PHOTO_SLOTS = [
   { label: 'Closing Scene', title: 'Legacy Capture', note: 'Use this for one last memorable Cognotsav moment.', tone: 'pink', featured: false },
 ] as const;
 
+const LAST_YEAR_PHOTO_CARDS = LAST_YEAR_PHOTO_SLOTS.map((slot, index) => {
+  const photo = DEPARTMENT_GALLERY_PHOTOS[index] ?? DEPARTMENT_GALLERY_PHOTOS[0];
+
+  return {
+    ...slot,
+    image: photo.image,
+    title: photo.title,
+    note: photo.text,
+  };
+});
+
 function LastYearPhotosStripBase() {
   return (
     <section className="portal-memory-showcase portal-glow-card portal-glass rounded-[1.8rem] p-4 md:rounded-[2rem] md:p-6" data-reveal="fade-up">
@@ -263,12 +274,12 @@ function LastYearPhotosStripBase() {
           <h3 className="portal-memory-showcase__title">Last Year at Cognotsav</h3>
         </div>
         <p className="portal-memory-showcase__copy">
-          Photo-ready slots are reserved here. Share the images later and I&apos;ll swap them in.
+          Highlights from last year&apos;s crowd moments, CEAS energy, and on-ground Cognotsav memories.
         </p>
       </div>
 
       <div className="portal-memory-showcase__grid">
-        {LAST_YEAR_PHOTO_SLOTS.map(({ label, title, note, tone, featured }, index) => (
+        {LAST_YEAR_PHOTO_CARDS.map(({ label, title, note, tone, featured, image }, index) => (
           <article
             key={title}
             className={`portal-memory-showcase__card portal-memory-showcase__card--${tone} ${featured ? 'is-featured' : ''}`}
@@ -278,9 +289,14 @@ function LastYearPhotosStripBase() {
               <span className="portal-memory-showcase__card-index">{String(index + 1).padStart(2, '0')}</span>
             </div>
 
-            <div className="portal-memory-showcase__placeholder" aria-hidden="true">
-              <ImageIcon size={featured ? 30 : 24} />
-              <span>{featured ? 'Main photo slot' : 'Photo slot'}</span>
+            <div className="portal-memory-showcase__media">
+              <img
+                src={image}
+                alt={title}
+                loading="lazy"
+                decoding="async"
+                className="portal-memory-showcase__image"
+              />
             </div>
 
             <div className="portal-memory-showcase__card-copy">
