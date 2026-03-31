@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useState } from 'react';
 import {
-  Award, Clock3, Code2, Cpu, Flame, Gamepad2, Gift, GraduationCap, MapPin, MonitorUp, Rocket, Trophy, Users,
+  Award, Clock3, Code2, Cpu, Flame, Gamepad2, Gift, MapPin, MonitorUp, Rocket, Trophy, Users,
 } from 'lucide-react';
 import { parsePortalEventDate } from './utils';
 
@@ -24,8 +24,7 @@ const heroFeatureBadges = [
 
 const heroStatItems = [
   { value: '1200+', label: 'Participants', Icon: Users, tone: 'cyan' },
-  { value: '50+', label: 'Colleges', Icon: GraduationCap, tone: 'amber' },
-  { value: '50+', label: 'Competitions', Icon: Trophy, tone: 'amber' },
+  { value: '₹1,00,000', label: 'Prize Pool', Icon: Trophy, tone: 'amber' },
   { value: '10+', label: 'Offline Events', Icon: MapPin, tone: 'pink' },
   { value: 'Live', label: 'Competitions', Icon: Flame, tone: 'orange' },
 ] as const;
