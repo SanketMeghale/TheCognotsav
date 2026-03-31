@@ -30,7 +30,7 @@ const heroMobileTopicBadges = [
 const heroStatItems = [
   { value: '1200+', label: 'Participants', Icon: Users, tone: 'cyan' },
   { value: '₹1,00,000', label: 'Prize Pool', Icon: Trophy, tone: 'amber' },
-  { value: '10+', label: 'Offline Events', Icon: MapPin, tone: 'pink' },
+  { value: '8', label: 'Events', Icon: MapPin, tone: 'pink' },
   { value: 'Live', label: 'Competitions', Icon: Flame, tone: 'orange' },
 ] as const;
 
