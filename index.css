@@ -10283,10 +10283,8 @@ body {
   max-width: 25ch;
   font-size: clamp(1.8rem, 3vw, 2.35rem);
   line-height: 1.06;
-  color: #ffd86f;
-  text-shadow:
-    0 0 12px rgba(255, 216, 111, 0.14),
-    0 10px 26px rgba(2, 8, 23, 0.24);
+  color: #f5fbff;
+  text-shadow: 0 10px 26px rgba(2, 8, 23, 0.24);
 }
 
 .portal-summit-hero__subtitle-break {
