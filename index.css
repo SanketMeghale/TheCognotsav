@@ -10376,3 +10376,636 @@ body {
     border-top: 0 !important;
   }
 }
+
+.portal-timeline-page-header {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.portal-cosmos-timeline {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2rem;
+  border: 1px solid rgba(115, 151, 255, 0.16);
+  background:
+    radial-gradient(circle at top, rgba(56, 189, 248, 0.12), transparent 26%),
+    radial-gradient(circle at bottom left, rgba(16, 185, 129, 0.08), transparent 24%),
+    radial-gradient(circle at bottom right, rgba(217, 70, 239, 0.1), transparent 26%),
+    linear-gradient(180deg, rgba(5, 9, 20, 0.98), rgba(4, 8, 18, 1));
+  padding: clamp(1rem, 2vw, 1.45rem);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 28px 64px rgba(2, 8, 23, 0.38);
+}
+
+.portal-cosmos-timeline::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(156, 183, 255, 0.22) 1px, transparent 1px),
+    linear-gradient(130deg, transparent 0%, rgba(102, 126, 255, 0.06) 46%, transparent 100%);
+  background-size: 18px 18px, 100% 100%;
+  opacity: 0.32;
+  pointer-events: none;
+}
+
+.portal-cosmos-timeline::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 26%, rgba(97, 234, 255, 0.12), transparent 22%),
+    linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.05) 48%, transparent 100%);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.portal-cosmos-timeline--empty {
+  display: grid;
+  gap: 0.9rem;
+  justify-items: center;
+  padding: 2rem 1.2rem;
+  text-align: center;
+}
+
+.portal-cosmos-timeline__empty-copy {
+  margin: 0;
+  max-width: 36rem;
+  color: rgba(226, 232, 240, 0.82);
+  font-size: 0.98rem;
+  line-height: 1.7;
+}
+
+.portal-cosmos-timeline__hero {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  gap: 0.7rem;
+  text-align: center;
+}
+
+.portal-cosmos-timeline__eyebrow {
+  margin: 0;
+  color: rgba(206, 220, 255, 0.74);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+}
+
+.portal-cosmos-timeline__title {
+  margin: 0;
+  color: transparent;
+  font-family: 'Orbitron', 'Oxanium', 'Inter', sans-serif;
+  font-size: clamp(2.4rem, 6vw, 4.65rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+  text-transform: uppercase;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.02) 26%, rgba(255, 255, 255, 0) 46%),
+    linear-gradient(92deg, #54f4ff 0%, #36c4ff 22%, #4d8dff 44%, #ad61ff 68%, #ff82cf 100%);
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-shadow:
+    0 1px 0 rgba(215, 246, 255, 0.3),
+    0 3px 0 rgba(6, 11, 24, 0.28),
+    0 10px 20px rgba(3, 8, 18, 0.42),
+    0 0 24px rgba(84, 244, 255, 0.24),
+    0 0 42px rgba(173, 97, 255, 0.18);
+  animation: portalHeroSpectrum 7.2s linear infinite;
+}
+
+.portal-cosmos-timeline__subtitle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9rem;
+  color: rgba(233, 239, 255, 0.9);
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  font-size: 0.96rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.portal-cosmos-timeline__subtitle::before,
+.portal-cosmos-timeline__subtitle::after {
+  content: '';
+  width: 5.2rem;
+  height: 1px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, rgba(97, 234, 255, 0.86), transparent);
+  box-shadow: 0 0 18px rgba(97, 234, 255, 0.22);
+}
+
+.portal-cosmos-timeline__summary {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.7rem;
+}
+
+.portal-cosmos-timeline__summary span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2.35rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.46rem 0.82rem;
+  color: rgba(226, 232, 240, 0.92);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.portal-cosmos-timeline__summary svg {
+  color: #7defff;
+}
+
+.portal-cosmos-timeline__board {
+  position: relative;
+  z-index: 1;
+  margin-top: 2rem;
+  padding: 0.6rem 0 1rem;
+}
+
+.portal-cosmos-timeline__board::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0.2rem;
+  bottom: 0.2rem;
+  width: 2px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, rgba(74, 222, 255, 0), rgba(74, 222, 255, 0.9) 16%, rgba(169, 92, 255, 0.88) 52%, rgba(255, 136, 92, 0.86) 84%, rgba(74, 222, 255, 0));
+  box-shadow:
+    0 0 16px rgba(74, 222, 255, 0.3),
+    0 0 28px rgba(169, 92, 255, 0.16);
+}
+
+.portal-cosmos-timeline__row {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 4.4rem minmax(0, 1fr);
+  gap: 1.15rem;
+  align-items: center;
+  min-height: 9.4rem;
+}
+
+.portal-cosmos-timeline__lane {
+  min-width: 0;
+  display: flex;
+}
+
+.portal-cosmos-timeline__lane--left {
+  justify-content: flex-end;
+}
+
+.portal-cosmos-timeline__lane--right {
+  justify-content: flex-start;
+}
+
+.portal-cosmos-timeline__center {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.portal-cosmos-timeline__node {
+  display: inline-flex;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 999px;
+  border: 2px solid rgba(224, 248, 255, 0.96);
+  background: radial-gradient(circle at center, #ffffff 0%, #8cf7ff 46%, #2fb0ff 100%);
+  box-shadow:
+    0 0 0 0.28rem rgba(97, 234, 255, 0.12),
+    0 0 20px rgba(97, 234, 255, 0.52),
+    0 0 38px rgba(169, 92, 255, 0.24);
+}
+
+.portal-cosmos-timeline__node.is-focused {
+  box-shadow:
+    0 0 0 0.38rem rgba(255, 225, 122, 0.14),
+    0 0 22px rgba(255, 225, 122, 0.58),
+    0 0 44px rgba(97, 234, 255, 0.34);
+}
+
+.portal-cosmos-timeline__card-wrap {
+  --timeline-accent: #61eaff;
+  --timeline-accent-strong: #36b8ff;
+  --timeline-border: rgba(97, 234, 255, 0.34);
+  --timeline-soft: rgba(97, 234, 255, 0.18);
+  position: relative;
+  width: min(100%, 24rem);
+}
+
+.portal-cosmos-timeline__card-wrap--left::after,
+.portal-cosmos-timeline__card-wrap--right::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 1.35rem;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), var(--timeline-accent));
+  box-shadow: 0 0 16px var(--timeline-soft);
+}
+
+.portal-cosmos-timeline__card-wrap--left::after {
+  right: -1.35rem;
+}
+
+.portal-cosmos-timeline__card-wrap--right::before {
+  left: -1.35rem;
+  background: linear-gradient(90deg, var(--timeline-accent), rgba(255, 255, 255, 0));
+}
+
+.portal-cosmos-timeline__tone--cyan {
+  --timeline-accent: #61eaff;
+  --timeline-accent-strong: #36b8ff;
+  --timeline-border: rgba(97, 234, 255, 0.38);
+  --timeline-soft: rgba(97, 234, 255, 0.22);
+}
+
+.portal-cosmos-timeline__tone--violet {
+  --timeline-accent: #b974ff;
+  --timeline-accent-strong: #7c4dff;
+  --timeline-border: rgba(185, 116, 255, 0.38);
+  --timeline-soft: rgba(185, 116, 255, 0.22);
+}
+
+.portal-cosmos-timeline__tone--amber {
+  --timeline-accent: #ffd166;
+  --timeline-accent-strong: #ff9f43;
+  --timeline-border: rgba(255, 209, 102, 0.4);
+  --timeline-soft: rgba(255, 209, 102, 0.22);
+}
+
+.portal-cosmos-timeline__tone--rose {
+  --timeline-accent: #ff82cf;
+  --timeline-accent-strong: #fb7185;
+  --timeline-border: rgba(255, 130, 207, 0.38);
+  --timeline-soft: rgba(255, 130, 207, 0.22);
+}
+
+.portal-cosmos-timeline__tone--emerald {
+  --timeline-accent: #57f0c8;
+  --timeline-accent-strong: #14b8a6;
+  --timeline-border: rgba(87, 240, 200, 0.36);
+  --timeline-soft: rgba(87, 240, 200, 0.2);
+}
+
+.portal-cosmos-timeline__tone--blue {
+  --timeline-accent: #8aa8ff;
+  --timeline-accent-strong: #4d8dff;
+  --timeline-border: rgba(138, 168, 255, 0.34);
+  --timeline-soft: rgba(138, 168, 255, 0.22);
+}
+
+.portal-cosmos-timeline-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.45rem;
+  border: 1px solid var(--timeline-border);
+  background:
+    radial-gradient(circle at top right, var(--timeline-soft), transparent 42%),
+    linear-gradient(160deg, rgba(11, 18, 34, 0.96), rgba(6, 10, 20, 0.96));
+  padding: 1rem 1rem 0.95rem;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 18px 40px rgba(2, 8, 23, 0.26),
+    0 0 24px rgba(8, 145, 178, 0.06);
+}
+
+.portal-cosmos-timeline-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.14) 1px, transparent 1px);
+  background-size: 16px 16px;
+  opacity: 0.08;
+  pointer-events: none;
+}
+
+.portal-cosmos-timeline-card::after {
+  content: '';
+  position: absolute;
+  left: 1rem;
+  right: 1rem;
+  top: 0;
+  height: 1px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, var(--timeline-accent), transparent);
+  opacity: 0.86;
+}
+
+.portal-cosmos-timeline-card.is-focused {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 22px 44px rgba(2, 8, 23, 0.3),
+    0 0 30px var(--timeline-soft);
+}
+
+.portal-cosmos-timeline-card__date-pill {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  border-radius: 999px;
+  border: 1px solid var(--timeline-border);
+  background: rgba(7, 11, 22, 0.8);
+  padding: 0.34rem 0.78rem;
+  color: rgba(240, 247, 255, 0.94);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.portal-cosmos-timeline-card__body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-top: 0.9rem;
+  min-width: 0;
+}
+
+.portal-cosmos-timeline-card__icon-shell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.2rem;
+  height: 3.2rem;
+  flex-shrink: 0;
+  border-radius: 1rem;
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.2), transparent 40%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(11, 18, 34, 0.92));
+  color: var(--timeline-accent);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 0 20px var(--timeline-soft);
+}
+
+.portal-cosmos-timeline-card__copy {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.portal-cosmos-timeline-card__title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.7rem;
+}
+
+.portal-cosmos-timeline-card__title-row h4 {
+  margin: 0;
+  color: #ffffff;
+  font-size: clamp(1.15rem, 1.8vw, 1.62rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+}
+
+.portal-cosmos-timeline-card__focus-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.6rem;
+  white-space: nowrap;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 222, 104, 0.32);
+  background: linear-gradient(180deg, rgba(255, 222, 104, 0.16), rgba(255, 178, 66, 0.08));
+  padding: 0.24rem 0.58rem;
+  color: #fff4c7;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.portal-cosmos-timeline-card__time {
+  margin: 0.4rem 0 0;
+  color: rgba(220, 232, 255, 0.82);
+  font-size: 0.94rem;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.portal-cosmos-timeline-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 1rem;
+  margin-top: 0.62rem;
+}
+
+.portal-cosmos-timeline-card__meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: rgba(190, 204, 228, 0.76);
+  font-size: 0.76rem;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.portal-cosmos-timeline-card__meta svg {
+  flex-shrink: 0;
+  color: var(--timeline-accent);
+}
+
+@media (max-width: 1024px) {
+  .portal-cosmos-timeline {
+    padding: 1rem;
+  }
+
+  .portal-cosmos-timeline__title {
+    font-size: clamp(2.15rem, 8vw, 3.7rem);
+  }
+
+  .portal-cosmos-timeline__subtitle::before,
+  .portal-cosmos-timeline__subtitle::after {
+    width: 3.6rem;
+  }
+
+  .portal-cosmos-timeline__row {
+    grid-template-columns: minmax(0, 1fr) 3.6rem minmax(0, 1fr);
+    gap: 0.9rem;
+  }
+
+  .portal-cosmos-timeline__card-wrap {
+    width: min(100%, 21rem);
+  }
+}
+
+@media (max-width: 860px) {
+  .portal-cosmos-timeline__board {
+    margin-top: 1.45rem;
+  }
+
+  .portal-cosmos-timeline__board::before {
+    left: 1.1rem;
+    transform: none;
+  }
+
+  .portal-cosmos-timeline__row {
+    grid-template-columns: 2.2rem minmax(0, 1fr);
+    gap: 0.85rem;
+    align-items: start;
+    min-height: 0;
+    padding: 0.2rem 0;
+  }
+
+  .portal-cosmos-timeline__center {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    min-height: 100%;
+    padding-top: 1.7rem;
+  }
+
+  .portal-cosmos-timeline__lane--left,
+  .portal-cosmos-timeline__lane--right {
+    justify-content: stretch;
+  }
+
+  .portal-cosmos-timeline__lane--left {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .portal-cosmos-timeline__lane--right {
+    grid-column: 2;
+    grid-row: 2;
+    margin-top: 0.75rem;
+  }
+
+  .portal-cosmos-timeline__card-wrap {
+    width: 100%;
+    max-width: none;
+  }
+
+  .portal-cosmos-timeline__card-wrap--left::after,
+  .portal-cosmos-timeline__card-wrap--right::before {
+    left: -0.88rem;
+    right: auto;
+    width: 0.88rem;
+    top: 1.7rem;
+    background: linear-gradient(90deg, var(--timeline-accent), rgba(255, 255, 255, 0));
+  }
+}
+
+@media (max-width: 640px) {
+  .portal-cosmos-timeline {
+    border-radius: 1.6rem;
+    padding: 0.88rem;
+  }
+
+  .portal-cosmos-timeline__hero {
+    gap: 0.58rem;
+  }
+
+  .portal-cosmos-timeline__eyebrow {
+    font-size: 0.64rem;
+    letter-spacing: 0.26em;
+  }
+
+  .portal-cosmos-timeline__title {
+    font-size: clamp(1.85rem, 12vw, 3rem);
+  }
+
+  .portal-cosmos-timeline__subtitle {
+    gap: 0.5rem;
+    font-size: 0.74rem;
+    letter-spacing: 0.12em;
+  }
+
+  .portal-cosmos-timeline__subtitle::before,
+  .portal-cosmos-timeline__subtitle::after {
+    width: 1.9rem;
+  }
+
+  .portal-cosmos-timeline__summary {
+    gap: 0.5rem;
+  }
+
+  .portal-cosmos-timeline__summary span {
+    min-height: 2rem;
+    padding: 0.4rem 0.66rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+  }
+
+  .portal-cosmos-timeline__row {
+    gap: 0.72rem;
+  }
+
+  .portal-cosmos-timeline__board::before {
+    left: 0.95rem;
+  }
+
+  .portal-cosmos-timeline__node {
+    width: 0.88rem;
+    height: 0.88rem;
+  }
+
+  .portal-cosmos-timeline-card {
+    border-radius: 1.2rem;
+    padding: 0.82rem 0.82rem 0.78rem;
+  }
+
+  .portal-cosmos-timeline-card__date-pill {
+    min-height: 1.78rem;
+    padding: 0.28rem 0.62rem;
+    font-size: 0.68rem;
+  }
+
+  .portal-cosmos-timeline-card__body {
+    gap: 0.72rem;
+    margin-top: 0.72rem;
+  }
+
+  .portal-cosmos-timeline-card__icon-shell {
+    width: 2.7rem;
+    height: 2.7rem;
+    border-radius: 0.85rem;
+  }
+
+  .portal-cosmos-timeline-card__title-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.42rem;
+  }
+
+  .portal-cosmos-timeline-card__title-row h4 {
+    font-size: 1.02rem;
+  }
+
+  .portal-cosmos-timeline-card__focus-chip {
+    font-size: 0.54rem;
+    letter-spacing: 0.14em;
+  }
+
+  .portal-cosmos-timeline-card__time {
+    font-size: 0.82rem;
+  }
+
+  .portal-cosmos-timeline-card__meta {
+    gap: 0.32rem 0.72rem;
+  }
+
+  .portal-cosmos-timeline-card__meta span {
+    font-size: 0.68rem;
+  }
+}
