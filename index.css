@@ -9679,6 +9679,25 @@ body {
   }
 }
 
+@keyframes portalHeroChromaflow {
+  0%,
+  100% {
+    filter: saturate(1.28) brightness(1.06) contrast(1.04) hue-rotate(0deg);
+  }
+
+  25% {
+    filter: saturate(1.42) brightness(1.14) contrast(1.06) hue-rotate(-12deg);
+  }
+
+  50% {
+    filter: saturate(1.36) brightness(1.18) contrast(1.08) hue-rotate(16deg);
+  }
+
+  75% {
+    filter: saturate(1.48) brightness(1.13) contrast(1.07) hue-rotate(32deg);
+  }
+}
+
 @media (max-width: 767px) {
   .portal-summit-hero__title {
     font-size: clamp(2.8rem, 13.5vw, 4.4rem);
@@ -9886,7 +9905,9 @@ body {
 .portal-summit-hero--immersive .portal-summit-hero__title-line--main {
   background-image:
     linear-gradient(180deg, rgba(255, 255, 255, 0.34) 0%, rgba(255, 255, 255, 0.04) 16%, rgba(255, 255, 255, 0) 32%),
-    linear-gradient(94deg, #35f8ff 0%, #00e5ff 15%, #36b8ff 34%, #7c4dff 60%, #c45dff 80%, #ff96df 100%);
+    linear-gradient(94deg, #42f9ff 0%, #00e5ff 14%, #3db6ff 30%, #7c4dff 48%, #b95cff 66%, #ff72d8 84%, #ffd166 100%);
+  background-size: 240% auto;
+  animation: portalHeroSpectrum 6.2s linear infinite, portalHeroChromaflow 9.4s ease-in-out infinite;
   text-shadow:
     0 1px 0 rgba(177, 247, 255, 0.34),
     0 2px 0 rgba(10, 15, 30, 0.4),
@@ -9904,7 +9925,9 @@ body {
   padding: 0 0.18em 0.08em;
   background-image:
     linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.03) 22%, rgba(255, 255, 255, 0) 36%),
-    linear-gradient(92deg, #ffd5f6 0%, #9cedff 22%, #00dfff 42%, #7c4dff 72%, #ffcae9 100%);
+    linear-gradient(92deg, #ffd5f6 0%, #8cf7ff 20%, #00dfff 38%, #7c4dff 66%, #ff87dd 86%, #ffe082 100%);
+  background-size: 220% auto;
+  animation: portalHeroSpectrum 7.1s linear infinite reverse, portalHeroChromaflow 10.4s ease-in-out infinite;
   text-shadow:
     0 1px 0 rgba(255, 235, 252, 0.26),
     0 2px 0 rgba(10, 14, 28, 0.34),
