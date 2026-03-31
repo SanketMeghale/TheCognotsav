@@ -437,37 +437,7 @@ function DepartmentPageBase() {
         </article>
       </section>
 
-      <section className="portal-department-page__section portal-glow-card portal-glass rounded-[1.7rem] p-4 md:rounded-[2rem] md:p-6">
-        <div className="portal-department-page__section-head">
-          <div>
-            <p className="portal-department-page__section-kicker">Past Events</p>
-            <h3 className="portal-department-page__section-title">Gallery and Event Legacy</h3>
-          </div>
-          <p className="portal-department-page__section-copy portal-department-page__section-copy--compact">
-            A live archive of previous Cognotsav and CEAS event moments.
-          </p>
-        </div>
-
-        <div className="portal-department-page__gallery">
-          {DEPARTMENT_GALLERY_PHOTOS.map((photo) => (
-            <div key={photo.image} className="portal-department-page__gallery-card">
-              <div className="overflow-hidden rounded-[1.2rem] border border-white/10 bg-black/20">
-                <img
-                  src={photo.image}
-                  alt={photo.title}
-                  loading="lazy"
-                  decoding="async"
-                  className="h-56 w-full object-cover transition duration-500 hover:scale-105"
-                />
-              </div>
-              <div className="portal-department-page__gallery-copy">
-                <p className="portal-department-page__gallery-title">{photo.title}</p>
-                <p className="portal-department-page__gallery-text">{photo.text}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      <LastYearPhotosStrip />
     </main>
   );
 }
@@ -2332,8 +2302,6 @@ export const App: React.FC = () => {
             <PremiumBrochureStrip />
 
             <DepartmentIntroStrip />
-
-            <LastYearPhotosStrip />
 
             <CompetitionGridSection
               events={events}
