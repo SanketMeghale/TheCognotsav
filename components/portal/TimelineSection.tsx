@@ -15,6 +15,13 @@ type TimelineEntry = {
   tone: TimelineTone;
   isFocused: boolean;
   focusLabel: string;
+  sourceSlugs: string[];
+};
+
+type TimelineSourceEvent = {
+  event: EventRecord;
+  sortAt: number;
+  sourceSlugs: string[];
 };
 
 const toneSequence: TimelineTone[] = ['cyan', 'violet', 'amber', 'rose', 'emerald', 'blue'];
@@ -29,6 +36,7 @@ const toneByCategory: Partial<Record<string, TimelineTone>> = {
 const eventIconBySlug: Record<string, typeof CalendarDays> = {
   'bgmi-esports': Gamepad2,
   'ff-esports': Gamepad2,
+  'ranbhoomi-esports-combined': Gamepad2,
   'tech-kbc': Cpu,
   'googler-hunt': Search,
   techxcelerate: Rocket,
@@ -92,7 +100,55 @@ function getTimelineDateRange(events: EventRecord[]) {
   if (dates.length === 0) return 'Schedule pending';
   if (dates.length === 1) return dates[0];
 
-  return `${dates[0]} • ${dates[dates.length - 1]}`;
+  return `${dates[0]} - ${dates[dates.length - 1]}`;
+}
+
+function getTimelineEventTimestamp(event: EventRecord) {
+  return parsePortalEventDate(event.date_label, event.time_label)?.getTime() ?? Number.MAX_SAFE_INTEGER;
+}
+
+function combineTimelineLabel(primary: string, secondary: string, separator: string) {
+  return primary === secondary ? primary : `${primary}${separator}${secondary}`;
+}
+
+function mergeTimelineEvents(events: EventRecord[]): TimelineSourceEvent[] {
+  const baseEntries = events.map((event) => ({
+    event,
+    sortAt: getTimelineEventTimestamp(event),
+    sourceSlugs: [event.slug],
+  }));
+
+  const bgmiEvent = events.find((event) => event.slug === 'bgmi-esports');
+  const freeFireEvent = events.find((event) => event.slug === 'ff-esports');
+
+  if (!bgmiEvent || !freeFireEvent) {
+    return baseEntries;
+  }
+
+  const mergedEvent: EventRecord = {
+    ...bgmiEvent,
+    slug: 'ranbhoomi-esports-combined',
+    name: 'Ranbhoomi: BGMI + Free Fire',
+    date_label: combineTimelineLabel(bgmiEvent.date_label, freeFireEvent.date_label, ' / '),
+    time_label: combineTimelineLabel(bgmiEvent.time_label, freeFireEvent.time_label, ' / '),
+    venue: combineTimelineLabel(bgmiEvent.venue, freeFireEvent.venue, ' / '),
+    registration_enabled: bgmiEvent.registration_enabled || freeFireEvent.registration_enabled,
+    registrations_count: bgmiEvent.registrations_count + freeFireEvent.registrations_count,
+    waitlist_count: bgmiEvent.waitlist_count + freeFireEvent.waitlist_count,
+    coordinators: [...bgmiEvent.coordinators, ...freeFireEvent.coordinators].filter(
+      (coordinator, index, coordinators) =>
+        coordinators.findIndex((entry) => entry.name === coordinator.name && entry.phone === coordinator.phone) === index,
+    ),
+  };
+
+  return [
+    ...baseEntries.filter((entry) => entry.event.slug !== 'bgmi-esports' && entry.event.slug !== 'ff-esports'),
+    {
+      event: mergedEvent,
+      sortAt: Math.min(getTimelineEventTimestamp(bgmiEvent), getTimelineEventTimestamp(freeFireEvent)),
+      sourceSlugs: ['bgmi-esports', 'ff-esports'],
+    },
+  ];
 }
 
 function chunkTimelineRows(entries: TimelineEntry[]) {
@@ -112,12 +168,12 @@ function chunkTimelineRows(entries: TimelineEntry[]) {
   return rows;
 }
 
-function TimelineEventCard({ entry, side }: { entry: TimelineEntry; side: 'left' | 'right' }) {
+function TimelineEventCard({ entry, side, compact = false }: { entry: TimelineEntry; side: 'left' | 'right'; compact?: boolean }) {
   const { event, tone, isFocused, focusLabel } = entry;
   const Icon = getTimelineIcon(event);
 
   return (
-    <div className={`portal-cosmos-timeline__card-wrap portal-cosmos-timeline__card-wrap--${side} portal-cosmos-timeline__tone--${tone}`}>
+    <div className={`portal-cosmos-timeline__card-wrap portal-cosmos-timeline__card-wrap--${side} ${compact ? 'portal-cosmos-timeline__card-wrap--compact' : ''} portal-cosmos-timeline__tone--${tone}`}>
       <article className={`portal-cosmos-timeline-card ${isFocused ? 'is-focused' : ''}`}>
         <div className="portal-cosmos-timeline-card__date-pill">{event.date_label}</div>
 
@@ -157,23 +213,26 @@ export const TimelineSection: React.FC<TimelineSectionProps> = ({ standalone = f
   const timelineEntries = useMemo(() => {
     const focusSlug = getCurrentEventSlug(events, now);
 
-    return [...events]
-      .sort((left, right) => {
-        const leftTime = parsePortalEventDate(left.date_label, left.time_label)?.getTime() ?? Number.MAX_SAFE_INTEGER;
-        const rightTime = parsePortalEventDate(right.date_label, right.time_label)?.getTime() ?? Number.MAX_SAFE_INTEGER;
-        return leftTime - rightTime;
-      })
-      .map((event, index) => ({
-        event,
-        tone: getTimelineTone(event, index),
-        isFocused: focusSlug === event.slug,
-        focusLabel: focusSlug === event.slug ? getTimelineFocusLabel(event, now) : '',
-      }));
+    return mergeTimelineEvents(events)
+      .sort((left, right) => left.sortAt - right.sortAt)
+      .map(({ event, sourceSlugs }, index) => {
+        const focusedEvent = sourceSlugs.includes(focusSlug ?? '')
+          ? events.find((sourceEvent) => sourceEvent.slug === focusSlug) ?? event
+          : event;
+
+        return {
+          event,
+          sourceSlugs,
+          tone: getTimelineTone(event, index),
+          isFocused: Boolean(focusSlug && sourceSlugs.includes(focusSlug)),
+          focusLabel: sourceSlugs.includes(focusSlug ?? '') ? getTimelineFocusLabel(focusedEvent, now) : '',
+        };
+      });
   }, [events, now]);
 
   const timelineRows = useMemo(() => chunkTimelineRows(timelineEntries), [timelineEntries]);
-  const dateRange = useMemo(() => getTimelineDateRange(timelineEntries.map((entry) => entry.event)), [timelineEntries]);
-  const uniqueDates = useMemo(() => new Set(timelineEntries.map((entry) => entry.event.date_label)).size, [timelineEntries]);
+  const dateRange = useMemo(() => getTimelineDateRange(events), [events]);
+  const uniqueDates = useMemo(() => new Set(events.map((event) => event.date_label)).size, [events]);
 
   if (events.length === 0) {
     return (
@@ -204,7 +263,7 @@ export const TimelineSection: React.FC<TimelineSectionProps> = ({ standalone = f
           </div>
         </div>
 
-        <div className="portal-cosmos-timeline__board">
+        <div className="portal-cosmos-timeline__board portal-cosmos-timeline__board--desktop">
           {timelineRows.map((row, rowIndex) => (
             <div key={`timeline-row-${rowIndex}`} className="portal-cosmos-timeline__row">
               <div className="portal-cosmos-timeline__lane portal-cosmos-timeline__lane--left">
@@ -218,6 +277,17 @@ export const TimelineSection: React.FC<TimelineSectionProps> = ({ standalone = f
               <div className="portal-cosmos-timeline__lane portal-cosmos-timeline__lane--right">
                 {row.right ? <TimelineEventCard entry={row.right} side="right" /> : null}
               </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="portal-cosmos-timeline__board-mobile">
+          {timelineEntries.map((entry) => (
+            <div key={`timeline-mobile-${entry.event.slug}`} className="portal-cosmos-timeline__mobile-row">
+              <div className="portal-cosmos-timeline__mobile-rail">
+                <span className={`portal-cosmos-timeline__node ${entry.isFocused ? 'is-focused' : ''}`} />
+              </div>
+              <TimelineEventCard entry={entry} side="right" compact />
             </div>
           ))}
         </div>

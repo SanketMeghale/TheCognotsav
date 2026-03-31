@@ -10,7 +10,7 @@ export const TimelinePage: React.FC<{ events: EventRecord[] }> = ({ events }) =>
       <section data-reveal="up" className="portal-timeline-page-header">
         <a
           href="#overview"
-          className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-sm text-slate-100 transition hover:border-blue-400/30 hover:text-white"
+          className="portal-timeline-page-header__back inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-sm text-slate-100 transition hover:border-blue-400/30 hover:text-white"
         >
           <ArrowLeft size={16} />
           Back to portal

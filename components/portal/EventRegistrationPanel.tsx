@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
   AlertTriangle, ArrowLeft, ArrowRight, CheckCircle2, Clock3, Copy, CreditCard, ExternalLink,
-  Eye, Info, MapPin, Phone, QrCode, Smartphone, Sparkles, Trophy, Upload, Users,
+  Eye, Info, MapPin, QrCode, Smartphone, Sparkles, Trophy, Upload, Users,
 } from 'lucide-react';
 import type { EventRecord, ParticipantDraft, RegistrationReceipt } from './types';
 import { formatCurrency, getEventLiveState, getTeamLabel } from './utils';
@@ -396,39 +396,6 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                 </p>
               </div>
 
-              <div className="portal-event-inline-info portal-event-inline-info--hero mt-6">
-                <div className="portal-event-inline-info__item">
-                  <Clock3 size={15} className="text-amber-200" />
-                  <span className="portal-event-inline-info__label">Date</span>
-                  <span className="portal-event-inline-info__value">{selectedEvent.date_label}</span>
-                </div>
-                <div className="portal-event-inline-info__item">
-                  <Users size={15} className="text-amber-200" />
-                  <span className="portal-event-inline-info__label">Team</span>
-                  <span className="portal-event-inline-info__value">{getTeamLabel(selectedEvent)}</span>
-                </div>
-                <div className="portal-event-inline-info__item">
-                  <CreditCard size={15} className="text-amber-200" />
-                  <span className="portal-event-inline-info__label">Fee</span>
-                  <span className="portal-event-inline-info__value">{formatCurrency(payableAmount)}</span>
-                </div>
-                <div className="portal-event-inline-info__item">
-                  <MapPin size={15} className="text-amber-200" />
-                  <span className="portal-event-inline-info__label">Venue</span>
-                  <span className="portal-event-inline-info__value">{selectedEvent.venue}</span>
-                </div>
-                <div className="portal-event-inline-info__item">
-                  <Clock3 size={15} className="text-amber-200" />
-                  <span className="portal-event-inline-info__label">Status</span>
-                  <span className="portal-event-inline-info__value">{liveState.label}</span>
-                </div>
-                <div className="portal-event-inline-info__item">
-                  <Sparkles size={15} className="text-amber-200" />
-                  <span className="portal-event-inline-info__label">Countdown</span>
-                  <span className="portal-event-inline-info__value">{liveState.countdown}</span>
-                </div>
-              </div>
-
               {selectedEvent.coordinators?.length ? (
                 <div className="portal-event-contact-strip">
                   <p className="portal-event-contact-strip__label">Coordination Contacts</p>
@@ -758,28 +725,6 @@ export const EventRegistrationPanel: React.FC<Props> = ({
               </div>
           </form>
 
-          {selectedEvent.coordinators?.length ? (
-            <section className="portal-event-section portal-glow-card portal-glass">
-              <div className="portal-event-section__head">
-                <Phone size={17} className="text-emerald-200" />
-                <div>
-                  <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Contacts</p>
-                  <h3 className="mt-1 text-lg font-semibold text-white">Need help before you submit?</h3>
-                </div>
-              </div>
-              <div className="mt-5 grid gap-3">
-                {selectedEvent.coordinators.map((coordinator) => {
-                  const telValue = coordinator.phone.replace(/\D+/g, '');
-                  return (
-                    <a key={`${selectedEvent.slug}-sidebar-${coordinator.name}-${coordinator.phone}`} href={`tel:${telValue}`} className="portal-event-sidebar-contact">
-                      <span className="portal-event-sidebar-contact__name">{coordinator.name}</span>
-                      <span className="portal-event-sidebar-contact__phone">{coordinator.phone}</span>
-                    </a>
-                  );
-                })}
-              </div>
-            </section>
-          ) : null}
         </aside>
       </div>
 
