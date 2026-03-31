@@ -418,31 +418,6 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                   </a>
                 ) : null}
               </div>
-
-              <div className="portal-event-showcase__content">
-                <div className="portal-event-showcase__eyebrow">
-                  <span className="portal-event-showcase__eyebrow-chip">Event Style</span>
-                  <span className="portal-event-showcase__eyebrow-text">{selectedHandbook?.theme || 'Official Event Brief'}</span>
-                </div>
-                <h2 className="portal-event-showcase__title">{selectedEvent.name}</h2>
-                <p className="portal-event-showcase__description">
-                  {selectedHandbook?.overview || selectedEvent.description}
-                </p>
-
-                <div className="portal-event-inline-info portal-event-inline-info--spotlight">
-                  {spotlightMeta.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <div key={`${item.label}-${item.value}`} className="portal-event-inline-info__item">
-                        <Icon size={15} className="text-amber-200" />
-                        <span className="portal-event-inline-info__label">{item.label}</span>
-                        <span className="portal-event-inline-info__value">{item.value}</span>
-                        <span className="portal-event-inline-info__detail">{item.detail}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
             </section>
 
             {activeTab === 'overview' ? (
@@ -451,13 +426,23 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                 <Info size={17} className="text-amber-200" />
                 <div>
                   <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Overview</p>
-                  <h3 className="mt-1 text-lg font-semibold text-white">Event briefing</h3>
+                  <h3 className="mt-1 text-lg font-semibold text-white">{selectedEvent.name}</h3>
                 </div>
               </div>
+              <p className="mt-2 text-sm font-medium text-slate-200">{selectedHandbook?.theme || 'Official event briefing'}</p>
               <p className="mt-4 text-sm leading-7 text-slate-300">
-                {selectedEvent.description}
+                {selectedHandbook?.overview || selectedEvent.description}
               </p>
               <div className="portal-event-mini-grid mt-5">
+                {spotlightMeta.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                  <div key={`${item.label}-${item.value}`} className="portal-event-mini-grid__item">
+                    <Icon size={14} className="text-amber-200" />
+                    <span>{item.label}: {item.value}</span>
+                  </div>
+                  );
+                })}
                 {overviewHighlights.map((item) => (
                   <div key={item} className="portal-event-mini-grid__item">
                     <Trophy size={14} className="text-amber-200" />

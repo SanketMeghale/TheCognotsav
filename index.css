@@ -9074,7 +9074,7 @@ body {
 
 .portal-event-showcase__poster {
   position: relative;
-  min-height: 20rem;
+  min-height: clamp(13.25rem, 24vw, 16rem);
   overflow: hidden;
 }
 
@@ -9620,8 +9620,8 @@ body {
     align-self: start;
   }
 
-  .portal-event-inline-info {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+  .portal-event-showcase__poster {
+    min-height: clamp(12.5rem, 18vw, 14.8rem);
   }
 }
 
@@ -9631,7 +9631,7 @@ body {
   }
 
   .portal-event-showcase__poster {
-    min-height: 17.5rem;
+    min-height: 15.25rem;
   }
 
   .portal-event-mini-grid,
