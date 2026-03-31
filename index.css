@@ -10252,7 +10252,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 3.5rem;
+  width: 4rem;
   margin-bottom: 0.05rem;
   pointer-events: none;
 }
@@ -10676,7 +10676,7 @@ body {
   }
 
   .portal-summit-hero__crest {
-    width: 2.8rem;
+    width: 3.1rem;
     margin-bottom: -0.04rem;
   }
 
