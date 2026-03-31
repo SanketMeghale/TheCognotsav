@@ -9983,29 +9983,35 @@ body {
 .portal-summit-hero__backdrop::before {
   content: '';
   position: absolute;
-  left: -10%;
-  top: -11.6rem;
-  width: 120%;
-  height: 14rem;
-  border-radius: 50%;
-  border: 1px solid rgba(111, 240, 255, 0.28);
+  left: -15%;
+  top: -9.8rem;
+  width: 130%;
+  height: 12.6rem;
+  border: 1px solid rgba(118, 146, 255, 0.34);
+  border-bottom: 0;
+  border-radius: 0 0 50% 50% / 0 0 100% 100%;
+  background: transparent;
   box-shadow:
-    0 0 14px rgba(111, 240, 255, 0.12),
-    inset 0 0 18px rgba(111, 240, 255, 0.03);
-  opacity: 0.9;
+    0 0 18px rgba(118, 146, 255, 0.1),
+    0 1px 0 rgba(154, 178, 255, 0.16);
+  opacity: 0.82;
 }
 
 .portal-summit-hero__backdrop::after {
   content: '';
   position: absolute;
-  left: -6%;
-  top: -10.2rem;
-  width: 112%;
-  height: 12.6rem;
-  border-radius: 50%;
-  border: 1px solid rgba(111, 240, 255, 0.12);
-  box-shadow: 0 0 12px rgba(111, 240, 255, 0.06);
-  opacity: 0.7;
+  left: -8%;
+  top: -7.4rem;
+  width: 116%;
+  height: 10.1rem;
+  border: 1px solid rgba(102, 230, 255, 0.24);
+  border-bottom: 0;
+  border-radius: 0 0 50% 50% / 0 0 100% 100%;
+  background: transparent;
+  box-shadow:
+    0 0 14px rgba(102, 230, 255, 0.08),
+    0 1px 0 rgba(150, 243, 255, 0.12);
+  opacity: 0.88;
 }
 
 .portal-summit-hero__countdown-pill,
@@ -10490,13 +10496,17 @@ body {
   }
 
   .portal-summit-hero__backdrop::before {
-    top: -10.4rem;
-    height: 12.8rem;
+    left: -18%;
+    top: -9rem;
+    width: 136%;
+    height: 11.4rem;
   }
 
   .portal-summit-hero__backdrop::after {
-    top: -9.2rem;
-    height: 11rem;
+    left: -11%;
+    top: -6.8rem;
+    width: 122%;
+    height: 9.1rem;
   }
 
   .portal-summit-hero__backdrop-pill {
@@ -10565,34 +10575,33 @@ body {
   }
 
   .portal-summit-hero__backdrop::before {
-    left: -17%;
-    top: -8.9rem;
-    width: 134%;
-    height: 10.8rem;
-    border: 1px solid rgba(92, 221, 255, 0.44);
+    left: -20%;
+    top: -7.65rem;
+    width: 142%;
+    height: 9.4rem;
+    border: 1px solid rgba(118, 146, 255, 0.38);
     border-bottom: 0;
     border-radius: 0 0 50% 50% / 0 0 100% 100%;
     background: transparent;
     box-shadow:
-      0 0 14px rgba(92, 221, 255, 0.12),
-      0 1.65rem 0 -1px rgba(90, 203, 255, 0.24);
-    opacity: 0.94;
+      0 0 14px rgba(118, 146, 255, 0.12),
+      0 1px 0 rgba(154, 178, 255, 0.16);
+    opacity: 0.86;
   }
 
   .portal-summit-hero__backdrop::after {
-    left: -14%;
-    top: auto;
-    bottom: -7.7rem;
-    width: 128%;
-    height: 9.7rem;
-    border: 1px solid rgba(109, 206, 255, 0.28);
-    border-top: 0;
-    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    left: -9%;
+    top: -5.55rem;
+    width: 118%;
+    height: 7.9rem;
+    border: 1px solid rgba(102, 230, 255, 0.28);
+    border-bottom: 0;
+    border-radius: 0 0 50% 50% / 0 0 100% 100%;
     background: transparent;
     box-shadow:
-      0 0 10px rgba(92, 221, 255, 0.08),
-      0 -1.4rem 0 -1px rgba(77, 193, 255, 0.16);
-    opacity: 0.74;
+      0 0 12px rgba(102, 230, 255, 0.08),
+      0 1px 0 rgba(150, 243, 255, 0.14);
+    opacity: 0.92;
   }
 
   .portal-summit-hero__backdrop-pill {
