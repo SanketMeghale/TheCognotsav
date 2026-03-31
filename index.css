@@ -9226,9 +9226,9 @@ body {
 
 .portal-summit-hero--immersive .portal-summit-hero__content--immersive {
   position: relative;
-  min-height: 36rem;
-  gap: 1.2rem;
-  padding: clamp(3.6rem, 7vw, 5rem) 1rem clamp(1.4rem, 3vw, 2rem);
+  min-height: 31rem;
+  gap: 1rem;
+  padding: clamp(2.8rem, 5.5vw, 4rem) 1rem clamp(1rem, 2.2vw, 1.5rem);
 }
 
 .portal-summit-hero--immersive .portal-summit-hero__content--immersive::before {
@@ -9324,17 +9324,17 @@ body {
 }
 
 .portal-summit-hero__orbit-pill--middle-left {
-  top: 5rem;
+  top: 4.25rem;
   left: 5%;
 }
 
 .portal-summit-hero__orbit-pill--middle-right {
-  top: 4rem;
+  top: 3.55rem;
   right: 5%;
 }
 
 .portal-summit-hero__orbit-pill--bottom-right {
-  top: 8.1rem;
+  top: 6.9rem;
   right: 17%;
 }
 
@@ -9482,7 +9482,7 @@ body {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   width: min(100%, 56rem);
-  margin-top: 1rem;
+  margin-top: 0.6rem;
   border-radius: 1.65rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background:
@@ -9556,7 +9556,7 @@ body {
 @media (max-width: 1100px) {
   .portal-summit-hero--immersive .portal-summit-hero__content--immersive {
     min-height: auto;
-    padding-top: 2.75rem;
+    padding-top: 2.25rem;
   }
 
   .portal-summit-hero__orbit {
@@ -9584,8 +9584,8 @@ body {
 
 @media (max-width: 720px) {
   .portal-summit-hero--immersive .portal-summit-hero__content--immersive {
-    gap: 1rem;
-    padding-top: 2.25rem;
+    gap: 0.9rem;
+    padding-top: 1.85rem;
   }
 
   .portal-summit-hero__eyebrow--immersive {

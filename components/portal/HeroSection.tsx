@@ -11,7 +11,7 @@ const heroEndDate = parsePortalEventDate('8 Apr 2026', '10:00 AM');
 const heroOrbitBadges = [
   { label: 'BGMI', Icon: Gamepad2, tone: 'cyan', position: 'top-left' },
   { label: 'Hackathon', Icon: MonitorUp, tone: 'violet', position: 'top-right' },
-  { label: 'BGMI', Icon: Gamepad2, tone: 'amber', position: 'middle-left' },
+  { label: 'Tech Quiz', Icon: Cpu, tone: 'amber', position: 'middle-left' },
   { label: 'C coding', Icon: Code2, tone: 'violet', position: 'middle-right' },
   { label: 'Tech Quiz', Icon: Cpu, tone: 'amber', position: 'bottom-right' },
 ] as const;
