@@ -39,7 +39,7 @@ const heroBackdropPills: BackdropPill[] = [
 
 const heroBackdropMarks: BackdropMark[] = [
   { label: 'TECH QUIZ', Icon: Cpu, tone: 'orange', variant: 'compact', style: { left: '8.1%', top: '35.5%', transform: 'rotate(-6deg)' } },
-  { label: 'REACT', Icon: Orbit, tone: 'cyan', variant: 'wordmark', style: { left: '8.8%', top: '66%', transform: 'rotate(-7deg)' } },
+  { label: 'REACT', Icon: Orbit, tone: 'cyan', variant: 'emblem', style: { left: '8.6%', top: '64.5%' } },
   { label: 'AI', Icon: Bot, tone: 'amber', variant: 'emblem', style: { right: '11.6%', top: '33%' } },
   { label: 'GITHUB', Icon: Github, tone: 'violet', variant: 'wordmark', style: { right: '12.5%', top: '58%', transform: 'rotate(-6deg)' } },
   { label: 'FREE FIRE', Icon: Flame, tone: 'orange', variant: 'wordmark', style: { right: '16.5%', bottom: '18%', transform: 'rotate(-2deg)' } },
@@ -54,7 +54,7 @@ const heroBackdropAccents: BackdropAccent[] = [
 
 const heroMobileBackdropMarks: BackdropMark[] = [
   { label: 'GAMES', Icon: Gamepad2, tone: 'cyan', variant: 'emblem', style: { left: '6.6%', top: '37.5%' } },
-  { label: 'REACT', Icon: Orbit, tone: 'cyan', variant: 'compact', style: { left: '4.2%', top: '47.5%', transform: 'rotate(-8deg)' } },
+  { label: 'REACT', Icon: Orbit, tone: 'cyan', variant: 'emblem', style: { left: '6.1%', top: '47%' } },
   { label: 'HTML5', Icon: FileCode2, tone: 'orange', variant: 'emblem', style: { left: '7.4%', top: '77%' } },
   { label: 'AI', Icon: Bot, tone: 'pink', variant: 'emblem', style: { right: '7.2%', top: '46.5%' } },
   { label: 'GITHUB', Icon: Github, tone: 'violet', variant: 'emblem', style: { right: '7%', top: '60%' } },
