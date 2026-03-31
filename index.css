@@ -9049,8 +9049,14 @@ body {
 }
 
 .portal-event-layout__details,
-.portal-event-layout__sidebar {
+.portal-event-layout__register {
   min-width: 0;
+}
+
+.portal-event-support-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .portal-event-showcase,
@@ -9610,14 +9616,19 @@ body {
 }
 
 @media (min-width: 1080px) {
-  .portal-event-layout {
-    grid-template-columns: minmax(0, 1.12fr) minmax(18rem, 0.58fr);
+  .portal-event-layout--form-open {
+    grid-template-columns: minmax(0, 1.08fr) minmax(20rem, 0.72fr);
   }
 
-  .portal-event-layout__sidebar {
+  .portal-event-layout__register {
     position: sticky;
     top: 6rem;
     align-self: start;
+  }
+
+  .portal-event-layout__register .portal-event-form-shell {
+    max-height: calc(100vh - 7rem);
+    overflow: auto;
   }
 
   .portal-event-showcase__poster {
@@ -9634,17 +9645,12 @@ body {
     min-height: 15.25rem;
   }
 
+  .portal-event-support-grid,
   .portal-event-mini-grid,
-  .portal-event-contact-grid,
-  .portal-event-handbook-actions {
-    grid-template-columns: 1fr;
+  .portal-event-contact-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .portal-event-overview-handbook {
-    grid-template-columns: 1fr;
-  }
-
-  .portal-event-overview-handbook__actions,
   .portal-event-sidebar-card__actions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -9711,14 +9717,13 @@ body {
     line-height: 1.7;
   }
 
+  .portal-event-support-grid,
   .portal-event-inline-info,
   .portal-event-mini-grid,
-  .portal-event-contact-grid,
-  .portal-event-handbook-actions {
+  .portal-event-contact-grid {
     grid-template-columns: 1fr;
   }
 
-  .portal-event-overview-handbook__actions,
   .portal-event-sidebar-card__actions {
     grid-template-columns: 1fr;
   }
@@ -9758,7 +9763,6 @@ body {
     font-size: 0.74rem;
   }
 
-  .portal-event-overview-handbook__icon,
   .portal-event-sidebar-card__handbook-visual {
     height: 3.4rem;
     width: 3.4rem;

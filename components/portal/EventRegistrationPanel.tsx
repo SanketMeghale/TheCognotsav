@@ -43,7 +43,7 @@ type Props = {
   onSubmit: (event: React.FormEvent) => void;
 };
 
-type EventPanelTab = 'overview' | 'handbook' | 'rules' | 'contact' | 'register';
+type EventPanelTab = 'overview' | 'rules' | 'contact' | 'register';
 
 const categoryThemes: Record<string, { badge: string; button: string; surface: string; glow: string }> = {
   Technical: {
@@ -319,7 +319,6 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const prizeLabel = selectedEvent.prize.replace(/^INR\s*/i, '\u20B9');
   const toolbarTabs = [
     { id: 'overview' as EventPanelTab, label: 'Overview', icon: Info },
-    { id: 'handbook' as EventPanelTab, label: 'Handbook', icon: BookOpen },
     { id: 'rules' as EventPanelTab, label: 'Rules', icon: CheckCircle2 },
     { id: 'contact' as EventPanelTab, label: 'Contact', icon: Phone },
     { id: 'register' as EventPanelTab, label: 'Register', icon: CreditCard },
@@ -350,6 +349,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const sidebarSummaryItems = selectedHandbook?.highlights?.length
     ? selectedHandbook.highlights.slice(0, 4)
     : overviewHighlights.slice(0, 4);
+  const showingRegisterTab = activeTab === 'register';
 
   return (
     <section id="registration-panel">
@@ -382,7 +382,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
           </div>
         </div>
 
-        <div className="portal-event-layout">
+        <div className={`portal-event-layout ${showingRegisterTab ? 'portal-event-layout--form-open' : ''}`}>
           <div className="portal-event-layout__details space-y-5">
             <section className={`portal-event-showcase portal-glow-card portal-glass ${selectedTheme.glow}`} data-reveal="fade-up">
               <div className="portal-event-showcase__poster">
@@ -420,6 +420,102 @@ export const EventRegistrationPanel: React.FC<Props> = ({
               </div>
             </section>
 
+            <div className="portal-event-support-grid" data-reveal="up">
+              <section className="portal-event-summary-card portal-glow-card portal-glass">
+                <div className="portal-event-summary-card__head">
+                  <div className="portal-event-summary-card__icon">
+                    <Trophy size={18} />
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase tracking-[0.24em] text-amber-200/80">Event Summary</p>
+                    <p className="mt-2 text-3xl font-black text-white">{prizeLabel}</p>
+                  </div>
+                </div>
+                <div className="portal-event-summary-card__list">
+                  <div className="portal-event-summary-card__item">
+                    <Clock3 size={15} />
+                    <span>{selectedEvent.date_label} / {selectedEvent.time_label}</span>
+                  </div>
+                  <div className="portal-event-summary-card__item">
+                    <MapPin size={15} />
+                    <span>{selectedEvent.venue}</span>
+                  </div>
+                  <div className="portal-event-summary-card__item">
+                    <Users size={15} />
+                    <span>{getTeamLabel(selectedEvent)}</span>
+                  </div>
+                  <div className="portal-event-summary-card__item">
+                    <Sparkles size={15} />
+                    <span>{liveState.countdown}</span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={openRegisterTab}
+                  disabled={registrationPaused}
+                  className="portal-register-cta mt-5 inline-flex w-full items-center justify-center gap-2"
+                >
+                  {registrationPaused ? 'Registration Paused' : registerLabel}
+                  <ArrowRight size={16} />
+                </button>
+              </section>
+
+              <section className="portal-event-sidebar-card portal-glow-card portal-glass">
+                <p className="text-[10px] uppercase tracking-[0.24em] text-slate-400">Event Handbook</p>
+                <div className="portal-event-sidebar-card__handbook">
+                  <div className="portal-event-sidebar-card__handbook-visual">
+                    <BookOpen size={28} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-white">{selectedHandbook?.theme || 'Official event guide'}</p>
+                    <div className="mt-4 space-y-2">
+                      {sidebarSummaryItems.map((item) => (
+                        <div key={`sidebar-summary-${item}`} className="portal-event-sidebar-card__bullet">
+                          <CheckCircle2 size={14} />
+                          <span>{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div className="portal-event-sidebar-card__actions">
+                  {selectedHandbook?.handbookUrl ? (
+                    <a href={selectedHandbook.handbookUrl} target="_blank" rel="noreferrer" className="portal-event-tab-action">
+                      <ExternalLink size={15} />
+                      Download PDF
+                    </a>
+                  ) : null}
+                  <button type="button" onClick={() => setActiveTab('rules')} className="portal-event-tab-action portal-event-tab-action--secondary">
+                    <BookOpen size={15} />
+                    View Rules
+                  </button>
+                </div>
+              </section>
+
+              {coordinatorContacts.length ? (
+                <section className="portal-event-sidebar-card portal-glow-card portal-glass">
+                  <p className="text-[10px] uppercase tracking-[0.24em] text-slate-400">Coordinator Contacts</p>
+                  <div className="mt-4 space-y-3">
+                    {coordinatorContacts.map((coordinator) => {
+                      const telValue = coordinator.phone.replace(/\D+/g, '');
+                      return (
+                        <div key={`support-${selectedEvent.slug}-${coordinator.name}-${coordinator.phone}`} className="portal-event-sidebar-card__contact">
+                          <div>
+                            <p className="text-sm font-semibold text-white">{coordinator.name}</p>
+                            <p className="mt-1 text-sm text-slate-300">{coordinator.phone}</p>
+                          </div>
+                          <a href={`tel:${telValue}`} className="portal-event-sidebar-card__call">
+                            <Phone size={14} />
+                            Call
+                          </a>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </section>
+              ) : null}
+            </div>
+
             {activeTab === 'overview' ? (
             <section id="event-overview" className="portal-event-section portal-glow-card portal-glass" data-reveal="up">
               <div className="portal-event-section__head">
@@ -449,106 +545,6 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                     <span>{item}</span>
                   </div>
                 ))}
-              </div>
-              <div className="portal-event-overview-handbook mt-5">
-                <div className="portal-event-overview-handbook__icon">
-                  <BookOpen size={24} />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-white">Event Handbook</p>
-                  <p className="mt-2 text-sm leading-7 text-slate-300">
-                    Keep the format, rounds, rules, and coordinator instructions ready before event day.
-                  </p>
-                </div>
-                <div className="portal-event-overview-handbook__actions">
-                  {selectedHandbook?.handbookUrl ? (
-                    <a
-                      href={selectedHandbook.handbookUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="portal-event-tab-action"
-                    >
-                      <ExternalLink size={15} />
-                      Download PDF
-                    </a>
-                  ) : null}
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab('handbook')}
-                    className="portal-event-tab-action portal-event-tab-action--secondary"
-                  >
-                    <BookOpen size={15} />
-                    View Guide
-                  </button>
-                </div>
-              </div>
-            </section>
-            ) : null}
-
-            {activeTab === 'handbook' ? (
-            <section id="event-handbook" className="portal-event-section portal-glow-card portal-glass" data-reveal="up">
-              <div className="portal-event-section__head">
-                <BookOpen size={17} className="text-amber-200" />
-                <div>
-                  <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Handbook</p>
-                  <h3 className="mt-1 text-lg font-semibold text-white">Rules, rounds, and event flow</h3>
-                </div>
-              </div>
-
-              <div className="portal-event-handbook-panel mt-5">
-                <div className="portal-event-handbook-panel__hero">
-                  <div className="portal-event-handbook-panel__icon">
-                    <BookOpen size={24} />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-white">{selectedHandbook?.theme || 'Official event guide'}</p>
-                    <p className="mt-2 text-sm leading-7 text-slate-300">
-                      Open the handbook for rounds, judging, reporting notes, coordinator instructions, and final event-day guidance.
-                    </p>
-                  </div>
-                </div>
-                {selectedHandbook?.highlights?.length ? (
-                  <div className="portal-event-mini-grid mt-5">
-                    {selectedHandbook.highlights.slice(0, 4).map((item) => (
-                      <div key={item} className="portal-event-mini-grid__item">
-                        <CheckCircle2 size={14} className="text-amber-200" />
-                        <span>{item}</span>
-                      </div>
-                    ))}
-                  </div>
-                ) : null}
-                <div className="portal-event-handbook-actions">
-                  {selectedHandbook?.handbookUrl ? (
-                    <a
-                      href={selectedHandbook.handbookUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="portal-event-handbook-card"
-                    >
-                      <div>
-                        <p className="text-sm font-semibold text-white">Download handbook</p>
-                        <p className="mt-2 text-sm text-slate-300">Open the official guide in a new tab.</p>
-                      </div>
-                      <ExternalLink size={18} className="shrink-0 text-amber-200" />
-                    </a>
-                  ) : (
-                    <div className="portal-event-note-list__item">
-                      <Info size={15} className="mt-0.5 shrink-0 text-amber-200" />
-                      <span>Full handbook is not attached for this event yet.</span>
-                    </div>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab('rules')}
-                    className="portal-event-handbook-card portal-event-handbook-card--secondary"
-                  >
-                    <div>
-                      <p className="text-sm font-semibold text-white">View quick rules</p>
-                      <p className="mt-2 text-sm text-slate-300">Jump straight to the shortlist below.</p>
-                    </div>
-                    <ArrowRight size={18} className="shrink-0 text-cyan-200" />
-                  </button>
-                </div>
               </div>
             </section>
             ) : null}
@@ -615,105 +611,9 @@ export const EventRegistrationPanel: React.FC<Props> = ({
             ) : null}
           </div>
 
-          <aside className="portal-event-layout__sidebar space-y-5" data-reveal="right">
-            <section className="portal-event-summary-card portal-glow-card portal-glass">
-              <div className="portal-event-summary-card__head">
-                <div className="portal-event-summary-card__icon">
-                  <Trophy size={18} />
-                </div>
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.24em] text-amber-200/80">Event Summary</p>
-                  <p className="mt-2 text-3xl font-black text-white">{prizeLabel}</p>
-                </div>
-              </div>
-              <div className="portal-event-summary-card__list">
-                <div className="portal-event-summary-card__item">
-                  <Clock3 size={15} />
-                  <span>{selectedEvent.date_label} / {selectedEvent.time_label}</span>
-                </div>
-                <div className="portal-event-summary-card__item">
-                  <MapPin size={15} />
-                  <span>{selectedEvent.venue}</span>
-                </div>
-                <div className="portal-event-summary-card__item">
-                  <Users size={15} />
-                  <span>{getTeamLabel(selectedEvent)}</span>
-                </div>
-                <div className="portal-event-summary-card__item">
-                  <Sparkles size={15} />
-                  <span>{liveState.countdown}</span>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={openRegisterTab}
-                disabled={registrationPaused}
-                className="portal-register-cta mt-5 inline-flex w-full items-center justify-center gap-2"
-              >
-                {registrationPaused ? 'Registration Paused' : registerLabel}
-                <ArrowRight size={16} />
-              </button>
-            </section>
-
-            <section className="portal-event-sidebar-card portal-glow-card portal-glass">
-              <p className="text-[10px] uppercase tracking-[0.24em] text-slate-400">Event Handbook</p>
-              <div className="portal-event-sidebar-card__handbook">
-                <div className="portal-event-sidebar-card__handbook-visual">
-                  <BookOpen size={28} />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-white">{selectedHandbook?.theme || 'Official event guide'}</p>
-                  <div className="mt-4 space-y-2">
-                    {sidebarSummaryItems.map((item) => (
-                      <div key={`sidebar-summary-${item}`} className="portal-event-sidebar-card__bullet">
-                        <CheckCircle2 size={14} />
-                        <span>{item}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div className="portal-event-sidebar-card__actions">
-                {selectedHandbook?.handbookUrl ? (
-                  <a href={selectedHandbook.handbookUrl} target="_blank" rel="noreferrer" className="portal-event-tab-action">
-                    <ExternalLink size={15} />
-                    Download PDF
-                  </a>
-                ) : null}
-                <button type="button" onClick={() => setActiveTab('handbook')} className="portal-event-tab-action portal-event-tab-action--secondary">
-                  <BookOpen size={15} />
-                  View Guide
-                </button>
-              </div>
-            </section>
-
-            {coordinatorContacts.length ? (
-              <section className="portal-event-sidebar-card portal-glow-card portal-glass">
-                <p className="text-[10px] uppercase tracking-[0.24em] text-slate-400">Coordinator Contacts</p>
-                <div className="mt-4 space-y-3">
-                  {coordinatorContacts.map((coordinator) => {
-                    const telValue = coordinator.phone.replace(/\D+/g, '');
-                    return (
-                      <div key={`sidebar-${selectedEvent.slug}-${coordinator.name}-${coordinator.phone}`} className="portal-event-sidebar-card__contact">
-                        <div>
-                          <p className="text-sm font-semibold text-white">{coordinator.name}</p>
-                          <p className="mt-1 text-sm text-slate-300">{coordinator.phone}</p>
-                        </div>
-                        <a href={`tel:${telValue}`} className="portal-event-sidebar-card__call">
-                          <Phone size={14} />
-                          Call
-                        </a>
-                      </div>
-                    );
-                  })}
-                </div>
-              </section>
-            ) : null}
-          </aside>
-        </div>
-
-        {activeTab === 'register' ? (
-        <form id="portal-registration-form" onSubmit={onSubmit} className="portal-event-form-shell space-y-4">
+          {showingRegisterTab ? (
+            <aside className="portal-event-layout__register" data-reveal="right">
+              <form id="portal-registration-form" onSubmit={onSubmit} className="portal-event-form-shell space-y-4">
           <div className="portal-event-form-shell__head">
             <div>
               <p className="text-[10px] uppercase tracking-[0.24em] text-slate-400">Registration</p>
@@ -976,8 +876,10 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                   Once submitted, your entry is saved as <span className="font-semibold text-white">pending</span>. Organizers verify the payment proof and send the final update by email.
                 </p>
               </div>
-        </form>
-        ) : null}
+              </form>
+            </aside>
+          ) : null}
+        </div>
       </div>
 
     </section>
