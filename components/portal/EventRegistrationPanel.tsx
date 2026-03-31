@@ -294,7 +294,6 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const handbookCtaLabel = selectedHandbook?.handbookUrl?.toLowerCase().endsWith('.pdf') ? 'Download PDF' : 'Download Handbook';
   const quickDetails = selectedHandbook?.quickDetails?.slice(0, 3) || [];
   const eventStoryPoints = selectedHandbook?.highlights?.slice(0, 3) || [];
-  const rulePreview = selectedHandbook?.rules?.slice(0, 3) || [];
   const handbookReady = Boolean(selectedHandbook?.handbookUrl);
   const posterMetaItems = [
     { label: 'Date', value: selectedEvent.date_label, Icon: Clock3 },
@@ -470,16 +469,6 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                 ) : null}
               </div>
             ) : null}
-            {rulePreview.length ? (
-              <div className="portal-event-handbook-list portal-event-handbook-list--framed">
-                {rulePreview.map((rule) => (
-                  <div key={rule} className="portal-event-handbook-list__item">
-                    <CheckCircle2 size={15} className="text-cyan-200" />
-                    <span>{rule}</span>
-                  </div>
-                ))}
-              </div>
-            ) : null}
             {handbookReady ? (
               <div className="portal-event-handbook-actions">
                 <a
@@ -512,28 +501,6 @@ export const EventRegistrationPanel: React.FC<Props> = ({
 
         <aside className="portal-event-page__sidebar" data-reveal="right">
           <form id="portal-registration-form" onSubmit={onSubmit} className="portal-event-form-shell space-y-4">
-              <div className="portal-event-form-intro">
-                <p className="portal-event-form-intro__kicker">Registration Desk</p>
-                <h3 className="portal-event-form-intro__title">Secure your slot for {selectedEvent.name}</h3>
-                <p className="portal-event-form-intro__text">
-                  Submit your team details and payment proof once. Organizers review it manually and confirm your entry.
-                </p>
-                <div className="portal-event-form-intro__grid">
-                  <div className="portal-event-form-intro__metric">
-                    <span>Entry Fee</span>
-                    <strong>{formatCurrency(payableAmount)}</strong>
-                  </div>
-                  <div className="portal-event-form-intro__metric">
-                    <span>Team Format</span>
-                    <strong>{getTeamLabel(selectedEvent)}</strong>
-                  </div>
-                  <div className="portal-event-form-intro__metric">
-                    <span>Review</span>
-                    <strong>Manual verification</strong>
-                  </div>
-                </div>
-              </div>
-
               <SectionCard title="Start with the basics" subtitle="Team Setup">
                 <div className="grid gap-3 sm:grid-cols-2">
                   {!isSoloEvent && selectedEvent.max_members > selectedEvent.min_members ? (
