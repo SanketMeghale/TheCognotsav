@@ -228,7 +228,6 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const passCardRef = useRef<HTMLDivElement | null>(null);
   const eventTopRef = useRef<HTMLDivElement | null>(null);
   const [codeCopied, setCodeCopied] = useState(false);
-  const [paymentCopyState, setPaymentCopyState] = useState<'upi' | 'amount' | 'link' | null>(null);
   const [now, setNow] = useState(() => new Date());
   const showError = (field: string) => (touchedFields[field] ? validationErrors[field] : '');
   const selectedTheme = selectedEvent ? categoryThemes[selectedEvent.category] || categoryThemes.Technical : categoryThemes.Technical;
@@ -267,13 +266,6 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   }, [successReceipt?.registrationCode]);
 
   useEffect(() => {
-    if (!paymentCopyState || typeof window === 'undefined') return undefined;
-
-    const timer = window.setTimeout(() => setPaymentCopyState(null), 1800);
-    return () => window.clearTimeout(timer);
-  }, [paymentCopyState]);
-
-  useEffect(() => {
     if (!successReceipt || !passCardRef.current || typeof window === 'undefined') return;
 
     const animationFrame = window.requestAnimationFrame(() => {
@@ -290,15 +282,6 @@ export const EventRegistrationPanel: React.FC<Props> = ({
       setCodeCopied(true);
     } catch {
       setCodeCopied(false);
-    }
-  };
-
-  const handleCopyPaymentValue = async (value: string, type: 'upi' | 'amount' | 'link') => {
-    try {
-      await navigator.clipboard.writeText(value);
-      setPaymentCopyState(type);
-    } catch {
-      setPaymentCopyState(null);
     }
   };
 
@@ -540,91 +523,65 @@ export const EventRegistrationPanel: React.FC<Props> = ({
               ) : null}
 
               <SectionCard title="Pay and upload proof" subtitle="Payment">
-                <div className="grid gap-4">
-                  <div className="rounded-[1.35rem] border border-white/10 bg-white/[0.05] p-4">
-                    <div className="flex items-center gap-2">
+                <div className="grid gap-3.5">
+                  <div className="portal-payment-method-card">
+                    <div className="portal-payment-method-card__head">
                       <Smartphone size={16} className="text-cyan-200" />
-                      <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">Payment Methods</p>
+                      <p className="portal-payment-method-card__eyebrow">Payment Methods</p>
                     </div>
-                    <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                      <a
-                        href={upiLink || '#'}
-                        className={`magnetic-button flex items-center justify-center gap-2 rounded-[1.15rem] border px-4 py-3 text-sm font-semibold ${upiLink ? 'border-emerald-300/18 bg-emerald-400/10 text-emerald-100' : 'pointer-events-none border-white/10 bg-white/5 text-slate-400 opacity-70'}`}
-                      >
-                        <Smartphone size={16} />
-                        {canOpenPaymentApp ? 'Open UPI App' : 'UPI App on Mobile'}
-                      </a>
-                      <button
-                        type="button"
-                        onClick={() => handleCopyPaymentValue(String(payableAmount), 'amount')}
-                        className="magnetic-button flex items-center justify-center gap-2 rounded-[1.15rem] border border-blue-300/18 bg-blue-400/10 px-4 py-3 text-sm font-semibold text-blue-100"
-                      >
-                        <Copy size={16} />
-                        {paymentCopyState === 'amount' ? 'Amount Copied' : 'Copy Amount'}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleCopyPaymentValue(selectedEvent.payment_upi || '', 'upi')}
-                        disabled={!selectedEvent.payment_upi}
-                        className="magnetic-button flex items-center justify-center gap-2 rounded-[1.15rem] border border-white/10 bg-black/20 px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
-                      >
-                        <Copy size={16} />
-                        {paymentCopyState === 'upi' ? 'UPI Copied' : 'Copy UPI ID'}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleCopyPaymentValue(upiLink, 'link')}
-                        disabled={!upiLink}
-                        className="magnetic-button flex items-center justify-center gap-2 rounded-[1.15rem] border border-white/10 bg-black/20 px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
-                      >
-                        <Copy size={16} />
-                        {paymentCopyState === 'link' ? 'Link Copied' : 'Copy Payment Link'}
-                      </button>
+                    <a
+                      href={upiLink || '#'}
+                      aria-disabled={!upiLink}
+                      tabIndex={upiLink ? undefined : -1}
+                      className={`portal-payment-method-card__open ${upiLink ? '' : 'is-disabled'}`}
+                    >
+                      <Smartphone size={17} />
+                      <span>{canOpenPaymentApp ? 'Open UPI App' : 'UPI App on Mobile'}</span>
+                    </a>
+                    <div className="portal-payment-method-card__apps">
+                      <span>Google Pay</span>
+                      <span>PhonePe</span>
+                      <span>Paytm</span>
+                      <span>Any UPI App</span>
                     </div>
-                    <div className="mt-3 flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.18em] text-slate-400">
-                      <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1">Google Pay</span>
-                      <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1">PhonePe</span>
-                      <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1">Paytm</span>
-                      <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1">Any UPI App</span>
-                    </div>
-                    <p className="mt-3 text-xs leading-6 text-slate-300">
+                    <p className="portal-payment-method-card__note">
                       {upiLink
                         ? <>On mobile, use <span className="font-semibold text-white">Open UPI App</span>. On laptop, scan the QR below using any UPI app on your phone, then submit the transaction ID and screenshot.</>
                         : <>Scan the QR below using any UPI app on your phone, then submit the transaction ID and screenshot for verification.</>}
                     </p>
                   </div>
 
-                  <div className={`rounded-[1.35rem] border border-white/10 bg-gradient-to-br p-4 ${selectedTheme.surface}`}>
+                  <div className={`rounded-[1.25rem] border border-white/10 bg-gradient-to-br p-[0.95rem] ${selectedTheme.surface}`}>
                     <div className="flex items-center gap-2 text-white">
                       <QrCode size={18} />
                       <p className="text-sm font-semibold">Event payment QR</p>
                     </div>
-                    <div className={`mt-4 flex items-center justify-center overflow-hidden rounded-[1.4rem] p-4 ${hasCustomQrImage ? 'aspect-square bg-white' : 'aspect-square bg-white'}`}>
+                    <div className={`mt-3 flex items-center justify-center overflow-hidden rounded-[1.2rem] p-3 ${hasCustomQrImage ? 'aspect-square bg-white' : 'aspect-square bg-white'}`}>
                       {paymentQrSrc ? (
                         <img
                           src={paymentQrSrc}
                           alt={`${selectedEvent.name} payment QR`}
-                          className={hasCustomQrImage ? 'h-full w-full rounded-[1rem] object-cover' : 'h-full w-full max-w-[14rem] object-contain'}
+                          className={hasCustomQrImage ? 'h-full w-full rounded-[0.9rem] object-cover' : 'h-full w-full max-w-[12rem] object-contain'}
                           style={hasCustomQrImage ? { objectPosition: customQrObjectPosition, transform: `scale(${customQrScale})` } : undefined}
                         />
                       ) : (
-                        <div className="h-full w-full max-w-[14rem] rounded-[1.2rem] bg-slate-200/30" />
+                        <div className="h-full w-full max-w-[12rem] rounded-[1rem] bg-slate-200/30" />
                       )}
                     </div>
                   </div>
 
-                  <div className="rounded-[1.35rem] border border-white/10 bg-white/[0.05] p-4">
+                  <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.05] p-[0.95rem]">
                     <div className="flex items-center gap-2">
                       <CreditCard size={16} className="text-cyan-200" />
                       <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">UPI Details</p>
                     </div>
-                    <div className="mt-3 rounded-[1.15rem] border border-amber-300/16 bg-amber-400/10 p-4">
+                    <div className="mt-3 rounded-[1.05rem] border border-amber-300/16 bg-amber-400/10 p-3">
                       <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Payable Amount</p>
                       <p className="mt-2 text-lg font-semibold text-white">{formatCurrency(payableAmount)}</p>
                       {selectedEvent.slug === 'rang-manch' ? <p className="mt-1 text-xs text-slate-300">Calculated at Rs 50 per participant.</p> : null}
                     </div>
                     {selectedEvent.payment_upi ? (
-                      <div className="mt-3 rounded-[1.15rem] border border-white/10 bg-black/20 p-4">
+                      <div className="mt-3 rounded-[1.05rem] border border-white/10 bg-black/20 p-3">
                         <p className="text-xs uppercase tracking-[0.16em] text-slate-500">UPI ID</p>
                         <div className="mt-2 flex items-center justify-between gap-3">
                           <p className="break-all text-sm font-semibold text-white">{selectedEvent.payment_upi}</p>
@@ -634,7 +591,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                         </div>
                       </div>
                     ) : null}
-                    <div className="mt-3 rounded-[1.15rem] border border-white/10 bg-black/20 p-4">
+                    <div className="mt-3 rounded-[1.05rem] border border-white/10 bg-black/20 p-3">
                       <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Payee Name</p>
                       <p className="mt-2 text-sm font-semibold text-white">{selectedEvent.payment_payee || selectedEvent.name}</p>
                     </div>
@@ -645,7 +602,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                     ) : null}
                   </div>
 
-                  <div className={`rounded-[1.35rem] border border-white/10 bg-gradient-to-br p-4 ${selectedTheme.surface}`}>
+                  <div className={`rounded-[1.25rem] border border-white/10 bg-gradient-to-br p-[0.95rem] ${selectedTheme.surface}`}>
                     <FloatingField label="Transaction ID / payment reference" value={form.paymentReference} onChange={(value) => onFormFieldChange('paymentReference', value)} onBlur={() => onFieldBlur('paymentReference')} error={showError('paymentReference')} required />
                     <label className="mt-4 block">
                       <span className="mb-2 block text-sm text-slate-200">Upload payment screenshot</span>
