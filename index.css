@@ -6339,9 +6339,9 @@ footer {
 }
 
 .portal-front-hero--editorial .portal-front-hero__main--editorial {
-  grid-template-columns: minmax(0, 1.02fr) minmax(300px, 0.78fr);
-  align-items: stretch;
-  gap: 1.35rem;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 1.1rem;
 }
 
 .portal-front-hero--editorial .portal-front-hero__content--premium,
@@ -6516,31 +6516,30 @@ footer {
 
 .portal-front-hero__panel--editorial {
   display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
-  padding-left: clamp(1rem, 2.2vw, 2.6rem);
+  align-items: stretch;
+  justify-content: stretch;
+  padding-left: 0;
 }
 
 .portal-front-hero__visual-card--editorial {
   position: relative;
   width: 100%;
-  max-width: 27rem;
-  min-height: 100%;
+  max-width: 42rem;
+  min-height: 0;
   display: grid;
-  align-content: center;
-  justify-items: center;
-  gap: 0.72rem;
+  grid-template-columns: minmax(8rem, 10.5rem) minmax(0, 1fr);
+  align-items: center;
+  gap: 1.25rem;
   overflow: hidden;
   border-radius: 1.35rem;
   border: 1px solid rgba(88, 126, 255, 0.2);
   background:
     radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.14), transparent 34%),
     linear-gradient(180deg, rgba(11, 17, 34, 0.98), rgba(8, 12, 24, 0.99));
-  padding: 1.35rem 1.15rem 1.2rem;
+  padding: 1.15rem 1.35rem;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.04),
     0 22px 44px rgba(2, 8, 23, 0.24);
-  margin-left: auto;
 }
 
 .portal-front-hero__visual-aura {
@@ -6554,7 +6553,7 @@ footer {
 }
 
 .portal-front-hero__visual-logo-frame--editorial {
-  width: min(100%, 13.4rem);
+  width: min(100%, 10.2rem);
   aspect-ratio: 1.18 / 1;
   padding: 0;
   border: 0;
@@ -6588,7 +6587,7 @@ footer {
 .portal-front-hero__visual-copy--editorial {
   display: grid;
   gap: 0.22rem;
-  text-align: center;
+  text-align: left;
 }
 
 .portal-front-hero__visual-copy--editorial .portal-front-hero__visual-overline {
@@ -6619,7 +6618,7 @@ footer {
   .portal-front-hero__panel--editorial {
     align-items: stretch;
     justify-content: stretch;
-    padding-left: 0.85rem;
+    padding-left: 0;
   }
 }
 
@@ -6689,14 +6688,20 @@ footer {
   }
 
   .portal-front-hero__visual-card--editorial {
-    padding: 1.18rem 0.95rem 1.2rem;
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 0.7rem;
+    padding: 1.12rem 0.95rem 1.14rem;
     border-radius: 1.25rem;
     max-width: none;
-    margin-left: 0;
   }
 
   .portal-front-hero__visual-logo-frame--editorial {
-    width: min(100%, 12rem);
+    width: min(100%, 11.2rem);
+  }
+
+  .portal-front-hero__visual-copy--editorial {
+    text-align: center;
   }
 
   .portal-front-hero__visual-copy--editorial .portal-front-hero__visual-title {
