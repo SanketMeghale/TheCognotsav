@@ -232,6 +232,7 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
                           : liveState.label;
                       const subtitle = event.description || categoryTaglines[displayCategory] || categoryTaglines.Technical;
                       const feeLabel = event.registration_fee_label || formatCurrency(event.registration_fee);
+                      const scheduleLabel = `${event.date_label} • ${event.time_label}`;
 
                       return (
                         <article
@@ -302,7 +303,7 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
                             <div className="portal-competition-card__noise" aria-hidden="true" />
                             <div className="portal-competition-card__media-overlay" aria-hidden="true" />
                             <div className="portal-competition-card__media-top">
-                              <span className={`portal-competition-card__category-pill ${theme.badge}`}>{displayCategory}</span>
+                              <span className="portal-competition-card__media-badge">{statusLabel}</span>
                               {hasIntroVideo ? (
                                 <button
                                   type="button"
@@ -318,53 +319,50 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
                                 </button>
                               ) : null}
                             </div>
+                            <div className="portal-competition-card__hero-caption portal-competition-card__hero-caption--roster">
+                              <h4 className="portal-competition-card__hero-title">{event.name}</h4>
+                              <p className="portal-competition-card__hero-subtitle line-clamp-1">{subtitle}</p>
+                            </div>
                           </div>
 
-                          <div className="portal-competition-card__body portal-competition-card__body--compact p-5">
-                            <div className="portal-competition-card__topline">
-                              <span className="portal-competition-card__status">{statusLabel}</span>
-                              <span className="portal-competition-card__date-chip">
-                                <CalendarDays size={13} />
-                                <span>{event.date_label}</span>
-                              </span>
+                          <div className="portal-competition-card__body portal-competition-card__body--roster">
+                            <div className="portal-competition-card__prize-row">
+                              <div className="portal-competition-card__prize-main">
+                                <Trophy size={16} />
+                                <span className="portal-competition-card__prize-value">{event.prize}</span>
+                              </div>
+                              <span className="portal-competition-card__category-chip">{displayCategory}</span>
                             </div>
 
-                            <div className="portal-competition-card__title-block">
-                              <h4 className="portal-competition-card__title">{event.name}</h4>
-                              <p className="portal-competition-card__tagline line-clamp-1">{subtitle}</p>
-                            </div>
+                            <div className="portal-competition-card__footer portal-competition-card__footer--roster">
+                              <div className="portal-competition-card__info-stack">
+                                <div className="portal-competition-card__info-row">
+                                  <CalendarDays size={14} />
+                                  <span>{scheduleLabel}</span>
+                                </div>
+                                <div className="portal-competition-card__info-row portal-competition-card__info-row--split">
+                                  <span className="portal-competition-card__info-inline">
+                                    <Users size={14} />
+                                    <span>{teamLabel}</span>
+                                  </span>
+                                  <span className="portal-competition-card__meta-dot" aria-hidden="true" />
+                                  <span className="portal-competition-card__info-inline">
+                                    <CreditCard size={14} />
+                                    <span>Fee {feeLabel}</span>
+                                  </span>
+                                </div>
+                              </div>
 
-                            <div className="portal-competition-card__meta-list">
-                              <div className="portal-competition-card__meta-row portal-competition-card__meta-row--wide portal-competition-card__meta-row--highlight">
-                                <Trophy size={14} />
-                                <span>{event.prize}</span>
-                              </div>
-                              <div className="portal-competition-card__meta-row">
-                                <Users size={14} />
-                                <span>{teamLabel}</span>
-                              </div>
-                              <div className="portal-competition-card__meta-row">
-                                <CreditCard size={14} />
-                                <span>Fee {feeLabel}</span>
-                              </div>
-                              <div className="portal-competition-card__meta-row portal-competition-card__meta-row--wide">
-                                <CalendarDays size={14} />
-                                <span>{event.time_label}</span>
-                              </div>
-                            </div>
-
-                            <div className="portal-competition-card__footer portal-competition-card__footer--inline">
-                              <span className="portal-competition-card__link-text">Tap card for details</span>
                               <button
                                 type="button"
                                 onClick={(clickEvent) => {
                                   clickEvent.stopPropagation();
                                   handleOpenEvent();
                                 }}
-                                className="portal-register-cta portal-register-cta--compact portal-register-cta--card"
+                                className="portal-register-cta portal-register-cta--compact portal-register-cta--card portal-register-cta--card-compact"
                               >
                                 {event.registration_enabled === false ? 'View Details' : 'Register Now'}
-                                <ExternalLink size={16} />
+                                <ExternalLink size={15} />
                               </button>
                             </div>
                           </div>

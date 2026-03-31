@@ -7927,3 +7927,487 @@ body {
     0 0 26px rgba(74, 222, 255, 0.1),
     0 0 38px rgba(250, 204, 21, 0.06);
 }
+
+/* Hero and event card refinement pass */
+.portal-summit-hero__title-shell {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  width: min(100%, 58rem);
+  padding: 2.55rem 1rem 0.15rem;
+}
+
+.portal-summit-hero__title-shell::before,
+.portal-summit-hero__title-shell::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  border-bottom: 0;
+  border-radius: 999px 999px 0 0;
+  pointer-events: none;
+}
+
+.portal-summit-hero__title-shell::before {
+  top: 0;
+  width: min(92%, 44rem);
+  height: 8.9rem;
+  border: 1.5px solid rgba(74, 222, 255, 0.24);
+  box-shadow:
+    0 0 26px rgba(74, 222, 255, 0.1),
+    inset 0 0 24px rgba(59, 130, 246, 0.03);
+}
+
+.portal-summit-hero__title-shell::after {
+  top: 0.92rem;
+  width: min(72%, 30rem);
+  height: 5.9rem;
+  border: 1px solid rgba(250, 204, 21, 0.22);
+  opacity: 0.78;
+}
+
+.portal-summit-hero__title-arc {
+  position: absolute;
+  left: 50%;
+  top: 1.55rem;
+  width: min(76%, 28rem);
+  height: 6.4rem;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at center, rgba(74, 222, 255, 0.18), rgba(59, 130, 246, 0.1) 42%, transparent 72%);
+  filter: blur(18px);
+  pointer-events: none;
+}
+
+.portal-summit-hero__title {
+  font-size: clamp(3.8rem, 7vw, 6.65rem);
+  line-height: 0.82;
+  letter-spacing: -0.065em;
+  text-shadow:
+    0 10px 32px rgba(4, 8, 18, 0.38),
+    0 0 28px rgba(59, 130, 246, 0.08);
+}
+
+.portal-summit-hero__prize-copy {
+  width: 100%;
+}
+
+.portal-summit-hero__timer {
+  display: grid;
+  gap: 0.7rem;
+  width: 100%;
+  margin-top: 0.35rem;
+}
+
+.portal-summit-hero__timer-label {
+  color: rgba(230, 207, 133, 0.82);
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.portal-summit-hero__timer-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.55rem;
+  width: 100%;
+}
+
+.portal-summit-hero__timer-chip {
+  display: grid;
+  justify-items: center;
+  gap: 0.22rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(74, 222, 255, 0.16);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015)),
+    linear-gradient(145deg, rgba(8, 14, 26, 0.96), rgba(7, 10, 20, 0.98));
+  padding: 0.62rem 0.5rem 0.56rem;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 12px 26px rgba(2, 8, 23, 0.16);
+}
+
+.portal-summit-hero__timer-value {
+  color: #f8fbff;
+  font-family: 'Oxanium', 'Sora', 'Inter', sans-serif;
+  font-size: clamp(1rem, 2vw, 1.35rem);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.portal-summit-hero__timer-unit {
+  color: rgba(191, 219, 254, 0.76);
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  font-size: 0.52rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.portal-summit-hero__timer-state {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  border-radius: 1rem;
+  padding: 0.84rem 1rem;
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.portal-summit-hero__timer-state--live {
+  border: 1px solid rgba(21, 214, 141, 0.22);
+  background: linear-gradient(135deg, rgba(21, 214, 141, 0.14), rgba(74, 222, 255, 0.08));
+  color: #dcfff0;
+}
+
+.portal-summit-hero__timer-state--complete {
+  border: 1px solid rgba(250, 204, 21, 0.22);
+  background: linear-gradient(135deg, rgba(250, 204, 21, 0.14), rgba(255, 106, 77, 0.08));
+  color: #fff4c3;
+}
+
+.portal-summit-hero__timer-state--pending {
+  border: 1px solid rgba(74, 222, 255, 0.18);
+  background: linear-gradient(135deg, rgba(74, 222, 255, 0.12), rgba(59, 130, 246, 0.08));
+  color: #def7ff;
+}
+
+.portal-competition-card--showcase {
+  border-radius: 1.35rem;
+  background:
+    radial-gradient(circle at top right, rgba(74, 222, 255, 0.08), transparent 28%),
+    radial-gradient(circle at bottom left, rgba(250, 204, 21, 0.06), transparent 26%),
+    linear-gradient(180deg, rgba(10, 16, 30, 0.98), rgba(6, 10, 20, 0.99));
+}
+
+.portal-competition-card--showcase .portal-competition-card__media {
+  aspect-ratio: 16 / 10;
+  background: #08101f;
+}
+
+.portal-competition-card__media-overlay {
+  background:
+    linear-gradient(180deg, rgba(6, 10, 24, 0.06), rgba(6, 10, 24, 0.04) 34%, rgba(4, 8, 18, 0.78)),
+    linear-gradient(180deg, transparent 52%, rgba(4, 8, 18, 0.9));
+}
+
+.portal-competition-card__media-top {
+  padding: 0.82rem;
+}
+
+.portal-competition-card__media-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.9rem;
+  border-radius: 999px;
+  border: 1px solid rgba(250, 204, 21, 0.18);
+  background:
+    linear-gradient(135deg, rgba(250, 204, 21, 0.14), rgba(74, 222, 255, 0.08)),
+    rgba(4, 8, 18, 0.78);
+  padding: 0.42rem 0.72rem;
+  color: #fff8d8;
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 10px 24px rgba(2, 8, 23, 0.18);
+}
+
+.portal-competition-card__hero-caption--roster {
+  position: absolute;
+  inset: auto 0.82rem 0.82rem;
+  display: grid;
+  gap: 0.24rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(180deg, rgba(4, 8, 18, 0.18), rgba(4, 8, 18, 0.6)),
+    linear-gradient(145deg, rgba(8, 14, 26, 0.76), rgba(8, 14, 26, 0.88));
+  padding: 0.72rem 0.82rem 0.76rem;
+  box-shadow:
+    0 14px 28px rgba(2, 8, 23, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.portal-competition-card__hero-caption--roster .portal-competition-card__hero-title {
+  margin: 0;
+  color: #ffffff;
+  font-family: 'Oxanium', 'Sora', 'Inter', sans-serif;
+  font-size: clamp(1.3rem, 2vw, 1.75rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  text-shadow: 0 8px 18px rgba(2, 8, 23, 0.24);
+}
+
+.portal-competition-card__hero-subtitle {
+  margin: 0;
+  color: rgba(226, 232, 240, 0.74);
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.portal-competition-card__body--roster {
+  display: grid;
+  gap: 0.88rem;
+  padding: 0.95rem 1rem 1rem;
+  background:
+    radial-gradient(circle at top right, rgba(74, 222, 255, 0.05), transparent 26%),
+    linear-gradient(180deg, rgba(9, 14, 26, 0.98), rgba(5, 9, 18, 0.99));
+}
+
+.portal-competition-card__prize-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.portal-competition-card__prize-main {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.52rem;
+  min-width: 0;
+  color: #fff4c3;
+}
+
+.portal-competition-card__prize-main svg {
+  flex: 0 0 auto;
+  color: #ffd44a;
+}
+
+.portal-competition-card__prize-value {
+  min-width: 0;
+  color: #f8fbff;
+  font-family: 'Oxanium', 'Sora', 'Inter', sans-serif;
+  font-size: 1.18rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.portal-competition-card__category-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-height: 1.9rem;
+  border-radius: 999px;
+  border: 1px solid rgba(74, 222, 255, 0.16);
+  background: rgba(74, 222, 255, 0.08);
+  padding: 0.38rem 0.68rem;
+  color: rgba(226, 243, 255, 0.86);
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.portal-competition-card__footer--roster {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.78rem;
+  align-items: end;
+  margin-top: auto;
+}
+
+.portal-competition-card__info-stack {
+  display: grid;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.portal-competition-card__info-row {
+  display: flex;
+  align-items: center;
+  gap: 0.46rem;
+  min-width: 0;
+  color: rgba(203, 213, 225, 0.82);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.portal-competition-card__info-row svg {
+  flex: 0 0 auto;
+  color: rgba(255, 212, 74, 0.92);
+}
+
+.portal-competition-card__info-row--split {
+  gap: 0.42rem;
+  flex-wrap: wrap;
+}
+
+.portal-competition-card__info-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.34rem;
+  min-width: 0;
+}
+
+.portal-register-cta--card-compact {
+  min-width: 8.75rem;
+  border-radius: 0.95rem;
+  padding: 0.78rem 0.95rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+}
+
+@media (max-width: 767px) {
+  .portal-summit-hero__title-shell {
+    padding-top: 2.1rem;
+  }
+
+  .portal-summit-hero__title-shell::before {
+    height: 6.9rem;
+  }
+
+  .portal-summit-hero__title-shell::after {
+    top: 0.72rem;
+    height: 4.6rem;
+  }
+
+  .portal-summit-hero__title-arc {
+    top: 1.2rem;
+    height: 4.8rem;
+  }
+
+  .portal-summit-hero__title {
+    font-size: clamp(2.8rem, 13vw, 4.6rem);
+  }
+
+  .portal-summit-hero__timer {
+    gap: 0.58rem;
+  }
+
+  .portal-summit-hero__timer-chip {
+    padding: 0.56rem 0.34rem 0.5rem;
+  }
+
+  .portal-summit-hero__timer-value {
+    font-size: 1rem;
+  }
+
+  .portal-summit-hero__timer-unit {
+    font-size: 0.48rem;
+    letter-spacing: 0.12em;
+  }
+
+  .portal-competition-card--showcase .portal-competition-card__media {
+    aspect-ratio: 16 / 9.2;
+  }
+
+  .portal-competition-card__media-top {
+    padding: 0.68rem;
+  }
+
+  .portal-competition-card__media-badge {
+    padding: 0.36rem 0.58rem;
+    font-size: 0.5rem;
+    letter-spacing: 0.1em;
+  }
+
+  .portal-competition-card__preview-toggle {
+    min-width: 2.15rem;
+    padding-inline: 0.6rem;
+  }
+
+  .portal-competition-card__preview-toggle span {
+    display: none;
+  }
+
+  .portal-competition-card__hero-caption--roster {
+    inset: auto 0.7rem 0.7rem;
+    gap: 0.18rem;
+    padding: 0.56rem 0.68rem 0.62rem;
+  }
+
+  .portal-competition-card__hero-caption--roster .portal-competition-card__hero-title {
+    font-size: 1.08rem;
+  }
+
+  .portal-competition-card__hero-subtitle {
+    display: none;
+  }
+
+  .portal-competition-card__body--roster {
+    gap: 0.72rem;
+    padding: 0.78rem 0.82rem 0.84rem;
+  }
+
+  .portal-competition-card__prize-value {
+    font-size: 1rem;
+  }
+
+  .portal-competition-card__category-chip {
+    padding: 0.32rem 0.56rem;
+    font-size: 0.52rem;
+  }
+
+  .portal-competition-card__footer--roster {
+    gap: 0.72rem;
+  }
+
+  .portal-competition-card__info-row {
+    font-size: 0.68rem;
+  }
+
+  .portal-register-cta--card-compact {
+    min-width: 7.8rem;
+    padding: 0.72rem 0.8rem;
+    font-size: 0.62rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .portal-summit-hero__title-shell {
+    padding-top: 1.8rem;
+  }
+
+  .portal-summit-hero__title-shell::before {
+    height: 5.9rem;
+  }
+
+  .portal-summit-hero__title-shell::after {
+    height: 3.8rem;
+  }
+
+  .portal-summit-hero__title {
+    font-size: clamp(2.55rem, 14vw, 3.75rem);
+  }
+
+  .portal-summit-hero__timer-grid {
+    gap: 0.42rem;
+  }
+
+  .portal-summit-hero__timer-chip {
+    border-radius: 0.88rem;
+  }
+
+  .portal-competition-card__footer--roster {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .portal-register-cta--card-compact {
+    width: 100%;
+    min-width: 0;
+  }
+}
