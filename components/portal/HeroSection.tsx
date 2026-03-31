@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useState } from 'react';
 import {
-  Award, Clock3, Code2, Cpu, Flame, Gamepad2, Gift, MapPin, MonitorUp, Rocket, Trophy, Users,
+  ArrowRight, Award, Clock3, Code2, Cpu, Flame, Gamepad2, Gift, MapPin, MonitorUp, Rocket, Trophy, Users,
 } from 'lucide-react';
 import { parsePortalEventDate } from './utils';
 
@@ -20,6 +20,12 @@ const heroFeatureBadges = [
   { label: 'Certificates', Icon: Award, tone: 'cyan' },
   { label: 'Goodies', Icon: Gift, tone: 'amber' },
   { label: 'Networking', Icon: Rocket, tone: 'pink' },
+] as const;
+
+const heroMobileTopicBadges = [
+  { label: 'BGMI', Icon: Gamepad2, tone: 'cyan' },
+  { label: 'Hackathon', Icon: MonitorUp, tone: 'violet' },
+  { label: 'Tech Quiz', Icon: Cpu, tone: 'amber' },
 ] as const;
 
 const heroStatItems = [
@@ -121,7 +127,15 @@ export const HeroSection: React.FC<Props> = memo(() => {
               2026
             </span>
           </h1>
-          <p className="portal-summit-hero__subtitle portal-summit-hero__subtitle--immersive">A State-Level Technical &amp; Esports Event</p>
+          <div className="portal-summit-hero__mobile-topics" aria-hidden="true">
+            {heroMobileTopicBadges.map(({ label, Icon, tone }) => (
+              <div key={label} className={`portal-summit-hero__mobile-topic-pill portal-summit-hero__mobile-topic-pill--${tone}`}>
+                <Icon size={14} />
+                <span>{label}</span>
+              </div>
+            ))}
+          </div>
+          <p className="portal-summit-hero__subtitle portal-summit-hero__subtitle--immersive">State-Level Technical &amp; Esports Event</p>
           <p className="portal-summit-hero__description portal-summit-hero__description--immersive">
             Where ideas turn into impact through competitions, esports &amp; innovation.
           </p>
@@ -132,6 +146,17 @@ export const HeroSection: React.FC<Props> = memo(() => {
               {countdown.state === 'countdown' ? 'Starts in:' : 'Status:'}
             </span>
             <strong className="portal-summit-hero__countdown-value">{countdownSummary}</strong>
+          </div>
+
+          <div className="portal-summit-hero__actions portal-summit-hero__actions--mobile">
+            <a href="#registration-panel" className="portal-summit-hero__action portal-summit-hero__action--primary">
+              Register Now
+              <ArrowRight size={16} />
+            </a>
+            <a href="#registration-panel" className="portal-summit-hero__action portal-summit-hero__action--ghost">
+              Explore Events
+              <ArrowRight size={16} />
+            </a>
           </div>
 
           <div className="portal-summit-hero__benefit-row">

@@ -9258,6 +9258,10 @@ body {
   pointer-events: none;
 }
 
+.portal-summit-hero__mobile-topics {
+  display: none;
+}
+
 .portal-summit-hero__orbit-pill {
   position: absolute;
   display: inline-flex;
@@ -9425,6 +9429,10 @@ body {
   letter-spacing: 0.02em;
 }
 
+.portal-summit-hero__actions--mobile {
+  display: none;
+}
+
 .portal-summit-hero__benefit-row {
   display: flex;
   flex-wrap: wrap;
@@ -9588,34 +9596,119 @@ body {
     padding-top: 1.85rem;
   }
 
+  .portal-summit-hero__orbit {
+    display: none;
+  }
+
   .portal-summit-hero__eyebrow--immersive {
     font-size: 0.74rem;
     letter-spacing: 0.24em;
   }
 
+  .portal-summit-hero__title--immersive {
+    font-size: clamp(3.05rem, 14vw, 4.35rem);
+    gap: 0.08em;
+  }
+
   .portal-summit-hero__subtitle--immersive {
-    font-size: clamp(1.55rem, 7vw, 2rem);
+    max-width: 12ch;
+    font-size: clamp(1.55rem, 6.8vw, 1.9rem);
+    line-height: 1.16;
   }
 
   .portal-summit-hero__description--immersive {
-    font-size: 0.97rem;
-    line-height: 1.6;
+    display: none;
+  }
+
+  .portal-summit-hero__mobile-topics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.45rem;
+    width: min(100%, 18rem);
+  }
+
+  .portal-summit-hero__mobile-topic-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.38rem;
+    min-height: 2.25rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: linear-gradient(180deg, rgba(15, 21, 38, 0.94), rgba(9, 13, 27, 0.88));
+    padding: 0.48rem 0.62rem;
+    font-family: 'Space Grotesk', 'Inter', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.06),
+      0 10px 24px rgba(2, 8, 23, 0.22);
+  }
+
+  .portal-summit-hero__mobile-topic-pill--cyan {
+    border-color: rgba(0, 229, 255, 0.26);
+    color: #bfefff;
+  }
+
+  .portal-summit-hero__mobile-topic-pill--violet {
+    border-color: rgba(124, 77, 255, 0.28);
+    color: #dfd2ff;
+  }
+
+  .portal-summit-hero__mobile-topic-pill--amber {
+    border-color: rgba(255, 193, 92, 0.28);
+    color: #ffe0a8;
   }
 
   .portal-summit-hero__countdown-pill {
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    padding-inline: 1rem;
+    min-height: 2.7rem;
+    gap: 0.38rem;
+    padding: 0.6rem 1rem;
+  }
+
+  .portal-summit-hero__countdown-label,
+  .portal-summit-hero__countdown-value {
+    font-size: 0.96rem;
+  }
+
+  .portal-summit-hero__actions--mobile {
+    display: grid;
+    gap: 0.7rem;
+    width: min(100%, 17.25rem);
+  }
+
+  .portal-summit-hero__actions--mobile .portal-summit-hero__action {
+    width: 100%;
+    min-width: 0;
+    min-height: 3.2rem;
+    border-radius: 1rem;
+    padding: 0.9rem 1.1rem;
+    font-size: 1rem;
   }
 
   .portal-summit-hero__benefit-row {
-    display: grid;
+    display: flex;
     width: 100%;
-    grid-template-columns: 1fr;
+    max-width: 100%;
+    gap: 0.55rem;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: 0.15rem;
+    scrollbar-width: none;
+  }
+
+  .portal-summit-hero__benefit-row::-webkit-scrollbar {
+    display: none;
   }
 
   .portal-summit-hero__benefit-pill {
-    width: 100%;
+    min-width: max-content;
+    min-height: 2.45rem;
+    padding: 0.58rem 0.82rem;
+    font-size: 0.84rem;
+    border-radius: 0.95rem;
   }
 
   .portal-summit-hero__stats-bar {
@@ -9645,6 +9738,20 @@ body {
 
   .portal-summit-hero__title--immersive {
     font-size: clamp(2.9rem, 15vw, 4.2rem);
+  }
+
+  .portal-summit-hero__mobile-topics {
+    width: 100%;
+    gap: 0.38rem;
+  }
+
+  .portal-summit-hero__mobile-topic-pill {
+    font-size: 0.69rem;
+    padding-inline: 0.45rem;
+  }
+
+  .portal-summit-hero__actions--mobile {
+    width: 100%;
   }
 
   .portal-summit-hero__stats-bar {
