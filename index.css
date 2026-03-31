@@ -7379,3 +7379,551 @@ footer {
     height: 4.25rem;
   }
 }
+
+/* Hero-driven global theme alignment */
+:root {
+  --portal-cyan: #4adeff;
+  --portal-sky: #56c6ff;
+  --portal-blue: #3b82f6;
+  --portal-violet: #4f6dff;
+  --portal-purple: #3157ff;
+  --portal-pink: #ff7a59;
+  --portal-amber: #f6c456;
+  --portal-emerald: #15d68d;
+  --portal-rose: #ff8b5f;
+  --portal-lime: #b5ec4d;
+  --portal-orange: #ffae42;
+  --portal-teal: #20d5c7;
+  --portal-indigo: #5f72ff;
+  --portal-red: #ff5f5f;
+  --portal-yellow: #facc15;
+  --portal-magenta: #ff7a5c;
+  --portal-neon-green: #15d68d;
+  --portal-neon-blue: #4adeff;
+  --portal-neon-pink: #ff6a4d;
+  --portal-electric-blue: #29d3ff;
+  --portal-neon-gold: #ffd44a;
+  --portal-hover-purple: #3250ff;
+  --portal-highlight-cyan: #78ebff;
+  --portal-accent-pink-soft: #ff8a68;
+  --portal-status-green: #46f0b2;
+  --portal-panel: rgba(8, 14, 26, 0.76);
+  --portal-panel-strong: rgba(6, 10, 20, 0.88);
+  --portal-border: rgba(141, 194, 255, 0.14);
+  --portal-shadow: 0 28px 88px rgba(2, 8, 23, 0.46);
+  --portal-shadow-soft: 0 18px 46px rgba(2, 8, 23, 0.24);
+  --portal-neon-primary: rgba(74, 222, 255, 0.18);
+  --portal-neon-secondary: rgba(59, 130, 246, 0.15);
+  --portal-neon-tertiary: rgba(250, 204, 21, 0.1);
+  --portal-neon-edge: rgba(74, 222, 255, 0.16);
+  --portal-surface-border: linear-gradient(135deg, rgba(74, 222, 255, 0.44), rgba(59, 130, 246, 0.2) 42%, rgba(250, 204, 21, 0.22) 78%, rgba(255, 106, 77, 0.14) 100%);
+  --portal-surface-shadow-glow:
+    0 24px 60px rgba(2, 8, 23, 0.36),
+    0 0 18px rgba(74, 222, 255, 0.08),
+    0 0 42px rgba(59, 130, 246, 0.08),
+    0 0 72px rgba(250, 204, 21, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --portal-surface-shadow-hover:
+    0 28px 70px rgba(2, 8, 23, 0.44),
+    0 0 24px rgba(74, 222, 255, 0.12),
+    0 0 54px rgba(59, 130, 246, 0.1),
+    0 0 96px rgba(250, 204, 21, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --portal-cta-border: linear-gradient(135deg, rgba(255, 247, 214, 0.92), rgba(250, 204, 21, 0.62) 56%, rgba(74, 222, 255, 0.16) 100%);
+  --portal-cta-shadow:
+    0 18px 42px rgba(250, 204, 21, 0.18),
+    0 0 22px rgba(250, 204, 21, 0.12),
+    0 0 48px rgba(74, 222, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.38);
+  --portal-cta-shadow-hover:
+    0 22px 52px rgba(250, 204, 21, 0.24),
+    0 0 28px rgba(250, 204, 21, 0.16),
+    0 0 62px rgba(74, 222, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.46);
+}
+
+html {
+  background: #040812;
+}
+
+body {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(74, 222, 255, 0.12), transparent 22%),
+    radial-gradient(circle at 82% 18%, rgba(59, 130, 246, 0.12), transparent 24%),
+    radial-gradient(circle at 18% 84%, rgba(250, 204, 21, 0.08), transparent 18%),
+    linear-gradient(180deg, #060913 0%, #040811 54%, #03060d 100%);
+  color: #e8eefc;
+  font-family: 'Manrope', 'Inter', sans-serif;
+}
+
+.portal-brand-mark,
+.portal-brand-title,
+.portal-card-title {
+  font-family: 'Oxanium', 'Sora', 'Inter', sans-serif;
+}
+
+.portal-background-image {
+  background:
+    linear-gradient(180deg, rgba(4, 8, 18, 0.72), rgba(4, 8, 18, 0.84)),
+    url('https://res.cloudinary.com/dkxddhawc/image/upload/f_auto,q_auto,w_1920,c_limit/v1774157303/ChatGPT_Image_Mar_22_2026_10_54_12_AM_foafcx.png') center/cover no-repeat;
+  filter: saturate(0.84) brightness(0.7);
+  opacity: 0.94;
+}
+
+.portal-shell::before {
+  background:
+    radial-gradient(circle at 16% 14%, rgba(74, 222, 255, 0.16), transparent 16%),
+    radial-gradient(circle at 84% 20%, rgba(59, 130, 246, 0.16), transparent 18%),
+    radial-gradient(circle at 50% 0%, rgba(250, 204, 21, 0.08), transparent 22%),
+    linear-gradient(180deg, rgba(4, 8, 18, 0.22), rgba(4, 8, 18, 0.06));
+  opacity: 0.94;
+}
+
+.portal-shell::after {
+  background:
+    linear-gradient(rgba(88, 128, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(74, 222, 255, 0.018) 1px, transparent 1px);
+  opacity: 0.24;
+}
+
+.portal-theme-toggle,
+.portal-mobile-theme {
+  border-color: rgba(74, 222, 255, 0.16);
+  background: linear-gradient(180deg, rgba(8, 14, 26, 0.82), rgba(5, 9, 18, 0.92));
+  color: #eef4ff;
+  box-shadow: 0 14px 28px rgba(2, 8, 23, 0.18);
+}
+
+.portal-theme-toggle:hover,
+.portal-mobile-theme:hover {
+  border-color: rgba(250, 204, 21, 0.22);
+  background: linear-gradient(180deg, rgba(10, 17, 31, 0.9), rgba(7, 10, 20, 0.96));
+}
+
+.portal-kicker,
+.portal-footer-lockup__overline,
+.portal-pass-lockup__overline,
+.portal-admin-lockup__overline {
+  color: rgba(230, 207, 133, 0.86);
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+}
+
+.portal-section-divider::before {
+  background:
+    radial-gradient(circle at 14% 50%, rgba(21, 214, 141, 0.3), transparent 18%),
+    radial-gradient(circle at 50% 50%, rgba(74, 222, 255, 0.24), transparent 18%),
+    radial-gradient(circle at 86% 50%, rgba(250, 204, 21, 0.24), transparent 18%),
+    linear-gradient(90deg, rgba(21, 214, 141, 0.1), rgba(74, 222, 255, 0.1), rgba(59, 130, 246, 0.08), rgba(250, 204, 21, 0.1), rgba(255, 106, 77, 0.08));
+}
+
+.portal-legacy-card--mission {
+  background: linear-gradient(145deg, rgba(59, 130, 246, 0.14), rgba(250, 204, 21, 0.08));
+}
+
+.portal-front-hero::after {
+  background: rgba(250, 204, 21, 0.24);
+}
+
+.portal-orb {
+  filter: blur(18px);
+  opacity: 0.2;
+}
+
+.portal-orb--violet {
+  background: radial-gradient(circle, rgba(250, 204, 21, 0.28), transparent 70%);
+}
+
+.portal-orb--cyan {
+  background: radial-gradient(circle, rgba(74, 222, 255, 0.24), transparent 72%);
+}
+
+.portal-orb--blue {
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.2), transparent 72%);
+}
+
+.portal-glass {
+  background:
+    radial-gradient(circle at 12% 10%, rgba(74, 222, 255, 0.12), transparent 28%) padding-box,
+    radial-gradient(circle at 86% 14%, rgba(59, 130, 246, 0.1), transparent 26%) padding-box,
+    radial-gradient(circle at 78% 100%, rgba(250, 204, 21, 0.08), transparent 32%) padding-box,
+    linear-gradient(145deg, rgba(9, 14, 26, 0.86), rgba(5, 9, 18, 0.96)) padding-box,
+    var(--portal-surface-border) border-box;
+}
+
+.portal-glow-card::before {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(74, 222, 255, 0.2), transparent 34%),
+    radial-gradient(circle at 82% 18%, rgba(59, 130, 246, 0.16), transparent 28%),
+    radial-gradient(circle at 78% 82%, rgba(250, 204, 21, 0.12), transparent 32%),
+    radial-gradient(circle at 42% 108%, rgba(255, 106, 77, 0.08), transparent 28%);
+  opacity: 0.4;
+}
+
+.portal-glow-card::after {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 24%, rgba(74, 222, 255, 0.12) 54%, rgba(250, 204, 21, 0.12) 100%),
+    radial-gradient(circle at top right, rgba(74, 222, 255, 0.06), transparent 24%);
+}
+
+.portal-nav-link::after {
+  background: linear-gradient(90deg, rgba(21, 214, 141, 0.92), rgba(74, 222, 255, 0.92), rgba(59, 130, 246, 0.92), rgba(250, 204, 21, 0.88));
+}
+
+.portal-nav-shell {
+  border-color: rgba(74, 222, 255, 0.14);
+  background:
+    radial-gradient(circle at top center, rgba(74, 222, 255, 0.08), transparent 54%),
+    linear-gradient(180deg, rgba(7, 12, 22, 0.86), rgba(4, 8, 16, 0.74));
+  box-shadow:
+    0 18px 48px rgba(2, 8, 23, 0.28),
+    0 0 26px rgba(59, 130, 246, 0.05);
+}
+
+.portal-nav-shell.is-scrolled {
+  border-color: rgba(250, 204, 21, 0.16);
+  background:
+    radial-gradient(circle at top center, rgba(74, 222, 255, 0.08), transparent 48%),
+    linear-gradient(180deg, rgba(8, 13, 24, 0.94), rgba(4, 8, 16, 0.98));
+  box-shadow:
+    0 24px 60px rgba(2, 8, 23, 0.3),
+    0 0 26px rgba(74, 222, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.portal-nav-links {
+  border-color: rgba(74, 222, 255, 0.12);
+  background: rgba(8, 14, 26, 0.54);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.portal-nav-link {
+  color: rgba(226, 232, 240, 0.82);
+  font-family: 'Space Grotesk', 'Manrope', 'Inter', sans-serif;
+}
+
+.portal-nav-link:hover,
+.portal-nav-link.is-active {
+  color: #fff8db;
+  background: linear-gradient(180deg, rgba(250, 204, 21, 0.1), rgba(74, 222, 255, 0.06));
+  box-shadow:
+    inset 0 0 0 1px rgba(250, 204, 21, 0.14),
+    0 12px 24px rgba(2, 8, 23, 0.16);
+}
+
+.portal-mobile-menu {
+  border: 1px solid rgba(74, 222, 255, 0.12);
+  background: linear-gradient(180deg, rgba(7, 12, 22, 0.88), rgba(4, 8, 16, 0.96));
+  box-shadow: 0 18px 40px rgba(2, 8, 23, 0.22);
+}
+
+.portal-mobile-admin-trigger {
+  border-color: rgba(74, 222, 255, 0.18);
+  background:
+    radial-gradient(circle at top, rgba(74, 222, 255, 0.12), transparent 52%),
+    linear-gradient(180deg, rgba(13, 22, 40, 0.96), rgba(6, 10, 20, 0.98));
+}
+
+.portal-mobile-admin-trigger__core {
+  border-color: rgba(250, 204, 21, 0.16);
+  background:
+    radial-gradient(circle at top left, rgba(250, 204, 21, 0.18), transparent 44%),
+    linear-gradient(145deg, rgba(8, 23, 44, 0.98), rgba(8, 14, 28, 0.98));
+}
+
+.portal-mobile-admin-trigger__icon {
+  background: linear-gradient(135deg, rgba(74, 222, 255, 0.22), rgba(59, 130, 246, 0.18));
+  color: #c8f7ff;
+}
+
+.portal-mobile-admin-trigger__badge {
+  background: linear-gradient(180deg, rgba(250, 204, 21, 0.94), rgba(246, 196, 86, 0.92));
+}
+
+.portal-bottom-dock {
+  border-color: rgba(74, 222, 255, 0.16);
+  background:
+    radial-gradient(circle at top left, rgba(74, 222, 255, 0.16), transparent 28%),
+    radial-gradient(circle at top right, rgba(59, 130, 246, 0.14), transparent 32%),
+    radial-gradient(circle at 50% 120%, rgba(250, 204, 21, 0.12), transparent 36%),
+    linear-gradient(180deg, rgba(8, 13, 24, 0.92), rgba(4, 8, 16, 0.96));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04),
+    0 22px 54px rgba(2, 8, 23, 0.34),
+    0 0 24px rgba(59, 130, 246, 0.05);
+}
+
+.portal-bottom-dock__item svg {
+  color: rgba(125, 232, 255, 0.9);
+}
+
+.portal-bottom-dock__item.is-active {
+  background: linear-gradient(180deg, rgba(74, 222, 255, 0.08), rgba(250, 204, 21, 0.08));
+  color: #fff9e5;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 12px 28px rgba(2, 8, 23, 0.18);
+}
+
+.portal-bottom-dock__item.is-active svg {
+  color: #ffd44a;
+}
+
+.portal-bottom-dock__logo::before {
+  background: conic-gradient(from 0deg, #15d68d, #4adeff, #3b82f6, #facc15, #ff6a4d, #15d68d);
+  opacity: 0.55;
+}
+
+.portal-bottom-dock__logo::after {
+  border-color: rgba(74, 222, 255, 0.16);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(7, 12, 23, 0.94));
+}
+
+.portal-bottom-dock__logo-core {
+  background:
+    radial-gradient(circle at top, rgba(250, 204, 21, 0.14), transparent 48%),
+    rgba(255, 255, 255, 0.1);
+}
+
+.portal-form-card {
+  border-color: rgba(74, 222, 255, 0.14);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(8, 14, 26, 0.5));
+}
+
+.portal-loader-overlay {
+  background: rgba(3, 7, 18, 0.62);
+}
+
+.portal-loader-card,
+.portal-modal-card {
+  border-color: rgba(74, 222, 255, 0.14);
+  background:
+    radial-gradient(circle at top right, rgba(74, 222, 255, 0.08), transparent 28%),
+    radial-gradient(circle at bottom left, rgba(250, 204, 21, 0.06), transparent 32%),
+    linear-gradient(145deg, rgba(9, 14, 26, 0.96), rgba(5, 9, 18, 0.94));
+  box-shadow:
+    0 26px 72px rgba(2, 8, 23, 0.38),
+    0 0 26px rgba(59, 130, 246, 0.05);
+}
+
+.portal-loader-brand__frame,
+.portal-footer-lockup__frame,
+.portal-pass-lockup__frame,
+.portal-admin-lockup__frame,
+.portal-updates-watermark__frame {
+  border-color: rgba(74, 222, 255, 0.16);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(74, 222, 255, 0.06));
+}
+
+.portal-loader-ring {
+  border-top-color: rgba(74, 222, 255, 0.95);
+  border-right-color: rgba(250, 204, 21, 0.95);
+}
+
+.portal-event-quick-card,
+.portal-event-detail-panel,
+.portal-event-showcase,
+.portal-event-section,
+.portal-event-form-shell,
+.portal-form-card,
+#registration-panel {
+  --portal-neon-primary: rgba(74, 222, 255, 0.18);
+  --portal-neon-secondary: rgba(59, 130, 246, 0.14);
+  --portal-neon-tertiary: rgba(250, 204, 21, 0.08);
+  --portal-neon-edge: rgba(74, 222, 255, 0.16);
+}
+
+.portal-update-lead,
+.portal-update-stack__card,
+.portal-update-card {
+  --portal-neon-primary: rgba(250, 204, 21, 0.14);
+  --portal-neon-secondary: rgba(74, 222, 255, 0.12);
+  --portal-neon-tertiary: rgba(255, 106, 77, 0.08);
+  --portal-neon-edge: rgba(250, 204, 21, 0.14);
+}
+
+.portal-competition-card,
+.roadmap-card {
+  --portal-neon-primary: rgba(74, 222, 255, 0.16);
+  --portal-neon-secondary: rgba(59, 130, 246, 0.14);
+  --portal-neon-tertiary: rgba(250, 204, 21, 0.1);
+  --portal-neon-edge: rgba(74, 222, 255, 0.16);
+}
+
+.portal-update-marquee__pill {
+  border-color: rgba(74, 222, 255, 0.14);
+  background: linear-gradient(180deg, rgba(7, 11, 21, 0.84), rgba(10, 14, 25, 0.92));
+  color: rgba(226, 232, 240, 0.88);
+}
+
+.portal-updates-hero__copy,
+.portal-updates-stat-card {
+  border-color: rgba(74, 222, 255, 0.12);
+  background:
+    radial-gradient(circle at top right, rgba(74, 222, 255, 0.1), transparent 32%),
+    radial-gradient(circle at bottom left, rgba(250, 204, 21, 0.08), transparent 34%),
+    linear-gradient(145deg, rgba(7, 12, 22, 0.94), rgba(11, 18, 32, 0.92));
+}
+
+.portal-updates-stat-card__label {
+  color: rgba(230, 207, 133, 0.82);
+}
+
+.portal-update-lead {
+  border-color: rgba(74, 222, 255, 0.12);
+  background: linear-gradient(145deg, rgba(7, 12, 22, 0.98), rgba(11, 18, 34, 0.92));
+}
+
+.portal-update-lead::before,
+.portal-update-stack__card::before {
+  background: linear-gradient(180deg, #15d68d, #4adeff, #3b82f6, #facc15, #ff6a4d);
+}
+
+.portal-update-stack__card {
+  border-color: rgba(74, 222, 255, 0.1);
+  background: linear-gradient(145deg, rgba(7, 12, 22, 0.92), rgba(11, 16, 29, 0.88));
+}
+
+.portal-update-card {
+  border-color: rgba(74, 222, 255, 0.12);
+  background: linear-gradient(145deg, rgba(8, 13, 24, 0.94), rgba(10, 18, 32, 0.86));
+}
+
+.portal-update-card:hover {
+  border-color: rgba(74, 222, 255, 0.18);
+  box-shadow:
+    0 18px 40px rgba(59, 130, 246, 0.12),
+    0 0 22px rgba(74, 222, 255, 0.06);
+}
+
+.portal-update-card--featured {
+  background: linear-gradient(145deg, rgba(10, 24, 46, 0.96), rgba(14, 16, 34, 0.92));
+}
+
+.roadmap-vertical__line {
+  background: linear-gradient(180deg, #15d68d, #4adeff, #3b82f6, #facc15, #ff6a4d);
+}
+
+.roadmap-card {
+  border-color: rgba(74, 222, 255, 0.12);
+  background: linear-gradient(145deg, rgba(8, 13, 24, 0.94), rgba(11, 18, 32, 0.88));
+}
+
+.roadmap-card:hover {
+  border-color: rgba(250, 204, 21, 0.18);
+  box-shadow:
+    0 18px 44px rgba(2, 8, 23, 0.28),
+    0 0 24px rgba(74, 222, 255, 0.06);
+}
+
+.portal-competition-card__status {
+  border-color: rgba(74, 222, 255, 0.42);
+  background: linear-gradient(135deg, rgba(74, 222, 255, 0.14), rgba(59, 130, 246, 0.16));
+  color: #d9f7ff;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+    0 0 18px rgba(74, 222, 255, 0.12);
+}
+
+.portal-competition-card__stat-card {
+  border-color: rgba(74, 222, 255, 0.14);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02)),
+    linear-gradient(145deg, rgba(8, 18, 36, 0.96), rgba(7, 12, 24, 0.92));
+  box-shadow:
+    0 18px 30px rgba(2, 8, 23, 0.18),
+    0 0 18px rgba(59, 130, 246, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.portal-competition-card:hover .portal-competition-card__stat-card {
+  border-color: rgba(250, 204, 21, 0.16);
+  box-shadow:
+    0 20px 34px rgba(2, 8, 23, 0.22),
+    0 0 24px rgba(74, 222, 255, 0.06),
+    0 0 34px rgba(250, 204, 21, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.portal-competition-card__stat-card--action {
+  border-color: rgba(250, 204, 21, 0.22);
+  background:
+    linear-gradient(180deg, rgba(250, 204, 21, 0.08), rgba(255, 255, 255, 0.02)),
+    linear-gradient(145deg, rgba(9, 24, 44, 0.9), rgba(11, 17, 30, 0.86));
+}
+
+.portal-competition-card__preview-toggle {
+  border-color: rgba(74, 222, 255, 0.14);
+  background: rgba(6, 12, 23, 0.78);
+}
+
+.portal-competition-card__preview-toggle:hover {
+  border-color: rgba(250, 204, 21, 0.2);
+  background: rgba(10, 18, 32, 0.9);
+}
+
+.portal-competition-card__preview-toggle.is-active {
+  border-color: rgba(250, 204, 21, 0.26);
+  background: linear-gradient(135deg, rgba(250, 204, 21, 0.18), rgba(255, 106, 77, 0.12));
+  color: #fff8d6;
+}
+
+.portal-competition-card--showcase .portal-competition-card__body {
+  background:
+    radial-gradient(circle at top right, rgba(74, 222, 255, 0.08), transparent 26%),
+    radial-gradient(circle at bottom left, rgba(250, 204, 21, 0.06), transparent 28%),
+    linear-gradient(180deg, rgba(8, 13, 24, 0.98), rgba(5, 9, 18, 0.99));
+}
+
+.portal-competition-card--showcase .portal-competition-card__status {
+  border: 1px solid rgba(74, 222, 255, 0.22);
+  background: rgba(74, 222, 255, 0.12);
+  color: #dff6ff;
+}
+
+.portal-competition-card__date-chip {
+  border: 1px solid rgba(250, 204, 21, 0.16);
+  background: rgba(250, 204, 21, 0.06);
+  color: rgba(255, 248, 219, 0.86);
+}
+
+.portal-competition-card__meta-row {
+  border-color: rgba(74, 222, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.portal-competition-card__meta-row svg {
+  color: #ffd44a;
+}
+
+.portal-competition-card__meta-row--highlight {
+  border-color: rgba(250, 204, 21, 0.18);
+  background: linear-gradient(135deg, rgba(250, 204, 21, 0.12), rgba(74, 222, 255, 0.04));
+  color: #fff8db;
+}
+
+.portal-competition-card--showcase .portal-competition-card__link-text {
+  color: rgba(190, 225, 255, 0.75);
+}
+
+.portal-premium-button {
+  font-family: 'Space Grotesk', 'Manrope', 'Inter', sans-serif;
+}
+
+.portal-premium-button--secondary {
+  background:
+    radial-gradient(circle at top left, rgba(74, 222, 255, 0.1), transparent 34%) padding-box,
+    linear-gradient(145deg, rgba(8, 14, 26, 0.92), rgba(5, 9, 18, 0.96)) padding-box,
+    linear-gradient(135deg, rgba(74, 222, 255, 0.34), rgba(59, 130, 246, 0.18) 46%, rgba(250, 204, 21, 0.2) 100%) border-box;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 18px 32px rgba(2, 8, 23, 0.24),
+    0 0 22px rgba(74, 222, 255, 0.06);
+}
+
+.portal-premium-button--secondary:hover {
+  box-shadow:
+    0 20px 40px rgba(2, 8, 23, 0.3),
+    0 0 26px rgba(74, 222, 255, 0.1),
+    0 0 38px rgba(250, 204, 21, 0.06);
+}
