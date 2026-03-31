@@ -296,6 +296,14 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const eventStoryPoints = selectedHandbook?.highlights?.slice(0, 3) || [];
   const rulePreview = selectedHandbook?.rules?.slice(0, 3) || [];
   const handbookReady = Boolean(selectedHandbook?.handbookUrl);
+  const posterMetaItems = [
+    { label: 'Date', value: selectedEvent.date_label, Icon: Clock3 },
+    { label: 'Team', value: getTeamLabel(selectedEvent), Icon: Users },
+    { label: 'Fee', value: formatCurrency(payableAmount), Icon: CreditCard },
+    { label: 'Venue', value: selectedEvent.venue, Icon: MapPin },
+    { label: 'Status', value: liveState.label, Icon: Clock3 },
+    { label: 'Countdown', value: liveState.countdown, Icon: Sparkles },
+  ];
 
   return (
     <section id="registration-panel">
@@ -305,6 +313,17 @@ export const EventRegistrationPanel: React.FC<Props> = ({
             <div className="portal-event-showcase__poster portal-event-showcase__poster--wide">
               <img src={selectedEvent.poster_path} alt={selectedEvent.name} loading="eager" decoding="async" className="h-full w-full object-cover" />
               <div className="portal-event-showcase__poster-overlay" />
+              <div className="portal-event-poster-meta">
+                {posterMetaItems.map(({ label, value, Icon }) => (
+                  <div key={label} className="portal-event-poster-meta__item">
+                    <div className="portal-event-poster-meta__head">
+                      <Icon size={13} />
+                      <span>{label}</span>
+                    </div>
+                    <strong>{value}</strong>
+                  </div>
+                ))}
+              </div>
             </div>
             <div className="portal-event-showcase__cta-row">
               <div className="flex flex-col gap-3 sm:flex-row">
