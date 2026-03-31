@@ -1181,6 +1181,7 @@ export const App: React.FC = () => {
   const isTimelinePage = hashRoute === '#timeline';
   const isDepartmentPage = hashRoute === '#department';
   const isEventPage = Boolean(eventPageSlug);
+  const isFrontLandingPage = !isAdminPage && !isTimelinePage && !isDepartmentPage && !isEventPage;
   const showFrontBottomDock = !isAdminPage && !isEventPage && !isDepartmentPage;
   const activeBottomDock =
     !hashRoute || hashRoute === '#overview'
@@ -2130,52 +2131,54 @@ export const App: React.FC = () => {
         </div>
       ) : null}
 
-      <header className="sticky top-0 z-30 px-3 pt-3 sm:px-4 md:px-0">
-        <div className={`${shellClassName} portal-nav-shell ${navScrolled ? 'is-scrolled' : ''}`}>
-          <a
-            href="#overview"
-            className="portal-brand-card portal-brand-card--nav flex min-w-0 flex-1 items-center gap-3 rounded-[1.4rem] px-3 py-2 transition hover:border-slate-200/18 hover:bg-white/[0.06] lg:flex-none"
-            onDoubleClick={(event) => {
-              event.preventDefault();
-              handleSecretAdminTap();
-            }}
-            onTouchEnd={(event) => {
-              handleSecretAdminTap();
-              if (secretAdminLastTapRef.current === 0) {
+      {!isFrontLandingPage ? (
+        <header className="sticky top-0 z-30 px-3 pt-3 sm:px-4 md:px-0">
+          <div className={`${shellClassName} portal-nav-shell ${navScrolled ? 'is-scrolled' : ''}`}>
+            <a
+              href="#overview"
+              className="portal-brand-card portal-brand-card--nav flex min-w-0 flex-1 items-center gap-3 rounded-[1.4rem] px-3 py-2 transition hover:border-slate-200/18 hover:bg-white/[0.06] lg:flex-none"
+              onDoubleClick={(event) => {
                 event.preventDefault();
-              }
-            }}
-            title="Home"
-          >
-            <div className="portal-brand-logo-frame">
-              <img src="/images/ceasposter.jpeg" alt="CEAS COGNOTSAV logo" className="portal-brand-logo-image" />
-            </div>
-            <div className="portal-brand-copy portal-brand-copy--nav min-w-0">
-              <p className="portal-brand-overline portal-brand-overline--nav truncate">Computer Engineering Association of Students</p>
-              <h1 className="portal-brand-mark portal-brand-mark--nav" aria-label="CEAS Cognotsav 2026">
-                <span className="portal-brand-mark__prefix">CEAS</span>
-                <span className="portal-brand-mark__title">COGNOTSAV</span>
-                <span className="portal-brand-mark__year">2026</span>
-              </h1>
-            </div>
-          </a>
-
-          <nav className="portal-nav-links hidden lg:flex">
-            {NAV_LINKS.map((link) => (
-              <a key={link.href} href={link.href} className={`portal-nav-link ${hashRoute === link.href ? 'is-active' : ''}`}>
-                {link.label}
-              </a>
-            ))}
-          </nav>
-
-          <div className="hidden items-center gap-3 lg:flex">
-            <a href="#registration-panel" className="portal-premium-button portal-premium-button--primary portal-nav-cta">
-              Register
-              <ArrowRight size={14} />
+                handleSecretAdminTap();
+              }}
+              onTouchEnd={(event) => {
+                handleSecretAdminTap();
+                if (secretAdminLastTapRef.current === 0) {
+                  event.preventDefault();
+                }
+              }}
+              title="Home"
+            >
+              <div className="portal-brand-logo-frame">
+                <img src="/images/ceasposter.jpeg" alt="CEAS COGNOTSAV logo" className="portal-brand-logo-image" />
+              </div>
+              <div className="portal-brand-copy portal-brand-copy--nav min-w-0">
+                <p className="portal-brand-overline portal-brand-overline--nav truncate">Computer Engineering Association of Students</p>
+                <h1 className="portal-brand-mark portal-brand-mark--nav" aria-label="CEAS Cognotsav 2026">
+                  <span className="portal-brand-mark__prefix">CEAS</span>
+                  <span className="portal-brand-mark__title">COGNOTSAV</span>
+                  <span className="portal-brand-mark__year">2026</span>
+                </h1>
+              </div>
             </a>
+
+            <nav className="portal-nav-links hidden lg:flex">
+              {NAV_LINKS.map((link) => (
+                <a key={link.href} href={link.href} className={`portal-nav-link ${hashRoute === link.href ? 'is-active' : ''}`}>
+                  {link.label}
+                </a>
+              ))}
+            </nav>
+
+            <div className="hidden items-center gap-3 lg:flex">
+              <a href="#registration-panel" className="portal-premium-button portal-premium-button--primary portal-nav-cta">
+                Register
+                <ArrowRight size={14} />
+              </a>
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
+      ) : null}
       {isAdminPage ? (
         <Suspense fallback={<PortalSectionFallback label="Loading admin panel..." />}>
           <AdminRegistrationsPage

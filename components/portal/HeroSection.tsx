@@ -12,7 +12,7 @@ const heroLinks = [
 
 export const HeroSection: React.FC<Props> = memo(() => {
   return (
-    <section id="overview" className="mx-auto w-full max-w-[1320px] px-1 pt-3 pb-2 sm:px-5 lg:px-8 md:pt-5 md:pb-4">
+    <section id="overview" className="mx-auto w-full max-w-[1320px] px-1 pt-0 pb-2 sm:px-5 lg:px-8 md:pt-0 md:pb-4">
       <div className="portal-summit-hero">
         <div className="portal-summit-hero__rail">
           <a href="#overview" className="portal-summit-hero__brand" aria-label="CEAS home">
