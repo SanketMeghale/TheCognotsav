@@ -54,7 +54,7 @@ const heroBackdropAccents: BackdropAccent[] = [
 
 const heroMobileBackdropMarks: BackdropMark[] = [
   { label: 'GAMES', Icon: Gamepad2, tone: 'cyan', variant: 'emblem', style: { left: '6.6%', top: '37.5%' } },
-  { label: 'REACT', Icon: Orbit, tone: 'cyan', variant: 'compact', style: { left: '4.2%', top: '51%', transform: 'rotate(-8deg)' } },
+  { label: 'REACT', Icon: Orbit, tone: 'cyan', variant: 'compact', style: { left: '4.2%', top: '47.5%', transform: 'rotate(-8deg)' } },
   { label: 'HTML5', Icon: FileCode2, tone: 'orange', variant: 'emblem', style: { left: '7.4%', top: '77%' } },
   { label: 'AI', Icon: Bot, tone: 'pink', variant: 'emblem', style: { right: '7.2%', top: '46.5%' } },
   { label: 'GITHUB', Icon: Github, tone: 'violet', variant: 'emblem', style: { right: '7%', top: '60%' } },
