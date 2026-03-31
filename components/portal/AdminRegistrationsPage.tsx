@@ -357,23 +357,22 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
             <div>
               <p className="text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Event controls</p>
               <h3 className="mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron text-3xl font-black uppercase text-transparent">Stop or restart registrations</h3>
-              <p className="mt-3 max-w-2xl text-sm text-slate-300">Only the main admin key can pause registration or reopen an event. Restart stays blocked when no seats are left.</p>
             </div>
           </div>
 
-          <div className="mt-6 grid gap-4 lg:grid-cols-2">
+          <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {eventControlRows.map((event) => {
               const isOpen = event.registration_enabled;
               const noSeatsLeft = event.remainingSlots !== null && event.remainingSlots <= 0;
 
               return (
-                <article key={event.slug} className="rounded-[1.5rem] border border-white/10 bg-[linear-gradient(145deg,rgba(12,20,35,0.92),rgba(18,27,45,0.82))] p-4">
+                <article key={event.slug} className="rounded-[1.3rem] border border-white/10 bg-[linear-gradient(145deg,rgba(12,20,35,0.92),rgba(18,27,45,0.82))] p-3.5">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="text-lg font-semibold text-white">{event.name}</p>
-                      <p className="mt-1 text-sm text-slate-300">{event.date_label} / {event.time_label} / {event.venue}</p>
+                      <p className="text-base font-semibold text-white">{event.name}</p>
+                      <p className="mt-1 text-xs text-slate-400">{event.date_label} / {event.time_label} / {event.venue}</p>
                     </div>
-                    <span className={`rounded-full border px-3 py-1 text-xs uppercase tracking-[0.18em] ${
+                    <span className={`rounded-full border px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] ${
                       isOpen
                         ? 'border-emerald-300/20 bg-emerald-400/10 text-emerald-100'
                         : 'border-rose-300/20 bg-rose-400/10 text-rose-100'
@@ -382,41 +381,38 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
                     </span>
                   </div>
 
-                  <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                    <div className="rounded-[1.1rem] border border-white/10 bg-black/20 p-3">
-                      <p className="text-[10px] uppercase tracking-[0.18em] text-slate-500">Registered</p>
-                      <p className="mt-2 text-base font-semibold text-white">{event.registrations_count}</p>
-                    </div>
-                    <div className="rounded-[1.1rem] border border-white/10 bg-black/20 p-3">
-                      <p className="text-[10px] uppercase tracking-[0.18em] text-slate-500">Seats left</p>
-                      <p className="mt-2 text-base font-semibold text-white">{event.remainingSlots === null ? 'Open' : event.remainingSlots}</p>
-                    </div>
-                    <div className="rounded-[1.1rem] border border-white/10 bg-black/20 p-3">
-                      <p className="text-[10px] uppercase tracking-[0.18em] text-slate-500">Waitlist</p>
-                      <p className="mt-2 text-base font-semibold text-white">{event.waitlist_count}</p>
-                    </div>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1 text-[11px] uppercase tracking-[0.14em] text-slate-200">
+                      Reg {event.registrations_count}
+                    </span>
+                    <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1 text-[11px] uppercase tracking-[0.14em] text-slate-200">
+                      Left {event.remainingSlots === null ? 'Open' : event.remainingSlots}
+                    </span>
+                    <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1 text-[11px] uppercase tracking-[0.14em] text-slate-200">
+                      Wait {event.waitlist_count}
+                    </span>
                   </div>
 
-                  <div className="mt-4 flex flex-wrap gap-3">
+                  <div className="mt-3 flex">
                     {isOpen ? (
                       <button
                         type="button"
                         onClick={() => onToggleEventRegistrationState(event.slug, false)}
-                        className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-rose-300/20 bg-rose-400/10 px-4 py-3 text-sm font-bold text-rose-100"
+                        className="magnetic-button inline-flex items-center justify-center rounded-xl border border-rose-300/20 bg-rose-400/10 px-3.5 py-2 text-xs font-bold uppercase tracking-[0.16em] text-rose-100"
                       >
-                        Stop Registration
+                        Stop
                       </button>
                     ) : (
                       <button
                         type="button"
                         onClick={() => onToggleEventRegistrationState(event.slug, true)}
                         disabled={noSeatsLeft}
-                        className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-emerald-300/20 bg-emerald-400/10 px-4 py-3 text-sm font-bold text-emerald-100 disabled:opacity-50"
+                        title={noSeatsLeft ? 'No seats left' : undefined}
+                        className="magnetic-button inline-flex items-center justify-center rounded-xl border border-emerald-300/20 bg-emerald-400/10 px-3.5 py-2 text-xs font-bold uppercase tracking-[0.16em] text-emerald-100 disabled:opacity-50"
                       >
-                        Restart Registration
+                        Restart
                       </button>
                     )}
-                    {noSeatsLeft ? <p className="self-center text-xs uppercase tracking-[0.16em] text-amber-200">No seats left, restart disabled</p> : null}
                   </div>
                 </article>
               );
