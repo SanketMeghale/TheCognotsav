@@ -13145,47 +13145,63 @@ body {
 
 .portal-summit-hero--immersive .portal-summit-hero__content--immersive {
   background:
-    radial-gradient(circle at 18% 14%, rgba(120, 214, 255, 0.18), transparent 24%),
-    radial-gradient(circle at 82% 12%, rgba(90, 138, 255, 0.16), transparent 26%),
-    radial-gradient(circle at 50% -8%, rgba(98, 228, 255, 0.12), transparent 30%),
+    radial-gradient(circle at 14% 8%, rgba(132, 220, 255, 0.28), transparent 24%),
+    radial-gradient(circle at 84% 10%, rgba(104, 154, 255, 0.24), transparent 26%),
+    radial-gradient(circle at 50% -10%, rgba(118, 236, 255, 0.18), transparent 30%),
     linear-gradient(180deg, rgba(7, 12, 24, 0.94), rgba(4, 8, 18, 0.97) 56%, rgba(2, 5, 12, 0.995));
 }
 
 .portal-summit-hero__backdrop {
+  isolation: isolate;
   background:
-    linear-gradient(180deg, rgba(119, 197, 255, 0.03), rgba(4, 8, 18, 0)),
-    radial-gradient(circle at top, rgba(102, 212, 255, 0.04), transparent 34%);
+    linear-gradient(180deg, rgba(138, 212, 255, 0.06), rgba(4, 8, 18, 0)),
+    radial-gradient(circle at top, rgba(112, 224, 255, 0.08), transparent 34%);
 }
 
 .portal-summit-hero__backdrop-mesh {
   position: absolute;
-  inset: -12% -10% 12%;
+  inset: -14% -12% 8%;
+  z-index: 0;
   background:
-    radial-gradient(circle at 14% 18%, rgba(118, 219, 255, 0.34), transparent 20%),
-    radial-gradient(circle at 33% 10%, rgba(83, 190, 255, 0.22), transparent 18%),
-    radial-gradient(circle at 54% 14%, rgba(110, 228, 255, 0.3), transparent 19%),
-    radial-gradient(circle at 78% 12%, rgba(92, 145, 255, 0.24), transparent 20%),
-    radial-gradient(circle at 86% 26%, rgba(73, 188, 255, 0.18), transparent 18%),
-    radial-gradient(circle at 48% 34%, rgba(144, 214, 255, 0.14), transparent 22%);
-  filter: blur(52px) saturate(122%);
-  opacity: 0.88;
+    radial-gradient(circle at 10% 16%, rgba(124, 220, 255, 0.42), transparent 22%),
+    radial-gradient(circle at 28% 8%, rgba(86, 198, 255, 0.3), transparent 18%),
+    radial-gradient(circle at 48% 12%, rgba(128, 235, 255, 0.38), transparent 20%),
+    radial-gradient(circle at 68% 10%, rgba(118, 192, 255, 0.3), transparent 18%),
+    radial-gradient(circle at 84% 14%, rgba(86, 156, 255, 0.34), transparent 22%),
+    radial-gradient(circle at 92% 30%, rgba(82, 204, 255, 0.24), transparent 18%),
+    radial-gradient(circle at 52% 32%, rgba(176, 229, 255, 0.18), transparent 24%);
+  filter: blur(68px) saturate(128%);
+  mix-blend-mode: screen;
+  opacity: 1;
   transform: translate3d(0, 0, 0) scale(1.04);
   animation: portalHeroSkyMeshDrift 18s ease-in-out infinite alternate;
 }
 
+.portal-summit-hero--immersive .portal-summit-hero__content--immersive::after {
+  opacity: 0.54;
+}
+
 .portal-summit-hero__backdrop::before {
+  z-index: 1;
   border-color: rgba(134, 176, 255, 0.32);
   box-shadow:
-    0 0 18px rgba(134, 176, 255, 0.1),
+    0 0 24px rgba(134, 176, 255, 0.14),
     0 1px 0 rgba(174, 210, 255, 0.12);
-  opacity: 0.82;
+  opacity: 0.9;
 }
 
 .portal-summit-hero__backdrop::after {
+  z-index: 1;
   border-color: rgba(112, 232, 255, 0.48);
   box-shadow:
-    0 0 20px rgba(112, 232, 255, 0.18),
+    0 0 28px rgba(112, 232, 255, 0.24),
     0 1px 0 rgba(182, 246, 255, 0.22);
+}
+
+.portal-summit-hero__backdrop-pill,
+.portal-summit-hero__backdrop-mark,
+.portal-summit-hero__backdrop-accent {
+  z-index: 2;
 }
 
 @keyframes portalHeroSkyMeshDrift {
@@ -13202,9 +13218,9 @@ body {
 
 @media (max-width: 720px) {
   .portal-summit-hero__backdrop-mesh {
-    inset: -18% -20% 18%;
-    filter: blur(40px) saturate(116%);
-    opacity: 0.8;
+    inset: -20% -24% 12%;
+    filter: blur(46px) saturate(120%);
+    opacity: 0.9;
   }
 }
 
