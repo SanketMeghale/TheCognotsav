@@ -276,6 +276,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const activeUpiLink = useBackupScanner ? fallbackUpiLink : primaryUpiLink;
   const paymentQrSrc = useBackupScanner ? FALLBACK_PAYMENT_QR_IMAGE : primaryPaymentQrSrc;
   const usingCustomQrImage = hasCustomQrImage && !useBackupScanner && !prefersDynamicPaymentQr;
+  const usesContainedCustomQr = usingCustomQrImage && selectedEvent.slug === 'utopia';
   const canOpenPaymentApp = typeof window !== 'undefined' && /Android|iPhone|iPad|iPod/i.test(window.navigator.userAgent);
   const isSoloEvent = selectedEvent.min_members === 1 && !selectedEvent.is_team_event;
   const registrationPaused = selectedEvent.registration_enabled === false;
@@ -621,13 +622,13 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                       <QrCode size={18} />
                       <p className="text-sm font-semibold">{useBackupScanner ? 'Backup payment QR' : 'Event payment QR'}</p>
                     </div>
-                    <div className="mt-3 flex aspect-square items-center justify-center overflow-hidden rounded-[1.2rem] bg-white p-3">
+                    <div className={`mt-3 flex aspect-square items-center justify-center overflow-hidden rounded-[1.2rem] p-3 ${usesContainedCustomQr ? 'bg-[#050505]' : 'bg-white'}`}>
                       {paymentQrSrc ? (
                         <img
                           src={paymentQrSrc}
                           alt={`${selectedEvent.name} ${useBackupScanner ? 'backup ' : ''}payment QR`}
-                          className={usingCustomQrImage ? 'h-full w-full rounded-[0.9rem] object-cover' : 'h-full w-full max-w-[12rem] object-contain'}
-                          style={usingCustomQrImage ? { objectPosition: customQrObjectPosition, transform: `scale(${customQrScale})` } : undefined}
+                          className={usingCustomQrImage ? `h-full w-full rounded-[0.9rem] ${usesContainedCustomQr ? 'object-contain' : 'object-cover'}` : 'h-full w-full max-w-[12rem] object-contain'}
+                          style={usingCustomQrImage && !usesContainedCustomQr ? { objectPosition: customQrObjectPosition, transform: `scale(${customQrScale})` } : undefined}
                         />
                       ) : (
                         <div className="h-full w-full max-w-[12rem] rounded-[1rem] bg-slate-200/30" />
