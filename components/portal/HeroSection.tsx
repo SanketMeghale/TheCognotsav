@@ -153,6 +153,7 @@ export const HeroSection: React.FC<Props> = memo(() => {
       <div className="portal-summit-hero portal-summit-hero--immersive">
         <div className="portal-summit-hero__content portal-summit-hero__content--immersive" data-reveal="fade-up">
           <div className="portal-summit-hero__backdrop" aria-hidden="true">
+            <div className="portal-summit-hero__backdrop-mesh" />
             {heroBackdropPills.map(({ label, Icon, tone, tier, style }) => (
               <div
                 key={label}
