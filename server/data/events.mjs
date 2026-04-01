@@ -198,7 +198,7 @@ export const eventSeed = [
     registration_fee: 50,
     registration_fee_label: 'INR 50 per participant',
     min_members: 1,
-    max_members: 4,
+    max_members: 2,
     max_slots: 40,
     is_team_event: true,
     poster_path: '/images/projectexpo.jpg',

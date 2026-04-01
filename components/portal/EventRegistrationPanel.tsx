@@ -117,10 +117,10 @@ const handbookBySlug: Record<string, {
   'techxcelerate-poster-presentation': {
     theme: 'Future Tech and Innovation',
     overview: 'Technical poster showcase for ideas, concepts, and research stories with the same handbook and judging flow.',
-    highlights: ['1 to 4 participants per entry', 'Rs 50 per participant', 'Poster-based presentation format', 'Presentation plus Q and A based judging'],
+    highlights: ['1 to 2 participants per entry', 'Rs 50 per participant', 'Poster-based presentation format', 'Presentation plus Q and A based judging'],
     rules: techxcelerateSharedRules,
     handbookUrl: techxcelerateHandbookUrl,
-    quickDetails: ['Format: Solo / Team', 'Fee: Rs 50 per participant', 'Type: Poster Presentation'],
+    quickDetails: ['Format: Solo / Team (max 2)', 'Fee: Rs 50 per participant', 'Type: Poster Presentation'],
   },
   'bgmi-esports': {
     theme: 'Enter the Arena. Survive the Battle.',

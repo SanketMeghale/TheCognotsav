@@ -148,14 +148,9 @@ export const COMPETITIONS: Competition[] = [
     teamType: 'flexible',
     minMembers: 1,
     maxMembers: 4,
-    pricing: {
-      1: 100,
-      2: 100,
-      3: 200,
-      4: 200
-    },
+    pricing: { team: 200 },
     prize: '\u20B95,000',
-    registrationFee: '\u20B9100 - \u20B9200',
+    registrationFee: '\u20B9200 per team',
     maxSlots: 40,
     category: EventCategory.TECHNICAL,
     poster: '/images/projectexpo.jpg',
