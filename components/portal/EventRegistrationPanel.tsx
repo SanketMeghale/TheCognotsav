@@ -94,10 +94,10 @@ const handbookBySlug: Record<string, {
   'rang-manch': {
     theme: 'Art of Expression',
     overview: 'Stage performance event focused on acting, expression, confidence, and storytelling.',
-    highlights: ['Solo or group format', '5 minute stage slot', 'Rs 50 per participant', 'Performance-first judging'],
+    highlights: ['Solo or group format', '5 minute stage slot', 'Rs 50 per participant up to Rs 200', 'Performance-first judging'],
     rules: ['Express emotions and ideas clearly through acting', 'Report before the event start time', 'Maintain stage discipline and follow organizer instructions'],
     handbookUrl: '/handbooks/rangmanch.pdf',
-    quickDetails: ['Format: Solo / Team', 'Fee: Rs 50 per participant', 'Stage Time: 5 minutes'],
+    quickDetails: ['Format: Solo / Team', 'Fee: Rs 50 per participant, max Rs 200', 'Stage Time: 5 minutes'],
   },
   'squid-game': {
     theme: 'Survival and Strategy',
@@ -194,7 +194,11 @@ function SectionCard({ title, subtitle, children }: { title: string; subtitle: s
 }
 
 function resolveEventAmount(event: EventRecord, participantCount: number) {
-  if (event.slug === 'rang-manch' || event.slug === 'techxcelerate-poster-presentation') {
+  if (event.slug === 'rang-manch') {
+    return Math.min(Math.max(1, participantCount) * 50, 200);
+  }
+
+  if (event.slug === 'techxcelerate-poster-presentation') {
     return Math.max(1, participantCount) * 50;
   }
 
@@ -258,7 +262,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const payableAmount = selectedEvent ? resolveEventAmount(selectedEvent, teamSize) : 0;
   const customQrImagePath = selectedEvent?.payment_qr_image_path?.trim() || '';
   const hasCustomQrImage = Boolean(customQrImagePath);
-  const prefersDynamicPaymentQr = selectedEvent?.slug === 'techxcelerate';
+  const prefersDynamicPaymentQr = selectedEvent?.slug === 'techxcelerate' || selectedEvent?.slug === 'rang-manch';
   const customQrObjectPosition = selectedEvent ? resolveCustomQrObjectPosition(selectedEvent.slug) : 'center center';
   const customQrScale = selectedEvent ? resolveCustomQrScale(selectedEvent.slug) : 1;
   const primaryUpiId = selectedEvent?.payment_upi?.trim() || '';
@@ -644,7 +648,8 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                     <div className="mt-3 rounded-[1.05rem] border border-amber-300/16 bg-amber-400/10 p-3">
                       <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Payable Amount</p>
                       <p className="mt-2 text-lg font-semibold text-white">{formatCurrency(payableAmount)}</p>
-                      {usesPerParticipantFee ? <p className="mt-1 text-xs text-slate-300">Calculated at Rs 50 per participant.</p> : null}
+                      {selectedEvent.slug === 'rang-manch' ? <p className="mt-1 text-xs text-slate-300">Calculated at Rs 50 per participant, capped at Rs 200 for 4 or more members.</p> : null}
+                      {selectedEvent.slug === 'techxcelerate-poster-presentation' ? <p className="mt-1 text-xs text-slate-300">Calculated at Rs 50 per participant.</p> : null}
                     </div>
                     {activeUpiId ? (
                       <div className="mt-3 rounded-[1.05rem] border border-white/10 bg-black/20 p-3">

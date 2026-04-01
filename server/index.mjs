@@ -633,7 +633,11 @@ function getEventSlotSnapshot(event, registrationsCount) {
 }
 
 function resolveRegistrationAmount(event, participantCount) {
-  if (event?.slug === 'rang-manch' || event?.slug === 'techxcelerate-poster-presentation') {
+  if (event?.slug === 'rang-manch') {
+    return Math.min(Math.max(1, Number(participantCount) || 1) * 50, 200);
+  }
+
+  if (event?.slug === 'techxcelerate-poster-presentation') {
     return Math.max(1, Number(participantCount) || 1) * 50;
   }
 
