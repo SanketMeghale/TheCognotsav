@@ -251,49 +251,71 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
           ) : null}
         </div>
         <div className="portal-admin-access-panel mt-6 rounded-[1.6rem] border border-white/10 bg-black/20 p-4 md:p-5">
-          <div className="grid gap-3 md:grid-cols-2">
-            <button type="button" onClick={() => onAdminAccessModeChange('global')} className={`portal-admin-mode rounded-[1.35rem] border px-4 py-4 text-left transition ${adminAccessMode === 'global' ? 'border-cyan-300/28 bg-cyan-400/12 text-white' : 'border-white/10 bg-white/5 text-slate-200'}`}>
-              <p className="text-xs uppercase tracking-[0.22em] text-cyan-100/80">Option 1</p>
-              <p className="mt-2 text-lg font-bold text-white">Main key</p>
-            </button>
-            <button type="button" onClick={() => onAdminAccessModeChange('event')} className={`portal-admin-mode rounded-[1.35rem] border px-4 py-4 text-left transition ${adminAccessMode === 'event' ? 'border-fuchsia-300/28 bg-fuchsia-400/12 text-white' : 'border-white/10 bg-white/5 text-slate-200'}`}>
-              <p className="text-xs uppercase tracking-[0.22em] text-fuchsia-100/80">Option 2</p>
-              <p className="mt-2 text-lg font-bold text-white">Particular event key</p>
-            </button>
+          <div className="portal-admin-access-mode-row">
+            <div className="portal-admin-access-mode-tabs grid gap-3 md:grid-cols-2">
+              <button type="button" onClick={() => onAdminAccessModeChange('global')} className={`portal-admin-mode rounded-[1.35rem] border px-4 py-4 text-left transition ${adminAccessMode === 'global' ? 'border-cyan-300/28 bg-cyan-400/12 text-white' : 'border-white/10 bg-white/5 text-slate-200'}`}>
+                <p className="text-xs uppercase tracking-[0.22em] text-cyan-100/80">Option 1</p>
+                <p className="mt-2 text-lg font-bold text-white">Main key</p>
+              </button>
+              <button type="button" onClick={() => onAdminAccessModeChange('event')} className={`portal-admin-mode rounded-[1.35rem] border px-4 py-4 text-left transition ${adminAccessMode === 'event' ? 'border-fuchsia-300/28 bg-fuchsia-400/12 text-white' : 'border-white/10 bg-white/5 text-slate-200'}`}>
+                <p className="text-xs uppercase tracking-[0.22em] text-fuchsia-100/80">Option 2</p>
+                <p className="mt-2 text-lg font-bold text-white">Particular event key</p>
+              </button>
+            </div>
+            <div className={`portal-admin-access-badge rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] ${
+              hasResolvedAccess
+                ? 'border-emerald-300/20 bg-emerald-400/10 text-emerald-100'
+                : 'border-white/10 bg-white/5 text-slate-300'
+            }`}>
+              {hasResolvedAccess
+                ? (adminScope?.mode === 'event' ? `Scoped: ${scopedEventName || 'Event'}` : 'All content ready')
+                : 'Awaiting access'}
+            </div>
           </div>
 
-          <div className={`mt-4 grid gap-4 ${adminAccessMode === 'event' ? 'xl:grid-cols-[0.9fr_1.1fr_auto]' : 'xl:grid-cols-[1.1fr_auto]'}`}>
-            {adminAccessMode === 'event' ? (
-              <label className="block rounded-[1.4rem] border border-white/10 bg-white/5 p-4">
-                <span className="mb-2 block text-sm text-slate-200">Select competition</span>
-                <select value={adminEventKeySlug} onChange={(event) => onAdminEventKeySlugChange(event.target.value)} className="floating-field-input">
-                  <option value="">Choose an event</option>
-                  {events.map((event) => <option key={event.slug} value={event.slug}>{event.name}</option>)}
-                </select>
-                <p className="portal-admin-access-hint mt-3 text-xs text-slate-400">{selectedDraftEventName ? `Key will be matched against ${selectedDraftEventName}.` : 'Each competition can have its own verification key.'}</p>
-              </label>
-            ) : null}
-            <FloatingField label={adminAccessMode === 'global' ? 'Enter main admin key' : 'Enter selected event key'} icon={<ShieldCheck size={18} />} type="password" value={activeDraftKey} onChange={adminAccessMode === 'global' ? onAdminMainKeyChange : onAdminEventKeyChange} />
-            <button type="button" onClick={onLoadAdminRows} disabled={adminLoading || !canSubmitAccess} className="animated-gradient-button rounded-2xl px-5 py-3 font-bold text-slate-950 disabled:opacity-60">{adminLoading ? 'Verifying...' : adminAccessMode === 'global' ? 'Show all content' : 'Open event verification'}</button>
-          </div>
-          {hasResolvedAccess ? (
-            <div className="mt-4 flex flex-wrap items-center gap-3">
-              <div className="portal-admin-access-summary flex-1 rounded-2xl border border-emerald-300/18 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-100">{accessSummary}</div>
-              <label className="block min-w-[240px] rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200">
-                <span className="mb-2 block text-xs uppercase tracking-[0.2em] text-slate-400">Download scope</span>
+          <div className="portal-admin-access-grid mt-4">
+            <div className={`portal-admin-access-shell portal-admin-access-shell--primary ${adminAccessMode === 'event' ? 'portal-admin-access-shell--event' : ''}`}>
+              {adminAccessMode === 'event' ? (
+                <label className="portal-admin-access-select block rounded-[1.2rem] border border-white/10 bg-white/5 p-3">
+                  <span className="portal-admin-access-label mb-2 block text-[11px] uppercase tracking-[0.2em] text-slate-400">Competition</span>
+                  <select value={adminEventKeySlug} onChange={(event) => onAdminEventKeySlugChange(event.target.value)} className="floating-field-input">
+                    <option value="">Choose an event</option>
+                    {events.map((event) => <option key={event.slug} value={event.slug}>{event.name}</option>)}
+                  </select>
+                </label>
+              ) : null}
+              <div className="portal-admin-access-field">
+                <FloatingField label={adminAccessMode === 'global' ? 'Enter main admin key' : 'Enter selected event key'} icon={<ShieldCheck size={18} />} type="password" value={activeDraftKey} onChange={adminAccessMode === 'global' ? onAdminMainKeyChange : onAdminEventKeyChange} />
+              </div>
+              <button type="button" onClick={onLoadAdminRows} disabled={adminLoading || !canSubmitAccess} className="portal-admin-access-submit animated-gradient-button rounded-2xl px-5 py-3 font-bold text-slate-950 disabled:opacity-60">
+                {adminLoading ? 'Verifying...' : 'Show content'}
+              </button>
+              <p className="portal-admin-access-hint text-xs text-slate-400">{selectedDraftEventName ? `Key will be matched against ${selectedDraftEventName}.` : 'Each competition can have its own verification key.'}</p>
+            </div>
+
+            <div className="portal-admin-access-shell portal-admin-access-shell--secondary">
+              <label className="portal-admin-export-select block rounded-[1.2rem] border border-white/10 bg-white/5 p-3">
+                <span className="portal-admin-access-label mb-2 block text-[11px] uppercase tracking-[0.2em] text-slate-400">Filter / export</span>
                 <select value={exportEventSlug} onChange={(event) => setExportEventSlug(event.target.value)} disabled={Boolean(scopedEventSlug)} className="floating-field-input disabled:opacity-70">
                   <option value="all">All competitions</option>
                   {events.map((event) => <option key={`export-${event.slug}`} value={event.slug}>{event.name}</option>)}
                 </select>
               </label>
-              <button type="button" onClick={() => onDownload('csv', exportEventSlug === 'all' ? undefined : exportEventSlug)} disabled={!hasResolvedAccess || adminScope?.can_export === false} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-cyan-300/12 bg-white/5 px-4 py-3 text-sm font-bold text-white disabled:opacity-60"><Download size={16} />CSV</button>
-              <button type="button" onClick={() => onDownload('xlsx', exportEventSlug === 'all' ? undefined : exportEventSlug)} disabled={!hasResolvedAccess || adminScope?.can_export === false} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-fuchsia-300/12 bg-white/5 px-4 py-3 text-sm font-bold text-white disabled:opacity-60"><FileSpreadsheet size={16} />Excel</button>
+              <div className="portal-admin-export-actions">
+                <button type="button" onClick={() => onDownload('csv', exportEventSlug === 'all' ? undefined : exportEventSlug)} disabled={!hasResolvedAccess || adminScope?.can_export === false} className="portal-admin-export-button magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-cyan-300/12 bg-white/5 px-4 py-3 text-sm font-bold text-white disabled:opacity-60"><Download size={16} />CSV</button>
+                <button type="button" onClick={() => onDownload('xlsx', exportEventSlug === 'all' ? undefined : exportEventSlug)} disabled={!hasResolvedAccess || adminScope?.can_export === false} className="portal-admin-export-button portal-admin-export-button--gold magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-fuchsia-300/12 bg-white/5 px-4 py-3 text-sm font-bold text-white disabled:opacity-60"><FileSpreadsheet size={16} />Excel</button>
+              </div>
             </div>
-          ) : (
-            <div className="mt-4 rounded-2xl border border-dashed border-white/10 bg-black/10 px-4 py-3 text-sm text-slate-400">
-              Enter a valid key and load the records. Compact verification cards will appear below.
-            </div>
-          )}
+          </div>
+          <div className={`portal-admin-access-summary mt-3 rounded-2xl border px-4 py-3 text-sm ${
+            hasResolvedAccess
+              ? 'border-emerald-300/18 bg-emerald-400/10 text-emerald-100'
+              : 'border-dashed border-white/10 bg-black/10 text-slate-400'
+          }`}>
+            {hasResolvedAccess
+              ? accessSummary
+              : 'Enter a valid key and load the records. Compact verification cards will appear below.'}
+          </div>
         </div>
         {adminError ? <div className="mt-5 rounded-2xl border border-rose-400/25 bg-gradient-to-r from-rose-500/14 to-orange-500/8 px-4 py-3 text-sm text-rose-100">{adminError}</div> : null}
       </section>

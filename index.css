@@ -1261,10 +1261,125 @@ body::-webkit-scrollbar-thumb:hover {
     0 18px 30px rgba(2, 8, 23, 0.18);
 }
 
+.portal-admin-access-mode-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.9rem;
+}
+
+.portal-admin-access-mode-tabs {
+  flex: 1 1 36rem;
+}
+
 .portal-admin-mode {
+  min-height: 4.4rem;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.04),
     0 14px 28px rgba(2, 8, 23, 0.12);
+}
+
+.portal-admin-access-badge {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 12px 22px rgba(2, 8, 23, 0.12);
+}
+
+.portal-admin-access-grid {
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: minmax(0, 1.45fr) minmax(17rem, 0.95fr);
+  align-items: stretch;
+}
+
+.portal-admin-access-shell {
+  min-width: 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.25rem;
+  padding: 0.7rem;
+  background:
+    linear-gradient(180deg, rgba(15, 20, 44, 0.9), rgba(10, 12, 31, 0.88)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.03), transparent);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 14px 28px rgba(2, 8, 23, 0.12);
+}
+
+.portal-admin-access-shell--primary {
+  display: grid;
+  gap: 0.7rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.portal-admin-access-shell--primary.portal-admin-access-shell--event {
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.15fr) auto;
+}
+
+.portal-admin-access-select,
+.portal-admin-export-select {
+  min-width: 0;
+}
+
+.portal-admin-access-field {
+  min-width: 0;
+}
+
+.portal-admin-access-field .floating-field {
+  height: 100%;
+}
+
+.portal-admin-access-field .floating-field-input {
+  min-height: 4rem;
+}
+
+.portal-admin-access-submit {
+  min-height: 4rem;
+  min-width: 9.6rem;
+  align-self: stretch;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 16px 30px rgba(255, 193, 92, 0.18);
+}
+
+.portal-admin-access-label {
+  color: rgba(191, 219, 254, 0.72);
+}
+
+.portal-admin-access-hint {
+  grid-column: 1 / -1;
+  padding-inline: 0.25rem;
+}
+
+.portal-admin-access-shell--secondary {
+  display: grid;
+  gap: 0.7rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.portal-admin-export-actions {
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.portal-admin-export-button {
+  min-height: 3.6rem;
+  background:
+    linear-gradient(180deg, rgba(18, 24, 42, 0.9), rgba(10, 14, 28, 0.84)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.03), transparent);
+}
+
+.portal-admin-export-button--gold {
+  border-color: rgba(255, 193, 92, 0.32);
+  background:
+    linear-gradient(180deg, rgba(255, 217, 102, 0.96), rgba(255, 183, 49, 0.92)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
+  color: #231300;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 16px 28px rgba(255, 193, 92, 0.22);
 }
 
 .portal-admin-jumpnav--dock {
@@ -1613,6 +1728,10 @@ body::-webkit-scrollbar-thumb:hover {
   .portal-admin-kpi-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .portal-admin-access-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 @media (max-width: 767px) {
@@ -1643,14 +1762,68 @@ body::-webkit-scrollbar-thumb:hover {
     padding: 0.9rem;
   }
 
-  .portal-admin-access-panel .text-xs,
-  .portal-admin-access-panel .text-sm {
-    line-height: 1.35;
+  .portal-admin-access-mode-row {
+    gap: 0.6rem;
+  }
+
+  .portal-admin-access-mode-tabs {
+    flex-basis: 100%;
+  }
+
+  .portal-admin-mode {
+    min-height: 3.55rem;
+    padding: 0.8rem 0.9rem;
+  }
+
+  .portal-admin-mode p.mt-2 {
+    margin-top: 0.35rem;
+    font-size: 0.86rem;
+  }
+
+  .portal-admin-access-badge {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .portal-admin-access-shell {
+    padding: 0.55rem;
+    border-radius: 1rem;
+  }
+
+  .portal-admin-access-shell--primary,
+  .portal-admin-access-shell--primary.portal-admin-access-shell--event {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .portal-admin-access-select,
+  .portal-admin-export-select {
+    padding: 0.7rem;
+  }
+
+  .portal-admin-access-field .floating-field-input {
+    min-height: 3.4rem;
+  }
+
+  .portal-admin-access-submit {
+    min-height: 3.1rem;
+    min-width: 100%;
+    font-size: 0.78rem;
   }
 
   .portal-admin-access-hint,
   .portal-admin-access-summary {
     display: none;
+  }
+
+  .portal-admin-export-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.45rem;
+  }
+
+  .portal-admin-export-button {
+    min-height: 2.9rem;
+    font-size: 0.74rem;
   }
 
   .portal-admin-jumpnav--dock {
