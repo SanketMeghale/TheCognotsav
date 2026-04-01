@@ -12166,7 +12166,9 @@ body {
 
   .portal-summit-hero__backdrop-mark--mobile-only {
     display: inline-flex;
-    opacity: 0.94;
+    opacity: 0.96;
+    transform-origin: center;
+    filter: saturate(1.06);
   }
 
   .portal-summit-hero__backdrop-accent--mobile-only {
@@ -12188,15 +12190,19 @@ body {
   }
 
   .portal-summit-hero__backdrop-mark--mobile-only.portal-summit-hero__backdrop-mark--emblem {
-    width: 1.92rem;
-    height: 1.92rem;
-    border-radius: 0.8rem;
+    width: 2.14rem;
+    height: 2.14rem;
+    border-radius: 0.88rem;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 14px 24px rgba(2, 8, 23, 0.22),
+      0 0 18px var(--hero-backdrop-glow);
   }
 
   .portal-summit-hero__backdrop-mark--mobile-only.portal-summit-hero__backdrop-mark--emblem .portal-summit-hero__backdrop-mark-icon svg,
   .portal-summit-hero__backdrop-mark--mobile-only.portal-summit-hero__backdrop-mark--compact .portal-summit-hero__backdrop-mark-icon svg {
-    width: 0.84rem;
-    height: 0.84rem;
+    width: 0.92rem;
+    height: 0.92rem;
   }
 
   .portal-summit-hero__eyebrow--immersive {

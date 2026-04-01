@@ -55,19 +55,19 @@ const heroBackdropAccents: BackdropAccent[] = [
 ];
 
 const heroMobileBackdropMarks: BackdropMark[] = [
-  { label: 'GAMES', Icon: Gamepad2, tone: 'cyan', variant: 'emblem', style: { left: '2.8%', top: '35.5%' } },
-  { label: 'REACT', Icon: Orbit, tone: 'cyan', variant: 'emblem', style: { left: '2.4%', top: '45%' } },
-  { label: 'HTML5', Icon: FileCode2, tone: 'orange', variant: 'emblem', style: { left: '1.8%', top: '81.5%' } },
-  { label: 'AI', Icon: Bot, tone: 'pink', variant: 'emblem', style: { right: '3.6%', top: '43.5%' } },
-  { label: 'GITHUB', Icon: Github, tone: 'violet', variant: 'emblem', style: { right: '2.8%', top: '57.5%' } },
-  { label: 'FREE', Icon: Flame, tone: 'orange', variant: 'compact', style: { right: '2.8%', top: '81.5%', transform: 'rotate(-4deg)' } },
+  { label: 'BGMI', Icon: Gamepad2, tone: 'cyan', variant: 'emblem', style: { left: '3.4%', top: '29%', transform: 'rotate(-8deg)' } },
+  { label: 'REACT', Icon: Orbit, tone: 'blue', variant: 'emblem', style: { left: '4.2%', top: '45%', transform: 'rotate(-5deg)' } },
+  { label: 'HTML5', Icon: FileCode2, tone: 'orange', variant: 'emblem', style: { left: '3.4%', top: '61%', transform: 'rotate(-7deg)' } },
+  { label: 'AI', Icon: Bot, tone: 'pink', variant: 'emblem', style: { right: '3.4%', top: '29%', transform: 'rotate(8deg)' } },
+  { label: 'GITHUB', Icon: Github, tone: 'violet', variant: 'emblem', style: { right: '4.2%', top: '45%', transform: 'rotate(5deg)' } },
+  { label: 'FREE FIRE', Icon: Flame, tone: 'orange', variant: 'emblem', style: { right: '3.4%', top: '61%', transform: 'rotate(7deg)' } },
 ];
 
 const heroMobileBackdropAccents: BackdropAccent[] = [
-  { Icon: Sparkles, tone: 'violet', style: { left: '5.6%', top: '29.5%' } },
-  { Icon: Zap, tone: 'orange', style: { right: '8.4%', top: '35.5%' } },
-  { Icon: ShieldCheck, tone: 'cyan', style: { left: '4.8%', top: '72%' } },
-  { Icon: Zap, tone: 'violet', style: { right: '5.8%', top: '73.5%' } },
+  { Icon: Sparkles, tone: 'violet', style: { left: '9.2%', top: '23%' } },
+  { Icon: ShieldCheck, tone: 'cyan', style: { left: '8.4%', top: '54.5%' } },
+  { Icon: Zap, tone: 'orange', style: { right: '9.2%', top: '23%' } },
+  { Icon: Zap, tone: 'violet', style: { right: '8.4%', top: '54.5%' } },
 ];
 
 const heroFeatureBadges = [
