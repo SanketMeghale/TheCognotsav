@@ -142,6 +142,9 @@ const handbookBySlug: Record<string, {
 };
 
 const prepDetailIcons = [Trophy, Sparkles, Clock3] as const;
+const FALLBACK_PAYMENT_UPI_ID = '9421329709@ybl';
+const FALLBACK_PAYMENT_PAYEE = '9421329709@ybl';
+const FALLBACK_PAYMENT_QR_IMAGE = '/images/backup-payment-qr.png';
 
 function formatPrepDetail(detail: string) {
   const value = detail.includes(':') ? detail.split(':').slice(1).join(':').trim() : detail.trim();
@@ -228,6 +231,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const passCardRef = useRef<HTMLDivElement | null>(null);
   const eventTopRef = useRef<HTMLDivElement | null>(null);
   const [codeCopied, setCodeCopied] = useState(false);
+  const [useBackupScanner, setUseBackupScanner] = useState(false);
   const [now, setNow] = useState(() => new Date());
   const showError = (field: string) => (touchedFields[field] ? validationErrors[field] : '');
   const selectedTheme = selectedEvent ? categoryThemes[selectedEvent.category] || categoryThemes.Technical : categoryThemes.Technical;
@@ -237,9 +241,16 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const hasCustomQrImage = Boolean(customQrImagePath);
   const customQrObjectPosition = selectedEvent ? resolveCustomQrObjectPosition(selectedEvent.slug) : 'center center';
   const customQrScale = selectedEvent ? resolveCustomQrScale(selectedEvent.slug) : 1;
-  const upiLink = selectedEvent?.payment_upi ? `upi://pay?pa=${selectedEvent.payment_upi}&pn=${encodeURIComponent(selectedEvent.payment_payee || selectedEvent.name)}&am=${payableAmount}&cu=INR&tn=${encodeURIComponent(selectedEvent.name)}` : '';
-  const qrUrl = upiLink ? `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(upiLink)}` : '';
-  const paymentQrSrc = hasCustomQrImage ? customQrImagePath : qrUrl;
+  const primaryUpiId = selectedEvent?.payment_upi?.trim() || '';
+  const primaryPayee = selectedEvent?.payment_payee?.trim() || selectedEvent.name;
+  const primaryUpiLink = primaryUpiId ? `upi://pay?pa=${primaryUpiId}&pn=${encodeURIComponent(primaryPayee)}&am=${payableAmount}&cu=INR&tn=${encodeURIComponent(selectedEvent.name)}` : '';
+  const primaryQrUrl = primaryUpiLink ? `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(primaryUpiLink)}` : '';
+  const primaryPaymentQrSrc = hasCustomQrImage ? customQrImagePath : primaryQrUrl;
+  const fallbackUpiLink = `upi://pay?pa=${FALLBACK_PAYMENT_UPI_ID}&pn=${encodeURIComponent(FALLBACK_PAYMENT_PAYEE)}&am=${payableAmount}&cu=INR&tn=${encodeURIComponent(`${selectedEvent.name} Backup Payment`)}`;
+  const activeUpiId = useBackupScanner ? FALLBACK_PAYMENT_UPI_ID : primaryUpiId;
+  const activePayee = useBackupScanner ? FALLBACK_PAYMENT_PAYEE : primaryPayee;
+  const activeUpiLink = useBackupScanner ? fallbackUpiLink : primaryUpiLink;
+  const paymentQrSrc = useBackupScanner ? FALLBACK_PAYMENT_QR_IMAGE : primaryPaymentQrSrc;
   const canOpenPaymentApp = typeof window !== 'undefined' && /Android|iPhone|iPad|iPod/i.test(window.navigator.userAgent);
   const isSoloEvent = selectedEvent.min_members === 1 && !selectedEvent.is_team_event;
   const registrationPaused = selectedEvent.registration_enabled === false;
@@ -264,6 +275,10 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   useEffect(() => {
     setCodeCopied(false);
   }, [successReceipt?.registrationCode]);
+
+  useEffect(() => {
+    setUseBackupScanner(false);
+  }, [selectedEvent.slug]);
 
   useEffect(() => {
     if (!successReceipt || !passCardRef.current || typeof window === 'undefined') return;
@@ -530,10 +545,10 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                       <p className="portal-payment-method-card__eyebrow">Payment Methods</p>
                     </div>
                     <a
-                      href={upiLink || '#'}
-                      aria-disabled={!upiLink}
-                      tabIndex={upiLink ? undefined : -1}
-                      className={`portal-payment-method-card__open ${upiLink ? '' : 'is-disabled'}`}
+                      href={activeUpiLink || '#'}
+                      aria-disabled={!activeUpiLink}
+                      tabIndex={activeUpiLink ? undefined : -1}
+                      className={`portal-payment-method-card__open ${activeUpiLink ? '' : 'is-disabled'}`}
                     >
                       <Smartphone size={17} />
                       <span>{canOpenPaymentApp ? 'Open UPI App' : 'UPI App on Mobile'}</span>
@@ -545,29 +560,41 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                       <span>Any UPI App</span>
                     </div>
                     <p className="portal-payment-method-card__note">
-                      {upiLink
+                      {activeUpiLink
                         ? <>On mobile, use <span className="font-semibold text-white">Open UPI App</span>. On laptop, scan the QR below using any UPI app on your phone, then submit the transaction ID and screenshot.</>
                         : <>Scan the QR below using any UPI app on your phone, then submit the transaction ID and screenshot for verification.</>}
                     </p>
+                    <button
+                      type="button"
+                      onClick={() => setUseBackupScanner((current) => !current)}
+                      className="magnetic-button mt-3 inline-flex items-center justify-center gap-2 rounded-xl border border-cyan-300/16 bg-cyan-400/10 px-4 py-2 text-sm font-semibold text-cyan-100"
+                    >
+                      {useBackupScanner ? 'Back to main scanner' : 'Main scanner not working? Use backup scanner'}
+                    </button>
                   </div>
 
                   <div className={`rounded-[1.25rem] border border-white/10 bg-gradient-to-br p-[0.95rem] ${selectedTheme.surface}`}>
                     <div className="flex items-center gap-2 text-white">
                       <QrCode size={18} />
-                      <p className="text-sm font-semibold">Event payment QR</p>
+                      <p className="text-sm font-semibold">{useBackupScanner ? 'Backup payment QR' : 'Event payment QR'}</p>
                     </div>
                     <div className={`mt-3 flex items-center justify-center overflow-hidden rounded-[1.2rem] p-3 ${hasCustomQrImage ? 'aspect-square bg-white' : 'aspect-square bg-white'}`}>
                       {paymentQrSrc ? (
                         <img
                           src={paymentQrSrc}
-                          alt={`${selectedEvent.name} payment QR`}
-                          className={hasCustomQrImage ? 'h-full w-full rounded-[0.9rem] object-cover' : 'h-full w-full max-w-[12rem] object-contain'}
-                          style={hasCustomQrImage ? { objectPosition: customQrObjectPosition, transform: `scale(${customQrScale})` } : undefined}
+                          alt={`${selectedEvent.name} ${useBackupScanner ? 'backup ' : ''}payment QR`}
+                          className={hasCustomQrImage && !useBackupScanner ? 'h-full w-full rounded-[0.9rem] object-cover' : 'h-full w-full max-w-[12rem] object-contain'}
+                          style={hasCustomQrImage && !useBackupScanner ? { objectPosition: customQrObjectPosition, transform: `scale(${customQrScale})` } : undefined}
                         />
                       ) : (
                         <div className="h-full w-full max-w-[12rem] rounded-[1rem] bg-slate-200/30" />
                       )}
                     </div>
+                    {useBackupScanner ? (
+                      <p className="mt-3 text-xs leading-6 text-cyan-100">
+                        Backup scanner is active for this event. Use it only if the main scanner is not working.
+                      </p>
+                    ) : null}
                   </div>
 
                   <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.05] p-[0.95rem]">
@@ -580,22 +607,22 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                       <p className="mt-2 text-lg font-semibold text-white">{formatCurrency(payableAmount)}</p>
                       {selectedEvent.slug === 'rang-manch' ? <p className="mt-1 text-xs text-slate-300">Calculated at Rs 50 per participant.</p> : null}
                     </div>
-                    {selectedEvent.payment_upi ? (
+                    {activeUpiId ? (
                       <div className="mt-3 rounded-[1.05rem] border border-white/10 bg-black/20 p-3">
-                        <p className="text-xs uppercase tracking-[0.16em] text-slate-500">UPI ID</p>
+                        <p className="text-xs uppercase tracking-[0.16em] text-slate-500">{useBackupScanner ? 'Backup UPI ID' : 'UPI ID'}</p>
                         <div className="mt-2 flex items-center justify-between gap-3">
-                          <p className="break-all text-sm font-semibold text-white">{selectedEvent.payment_upi}</p>
-                          <button type="button" onClick={() => navigator.clipboard.writeText(selectedEvent.payment_upi || '')} className="magnetic-button rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white">
+                          <p className="break-all text-sm font-semibold text-white">{activeUpiId}</p>
+                          <button type="button" onClick={() => navigator.clipboard.writeText(activeUpiId)} className="magnetic-button rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white">
                             <Copy size={14} />
                           </button>
                         </div>
                       </div>
                     ) : null}
                     <div className="mt-3 rounded-[1.05rem] border border-white/10 bg-black/20 p-3">
-                      <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Payee Name</p>
-                      <p className="mt-2 text-sm font-semibold text-white">{selectedEvent.payment_payee || selectedEvent.name}</p>
+                      <p className="text-xs uppercase tracking-[0.16em] text-slate-500">{useBackupScanner ? 'Backup Payee' : 'Payee Name'}</p>
+                      <p className="mt-2 text-sm font-semibold text-white">{activePayee}</p>
                     </div>
-                    {!selectedEvent.payment_upi && hasCustomQrImage ? (
+                    {!activeUpiId && hasCustomQrImage && !useBackupScanner ? (
                       <p className="mt-3 text-xs leading-6 text-slate-300">
                         Use the QR image above to complete payment for this event.
                       </p>
