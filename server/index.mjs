@@ -41,7 +41,7 @@ const registrationAlertRecipients = String(process.env.REGISTRATION_ALERT_EMAILS
   .split(',')
   .map((value) => normalizeEmail(value))
   .filter(Boolean);
-const publicAppUrl = String(process.env.PUBLIC_APP_URL || 'https://cognotsav.up.railway.app').trim().replace(/\/+$/, '');
+const publicAppUrl = resolveConfiguredPublicAppUrl();
 const resendApiKey = String(process.env.RESEND_API_KEY || '').trim();
 const brevoApiKey = String(process.env.BREVO_API_KEY || '').trim();
 const resendConfigured = Boolean(resendApiKey && smtpFromEmail);
@@ -71,6 +71,43 @@ const monthIndexByShortName = {
 
 if (!adminAccessKey) {
   throw new Error('ADMIN_ACCESS_KEY is required. Refusing to start with no default admin key.');
+}
+
+function normalizeAppUrl(value) {
+  return String(value || '').trim().replace(/\/+$/, '');
+}
+
+function resolveConfiguredPublicAppUrl() {
+  const explicitUrl = normalizeAppUrl(process.env.PUBLIC_APP_URL);
+  if (explicitUrl) {
+    return explicitUrl;
+  }
+
+  const railwayPublicDomain = normalizeAppUrl(String(process.env.RAILWAY_PUBLIC_DOMAIN || '').replace(/^https?:\/\//i, ''));
+  if (railwayPublicDomain) {
+    return `https://${railwayPublicDomain}`;
+  }
+
+  return '';
+}
+
+function resolveRequestPublicAppUrl(req) {
+  if (!req) return '';
+
+  const forwardedProto = String(req.header('x-forwarded-proto') || '').split(',')[0].trim();
+  const forwardedHost = String(req.header('x-forwarded-host') || '').split(',')[0].trim();
+  const host = forwardedHost || String(req.header('host') || '').trim();
+  const protocol = forwardedProto || req.protocol || 'https';
+
+  if (!host) {
+    return '';
+  }
+
+  return normalizeAppUrl(`${protocol}://${host}`);
+}
+
+function resolvePublicAppUrl(req) {
+  return resolveRequestPublicAppUrl(req) || publicAppUrl || `http://localhost:${port}`;
 }
 
 function buildAllowedOriginSet() {
@@ -759,10 +796,11 @@ function buildPortalEmailHtml({
   `;
 }
 
-function buildStatusEmail(registration) {
+function buildStatusEmail(registration, appUrl = resolvePublicAppUrl()) {
   const eventLine = `${registration.event_name} / ${registration.date_label} / ${registration.time_label}`;
   const salutation = registration.contact_name || registration.team_name || 'Participant';
   const statusTitle = formatStatusTitle(registration.status);
+  const passLink = `${appUrl}/pass/${encodeURIComponent(registration.registration_code)}`;
 
   const introByStatus = {
     verified:
@@ -805,6 +843,7 @@ function buildStatusEmail(registration) {
       ? [
           `Amount paid: INR ${registration.total_amount}`,
           `Payment reference: ${registration.payment_reference || 'Pending manual entry'}`,
+          `Official pass: ${passLink}`,
         ]
       : []),
     ...(reviewNoteLine ? ['', reviewNoteLine] : []),
@@ -834,7 +873,6 @@ function buildStatusEmail(registration) {
   const safeStatusLabel = escapeHtml(getPaymentStatusLabel(registration.status));
   const safePaymentReference = escapeHtml(registration.payment_reference || 'Pending manual entry');
   const safeTotalAmount = escapeHtml(`INR ${registration.total_amount}`);
-  const passLink = `${publicAppUrl}/pass/${encodeURIComponent(registration.registration_code)}`;
   const verifiedPassInstructions = registration.status === 'verified'
     ? `
         <div style="margin-top:18px;border-radius:20px;padding:18px;background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(34,211,238,0.1));border:1px solid rgba(52,211,153,0.18);color:#ecfdf5;line-height:1.75;">
@@ -886,7 +924,7 @@ function buildStatusEmail(registration) {
   };
 }
 
-function buildAdminRegistrationAlertEmail(registration) {
+function buildAdminRegistrationAlertEmail(registration, appUrl = resolvePublicAppUrl()) {
   const eventLine = `${registration.event_name} / ${registration.date_label} / ${registration.time_label}`;
   const statusLabel = getPaymentStatusLabel(registration.status);
   const participantsSummary = Array.isArray(registration.participants) && registration.participants.length > 0
@@ -931,7 +969,7 @@ function buildAdminRegistrationAlertEmail(registration) {
     'Participants:',
     participantsSummary,
     '',
-    `Admin panel: ${publicAppUrl}/#admin-registrations`,
+    `Admin panel: ${appUrl}/#admin-registrations`,
   ].filter(Boolean).join('\n');
   const gridSections = buildEmailInfoGrid([
     { label: 'Registration code', value: escapeHtml(registration.registration_code) },
@@ -963,7 +1001,7 @@ function buildAdminRegistrationAlertEmail(registration) {
           ${participantsHtml}
         </div>
         <div style="margin-top:16px;text-align:center;">
-          <a href="${publicAppUrl}/#admin-registrations" style="display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:linear-gradient(90deg,#67e8f9,#fbbf24);color:#041018;text-decoration:none;padding:13px 22px;font-size:13px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;">Open Admin Panel</a>
+          <a href="${appUrl}/#admin-registrations" style="display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:linear-gradient(90deg,#67e8f9,#fbbf24);color:#041018;text-decoration:none;padding:13px 22px;font-size:13px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;">Open Admin Panel</a>
         </div>
       </div>
     `,
@@ -977,12 +1015,12 @@ function buildAdminRegistrationAlertEmail(registration) {
   };
 }
 
-async function sendAdminRegistrationAlert(registration) {
+async function sendAdminRegistrationAlert(registration, options = {}) {
   if (!registration || registrationAlertRecipients.length === 0 || !emailConfigured) {
     return null;
   }
 
-  const email = buildAdminRegistrationAlertEmail(registration);
+  const email = buildAdminRegistrationAlertEmail(registration, resolvePublicAppUrl(options.req));
 
   try {
     await sendPortalMail({
@@ -1084,10 +1122,10 @@ async function getNotificationReadyRegistration(registrationId) {
   return result.rows[0] ?? null;
 }
 
-async function sendStatusNotification(registration) {
+async function sendStatusNotification(registration, options = {}) {
   if (!registration) return null;
 
-  const email = buildStatusEmail(registration);
+  const email = buildStatusEmail(registration, resolvePublicAppUrl(options.req));
 
   if (!emailConfigured) {
     return logRegistrationNotification({
@@ -1635,7 +1673,7 @@ function buildBroadcastEmail(registration, announcement) {
   };
 }
 
-function buildVerifiedPassPage(registration) {
+function buildVerifiedPassPage(registration, appUrl = resolvePublicAppUrl()) {
   const logoUrl = 'https://res.cloudinary.com/dkxddhawc/image/upload/v1774197829/Screenshot_2026-03-22_220018_oln02p.png';
 
   return `
@@ -1705,7 +1743,7 @@ function buildVerifiedPassPage(registration) {
               </div>
               <div class="actions">
                 <a class="button button-primary" href="javascript:window.print()">Print / Save PDF</a>
-                <a class="button button-secondary" href="${publicAppUrl}#tracker">Open Tracker</a>
+                <a class="button button-secondary" href="${appUrl}/#tracker">Open Tracker</a>
               </div>
             </div>
           </div>
@@ -1943,7 +1981,7 @@ function startBackupWorker() {
   }
 }
 
-async function promoteNextWaitlistedRegistration(eventSlug) {
+async function promoteNextWaitlistedRegistration(eventSlug, options = {}) {
   const waitlistResult = await pool.query(
     `
       SELECT id
@@ -1972,7 +2010,7 @@ async function promoteNextWaitlistedRegistration(eventSlug) {
   );
 
   const registration = await getNotificationReadyRegistration(registrationId);
-  const notification = await sendStatusNotification(registration);
+  const notification = await sendStatusNotification(registration, options);
   const refreshedRegistration = await fetchAdminRegistrationById(registrationId);
 
   return {
@@ -2202,7 +2240,7 @@ app.get('/pass/:registrationCode', async (req, res) => {
   }
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  return res.send(buildVerifiedPassPage(registration));
+  return res.send(buildVerifiedPassPage(registration, resolvePublicAppUrl(req)));
 });
 
 app.post('/api/registrations', async (req, res) => {
@@ -2400,8 +2438,8 @@ app.post('/api/registrations', async (req, res) => {
       time_label: event.time_label,
       venue: event.venue,
     };
-    const notification = await sendStatusNotification(notificationRegistration);
-    await sendAdminRegistrationAlert(notificationRegistration);
+    const notification = await sendStatusNotification(notificationRegistration, { req });
+    await sendAdminRegistrationAlert(notificationRegistration, { req });
 
     return res.status(201).json({
       success: true,
@@ -2647,7 +2685,7 @@ app.post('/api/admin/registrations/special', requireAdmin, async (req, res) => {
       venue: event.venue,
     };
 
-    const notification = await sendStatusNotification(notificationRegistration);
+    const notification = await sendStatusNotification(notificationRegistration, { req });
     const registration = await fetchAdminRegistrationById(
       registrationId,
       req.adminAccess?.mode === 'event' ? req.adminAccess.eventSlug : null,
@@ -2719,7 +2757,7 @@ app.patch('/api/admin/registrations/:id/status', requireAdmin, async (req, res) 
   let notification = null;
   if (previousStatus !== status) {
     const registration = await getNotificationReadyRegistration(id);
-    notification = await sendStatusNotification(registration);
+    notification = await sendStatusNotification(registration, { req });
   }
 
   let promotedRegistration = null;
@@ -2728,7 +2766,7 @@ app.patch('/api/admin/registrations/:id/status', requireAdmin, async (req, res) 
     previousStatus !== 'waitlisted' &&
     status === 'rejected'
   ) {
-    promotedRegistration = await promoteNextWaitlistedRegistration(eventSlug);
+    promotedRegistration = await promoteNextWaitlistedRegistration(eventSlug, { req });
   }
 
   const refreshedRegistration = await fetchAdminRegistrationById(
@@ -2819,7 +2857,7 @@ app.delete('/api/admin/registrations/:id', requireAdmin, async (req, res) => {
 
   let promotedRegistration = null;
   if (registration.status !== 'rejected' && registration.status !== 'waitlisted') {
-    promotedRegistration = await promoteNextWaitlistedRegistration(registration.event_slug);
+    promotedRegistration = await promoteNextWaitlistedRegistration(registration.event_slug, { req });
   }
 
   return res.json({
@@ -3025,7 +3063,7 @@ app.post('/api/admin/registrations/:id/notifications/status-email', requireAdmin
     return res.status(403).json({ error: 'This access key can email only its assigned event registrations.' });
   }
 
-  const notification = await sendStatusNotification(registration);
+  const notification = await sendStatusNotification(registration, { req });
   const refreshedRegistration = await fetchAdminRegistrationById(
     id,
     req.adminAccess?.mode === 'event' ? req.adminAccess.eventSlug : null,
