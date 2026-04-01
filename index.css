@@ -7866,6 +7866,19 @@ footer {
     display: none;
   }
 
+  .portal-glow-card::after,
+  .portal-brochure-strip::before,
+  .portal-department-strip::before,
+  .portal-department-strip::after,
+  .portal-faq-shell::before,
+  .portal-faq-shell::after,
+  .portal-footer-shell::before,
+  .portal-footer-shell::after,
+  .portal-memory-showcase::before,
+  .portal-memory-showcase::after {
+    display: none;
+  }
+
   .portal-glass,
   .portal-nav-shell,
   .portal-bottom-dock,
