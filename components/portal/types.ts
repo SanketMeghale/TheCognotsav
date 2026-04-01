@@ -144,7 +144,6 @@ export type AdminRegistration = {
   updated_at?: string;
   event_name: string;
   event_slug: string;
-  admin_event_override_slug?: string | null;
   date_label: string;
   time_label: string;
   venue: string;

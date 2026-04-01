@@ -2008,47 +2008,6 @@ export const App: React.FC = () => {
     }
   };
 
-  const reassignAdminRegistrationEvent = async (
-    registrationId: string,
-    eventSlug: 'techxcelerate' | 'techxcelerate-poster-presentation',
-  ) => {
-    setAdminError('');
-    try {
-      const response = await fetch(`/api/admin/registrations/${registrationId}/event`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-admin-key': adminKey,
-        },
-        body: JSON.stringify({ eventSlug }),
-      });
-      const { data: payload, rawText } = await readApiBody<{
-        error?: string;
-        registration?: AdminRegistration;
-      }>(response);
-
-      if (!response.ok) {
-        throw new Error(getApiErrorMessage(response, payload, rawText, 'Failed to move registration.'));
-      }
-
-      if (!payload?.registration) {
-        throw new Error('The registration was moved, but the refreshed registration details were missing.');
-      }
-
-      setAdminRows((current) =>
-        current.map((row) => (row.id === registrationId ? payload.registration ?? row : row)),
-      );
-      setToastClosing(false);
-      setToastMessage(
-        eventSlug === 'techxcelerate'
-          ? 'Registration moved to Project Expo.'
-          : 'Registration moved to Poster Presentation.',
-      );
-    } catch (error) {
-      setAdminError(error instanceof Error ? error.message : 'Failed to move registration.');
-    }
-  };
-
   const sendBroadcast = async (payload: {
     title: string;
     message: string;
@@ -2321,7 +2280,6 @@ export const App: React.FC = () => {
             onDownload={downloadAdminFile}
             onStatusChange={updateAdminStatus}
             onDeleteRegistration={deleteAdminRegistration}
-            onReassignRegistrationEvent={reassignAdminRegistrationEvent}
             onToggleEventRegistrationState={toggleEventRegistrationState}
             onSaveReviewNote={saveReviewNote}
             onResendStatusEmail={resendAdminStatusEmail}

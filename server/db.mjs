@@ -71,7 +71,6 @@ export async function initDatabase() {
       payment_provider_order_id TEXT,
       payment_provider_payment_id TEXT,
       payment_provider_signature TEXT,
-      admin_event_override_slug TEXT,
       total_amount INTEGER NOT NULL DEFAULT 0,
       status TEXT NOT NULL DEFAULT 'pending',
       verified_at TIMESTAMPTZ,
@@ -144,7 +143,6 @@ export async function initDatabase() {
     ALTER TABLE registrations ADD COLUMN IF NOT EXISTS payment_provider_order_id TEXT;
     ALTER TABLE registrations ADD COLUMN IF NOT EXISTS payment_provider_payment_id TEXT;
     ALTER TABLE registrations ADD COLUMN IF NOT EXISTS payment_provider_signature TEXT;
-    ALTER TABLE registrations ADD COLUMN IF NOT EXISTS admin_event_override_slug TEXT;
     ALTER TABLE registrations ADD COLUMN IF NOT EXISTS verified_at TIMESTAMPTZ;
     ALTER TABLE registrations ADD COLUMN IF NOT EXISTS review_note TEXT;
     ALTER TABLE registrations ADD COLUMN IF NOT EXISTS attendance_status TEXT NOT NULL DEFAULT 'registered';
