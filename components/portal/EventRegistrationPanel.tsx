@@ -14,6 +14,7 @@ type FormState = {
   contactName: string;
   contactEmail: string;
   contactPhone: string;
+  presentationMode: string;
   paymentReference: string;
   notes: string;
   participants: ParticipantDraft[];
@@ -275,6 +276,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const isSoloEvent = selectedEvent.min_members === 1 && !selectedEvent.is_team_event;
   const registrationPaused = selectedEvent.registration_enabled === false;
   const usesPerParticipantFee = selectedEvent.slug === 'rang-manch' || selectedEvent.slug === 'techxcelerate-poster-presentation';
+  const showsPresentationModeSelector = selectedEvent.slug === 'techxcelerate';
   const scrollBehavior = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
     ? 'auto'
     : 'smooth';
@@ -523,6 +525,22 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                   <div className="rounded-[1.15rem] border border-white/10 bg-white/[0.05] px-4 py-4 text-sm text-slate-200">
                     Review flow: payment proof is checked by admins after submission.
                   </div>
+                  {showsPresentationModeSelector ? (
+                    <label className="block">
+                      <span className="mb-2 block text-sm text-slate-200">Presentation mode</span>
+                      <select
+                        value={form.presentationMode}
+                        onChange={(event) => onFormFieldChange('presentationMode', event.target.value)}
+                        onBlur={() => onFieldBlur('presentationMode')}
+                        className={`floating-field-input ${showError('presentationMode') ? 'field-invalid' : ''}`}
+                      >
+                        <option value="">Select mode</option>
+                        <option value="online">Online presentation</option>
+                        <option value="offline">Offline presentation</option>
+                      </select>
+                      {showError('presentationMode') ? <span className="floating-field-error">{showError('presentationMode')}</span> : null}
+                    </label>
+                  ) : null}
                   {isSoloEvent ? null : (
                     <div className="sm:col-span-2">
                       <FloatingField label="Team name" value={form.teamName} onChange={(value) => onFormFieldChange('teamName', value)} onBlur={() => onFieldBlur('teamName')} error={showError('teamName')} required />

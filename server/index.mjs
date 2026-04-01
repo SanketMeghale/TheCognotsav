@@ -192,6 +192,10 @@ const groupedAdminEventSlugs = new Map([
   ['techxcelerate', ['techxcelerate', 'techxcelerate-poster-presentation']],
   ['techxcelerate-poster-presentation', ['techxcelerate', 'techxcelerate-poster-presentation']],
 ]);
+const techxceleratePresentationLinks = {
+  online: 'https://chat.whatsapp.com/DuoLgaR6qKP5Qxk91MSaX9?mode=gi_t',
+  offline: 'https://chat.whatsapp.com/FcAY4bfsJO6FxIrmHvFvun?mode=gi_t',
+};
 
 function resolveAdminAccess(key) {
   const normalizedKey = String(key || '').trim();
@@ -217,6 +221,24 @@ function resolveScopedAdminEventSlugs(eventSlug) {
   }
 
   return groupedAdminEventSlugs.get(normalizedSlug) || [normalizedSlug];
+}
+
+function resolveTechxceleratePresentationLink(registration) {
+  if (registration?.event_slug !== 'techxcelerate') {
+    return null;
+  }
+
+  const presentationMode = String(registration.presentation_mode || '').trim().toLowerCase();
+  const url = techxceleratePresentationLinks[presentationMode];
+  if (!url) {
+    return null;
+  }
+
+  return {
+    mode: presentationMode,
+    label: presentationMode === 'online' ? 'Online presentation' : 'Offline presentation',
+    url,
+  };
 }
 
 async function buildAdminAccessPayload(access) {
@@ -858,6 +880,7 @@ function buildStatusEmail(registration, appUrl = resolvePublicAppUrl()) {
   const salutation = registration.contact_name || registration.team_name || 'Participant';
   const statusTitle = formatStatusTitle(registration.status);
   const passLink = `${appUrl}/pass/${encodeURIComponent(registration.registration_code)}`;
+  const techxceleratePresentationInvite = resolveTechxceleratePresentationLink(registration);
 
   const introByStatus = {
     verified:
@@ -903,6 +926,9 @@ function buildStatusEmail(registration, appUrl = resolvePublicAppUrl()) {
           `Official pass: ${passLink}`,
         ]
       : []),
+    ...(techxceleratePresentationInvite
+      ? [`Presentation mode: ${techxceleratePresentationInvite.label}`, `Presentation group: ${techxceleratePresentationInvite.url}`]
+      : []),
     ...(reviewNoteLine ? ['', reviewNoteLine] : []),
     '',
     nextStep,
@@ -930,6 +956,18 @@ function buildStatusEmail(registration, appUrl = resolvePublicAppUrl()) {
   const safeStatusLabel = escapeHtml(getPaymentStatusLabel(registration.status));
   const safePaymentReference = escapeHtml(registration.payment_reference || 'Pending manual entry');
   const safeTotalAmount = escapeHtml(`INR ${registration.total_amount}`);
+  const techxceleratePresentationInviteHtml = techxceleratePresentationInvite
+    ? `
+        <div style="margin-top:14px;border-radius:16px;padding:14px;background:linear-gradient(135deg,rgba(59,130,246,0.12),rgba(34,211,238,0.08));border:1px solid rgba(96,165,250,0.18);">
+          <div style="font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:#bfdbfe;font-weight:800;">Techxcelerate ${escapeHtml(techxceleratePresentationInvite.label)}</div>
+          <div style="margin-top:7px;color:#dbeafe;line-height:1.58;">Join your presentation coordination group using the link below.</div>
+          <div style="margin-top:12px;text-align:center;">
+            <a class="portal-email-button" href="${techxceleratePresentationInvite.url}" style="display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:linear-gradient(90deg,#67e8f9,#60a5fa);color:#041018;text-decoration:none;padding:12px 20px;font-size:12px;font-weight:800;letter-spacing:0.11em;text-transform:uppercase;">Join ${escapeHtml(techxceleratePresentationInvite.label)} Group</a>
+          </div>
+          <div class="portal-email-inline-note" style="margin-top:9px;font-size:11px;color:#cbd5e1;line-height:1.55;">Link: <span style="color:#ffffff;word-break:break-all;">${techxceleratePresentationInvite.url}</span></div>
+        </div>
+      `
+    : '';
   const verifiedPassTopAction = registration.status === 'verified'
     ? `
         <div style="border-radius:16px;padding:14px;background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(34,211,238,0.1));border:1px solid rgba(52,211,153,0.18);">
@@ -975,7 +1013,7 @@ function buildStatusEmail(registration, appUrl = resolvePublicAppUrl()) {
     topAction: verifiedPassTopAction,
     sections: [gridSections],
     notice: registration.review_note ? `Organizer note: ${escapeHtml(registration.review_note)}` : '',
-    bodyAfterGrid: `${safeNextStep}${verifiedPassInstructions}`,
+    bodyAfterGrid: `${safeNextStep}${techxceleratePresentationInviteHtml}${verifiedPassInstructions}`,
   });
 
   return {
@@ -1165,6 +1203,7 @@ async function getNotificationReadyRegistration(registrationId) {
         r.contact_name,
         r.contact_email,
         r.contact_phone,
+        r.presentation_mode,
         r.payment_reference,
         r.total_amount,
         r.status,
@@ -2315,6 +2354,7 @@ app.post('/api/registrations', async (req, res) => {
     contactName,
     contactEmail,
     contactPhone,
+    presentationMode,
     paymentReference,
     paymentScreenshotDataUrl,
     notes,
@@ -2358,6 +2398,11 @@ app.post('/api/registrations', async (req, res) => {
     return res.status(400).json({
       error: `This event accepts ${event.min_members} to ${event.max_members} participants.`,
     });
+  }
+
+  const normalizedPresentationMode = String(presentationMode || '').trim().toLowerCase();
+  if (event.slug === 'techxcelerate' && !['online', 'offline'].includes(normalizedPresentationMode)) {
+    return res.status(400).json({ error: 'Choose online or offline presentation for Techxcelerate Project Expo.' });
   }
 
   const registrationId = randomUUID();
@@ -2415,14 +2460,14 @@ app.post('/api/registrations', async (req, res) => {
         INSERT INTO registrations (
           id, registration_code, event_slug, team_name, college_name, department_name,
           year_of_study, contact_name, contact_email, contact_phone, registration_source, payment_method,
-          payment_reference, payment_screenshot_path, payment_provider_order_id,
+          presentation_mode, payment_reference, payment_screenshot_path, payment_provider_order_id,
           payment_provider_payment_id, payment_provider_signature, total_amount, status, notes, invite_token
         )
         VALUES (
           $1, $2, $3, $4, $5, $6,
           $7, $8, $9, $10, $11,
-          $12, $13, $14, $15, $16, $17,
-          $18, $19, $20, $21
+          $12, $13, $14, $15, $16, $17, $18,
+          $19, $20, $21, $22
         )
       `,
       [
@@ -2438,6 +2483,7 @@ app.post('/api/registrations', async (req, res) => {
         String(contactPhone).trim(),
         'online',
         'upi',
+        event.slug === 'techxcelerate' ? normalizedPresentationMode : null,
         paymentReference ? String(paymentReference).trim() : null,
         paymentScreenshotPath,
         null,
@@ -2485,6 +2531,7 @@ app.post('/api/registrations', async (req, res) => {
       contact_name: String(contactName).trim(),
       contact_email: normalizeEmail(contactEmail),
       contact_phone: String(contactPhone).trim(),
+      presentation_mode: event.slug === 'techxcelerate' ? normalizedPresentationMode : null,
       payment_reference: paymentReference ? String(paymentReference).trim() : null,
       total_amount: totalAmount,
       status: initialStatus,

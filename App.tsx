@@ -133,6 +133,7 @@ type FormState = {
   contactName: string;
   contactEmail: string;
   contactPhone: string;
+  presentationMode: string;
   paymentReference: string;
   notes: string;
   participants: ParticipantDraft[];
@@ -853,6 +854,10 @@ function buildValidationErrors(
     errors.contactPhone = 'Enter a valid 10-digit phone number.';
   }
 
+  if (selectedEvent?.slug === 'techxcelerate' && !form.presentationMode.trim()) {
+    errors.presentationMode = 'Choose online or offline presentation.';
+  }
+
   if (!form.paymentReference.trim()) {
     errors.paymentReference = 'Transaction ID is required.';
   } else if (form.paymentReference.trim().length < 6) {
@@ -945,6 +950,7 @@ export const App: React.FC = () => {
     contactName: '',
     contactEmail: '',
     contactPhone: '',
+    presentationMode: '',
     paymentReference: '',
     notes: '',
     participants: makeParticipants(1),
@@ -1629,6 +1635,7 @@ export const App: React.FC = () => {
           contactName: form.contactName,
           contactEmail: form.contactEmail,
           contactPhone: form.contactPhone,
+          presentationMode: form.presentationMode,
           paymentMethod: 'upi',
           paymentReference: form.paymentReference,
           paymentScreenshotDataUrl,
@@ -1698,6 +1705,7 @@ export const App: React.FC = () => {
         contactName: '',
         contactEmail: '',
         contactPhone: '',
+        presentationMode: '',
         paymentReference: '',
         notes: '',
         participants: makeParticipants(selectedEvent.min_members),
