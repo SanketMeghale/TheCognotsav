@@ -196,6 +196,7 @@ const techxceleratePresentationLinks = {
   online: 'https://chat.whatsapp.com/DuoLgaR6qKP5Qxk91MSaX9?mode=gi_t',
   offline: 'https://chat.whatsapp.com/FcAY4bfsJO6FxIrmHvFvun?mode=gi_t',
 };
+const utopiaApprovedGroupLink = 'https://chat.whatsapp.com/C8RKDGK2uzT4X5K14jY2aZ?mode=gi_t';
 
 function resolveAdminAccess(key) {
   const normalizedKey = String(key || '').trim();
@@ -239,6 +240,22 @@ function resolveTechxceleratePresentationLink(registration) {
     label: presentationMode === 'online' ? 'Online presentation' : 'Offline presentation',
     url,
   };
+}
+
+function resolveApprovedEventGroupInvite(registration) {
+  if (registration?.status !== 'verified') {
+    return null;
+  }
+
+  if (registration?.event_slug === 'utopia') {
+    return {
+      label: 'Utopia Coordination Group',
+      description: 'Join the approved Utopia coordination group using the link below.',
+      url: utopiaApprovedGroupLink,
+    };
+  }
+
+  return null;
 }
 
 async function buildAdminAccessPayload(access) {
@@ -885,6 +902,7 @@ function buildStatusEmail(registration, appUrl = resolvePublicAppUrl()) {
   const statusTitle = formatStatusTitle(registration.status);
   const passLink = `${appUrl}/pass/${encodeURIComponent(registration.registration_code)}`;
   const techxceleratePresentationInvite = resolveTechxceleratePresentationLink(registration);
+  const approvedEventGroupInvite = resolveApprovedEventGroupInvite(registration);
 
   const introByStatus = {
     verified:
@@ -933,6 +951,9 @@ function buildStatusEmail(registration, appUrl = resolvePublicAppUrl()) {
     ...(techxceleratePresentationInvite
       ? [`Presentation mode: ${techxceleratePresentationInvite.label}`, `Presentation group: ${techxceleratePresentationInvite.url}`]
       : []),
+    ...(approvedEventGroupInvite
+      ? [`Event group: ${approvedEventGroupInvite.url}`]
+      : []),
     ...(reviewNoteLine ? ['', reviewNoteLine] : []),
     '',
     nextStep,
@@ -969,6 +990,18 @@ function buildStatusEmail(registration, appUrl = resolvePublicAppUrl()) {
             <a class="portal-email-button" href="${techxceleratePresentationInvite.url}" style="display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:linear-gradient(90deg,#67e8f9,#60a5fa);color:#041018;text-decoration:none;padding:12px 20px;font-size:12px;font-weight:800;letter-spacing:0.11em;text-transform:uppercase;">Join ${escapeHtml(techxceleratePresentationInvite.label)} Group</a>
           </div>
           <div class="portal-email-inline-note" style="margin-top:9px;font-size:11px;color:#cbd5e1;line-height:1.55;">Link: <span style="color:#ffffff;word-break:break-all;">${techxceleratePresentationInvite.url}</span></div>
+        </div>
+      `
+    : '';
+  const approvedEventGroupInviteHtml = approvedEventGroupInvite
+    ? `
+        <div style="margin-top:14px;border-radius:16px;padding:14px;background:linear-gradient(135deg,rgba(251,191,36,0.12),rgba(59,130,246,0.08));border:1px solid rgba(250,204,21,0.18);">
+          <div style="font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:#fde68a;font-weight:800;">${escapeHtml(approvedEventGroupInvite.label)}</div>
+          <div style="margin-top:7px;color:#f8fafc;line-height:1.58;">${escapeHtml(approvedEventGroupInvite.description)}</div>
+          <div style="margin-top:12px;text-align:center;">
+            <a class="portal-email-button" href="${approvedEventGroupInvite.url}" style="display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:linear-gradient(90deg,#fcd34d,#60a5fa);color:#041018;text-decoration:none;padding:12px 20px;font-size:12px;font-weight:800;letter-spacing:0.11em;text-transform:uppercase;">Join Event Group</a>
+          </div>
+          <div class="portal-email-inline-note" style="margin-top:9px;font-size:11px;color:#cbd5e1;line-height:1.55;">Link: <span style="color:#ffffff;word-break:break-all;">${approvedEventGroupInvite.url}</span></div>
         </div>
       `
     : '';
@@ -1017,7 +1050,7 @@ function buildStatusEmail(registration, appUrl = resolvePublicAppUrl()) {
     topAction: verifiedPassTopAction,
     sections: [gridSections],
     notice: registration.review_note ? `Organizer note: ${escapeHtml(registration.review_note)}` : '',
-    bodyAfterGrid: `${safeNextStep}${techxceleratePresentationInviteHtml}${verifiedPassInstructions}`,
+    bodyAfterGrid: `${safeNextStep}${techxceleratePresentationInviteHtml}${approvedEventGroupInviteHtml}${verifiedPassInstructions}`,
   });
 
   return {

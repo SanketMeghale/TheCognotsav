@@ -222,7 +222,7 @@ export const eventSeed = [
       'Flagship coding challenge with flexible squad formation and a review-friendly registration pipeline.',
     prize: 'INR 5,000',
     registration_fee: 250,
-    registration_fee_label: 'INR 250 per registration',
+    registration_fee_label: 'INR 250 per team',
     min_members: 1,
     max_members: 5,
     max_slots: 80,

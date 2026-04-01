@@ -152,10 +152,10 @@ const handbookBySlug: Record<string, {
   utopia: {
     theme: 'Concept. Code. Conquer.',
     overview: 'A flagship state-level hackathon designed as a high-intensity tech sprint where teams build and present a working MVP under strict time pressure.',
-    highlights: ['1 to 5 members per team', '3 hour build phase followed by 2 hour showdown and jury evaluation', 'Cross-institutional teams are allowed', 'AI tools and open-source resources may be used with proper disclosure'],
+    highlights: ['1 to 5 members per team', '3 hour build phase with jury evaluation', 'Cross-institutional teams are allowed', 'AI tools and open-source resources may be used with proper disclosure'],
     rules: ['All development must happen only within the official 3 hour build window', 'Only one registration per team is allowed and no mid-event team switching is permitted', 'Teams must carry valid college ID cards and registration confirmation', 'Misuse of AI tools or professional misconduct is grounds for disqualification'],
     handbookUrl: '/handbooks/utopia.pdf',
-    quickDetails: ['Format: Hackathon / MVP sprint', 'Fee: Rs 250 per team', 'Duration: 3 hr build + 2 hr showdown'],
+    quickDetails: ['Format: Hackathon / MVP sprint', 'Fee: Rs 250 per team', 'Duration: 3 hr build'],
   },
 };
 
@@ -262,7 +262,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const payableAmount = selectedEvent ? resolveEventAmount(selectedEvent, teamSize) : 0;
   const customQrImagePath = selectedEvent?.payment_qr_image_path?.trim() || '';
   const hasCustomQrImage = Boolean(customQrImagePath);
-  const prefersDynamicPaymentQr = selectedEvent?.slug === 'techxcelerate' || selectedEvent?.slug === 'rang-manch';
+  const prefersDynamicPaymentQr = selectedEvent?.slug === 'techxcelerate' || selectedEvent?.slug === 'rang-manch' || selectedEvent?.slug === 'utopia';
   const customQrObjectPosition = selectedEvent ? resolveCustomQrObjectPosition(selectedEvent.slug) : 'center center';
   const customQrScale = selectedEvent ? resolveCustomQrScale(selectedEvent.slug) : 1;
   const primaryUpiId = selectedEvent?.payment_upi?.trim() || '';
