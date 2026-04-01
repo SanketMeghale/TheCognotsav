@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-  AlertTriangle, ArrowLeft, ArrowRight, BarChart3, CheckCircle2, Clock3, Download,
-  ChevronDown, ChevronUp, Eye, EyeOff, FileSpreadsheet, HardDriveDownload, Mail, Megaphone,
-  RotateCcw, Save, Search, Send, ShieldCheck, Trash2, Users, XCircle,
+  AlertTriangle, ArrowLeft, ArrowRight, BarChart3, CheckCircle2, ChevronDown, ChevronUp, Clock3,
+  Copy, Download, Eye, EyeOff, FileSpreadsheet, HardDriveDownload, Hash, IndianRupee, Mail,
+  Megaphone, MoreVertical, RotateCcw, Save, Search, Send, ShieldCheck, Trash2, Users, XCircle,
 } from 'lucide-react';
 import type {
   AdminAccessScope,
@@ -146,6 +146,19 @@ function FloatingField({ label, icon, value, type = 'text', onChange }: { label:
   );
 }
 
+function compactReference(value: string | null | undefined) {
+  const normalized = String(value || '').trim();
+  if (!normalized) {
+    return 'Not added';
+  }
+
+  if (normalized.length <= 12) {
+    return normalized.toUpperCase();
+  }
+
+  return `${normalized.slice(0, 10).toUpperCase()}...`;
+}
+
 export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, adminMainKey, adminEventKey, adminEventKeySlug, adminScope, adminRows, events, announcements, backups, adminLoading, adminError, onAdminAccessModeChange, onAdminMainKeyChange, onAdminEventKeyChange, onAdminEventKeySlugChange, onLoadAdminRows, onDownload, onStatusChange, onDeleteRegistration, onToggleEventRegistrationState, onSaveReviewNote, onResendStatusEmail, onSendBroadcast, onDeleteAnnouncement, onRunBackup, onDownloadBackup }) => {
   const [activeView, setActiveView] = useState<AdminView>('overview');
   const [searchQuery, setSearchQuery] = useState('');
@@ -270,6 +283,15 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
       setActiveView('verification');
     }
   }, [isGlobalAccess]);
+
+  const copyToClipboard = (value: string | null | undefined) => {
+    const normalized = String(value || '').trim();
+    if (!normalized || typeof navigator === 'undefined' || !navigator.clipboard?.writeText) {
+      return;
+    }
+
+    navigator.clipboard.writeText(normalized).catch(() => {});
+  };
 
   return (
     <main className={`${shellClassName} portal-admin-page space-y-4 pb-10 md:space-y-8 md:pb-20`}>
@@ -612,64 +634,75 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
           {filteredRows.map((row) => (
             <article key={row.id} className="portal-admin-entry rounded-[1.7rem] border border-white/10 bg-[linear-gradient(145deg,rgba(12,20,35,0.92),rgba(18,27,45,0.82))] p-4 md:p-5">
               <div className="portal-admin-entry__header flex flex-col gap-4">
-                <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                <div className="portal-admin-entry__topline flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <button type="button" onClick={() => setExpandedRowId((current) => current === row.id ? null : row.id)} className="portal-admin-entry__trigger min-w-0 text-left">
-                        <p className="truncate text-lg font-semibold text-white">{row.team_name}</p>
+                        <p className="truncate text-[1.65rem] font-semibold text-white">{row.team_name}</p>
                       </button>
                       <span className={`portal-admin-entry__badge rounded-full border px-3 py-1 text-[11px] uppercase tracking-[0.2em] ${statusStyles[row.status] || 'border-white/10 bg-white/5 text-white'}`}>{prettyStatus(row.status)}</span>
-                      <span className="portal-admin-entry__code inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-slate-200">
-                        {row.registration_code}
-                        <Eye size={12} className="text-cyan-200" />
-                      </span>
                     </div>
                     <div className="portal-admin-entry__quickline mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-300">
                       <span>{resolveAdminEventName(row, events)}</span>
                       <span className="portal-admin-entry__meta-dot" aria-hidden="true" />
-                      <span>{row.participants.length} {row.participants.length === 1 ? 'participant' : 'participants'}</span>
-                      <span className="portal-admin-entry__meta-dot" aria-hidden="true" />
-                      <span>{row.date_label}</span>
+                      <span>{row.participants.length} {row.participants.length === 1 ? 'Participant' : 'Participants'}</span>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between gap-2 lg:flex-col lg:items-end">
-                    <div className="flex flex-wrap justify-end gap-2">
-                      {row.duplicate_email_count > 0 ? <span className="portal-admin-entry__badge inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-400/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-amber-100"><AlertTriangle size={12} />Email x{row.duplicate_email_count}</span> : null}
-                      {row.duplicate_phone_count > 0 ? <span className="portal-admin-entry__badge inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-400/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-amber-100"><AlertTriangle size={12} />Phone x{row.duplicate_phone_count}</span> : null}
-                      {row.duplicate_payment_count > 0 ? <span className="portal-admin-entry__badge inline-flex items-center gap-2 rounded-full border border-rose-300/20 bg-rose-400/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-rose-100"><AlertTriangle size={12} />Payment x{row.duplicate_payment_count}</span> : null}
+                  <button
+                    type="button"
+                    onClick={() => setExpandedRowId((current) => current === row.id ? null : row.id)}
+                    className="portal-admin-entry__menu magnetic-button inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-200"
+                    aria-label={expandedRowId === row.id ? 'Hide details' : 'Show details'}
+                  >
+                    {expandedRowId === row.id ? <ChevronUp size={18} /> : <MoreVertical size={18} />}
+                  </button>
+                </div>
+
+                {row.duplicate_email_count > 0 || row.duplicate_phone_count > 0 || row.duplicate_payment_count > 0 ? (
+                  <div className="portal-admin-entry__warning-row flex flex-wrap gap-2">
+                    {row.duplicate_email_count > 0 ? <span className="portal-admin-entry__badge inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-400/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-amber-100"><AlertTriangle size={12} />Email x{row.duplicate_email_count}</span> : null}
+                    {row.duplicate_phone_count > 0 ? <span className="portal-admin-entry__badge inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-400/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-amber-100"><AlertTriangle size={12} />Phone x{row.duplicate_phone_count}</span> : null}
+                    {row.duplicate_payment_count > 0 ? <span className="portal-admin-entry__badge inline-flex items-center gap-2 rounded-full border border-rose-300/20 bg-rose-400/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-rose-100"><AlertTriangle size={12} />Payment x{row.duplicate_payment_count}</span> : null}
+                  </div>
+                ) : null}
+
+                <div className="portal-admin-entry__summary-shell">
+                  <div className="portal-admin-entry__fact portal-admin-entry__fact--wide rounded-[1.1rem] border border-white/10 bg-black/20 px-3 py-3">
+                    <span className="portal-admin-entry__fact-icon portal-admin-entry__fact-icon--mail"><Mail size={16} /></span>
+                    <div className="portal-admin-entry__fact-copy">
+                      <p className="truncate text-base font-semibold text-white">{row.contact_email}</p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setExpandedRowId((current) => current === row.id ? null : row.id)}
-                      className="portal-admin-entry__expand magnetic-button inline-flex items-center gap-2 rounded-full border border-cyan-300/18 bg-cyan-400/10 px-3 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-cyan-100"
-                    >
-                      {expandedRowId === row.id ? 'Hide' : 'Details'}
-                      {expandedRowId === row.id ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                    <button type="button" onClick={() => copyToClipboard(row.contact_email)} className="portal-admin-entry__copy magnetic-button inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-200" aria-label="Copy email">
+                      <Copy size={15} />
                     </button>
                   </div>
+
+                  <div className="portal-admin-entry__summary-grid grid gap-3 md:grid-cols-[1.2fr_0.8fr]">
+                    <div className="portal-admin-entry__fact portal-admin-entry__fact--txn rounded-[1.1rem] border border-white/10 bg-black/20 px-3 py-3">
+                      <span className="portal-admin-entry__fact-icon portal-admin-entry__fact-icon--cyan"><Hash size={16} /></span>
+                      <div className="portal-admin-entry__fact-copy">
+                        <p className="text-[10px] uppercase tracking-[0.2em] text-cyan-200/72">Txn</p>
+                        <p className="mt-1 text-base font-semibold text-cyan-100">{compactReference(row.payment_reference || row.registration_code)}</p>
+                      </div>
+                      <button type="button" onClick={() => copyToClipboard(row.payment_reference || row.registration_code)} className="portal-admin-entry__copy magnetic-button inline-flex h-11 w-11 items-center justify-center rounded-xl border border-cyan-300/12 bg-cyan-400/10 text-cyan-100" aria-label="Copy transaction reference">
+                        <Copy size={15} />
+                      </button>
+                    </div>
+
+                    <div className="portal-admin-entry__fact portal-admin-entry__fact--amount rounded-[1.1rem] border border-white/10 bg-black/20 px-3 py-3">
+                      <span className="portal-admin-entry__fact-icon portal-admin-entry__fact-icon--amber"><IndianRupee size={16} /></span>
+                      <div className="portal-admin-entry__fact-copy">
+                        <p className="text-xl font-semibold text-white">{formatCurrency(row.total_amount)}</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="portal-admin-entry__summary grid gap-3 md:grid-cols-3">
-                  <div className="portal-admin-entry__fact rounded-[1.1rem] border border-white/10 bg-black/20 px-3 py-3">
-                    <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400">Email</p>
-                    <p className="mt-2 truncate text-sm font-semibold text-white">{row.contact_email}</p>
-                  </div>
-                  <div className="portal-admin-entry__fact rounded-[1.1rem] border border-white/10 bg-black/20 px-3 py-3">
-                    <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400">Venue</p>
-                    <p className="mt-2 text-sm font-semibold text-white">{row.venue}</p>
-                  </div>
-                  <div className="portal-admin-entry__fact rounded-[1.1rem] border border-white/10 bg-black/20 px-3 py-3">
-                    <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400">Payment</p>
-                    <p className="mt-2 text-sm font-semibold text-white">{formatCurrency(row.total_amount)}</p>
-                  </div>
-                </div>
-
-                <div className={`portal-admin-entry__actions portal-admin-entry__actions--compact grid gap-2 ${canDeleteRegistrations ? 'sm:grid-cols-5' : 'sm:grid-cols-4'}`}>
-                  <button type="button" onClick={() => onResendStatusEmail(row.id)} className="portal-admin-entry__action magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-blue-300/20 bg-blue-500/10 px-4 py-3 text-sm font-bold text-blue-100"><RotateCcw size={16} />Resend</button>
-                  <button type="button" onClick={() => onStatusChange(row.id, 'verified')} className="portal-admin-entry__action magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-emerald-300/20 bg-emerald-400/10 px-4 py-3 text-sm font-bold text-emerald-100"><CheckCircle2 size={16} />Approve</button>
-                  <button type="button" onClick={() => onStatusChange(row.id, 'pending')} className="portal-admin-entry__action magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-amber-300/20 bg-amber-400/10 px-4 py-3 text-sm font-bold text-amber-100"><Clock3 size={16} />Pending</button>
-                  <button type="button" onClick={() => onStatusChange(row.id, 'rejected')} className="portal-admin-entry__action magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-rose-300/20 bg-rose-400/10 px-4 py-3 text-sm font-bold text-rose-100"><XCircle size={16} />Reject</button>
+                <div className="portal-admin-entry__actions portal-admin-entry__actions--spotlight grid grid-cols-4 gap-3">
+                  <button type="button" onClick={() => onStatusChange(row.id, 'verified')} className="portal-admin-entry__action portal-admin-entry__action--approve magnetic-button inline-flex flex-col items-center justify-center gap-3 rounded-2xl border px-3 py-3 text-center text-sm font-bold"><span className="portal-admin-entry__action-icon"><CheckCircle2 size={24} /></span><span className="portal-admin-entry__action-label">Approve</span></button>
+                  <button type="button" onClick={() => onStatusChange(row.id, 'pending')} className="portal-admin-entry__action portal-admin-entry__action--pending magnetic-button inline-flex flex-col items-center justify-center gap-3 rounded-2xl border px-3 py-3 text-center text-sm font-bold"><span className="portal-admin-entry__action-icon"><Clock3 size={24} /></span><span className="portal-admin-entry__action-label">Pending</span></button>
+                  <button type="button" onClick={() => onStatusChange(row.id, 'rejected')} className="portal-admin-entry__action portal-admin-entry__action--reject magnetic-button inline-flex flex-col items-center justify-center gap-3 rounded-2xl border px-3 py-3 text-center text-sm font-bold"><span className="portal-admin-entry__action-icon"><XCircle size={24} /></span><span className="portal-admin-entry__action-label">Reject</span></button>
                   {canDeleteRegistrations ? (
                     <button
                       type="button"
@@ -678,12 +711,17 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
                           onDeleteRegistration(row.id);
                         }
                       }}
-                      className="portal-admin-entry__action magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-red-300/20 bg-red-500/10 px-4 py-3 text-sm font-bold text-red-100"
+                      className="portal-admin-entry__action portal-admin-entry__action--delete magnetic-button inline-flex flex-col items-center justify-center gap-3 rounded-2xl border px-3 py-3 text-center text-sm font-bold"
                     >
-                      <Trash2 size={16} />
-                      Delete
+                      <span className="portal-admin-entry__action-icon"><Trash2 size={24} /></span>
+                      <span className="portal-admin-entry__action-label">Delete</span>
                     </button>
-                  ) : null}
+                  ) : (
+                    <button type="button" onClick={() => onResendStatusEmail(row.id)} className="portal-admin-entry__action portal-admin-entry__action--resend magnetic-button inline-flex flex-col items-center justify-center gap-3 rounded-2xl border px-3 py-3 text-center text-sm font-bold">
+                      <span className="portal-admin-entry__action-icon"><RotateCcw size={22} /></span>
+                      <span className="portal-admin-entry__action-label">Resend</span>
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -713,6 +751,7 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
                         <div className="portal-admin-entry__subcard rounded-[1.35rem] border border-white/10 bg-black/20 p-4">
                           <div className="flex items-center gap-2"><Mail size={16} className="text-fuchsia-300" /><p className="text-sm font-semibold text-white">Notification center</p></div>
                           <div className="mt-4"><NotificationPanel notification={row.latest_notification} /></div>
+                          <button type="button" onClick={() => onResendStatusEmail(row.id)} className="magnetic-button mt-4 inline-flex items-center gap-2 rounded-2xl border border-blue-300/18 bg-blue-500/10 px-4 py-3 text-sm font-bold text-blue-100"><RotateCcw size={16} />Resend status email</button>
                         </div>
                       </div>
                     </div>
