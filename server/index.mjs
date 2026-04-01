@@ -197,6 +197,7 @@ const techxceleratePresentationLinks = {
   offline: 'https://chat.whatsapp.com/FcAY4bfsJO6FxIrmHvFvun?mode=gi_t',
 };
 const utopiaApprovedGroupLink = 'https://chat.whatsapp.com/C8RKDGK2uzT4X5K14jY2aZ?mode=gi_t';
+const techxceleratePosterApprovedGroupLink = 'https://chat.whatsapp.com/Hc0jW5nOPdXEumjhKF8DeY?mode=gi_t';
 
 function resolveAdminAccess(key) {
   const normalizedKey = String(key || '').trim();
@@ -252,6 +253,14 @@ function resolveApprovedEventGroupInvite(registration) {
       label: 'Utopia Coordination Group',
       description: 'Join the approved Utopia coordination group using the link below.',
       url: utopiaApprovedGroupLink,
+    };
+  }
+
+  if (registration?.event_slug === 'techxcelerate-poster-presentation') {
+    return {
+      label: 'Poster Presentation Group',
+      description: 'Join the approved poster presentation WhatsApp group using the link below.',
+      url: techxceleratePosterApprovedGroupLink,
     };
   }
 
@@ -1013,6 +1022,13 @@ function buildStatusEmail(registration, appUrl = resolvePublicAppUrl()) {
           <div style="margin-top:12px;text-align:center;">
             <a class="portal-email-button" href="${passLink}" style="display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:linear-gradient(90deg,#67e8f9,#fbbf24);color:#041018;text-decoration:none;padding:12px 20px;font-size:12px;font-weight:800;letter-spacing:0.11em;text-transform:uppercase;">Open / Download Official Pass</a>
           </div>
+          ${approvedEventGroupInvite
+            ? `
+              <div style="margin-top:10px;text-align:center;">
+                <a class="portal-email-button" href="${approvedEventGroupInvite.url}" style="display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:linear-gradient(90deg,#fcd34d,#60a5fa);color:#041018;text-decoration:none;padding:12px 20px;font-size:12px;font-weight:800;letter-spacing:0.11em;text-transform:uppercase;">Join WP Group</a>
+              </div>
+            `
+            : ''}
           <div class="portal-email-inline-note" style="margin-top:9px;font-size:11px;color:#cbd5e1;line-height:1.55;">If needed, open this link in your browser: <span style="color:#ffffff;word-break:break-all;">${passLink}</span></div>
         </div>
       `
@@ -1050,7 +1066,7 @@ function buildStatusEmail(registration, appUrl = resolvePublicAppUrl()) {
     topAction: verifiedPassTopAction,
     sections: [gridSections],
     notice: registration.review_note ? `Organizer note: ${escapeHtml(registration.review_note)}` : '',
-    bodyAfterGrid: `${safeNextStep}${techxceleratePresentationInviteHtml}${approvedEventGroupInviteHtml}${verifiedPassInstructions}`,
+    bodyAfterGrid: `${safeNextStep}${techxceleratePresentationInviteHtml}${registration.status === 'verified' ? '' : approvedEventGroupInviteHtml}${verifiedPassInstructions}`,
   });
 
   return {
