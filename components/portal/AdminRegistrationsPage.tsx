@@ -242,11 +242,11 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
             <h2 className="mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron text-2xl font-black uppercase text-transparent md:text-4xl">Operations dashboard</h2>
           </div>
           {hasResolvedAccess ? (
-            <div className="portal-admin-kpi-grid grid grid-cols-2 gap-3 xl:grid-cols-4">
+            <div className="portal-admin-kpi-grid grid grid-cols-2 gap-3 sm:grid-cols-4">
               <a href="#admin-analytics" className="portal-admin-kpi portal-admin-kpi--cyan"><p className="text-xs uppercase tracking-[0.24em] text-cyan-100/80">Registrations</p><p className="mt-2 text-3xl font-black text-white">{counts.all}</p></a>
               <a href="#admin-analytics" className="portal-admin-kpi portal-admin-kpi--violet"><p className="text-xs uppercase tracking-[0.24em] text-fuchsia-100/80">Participants</p><p className="mt-2 text-3xl font-black text-white">{totalParticipants}</p></a>
               <a href="#admin-verification" className="portal-admin-kpi portal-admin-kpi--emerald"><p className="text-xs uppercase tracking-[0.24em] text-emerald-100/80">Verified</p><p className="mt-2 text-3xl font-black text-white">{counts.verified}</p></a>
-              <a href="#admin-analytics" className="portal-admin-kpi portal-admin-kpi--amber"><p className="text-xs uppercase tracking-[0.24em] text-yellow-100/80">Busiest event</p><p className="mt-2 text-sm font-semibold text-white">{busiestEvent ? `${busiestEvent[0]} (${busiestEvent[1]})` : 'Waiting to load'}</p></a>
+              <a href="#admin-analytics" className="portal-admin-kpi portal-admin-kpi--amber"><p className="text-xs uppercase tracking-[0.24em] text-yellow-100/80">Focus event</p><p className="mt-2 text-sm font-semibold text-white">{busiestEvent ? `${busiestEvent[0]} (${busiestEvent[1]})` : 'Waiting to load'}</p></a>
             </div>
           ) : null}
         </div>
@@ -270,7 +270,7 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
                   <option value="">Choose an event</option>
                   {events.map((event) => <option key={event.slug} value={event.slug}>{event.name}</option>)}
                 </select>
-                <p className="mt-3 text-xs text-slate-400">{selectedDraftEventName ? `Key will be matched against ${selectedDraftEventName}.` : 'Each competition can have its own verification key.'}</p>
+                <p className="portal-admin-access-hint mt-3 text-xs text-slate-400">{selectedDraftEventName ? `Key will be matched against ${selectedDraftEventName}.` : 'Each competition can have its own verification key.'}</p>
               </label>
             ) : null}
             <FloatingField label={adminAccessMode === 'global' ? 'Enter main admin key' : 'Enter selected event key'} icon={<ShieldCheck size={18} />} type="password" value={activeDraftKey} onChange={adminAccessMode === 'global' ? onAdminMainKeyChange : onAdminEventKeyChange} />
@@ -278,7 +278,7 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
           </div>
           {hasResolvedAccess ? (
             <div className="mt-4 flex flex-wrap items-center gap-3">
-              <div className="flex-1 rounded-2xl border border-emerald-300/18 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-100">{accessSummary}</div>
+              <div className="portal-admin-access-summary flex-1 rounded-2xl border border-emerald-300/18 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-100">{accessSummary}</div>
               <label className="block min-w-[240px] rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200">
                 <span className="mb-2 block text-xs uppercase tracking-[0.2em] text-slate-400">Download scope</span>
                 <select value={exportEventSlug} onChange={(event) => setExportEventSlug(event.target.value)} disabled={Boolean(scopedEventSlug)} className="floating-field-input disabled:opacity-70">
@@ -308,7 +308,7 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
         </div>
 
       <section id="admin-analytics" className="space-y-4">
-        <div data-reveal="up" className="portal-admin-statband grid gap-3 md:grid-cols-3">
+        <div data-reveal="up" className="portal-admin-statband grid grid-cols-3 gap-3">
           <div className="portal-admin-statband__item">
             <strong>{totalParticipants}</strong>
             <span>Participants</span>
@@ -402,19 +402,19 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
             </div>
           </div>
 
-          <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          <div className="portal-admin-control-grid mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {eventControlRows.map((event) => {
               const isOpen = event.registration_enabled;
               const noSeatsLeft = event.remainingSlots !== null && event.remainingSlots <= 0;
 
               return (
-                <article key={event.slug} className="rounded-[1.3rem] border border-white/10 bg-[linear-gradient(145deg,rgba(12,20,35,0.92),rgba(18,27,45,0.82))] p-3.5">
+                <article key={event.slug} className="portal-admin-control-card rounded-[1.3rem] border border-white/10 bg-[linear-gradient(145deg,rgba(12,20,35,0.92),rgba(18,27,45,0.82))] p-3.5">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-base font-semibold text-white">{event.name}</p>
-                      <p className="mt-1 text-xs text-slate-400">{event.date_label} / {event.time_label} / {event.venue}</p>
+                      <p className="portal-admin-control-copy mt-1 text-xs text-slate-400">{event.date_label} / {event.time_label} / {event.venue}</p>
                     </div>
-                    <span className={`rounded-full border px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] ${
+                    <span className={`portal-admin-control-status rounded-full border px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] ${
                       isOpen
                         ? 'border-emerald-300/20 bg-emerald-400/10 text-emerald-100'
                         : 'border-rose-300/20 bg-rose-400/10 text-rose-100'
@@ -423,7 +423,7 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
                     </span>
                   </div>
 
-                  <div className="mt-3 flex flex-wrap gap-2">
+                  <div className="portal-admin-control-meta mt-3 flex flex-wrap gap-2">
                     <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1 text-[11px] uppercase tracking-[0.14em] text-slate-200">
                       Reg {event.registrations_count}
                     </span>
@@ -480,15 +480,15 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
         </div>
         <div className="mt-4">
           <p className="text-[11px] uppercase tracking-[0.24em] text-cyan-200/80">Competition-wise verification</p>
-          <div className="mt-3 flex flex-wrap gap-3">
-            <button type="button" onClick={() => { setExpandedRowId(null); setEventFilter(scopedEventSlug || 'all'); }} disabled={Boolean(scopedEventSlug)} className={`portal-admin-event-chip rounded-[1.2rem] border px-4 py-3 text-left text-sm transition disabled:opacity-70 ${eventFilter === (scopedEventSlug || 'all') ? 'border-cyan-300/24 bg-cyan-400/10 text-white' : 'border-white/10 bg-white/5 text-slate-200'}`}>
-              <span className="block font-semibold">All competitions</span>
-              <span className="mt-1 block text-xs uppercase tracking-[0.16em] text-slate-400">{scopedEventSlug ? `Locked to ${scopedEventName || 'assigned event'}` : `${counts.all} registrations`}</span>
+          <div className="portal-admin-event-strip mt-3 flex gap-3 overflow-x-auto pb-1">
+            <button type="button" onClick={() => { setExpandedRowId(null); setEventFilter(scopedEventSlug || 'all'); }} disabled={Boolean(scopedEventSlug)} className={`portal-admin-event-pill rounded-[1.1rem] border px-4 py-3 text-left text-sm transition disabled:opacity-70 ${eventFilter === (scopedEventSlug || 'all') ? 'border-cyan-300/24 bg-cyan-400/10 text-white' : 'border-white/10 bg-white/5 text-slate-200'}`}>
+              <span className="block font-semibold">All</span>
+              <span className="mt-1 block text-xs uppercase tracking-[0.16em] text-slate-400">{scopedEventSlug ? 'Locked' : `${counts.all} total`}</span>
             </button>
             {eventBuckets.map((event) => (
-              <button key={event.slug} type="button" onClick={() => { setExpandedRowId(null); setEventFilter(event.slug); }} disabled={Boolean(scopedEventSlug && scopedEventSlug !== event.slug)} className={`portal-admin-event-chip rounded-[1.2rem] border px-4 py-3 text-left text-sm transition disabled:opacity-50 ${eventFilter === event.slug ? 'border-fuchsia-300/24 bg-fuchsia-400/10 text-white' : 'border-white/10 bg-white/5 text-slate-200'}`}>
+              <button key={event.slug} type="button" onClick={() => { setExpandedRowId(null); setEventFilter(event.slug); }} disabled={Boolean(scopedEventSlug && scopedEventSlug !== event.slug)} className={`portal-admin-event-pill rounded-[1.1rem] border px-4 py-3 text-left text-sm transition disabled:opacity-50 ${eventFilter === event.slug ? 'border-fuchsia-300/24 bg-fuchsia-400/10 text-white' : 'border-white/10 bg-white/5 text-slate-200'}`}>
                 <span className="block font-semibold">{event.name}</span>
-                <span className="mt-1 block text-xs uppercase tracking-[0.16em] text-slate-400">{event.total} total / {event.pending} pending / {event.verified} verified</span>
+                <span className="mt-1 block text-xs uppercase tracking-[0.16em] text-slate-400">{event.total} total</span>
               </button>
             ))}
           </div>
