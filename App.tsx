@@ -2368,6 +2368,7 @@ export const App: React.FC = () => {
               <a
                 href="#overview"
                 className={`portal-bottom-dock__item ${activeBottomDock === 'home' ? 'is-active' : ''}`}
+                aria-current={activeBottomDock === 'home' ? 'page' : undefined}
               >
                 <House size={18} />
                 <span>Home</span>
@@ -2375,6 +2376,7 @@ export const App: React.FC = () => {
               <a
                 href="#registration-panel"
                 className={`portal-bottom-dock__item ${activeBottomDock === 'events' ? 'is-active' : ''}`}
+                aria-current={activeBottomDock === 'events' ? 'page' : undefined}
               >
                 <Trophy size={18} />
                 <span>Events</span>
@@ -2399,6 +2401,7 @@ export const App: React.FC = () => {
               <a
                 href="#timeline"
                 className={`portal-bottom-dock__item ${activeBottomDock === 'timeline' ? 'is-active' : ''}`}
+                aria-current={activeBottomDock === 'timeline' ? 'page' : undefined}
               >
                 <Clock3 size={18} />
                 <span>Timeline</span>
@@ -2406,6 +2409,7 @@ export const App: React.FC = () => {
               <a
                 href="#tracker"
                 className={`portal-bottom-dock__item ${activeBottomDock === 'tracker' ? 'is-active' : ''}`}
+                aria-current={activeBottomDock === 'tracker' ? 'page' : undefined}
               >
                 <Search size={18} />
                 <span>Tracker</span>

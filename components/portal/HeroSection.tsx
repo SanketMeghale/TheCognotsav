@@ -7,7 +7,7 @@ import {
 import type { LucideIcon } from 'lucide-react';
 import { parsePortalEventDate } from './utils';
 
-type Props = {};
+type Props = Record<string, never>;
 type HeroTone = 'amber' | 'blue' | 'cyan' | 'emerald' | 'orange' | 'pink' | 'rose' | 'violet';
 type BackdropPill = {
   label: string;
@@ -25,6 +25,13 @@ type BackdropMark = {
 };
 type BackdropAccent = {
   Icon: LucideIcon;
+  style: CSSProperties;
+  tone: HeroTone;
+};
+type HeroParticle = {
+  delay: string;
+  duration: string;
+  size: 'sm' | 'md' | 'lg';
   style: CSSProperties;
   tone: HeroTone;
 };
@@ -68,6 +75,18 @@ const heroMobileBackdropAccents: BackdropAccent[] = [
   { Icon: Zap, tone: 'violet', style: { right: '5.8%', top: '73.5%' } },
 ];
 
+const heroParticles: HeroParticle[] = [
+  { tone: 'cyan', size: 'lg', delay: '0s', duration: '15s', style: { left: '10%', top: '19%' } },
+  { tone: 'pink', size: 'sm', delay: '1.2s', duration: '13s', style: { left: '19%', top: '62%' } },
+  { tone: 'amber', size: 'md', delay: '2.1s', duration: '16s', style: { left: '31%', top: '12%' } },
+  { tone: 'violet', size: 'sm', delay: '3.4s', duration: '12s', style: { left: '42%', top: '74%' } },
+  { tone: 'cyan', size: 'md', delay: '0.8s', duration: '14.5s', style: { left: '56%', top: '23%' } },
+  { tone: 'amber', size: 'sm', delay: '2.8s', duration: '12.4s', style: { left: '66%', top: '54%' } },
+  { tone: 'pink', size: 'lg', delay: '1.8s', duration: '17s', style: { left: '79%', top: '16%' } },
+  { tone: 'cyan', size: 'sm', delay: '4.1s', duration: '11.5s', style: { left: '87%', top: '66%' } },
+  { tone: 'violet', size: 'md', delay: '2.6s', duration: '15.6s', style: { left: '71%', top: '78%' } },
+];
+
 const heroFeatureBadges = [
   { label: 'Certificates', Icon: Award, tone: 'cyan' },
   { label: 'Goodies', Icon: Gift, tone: 'amber' },
@@ -75,11 +94,46 @@ const heroFeatureBadges = [
 ] as const;
 
 const heroStatItems = [
-  { value: '1200+', label: 'Participants', Icon: Users, tone: 'cyan' },
+  { value: '1200+', label: 'Participants', Icon: Users, tone: 'cyan', numericValue: 1200, featured: true },
   { value: 'Rs 1,00,000', label: 'Prize Pool', Icon: Trophy, tone: 'amber' },
   { value: '8', label: 'Events', Icon: MapPin, tone: 'pink' },
   { value: 'Live', label: 'Competitions', Icon: Flame, tone: 'orange' },
 ] as const;
+
+function useAnimatedCount(target: number, duration = 2100) {
+  const [value, setValue] = useState(() => {
+    if (typeof window === 'undefined') {
+      return target;
+    }
+
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches ? target : 0;
+  });
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return undefined;
+    }
+
+    let frameId = 0;
+    let startTime = 0;
+
+    const animate = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      const easedProgress = 1 - Math.pow(1 - progress, 3);
+      setValue(Math.round(target * easedProgress));
+
+      if (progress < 1) {
+        frameId = window.requestAnimationFrame(animate);
+      }
+    };
+
+    frameId = window.requestAnimationFrame(animate);
+    return () => window.cancelAnimationFrame(frameId);
+  }, [duration, target]);
+
+  return value;
+}
 
 function getHeroCountdown(now: Date) {
   if (!heroStartDate) {
@@ -139,6 +193,7 @@ function getHeroCountdownSummary(
 
 export const HeroSection: React.FC<Props> = memo(() => {
   const [now, setNow] = useState(() => new Date());
+  const participantCount = useAnimatedCount(1200);
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(new Date()), 1000);
@@ -148,11 +203,59 @@ export const HeroSection: React.FC<Props> = memo(() => {
   const countdown = getHeroCountdown(now);
   const countdownSummary = getHeroCountdownSummary(countdown);
 
+  const handleHeroPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === 'touch' || typeof window === 'undefined') return;
+    if (window.innerWidth <= 900 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const card = event.currentTarget;
+    const bounds = card.getBoundingClientRect();
+    const offsetX = (event.clientX - bounds.left) / bounds.width;
+    const offsetY = (event.clientY - bounds.top) / bounds.height;
+    const rotateX = (0.5 - offsetY) * 8;
+    const rotateY = (offsetX - 0.5) * 10;
+
+    card.style.setProperty('--hero-tilt-x', `${rotateX.toFixed(2)}deg`);
+    card.style.setProperty('--hero-tilt-y', `${rotateY.toFixed(2)}deg`);
+    card.style.setProperty('--hero-glow-x', `${(offsetX * 100).toFixed(2)}%`);
+    card.style.setProperty('--hero-glow-y', `${(offsetY * 100).toFixed(2)}%`);
+    card.style.setProperty('--hero-card-lift', '-4px');
+  };
+
+  const handleHeroPointerLeave = (event: React.PointerEvent<HTMLDivElement>) => {
+    const card = event.currentTarget;
+    card.style.setProperty('--hero-tilt-x', '0deg');
+    card.style.setProperty('--hero-tilt-y', '0deg');
+    card.style.setProperty('--hero-glow-x', '50%');
+    card.style.setProperty('--hero-glow-y', '24%');
+    card.style.setProperty('--hero-card-lift', '0px');
+  };
+
   return (
     <section id="overview" className="mx-auto w-full max-w-[1320px] px-0 pt-0 pb-2 sm:px-5 lg:px-8 md:pt-0 md:pb-4">
       <div className="portal-summit-hero portal-summit-hero--immersive">
-        <div className="portal-summit-hero__content portal-summit-hero__content--immersive" data-reveal="fade-up">
+        <div
+          className="portal-summit-hero__content portal-summit-hero__content--immersive"
+          data-reveal="fade-up"
+          onPointerMove={handleHeroPointerMove}
+          onPointerLeave={handleHeroPointerLeave}
+        >
           <div className="portal-summit-hero__backdrop" aria-hidden="true">
+            <div className="portal-summit-hero__backdrop-mesh" />
+            <div className="portal-summit-hero__backdrop-grid" />
+            <div className="portal-summit-hero__backdrop-noise" />
+            <div className="portal-summit-hero__particle-field">
+              {heroParticles.map(({ delay, duration, size, style, tone }, index) => (
+                <span
+                  key={`${tone}-${index}`}
+                  className={`portal-summit-hero__particle portal-summit-hero__particle--${tone} portal-summit-hero__particle--${size}`}
+                  style={{
+                    ...style,
+                    ['--particle-delay' as string]: delay,
+                    ['--particle-duration' as string]: duration,
+                  } as CSSProperties}
+                />
+              ))}
+            </div>
             {heroBackdropPills.map(({ label, Icon, tone, tier, style }) => (
               <div
                 key={label}
@@ -235,27 +338,54 @@ export const HeroSection: React.FC<Props> = memo(() => {
           </p>
 
           <div className="portal-summit-hero__countdown-pill" aria-live="polite">
-            <Clock3 size={17} />
-            <span className="portal-summit-hero__countdown-label">
-              {countdown.state === 'countdown' ? 'Starts in:' : 'Status:'}
-            </span>
-            <strong className="portal-summit-hero__countdown-value">{countdownSummary}</strong>
+            <div className="portal-summit-hero__countdown-head">
+              <span className="portal-summit-hero__countdown-icon">
+                <Clock3 size={17} />
+              </span>
+              <span className="portal-summit-hero__countdown-label">
+                {countdown.state === 'countdown' ? 'Starts in:' : 'Status:'}
+              </span>
+              <strong className="portal-summit-hero__countdown-value">{countdownSummary}</strong>
+            </div>
+            {countdown.state === 'countdown' ? (
+              <div className="portal-summit-hero__countdown-grid">
+                {countdown.units.map((unit) => (
+                  <div key={unit.label} className="portal-summit-hero__countdown-unit">
+                    <div className="portal-summit-hero__countdown-digits" aria-hidden="true">
+                      {unit.value.split('').map((digit, digitIndex) => (
+                        <span
+                          key={`${unit.label}-${digitIndex}-${digit}`}
+                          className="portal-summit-hero__countdown-digit"
+                        >
+                          {digit}
+                        </span>
+                      ))}
+                    </div>
+                    <span className="portal-summit-hero__countdown-unit-label">{unit.label}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className={`portal-summit-hero__countdown-state portal-summit-hero__countdown-state--${countdown.state}`}>
+                {countdown.label}
+              </div>
+            )}
           </div>
 
           <div className="portal-summit-hero__actions portal-summit-hero__actions--desktop">
             <a href="#registration-panel" className="portal-summit-hero__action portal-summit-hero__action--primary">
-              Register Now
+              <span className="portal-summit-hero__action-label">Register Now</span>
               <ArrowRight size={16} />
             </a>
           </div>
 
           <div className="portal-summit-hero__actions portal-summit-hero__actions--mobile">
             <a href="#registration-panel" className="portal-summit-hero__action portal-summit-hero__action--primary">
-              Register Now
+              <span className="portal-summit-hero__action-label">Register Now</span>
               <ArrowRight size={16} />
             </a>
             <a href="#registration-panel" className="portal-summit-hero__action portal-summit-hero__action--ghost">
-              Explore Events
+              <span className="portal-summit-hero__action-label">Explore Events</span>
               <ArrowRight size={16} />
             </a>
           </div>
@@ -263,21 +393,34 @@ export const HeroSection: React.FC<Props> = memo(() => {
           <div className="portal-summit-hero__benefit-row">
             {heroFeatureBadges.map(({ label, Icon, tone }) => (
               <div key={label} className={`portal-summit-hero__benefit-pill portal-summit-hero__benefit-pill--${tone}`}>
-                <Icon size={18} />
+                <span className="portal-summit-hero__benefit-icon">
+                  <Icon size={18} />
+                </span>
                 <span>{label}</span>
               </div>
             ))}
           </div>
 
           <div className="portal-summit-hero__stats-bar">
-            {heroStatItems.map(({ value, label, Icon, tone }) => (
-              <div key={`${value}-${label}`} className="portal-summit-hero__stat-card">
+            {heroStatItems.map(({ value, label, Icon, tone, numericValue, featured }) => (
+              <div
+                key={`${value}-${label}`}
+                className={`portal-summit-hero__stat-card ${featured ? 'portal-summit-hero__stat-card--featured' : ''}`}
+              >
                 <div className={`portal-summit-hero__stat-icon portal-summit-hero__stat-icon--${tone}`}>
                   <Icon size={17} />
                 </div>
                 <div className="portal-summit-hero__stat-copy">
-                  <strong>{value}</strong>
+                  <strong>{typeof numericValue === 'number' ? `${participantCount.toLocaleString()}+` : value}</strong>
                   <span>{label}</span>
+                  {featured ? (
+                    <div className="portal-summit-hero__stat-avatars" aria-hidden="true">
+                      <span className="portal-summit-hero__stat-avatar portal-summit-hero__stat-avatar--cyan" />
+                      <span className="portal-summit-hero__stat-avatar portal-summit-hero__stat-avatar--violet" />
+                      <span className="portal-summit-hero__stat-avatar portal-summit-hero__stat-avatar--amber" />
+                      <span className="portal-summit-hero__stat-pulse" />
+                    </div>
+                  ) : null}
                 </div>
               </div>
             ))}
