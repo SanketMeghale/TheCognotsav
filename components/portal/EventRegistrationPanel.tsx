@@ -103,9 +103,8 @@ const handbookBySlug: Record<string, {
     theme: 'Survival and Strategy',
     overview: 'Elimination-format challenge testing speed, decision-making, teamwork, and survival instinct.',
     highlights: ['Individual competition', 'Mingle, Tug of War, Battleship, Dalgona, and Red Light Green Light', 'Rs 50 per participant', 'Judges decision is final'],
-    rules: ['No cheating or unfair play', 'Eliminated players cannot re-enter', 'Players must be present before the event starts', 'Failure to follow instructions leads to elimination'],
-    handbookUrl: '/handbooks/squid-game.pdf',
-    quickDetails: ['Format: Solo', 'Fee: Rs 50', 'Rounds: Multi-stage elimination'],
+    rules: ['Event rules will be revealed on the spot', 'Players must follow each round instruction exactly', 'Judges decision is final throughout the event'],
+    quickDetails: ['Format: Solo', 'Fee: Rs 50', 'Rules: Surprise'],
   },
   techxcelerate: {
     theme: 'Future Tech and Innovation',
@@ -346,6 +345,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   }));
   const eventStoryPoints = selectedHandbook?.highlights?.slice(0, 3) || [];
   const handbookReady = Boolean(selectedHandbook?.handbookUrl);
+  const isSurpriseRulesEvent = selectedEvent.slug === 'squid-game' && !handbookReady;
   const posterMetaItems = [
     { label: 'Date', value: getCompactPosterDate(selectedEvent.date_label), Icon: Clock3 },
     { label: 'Team', value: getTeamLabel(selectedEvent), Icon: Users },
@@ -448,7 +448,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
           <section className="portal-event-section portal-event-section--prep portal-glow-card portal-glass" data-reveal="up">
             <div className="portal-event-warning-banner">
               <AlertTriangle size={18} className="shrink-0" />
-              <span>Please read the handbook before you register.</span>
+              <span>{isSurpriseRulesEvent ? 'Squid Game rules will be revealed during the event.' : 'Please read the handbook before you register.'}</span>
             </div>
             <div className="portal-event-section__head portal-event-section__head--prep">
               <div>
@@ -503,8 +503,8 @@ export const EventRegistrationPanel: React.FC<Props> = ({
               </div>
             ) : (
               <div className="portal-event-note-list__item mt-5">
-                <Info size={15} className="mt-0.5 shrink-0 text-amber-200" />
-                <span>Full handbook is not attached for this event yet.</span>
+                <Info size={15} className={`mt-0.5 shrink-0 ${isSurpriseRulesEvent ? 'text-cyan-200' : 'text-amber-200'}`} />
+                <span>{isSurpriseRulesEvent ? 'This event keeps its rules and round flow as a surprise until the live session starts.' : 'Full handbook is not attached for this event yet.'}</span>
               </div>
             )}
           </section>
