@@ -125,8 +125,9 @@ export const eventSeed = [
     is_team_event: true,
     poster_path: '/images/rangmanch.jpg',
     intro_video_url: optimizeCloudinaryVideo('https://res.cloudinary.com/dkxddhawc/video/upload/v1774094878/rangmunch_y3w7dw.mp4'),
-    payment_upi: 'chaitanyamagar418@okhdfcbank',
-    payment_payee: 'Chaitanya Magar',
+    payment_upi: '9421329709@ybl',
+    payment_payee: '9421329709@ybl',
+    payment_qr_image_path: '/images/rangmanch-payment-qr.png',
     coordinators: [
       { name: 'Sayli A.', phone: '8668922831' },
       { name: 'Nikita A.', phone: '8669948742' },
