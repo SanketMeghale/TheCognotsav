@@ -13006,11 +13006,11 @@ body {
   overflow: hidden;
   isolation: isolate;
   background:
-    radial-gradient(circle at 50% 18%, rgba(130, 212, 255, 0.12), transparent 22%),
-    radial-gradient(circle at 18% 14%, rgba(95, 238, 255, 0.08), transparent 18%),
-    radial-gradient(circle at 82% 16%, rgba(132, 150, 255, 0.08), transparent 20%),
-    linear-gradient(180deg, rgba(19, 35, 65, 0.98) 0%, rgba(14, 27, 50, 0.98) 56%, rgba(9, 18, 33, 1) 56%, rgba(7, 14, 28, 1) 100%);
-  filter: saturate(1.02) brightness(0.98);
+    radial-gradient(circle at 18% 12%, rgba(52, 211, 255, 0.08), transparent 18%),
+    radial-gradient(circle at 82% 18%, rgba(35, 144, 255, 0.08), transparent 20%),
+    radial-gradient(circle at 50% 78%, rgba(21, 94, 198, 0.06), transparent 24%),
+    linear-gradient(180deg, #05070a 0%, #030509 46%, #020407 100%);
+  filter: none;
   opacity: 1;
 }
 
@@ -13022,81 +13022,57 @@ body {
 }
 
 .portal-background-image::before {
-  inset: 0 0 23% 0;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.025) 18%, rgba(5, 10, 21, 0.1) 100%),
-    repeating-linear-gradient(
-      90deg,
-      rgba(228, 240, 255, 0.12) 0 3px,
-      rgba(173, 196, 230, 0.06) 3px 10px,
-      rgba(16, 29, 56, 0.02) 10px 18px,
-      rgba(255, 255, 255, 0.03) 18px 22px,
-      rgba(5, 10, 20, 0.18) 22px 34px
-    );
-  box-shadow: inset 0 -26px 56px rgba(4, 8, 18, 0.24);
-  opacity: 0.82;
+  inset: 0;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320' viewBox='0 0 320 320' fill='none' stroke='%2327d8ff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cg opacity='.9'%3E%3Crect x='20' y='26' width='70' height='42' rx='4'/%3E%3Cpath d='M10 76h90'/%3E%3Cpath d='M48 48l-10 7 10 7'/%3E%3Cpath d='M64 44l-6 22'/%3E%3Cpath d='M70 62l10-7-10-7'/%3E%3Cpath d='M132 24h34l14 14v50h-48z'/%3E%3Cpath d='M166 24v14h14'/%3E%3Cpath d='M144 52h24'/%3E%3Cpath d='M144 64h24'/%3E%3Crect x='224' y='30' width='62' height='88' rx='8'/%3E%3Cpath d='M240 46h30'/%3E%3Cpath d='M240 58h30'/%3E%3Cpath d='M240 70h22'/%3E%3Ccircle cx='52' cy='168' r='18'/%3E%3Cpath d='m65 181 14 14'/%3E%3Cpath d='M170 144c0-10 8-18 18-18s18 8 18 18c0 7-4 12-8 15-3 2-4 4-4 8h-12c0-4-1-6-4-8-4-3-8-8-8-15Z'/%3E%3Cpath d='M186 171h4'/%3E%3Cpath d='M184 177h8'/%3E%3Crect x='236' y='144' width='56' height='36' rx='6'/%3E%3Cpath d='M256 154l-8 5 8 5'/%3E%3Cpath d='M264 170l4-22'/%3E%3Cpath d='M272 154l8 5-8 5'/%3E%3Crect x='34' y='232' width='74' height='44' rx='5'/%3E%3Cpath d='M22 282h98'/%3E%3Cpath d='M60 252h24'/%3E%3Cpath d='M148 224h34l14 14v50h-48z'/%3E%3Cpath d='M182 224v14h14'/%3E%3Cpath d='M160 252h24'/%3E%3Cpath d='M160 264h24'/%3E%3Ccircle cx='256' cy='250' r='18'/%3E%3Cpath d='m269 263 14 14'/%3E%3C/g%3E%3Cg stroke='%230e7fb2' opacity='.55'%3E%3Cpath d='M110 108h6'/%3E%3Cpath d='M118 108h6'/%3E%3Cpath d='M214 210h6'/%3E%3Cpath d='M222 210h6'/%3E%3Cpath d='M106 198l4-4'/%3E%3Cpath d='M212 100l4-4'/%3E%3Cpath d='M292 208l4-4'/%3E%3Cpath d='M120 300h6'/%3E%3Cpath d='M128 300h6'/%3E%3Cpath d='M292 126h6'/%3E%3Cpath d='M16 120h6'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 320px 320px;
+  background-position: center top;
+  background-repeat: repeat;
+  opacity: 0.24;
+  mix-blend-mode: screen;
 }
 
 .portal-background-image::after {
   inset: 0;
   background:
-    radial-gradient(ellipse at center 88%, rgba(0, 0, 0, 0.28) 0%, rgba(0, 0, 0, 0.28) 14%, transparent 22%),
-    radial-gradient(ellipse at center 84%, rgba(232, 241, 255, 0.9) 0%, rgba(232, 241, 255, 0.9) 12.4%, rgba(161, 185, 222, 0.92) 13.5%, rgba(71, 94, 136, 0.82) 14.3%, transparent 15.8%),
-    radial-gradient(ellipse at center 79%, rgba(246, 250, 255, 0.98) 0%, rgba(246, 250, 255, 0.98) 8.4%, rgba(182, 204, 239, 0.92) 9.1%, rgba(86, 110, 156, 0.84) 9.9%, transparent 11.1%),
-    radial-gradient(ellipse at center 74.5%, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.98) 5.5%, rgba(194, 216, 248, 0.9) 6.1%, rgba(100, 123, 168, 0.82) 6.8%, transparent 8%),
-    linear-gradient(180deg, transparent 0%, transparent 69%, rgba(255, 255, 255, 0.08) 70%, rgba(135, 168, 220, 0.12) 74%, rgba(8, 14, 28, 0) 76%),
-    radial-gradient(ellipse at center 102%, rgba(105, 222, 255, 0.08), transparent 34%);
-  opacity: 0.92;
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.03), transparent 22%),
+    radial-gradient(circle at 18% 18%, rgba(39, 216, 255, 0.08), transparent 18%),
+    radial-gradient(circle at 82% 22%, rgba(39, 216, 255, 0.06), transparent 16%),
+    linear-gradient(180deg, rgba(1, 2, 4, 0.06), rgba(1, 2, 4, 0.34) 72%, rgba(1, 2, 4, 0.52) 100%);
+  opacity: 1;
 }
 
 .portal-shell::before {
   background:
-    radial-gradient(circle at 18% 18%, rgba(105, 222, 255, 0.12), transparent 22%),
-    radial-gradient(circle at 82% 18%, rgba(134, 150, 255, 0.1), transparent 22%),
-    radial-gradient(circle at 50% 72%, rgba(105, 222, 255, 0.08), transparent 18%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 24%, transparent 100%);
-  opacity: 0.88;
+    radial-gradient(circle at 16% 10%, rgba(39, 216, 255, 0.14), transparent 14%),
+    radial-gradient(circle at 84% 12%, rgba(56, 189, 248, 0.12), transparent 14%),
+    radial-gradient(circle at 50% 100%, rgba(30, 64, 175, 0.08), transparent 28%);
+  opacity: 0.82;
   animation: none;
 }
 
 .portal-shell::after {
   background:
-    radial-gradient(circle at 50% 14%, rgba(255, 255, 255, 0.12), transparent 18%),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.04), transparent 12%, transparent 88%, rgba(255, 255, 255, 0.04)),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 18%, transparent 82%, rgba(255, 255, 255, 0.02));
-  opacity: 0.3;
-  mask-image: radial-gradient(circle at center, black 42%, rgba(0, 0, 0, 0.86) 76%, transparent 100%);
+    radial-gradient(circle, rgba(39, 216, 255, 0.18) 0 1px, transparent 1.6px);
+  background-size: 28px 28px;
+  opacity: 0.12;
+  mask-image: radial-gradient(circle at center, black 34%, rgba(0, 0, 0, 0.9) 72%, transparent 100%);
   animation: none;
 }
 
 @media (max-width: 720px) {
   .portal-background-image::before {
-    inset: 0 0 24% 0;
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02) 16%, rgba(5, 10, 21, 0.12) 100%),
-      repeating-linear-gradient(
-        90deg,
-        rgba(228, 240, 255, 0.11) 0 2px,
-        rgba(173, 196, 230, 0.05) 2px 7px,
-        rgba(16, 29, 56, 0.02) 7px 13px,
-        rgba(255, 255, 255, 0.02) 13px 16px,
-        rgba(5, 10, 20, 0.16) 16px 24px
-      );
-    opacity: 0.74;
+    background-size: 230px 230px;
+    opacity: 0.18;
   }
 
   .portal-background-image::after {
-    background:
-      radial-gradient(ellipse at center 90%, rgba(0, 0, 0, 0.26) 0%, rgba(0, 0, 0, 0.26) 13%, transparent 18%),
-      radial-gradient(ellipse at center 86%, rgba(232, 241, 255, 0.88) 0%, rgba(232, 241, 255, 0.88) 11.2%, rgba(161, 185, 222, 0.9) 12.2%, rgba(71, 94, 136, 0.78) 13.1%, transparent 14.5%),
-      radial-gradient(ellipse at center 81%, rgba(246, 250, 255, 0.96) 0%, rgba(246, 250, 255, 0.96) 7.6%, rgba(182, 204, 239, 0.9) 8.2%, rgba(86, 110, 156, 0.82) 8.9%, transparent 10.1%),
-      radial-gradient(ellipse at center 76%, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.98) 4.8%, rgba(194, 216, 248, 0.88) 5.3%, rgba(100, 123, 168, 0.8) 5.9%, transparent 6.9%),
-      linear-gradient(180deg, transparent 0%, transparent 72%, rgba(255, 255, 255, 0.06) 73%, rgba(135, 168, 220, 0.1) 77%, rgba(8, 14, 28, 0) 79%);
-    opacity: 0.86;
+    opacity: 0.94;
   }
 
   .portal-shell::after {
-    opacity: 0.22;
+    background-size: 22px 22px;
+    opacity: 0.1;
   }
 }
 
