@@ -13143,25 +13143,25 @@ body {
 }
 
 .portal-summit-hero__backdrop-mesh::before {
-  background-image:
-    linear-gradient(rgba(226, 242, 255, 0.08) 2px, transparent 2px),
-    linear-gradient(90deg, rgba(226, 242, 255, 0.07) 2px, transparent 2px),
-    linear-gradient(90deg, rgba(226, 242, 255, 0.07) 2px, transparent 2px);
-  background-size: 100% 42px, 84px 42px, 84px 42px;
-  background-position: 0 0, 0 0, 42px 21px;
-  opacity: 0.58;
+  inset: -2% -1% 0;
+  background:
+    linear-gradient(180deg, rgba(6, 12, 24, 0.28), rgba(6, 12, 24, 0.56)),
+    url('/images/hero-brick-lights-bg.jpg') center top / cover no-repeat;
+  filter: saturate(0.96) brightness(0.82) contrast(1.04);
+  opacity: 0.26;
+  transform: scale(1.04);
 }
 
 .portal-summit-hero__backdrop-mesh::after {
   inset: -10% -6% 8%;
   background:
-    radial-gradient(circle at 50% 74%, rgba(93, 219, 255, 0.28), transparent 15%),
-    radial-gradient(circle at 50% 66%, rgba(128, 235, 255, 0.18), transparent 19%),
-    radial-gradient(circle at 32% 18%, rgba(124, 220, 255, 0.12), transparent 18%),
-    radial-gradient(circle at 76% 20%, rgba(101, 170, 255, 0.16), transparent 18%);
-  filter: blur(34px);
+    radial-gradient(circle at 16% 10%, rgba(93, 219, 255, 0.22), transparent 18%),
+    radial-gradient(circle at 50% 14%, rgba(255, 112, 143, 0.14), transparent 16%),
+    radial-gradient(circle at 84% 10%, rgba(93, 219, 255, 0.22), transparent 18%),
+    radial-gradient(circle at 50% 72%, rgba(93, 219, 255, 0.16), transparent 16%);
+  filter: blur(28px);
   mix-blend-mode: screen;
-  opacity: 0.92;
+  opacity: 0.42;
   animation: portalHeroPosterGlow 8s ease-in-out infinite alternate;
 }
 
@@ -13209,15 +13209,16 @@ body {
   }
 
   .portal-summit-hero__backdrop-mesh::before {
-    background-size: 100% 34px, 68px 34px, 68px 34px, 100% 100%;
-    background-position: 0 0, 0 0, 34px 17px, 0 0;
-    opacity: 0.62;
+    inset: 0;
+    background-position: center top;
+    filter: saturate(0.94) brightness(0.78) contrast(1.02);
+    opacity: 0.22;
   }
 
   .portal-summit-hero__backdrop-mesh::after {
     inset: -14% -10% 10%;
-    filter: blur(24px);
-    opacity: 0.84;
+    filter: blur(20px);
+    opacity: 0.34;
   }
 }
 
