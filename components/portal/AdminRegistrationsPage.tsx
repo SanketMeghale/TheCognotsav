@@ -400,54 +400,64 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
 
       {activeView === 'overview' && isGlobalAccess ? (
         <section id="admin-overview" className="space-y-4">
-          <div data-reveal="up" className="portal-admin-statband grid grid-cols-1 gap-3">
-            <div className="portal-admin-statband__item">
-              <strong>{counts.all}</strong>
-              <span>Total registrations</span>
+          <div
+            data-reveal="up"
+            className="portal-admin-overview-hero portal-admin-shell portal-glow-card portal-glass rounded-[1.7rem] p-5 text-center md:rounded-[2.2rem] md:p-8"
+          >
+            <div className="portal-admin-overview-hero__icon mx-auto inline-flex h-16 w-16 items-center justify-center rounded-[1.25rem] border border-white/10 text-cyan-100 shadow-[0_18px_40px_rgba(2,8,23,0.18)]">
+              <BarChart3 size={30} />
             </div>
+            <p className="portal-admin-overview-hero__label mt-5 text-lg font-semibold text-slate-300">Total Registrations</p>
+            <strong className="portal-admin-overview-hero__value mt-3 block text-white">{counts.all}</strong>
           </div>
 
-          <div className="grid gap-4">
-            <div data-reveal="up" className="portal-admin-shell portal-admin-shell--analytics portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-6">
-              <div className="flex items-center gap-3"><BarChart3 size={18} className="text-cyan-200" /><div><h3 className="text-xl font-bold text-white">Top competitions</h3><p className="text-sm text-slate-400">Highest registration flow across events.</p></div></div>
-              <div className="portal-admin-subpanel mt-5 rounded-[1.4rem] border border-white/10 bg-black/20 p-4">
-                <div className="space-y-3">
-                  {topTrackedEvents.length > 0 ? topTrackedEvents.map((event, index) => (
-                    <div key={event.slug} className="portal-admin-subrow portal-admin-subrow--leader flex items-center justify-between gap-3 rounded-[1.15rem] border border-white/8 bg-white/[0.04] px-4 py-3">
-                      <div>
-                        <p className="text-[10px] uppercase tracking-[0.22em] text-slate-500">Rank 0{index + 1}</p>
-                        <p className="mt-1 font-semibold text-white">{event.name}</p>
-                      </div>
-                      <div className="text-right text-xs uppercase tracking-[0.16em] text-slate-300">
-                        <p>{event.total} total</p>
-                      </div>
-                    </div>
-                  )) : <div className="portal-admin-empty-state rounded-[1.15rem] border border-dashed border-white/10 bg-black/10 px-4 py-4 text-sm text-slate-400">Analytics will appear after records load.</div>}
-                </div>
+          <div
+            data-reveal="up"
+            className="portal-admin-overview-leaderboard portal-admin-shell portal-admin-shell--analytics portal-glow-card portal-glass rounded-[1.7rem] p-4 md:rounded-[2rem] md:p-6"
+          >
+            <div className="flex items-center gap-4">
+              <div className="portal-admin-overview-leaderboard__badge inline-flex h-14 w-14 items-center justify-center rounded-[1.15rem] border border-white/10 text-fuchsia-100">
+                <BarChart3 size={24} />
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold text-white">Top Competitions</h3>
+                <p className="mt-1 text-sm text-slate-400">Highest registration flow across events.</p>
               </div>
             </div>
-          </div>
 
-          {eventBuckets.length > 0 ? (
-            <div className="portal-admin-overview-grid grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              {eventBuckets.slice(0, 4).map((event) => (
-                <button
-                  key={event.slug}
-                  type="button"
-                  onClick={() => {
-                    setEventFilter(event.slug);
-                    setExpandedRowId(null);
-                    setActiveView('verification');
-                  }}
-                  className="portal-admin-overview-card portal-admin-overview-card--interactive text-left"
-                >
-                  <span>{event.name}</span>
-                  <strong>{event.total}</strong>
-                  <small>{event.total} registrations</small>
-                </button>
-              ))}
+            <div className="portal-admin-overview-leaderboard__panel mt-5 rounded-[1.35rem] border border-white/10 p-3 md:p-4">
+              {topTrackedEvents.length > 0 ? (
+                <div className="space-y-1">
+                  {topTrackedEvents.slice(0, 5).map((event, index) => (
+                    <button
+                      key={event.slug}
+                      type="button"
+                      onClick={() => {
+                        setEventFilter(event.slug);
+                        setExpandedRowId(null);
+                        setActiveView('verification');
+                      }}
+                      className="portal-admin-overview-leaderboard__row flex w-full items-center justify-between gap-3 rounded-[1.05rem] px-3 py-3 text-left md:px-4"
+                    >
+                      <div className="flex min-w-0 items-center gap-3">
+                        <span className={`portal-admin-overview-rank portal-admin-overview-rank--${index + 1 > 3 ? 'other' : index + 1}`}>
+                          {index + 1}
+                        </span>
+                        <div className="min-w-0">
+                          <p className="truncate text-lg font-semibold text-white">{event.name}</p>
+                        </div>
+                      </div>
+                      <span className="portal-admin-overview-total text-2xl font-semibold text-cyan-300">{event.total}</span>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="portal-admin-empty-state rounded-[1.15rem] border border-dashed border-white/10 bg-black/10 px-4 py-4 text-sm text-slate-400">
+                  Analytics will appear after records load.
+                </div>
+              )}
             </div>
-          ) : null}
+          </div>
 
           {announcements.length > 0 ? (
             <div className="portal-admin-shell portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-6">
