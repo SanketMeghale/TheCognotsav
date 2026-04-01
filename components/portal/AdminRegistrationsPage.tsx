@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-  AlertTriangle, ArrowLeft, BarChart3, CheckCircle2, Clock3, Download,
+  AlertTriangle, ArrowLeft, ArrowRight, BarChart3, CheckCircle2, Clock3, Download,
   ChevronDown, ChevronUp, Eye, EyeOff, FileSpreadsheet, HardDriveDownload, Mail, Megaphone,
   RotateCcw, Save, Search, Send, ShieldCheck, Trash2, Users, XCircle,
 } from 'lucide-react';
@@ -274,56 +274,32 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
   return (
     <main className={`${shellClassName} portal-admin-page space-y-4 pb-10 md:space-y-8 md:pb-20`}>
       <section className="portal-admin-shell portal-admin-shell--hero portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-8">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-3xl">
-            <a href="#overview" className="magnetic-button inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200"><ArrowLeft size={16} />Back to portal</a>
-            <div className="portal-admin-brand-row">
-              <div className="portal-admin-lockup">
-                <div className="portal-admin-lockup__frame">
-                  <div className="portal-admin-lockup__core" aria-hidden="true">
-                    <span className="portal-admin-lockup__icon">
-                      <ShieldCheck size={15} />
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="portal-admin-brand-copy">
-                <p className="portal-admin-brand-kicker">COGNOTSAV</p>
-                <p className="portal-admin-brand-title">Operations Dashboard</p>
-              </div>
-            </div>
-            <p className="mt-5 text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Admin workspace</p>
-            <h2 className="mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron text-2xl font-black uppercase text-transparent md:text-4xl">Operations dashboard</h2>
+        <div className="portal-admin-hero-top">
+          <div className="portal-admin-hero-copy">
+            <a href="#overview" className="portal-admin-hero-back magnetic-button inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200"><ArrowLeft size={16} />Back to portal</a>
+            <p className="portal-admin-hero-kicker">COGNOTSAV ADMIN</p>
+            <h2 className="portal-admin-hero-title">Operations Dashboard</h2>
           </div>
           {hasResolvedAccess ? (
             <div className="portal-admin-kpi-grid grid grid-cols-1 gap-3 sm:grid-cols-1">
-              <a href={isGlobalAccess ? '#admin-overview' : '#admin-verification'} className="portal-admin-kpi portal-admin-kpi--cyan">
-                <p className="text-xs uppercase tracking-[0.24em] text-cyan-100/80">Total registrations</p>
-                <p className="mt-2 text-3xl font-black text-white">{counts.all}</p>
+              <a href={isGlobalAccess ? '#admin-overview' : '#admin-verification'} className="portal-admin-kpi portal-admin-kpi--hero">
+                <span className="portal-admin-kpi__value">{counts.all}</span>
+                <span className="portal-admin-kpi__label">Registrations</span>
+                <ArrowRight size={17} />
               </a>
             </div>
           ) : null}
         </div>
+        <div className="portal-admin-hero-divider" aria-hidden="true" />
         <div className="portal-admin-access-panel mt-6 rounded-[1.6rem] border border-white/10 bg-black/20 p-4 md:p-5">
           <div className="portal-admin-access-mode-row">
             <div className="portal-admin-access-mode-tabs grid gap-3 md:grid-cols-2">
-              <button type="button" onClick={() => onAdminAccessModeChange('global')} className={`portal-admin-mode rounded-[1.35rem] border px-4 py-4 text-left transition ${adminAccessMode === 'global' ? 'border-cyan-300/28 bg-cyan-400/12 text-white' : 'border-white/10 bg-white/5 text-slate-200'}`}>
-                <p className="text-xs uppercase tracking-[0.22em] text-cyan-100/80">Option 1</p>
-                <p className="mt-2 text-lg font-bold text-white">Main key</p>
+              <button type="button" onClick={() => onAdminAccessModeChange('global')} className={`portal-admin-mode rounded-[1.35rem] border px-4 py-4 text-left transition ${adminAccessMode === 'global' ? 'is-active' : ''}`}>
+                <p className="text-lg font-bold text-white">Main Key</p>
               </button>
-              <button type="button" onClick={() => onAdminAccessModeChange('event')} className={`portal-admin-mode rounded-[1.35rem] border px-4 py-4 text-left transition ${adminAccessMode === 'event' ? 'border-fuchsia-300/28 bg-fuchsia-400/12 text-white' : 'border-white/10 bg-white/5 text-slate-200'}`}>
-                <p className="text-xs uppercase tracking-[0.22em] text-fuchsia-100/80">Option 2</p>
-                <p className="mt-2 text-lg font-bold text-white">Particular event key</p>
+              <button type="button" onClick={() => onAdminAccessModeChange('event')} className={`portal-admin-mode rounded-[1.35rem] border px-4 py-4 text-left transition ${adminAccessMode === 'event' ? 'is-active' : ''}`}>
+                <p className="text-lg font-bold text-white">Event Key</p>
               </button>
-            </div>
-            <div className={`portal-admin-access-badge rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] ${
-              hasResolvedAccess
-                ? 'border-emerald-300/20 bg-emerald-400/10 text-emerald-100'
-                : 'border-white/10 bg-white/5 text-slate-300'
-            }`}>
-              {hasResolvedAccess
-                ? (adminScope?.mode === 'event' ? `Scoped: ${scopedEventName || 'Event'}` : 'All content ready')
-                : 'Awaiting access'}
             </div>
           </div>
 

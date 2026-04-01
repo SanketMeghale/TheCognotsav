@@ -1121,29 +1121,34 @@ body::-webkit-scrollbar-thumb:hover {
 
 .portal-admin-page {
   position: relative;
-  --portal-neon-primary: rgba(74, 222, 255, 0.2);
-  --portal-neon-secondary: rgba(145, 96, 255, 0.18);
-  --portal-neon-tertiary: rgba(255, 193, 92, 0.12);
+  --portal-admin-cyan: #8af0ff;
+  --portal-admin-blue: #89a8ff;
+  --portal-admin-violet: #d6a0ff;
+  --portal-admin-pink: #ff9cda;
+  --portal-admin-amber: #ffd377;
+  --portal-neon-primary: rgba(138, 240, 255, 0.2);
+  --portal-neon-secondary: rgba(137, 168, 255, 0.18);
+  --portal-neon-tertiary: rgba(214, 160, 255, 0.16);
 }
 
 .portal-admin-page .portal-glass {
   background:
-    radial-gradient(circle at 14% 16%, rgba(74, 222, 255, 0.09), transparent 24%) padding-box,
-    radial-gradient(circle at 84% 14%, rgba(145, 96, 255, 0.15), transparent 22%) padding-box,
-    radial-gradient(circle at 78% 100%, rgba(255, 193, 92, 0.1), transparent 30%) padding-box,
-    linear-gradient(180deg, rgba(10, 14, 31, 0.95), rgba(8, 9, 24, 0.99)) padding-box,
+    radial-gradient(circle at 14% 16%, rgba(138, 240, 255, 0.1), transparent 24%) padding-box,
+    radial-gradient(circle at 84% 14%, rgba(137, 168, 255, 0.16), transparent 24%) padding-box,
+    radial-gradient(circle at 72% 100%, rgba(255, 156, 218, 0.12), transparent 32%) padding-box,
+    linear-gradient(180deg, rgba(8, 13, 29, 0.96), rgba(5, 9, 20, 0.99)) padding-box,
     var(--portal-surface-border) border-box;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
     inset 0 -1px 0 rgba(255, 255, 255, 0.03),
     0 24px 56px rgba(2, 8, 23, 0.28),
-    0 0 26px rgba(145, 96, 255, 0.06);
+    0 0 28px rgba(137, 168, 255, 0.08);
 }
 
 .portal-admin-page .portal-glow-card::after {
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 22%, rgba(74, 222, 255, 0.12) 54%, rgba(145, 96, 255, 0.12) 82%, rgba(255, 193, 92, 0.1) 100%),
-    radial-gradient(circle at top right, rgba(74, 222, 255, 0.06), transparent 24%);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 20%, rgba(138, 240, 255, 0.14) 44%, rgba(137, 168, 255, 0.14) 68%, rgba(214, 160, 255, 0.14) 88%, rgba(255, 156, 218, 0.1) 100%),
+    radial-gradient(circle at top right, rgba(138, 240, 255, 0.08), transparent 26%);
 }
 
 .portal-admin-page .floating-field-input {
@@ -1169,16 +1174,112 @@ body::-webkit-scrollbar-thumb:hover {
 }
 
 .portal-admin-shell--hero {
+  position: relative;
+  overflow: hidden;
   background:
-    radial-gradient(circle at 82% 10%, rgba(145, 96, 255, 0.2), transparent 26%) padding-box,
-    radial-gradient(circle at 14% 18%, rgba(74, 222, 255, 0.08), transparent 22%) padding-box,
-    linear-gradient(180deg, rgba(13, 18, 40, 0.98), rgba(8, 10, 27, 0.98)) padding-box,
+    radial-gradient(circle at 82% 12%, rgba(137, 168, 255, 0.22), transparent 28%) padding-box,
+    radial-gradient(circle at 14% 16%, rgba(138, 240, 255, 0.12), transparent 26%) padding-box,
+    radial-gradient(circle at 50% 100%, rgba(255, 156, 218, 0.12), transparent 34%) padding-box,
+    linear-gradient(180deg, rgba(9, 14, 31, 0.985), rgba(5, 9, 22, 0.985)) padding-box,
     var(--portal-surface-border) border-box;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
     inset 0 -1px 0 rgba(255, 255, 255, 0.03),
     0 28px 62px rgba(2, 8, 23, 0.32),
-    0 0 32px rgba(145, 96, 255, 0.08);
+    0 0 32px rgba(137, 168, 255, 0.08);
+}
+
+.portal-admin-shell--hero::before,
+.portal-admin-shell--hero::after {
+  content: '';
+  position: absolute;
+  left: 1.25rem;
+  right: 1.25rem;
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.portal-admin-shell--hero::before {
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(138, 240, 255, 0), rgba(138, 240, 255, 0.9), rgba(214, 160, 255, 0.74), rgba(255, 156, 218, 0));
+  opacity: 0.9;
+}
+
+.portal-admin-shell--hero::after {
+  top: 1.1rem;
+  height: 8rem;
+  background: radial-gradient(circle at top, rgba(137, 168, 255, 0.16), transparent 72%);
+  filter: blur(28px);
+  opacity: 0.9;
+}
+
+.portal-admin-hero-top {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.35rem;
+}
+
+.portal-admin-hero-copy {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 0;
+  max-width: 48rem;
+}
+
+.portal-admin-hero-back {
+  width: fit-content;
+  border-color: rgba(138, 240, 255, 0.18);
+  background:
+    linear-gradient(180deg, rgba(13, 20, 36, 0.92), rgba(8, 12, 24, 0.88)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.04), transparent);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 12px 24px rgba(2, 8, 23, 0.12);
+}
+
+.portal-admin-hero-kicker {
+  margin: 0;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgba(191, 219, 254, 0.76);
+}
+
+.portal-admin-hero-title {
+  margin: 0;
+  color: transparent;
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  font-size: clamp(2.05rem, 4.8vw, 4.05rem);
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  line-height: 0.94;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.02) 26%, rgba(255, 255, 255, 0) 46%),
+    linear-gradient(92deg, var(--portal-admin-cyan) 0%, var(--portal-admin-blue) 26%, var(--portal-admin-violet) 62%, var(--portal-admin-pink) 100%);
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-shadow:
+    0 1px 0 rgba(215, 246, 255, 0.22),
+    0 10px 24px rgba(3, 8, 18, 0.36),
+    0 0 26px rgba(138, 240, 255, 0.18),
+    0 0 40px rgba(214, 160, 255, 0.14);
+  animation: portalHeroSpectrum 8.4s linear infinite;
+}
+
+.portal-admin-hero-divider {
+  position: relative;
+  z-index: 1;
+  margin-top: 1.4rem;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(138, 240, 255, 0), rgba(138, 240, 255, 0.36), rgba(137, 168, 255, 0.26), rgba(214, 160, 255, 0.3), rgba(255, 156, 218, 0));
 }
 
 .portal-admin-brand-row {
@@ -1212,6 +1313,11 @@ body::-webkit-scrollbar-thumb:hover {
   color: rgba(217, 70, 239, 0.82);
 }
 
+.portal-admin-kpi-grid {
+  justify-items: end;
+  width: 100%;
+}
+
 .portal-admin-kpi {
   display: flex;
   flex-direction: column;
@@ -1235,6 +1341,40 @@ body::-webkit-scrollbar-thumb:hover {
   transform: translateY(-2px);
 }
 
+.portal-admin-kpi--hero {
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 0.78rem;
+  min-height: 5rem;
+  min-width: min(100%, 15rem);
+  padding: 0.95rem 1.15rem;
+  border-radius: 1.35rem;
+  border-color: rgba(137, 168, 255, 0.2);
+  background:
+    radial-gradient(circle at 20% 20%, rgba(138, 240, 255, 0.1), transparent 26%),
+    linear-gradient(180deg, rgba(21, 27, 52, 0.96), rgba(11, 15, 33, 0.94));
+}
+
+.portal-admin-kpi--hero svg {
+  color: rgba(191, 219, 254, 0.88);
+}
+
+.portal-admin-kpi__value {
+  color: #ffffff;
+  font-size: 1.9rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.portal-admin-kpi__label {
+  color: rgba(226, 232, 240, 0.82);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+
 .portal-admin-kpi--cyan {
   border-color: rgba(74, 222, 255, 0.18);
 }
@@ -1252,43 +1392,77 @@ body::-webkit-scrollbar-thumb:hover {
 }
 
 .portal-admin-access-panel {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2rem;
+  border-color: rgba(137, 168, 255, 0.18);
   background:
-    radial-gradient(circle at top left, rgba(74, 222, 255, 0.05), transparent 26%),
-    radial-gradient(circle at 84% 22%, rgba(145, 96, 255, 0.1), transparent 28%),
-    linear-gradient(180deg, rgba(10, 14, 34, 0.78), rgba(7, 10, 25, 0.6));
+    radial-gradient(circle at 14% 14%, rgba(138, 240, 255, 0.08), transparent 24%),
+    radial-gradient(circle at 86% 18%, rgba(137, 168, 255, 0.12), transparent 30%),
+    radial-gradient(circle at 70% 100%, rgba(255, 156, 218, 0.1), transparent 34%),
+    linear-gradient(180deg, rgba(9, 14, 31, 0.92), rgba(7, 10, 24, 0.88));
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    0 18px 30px rgba(2, 8, 23, 0.18);
+    0 18px 30px rgba(2, 8, 23, 0.18),
+    0 0 0 1px rgba(137, 168, 255, 0.06);
+}
+
+.portal-admin-access-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 14%, transparent 86%, rgba(255, 255, 255, 0.02)),
+    radial-gradient(circle at bottom center, rgba(255, 211, 119, 0.08), transparent 38%);
 }
 
 .portal-admin-access-mode-row {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
+  position: relative;
+  z-index: 1;
   gap: 0.9rem;
 }
 
 .portal-admin-access-mode-tabs {
-  flex: 1 1 36rem;
-}
-
-.portal-admin-mode {
-  min-height: 4.4rem;
+  flex: 1 1 auto;
+  padding: 0.3rem;
+  border-radius: 1.55rem;
+  border: 1px solid rgba(137, 168, 255, 0.18);
+  background:
+    linear-gradient(180deg, rgba(18, 24, 46, 0.96), rgba(11, 15, 32, 0.92)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.03), transparent);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.04),
     0 14px 28px rgba(2, 8, 23, 0.12);
 }
 
-.portal-admin-access-badge {
+.portal-admin-mode {
+  border-color: transparent;
+  background: transparent;
+  min-height: 4.4rem;
+  color: rgba(226, 232, 240, 0.78);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    0 12px 22px rgba(2, 8, 23, 0.12);
+    0 14px 28px rgba(2, 8, 23, 0.12);
+}
+
+.portal-admin-mode.is-active {
+  border-color: rgba(138, 240, 255, 0.22);
+  background:
+    radial-gradient(circle at top left, rgba(138, 240, 255, 0.12), transparent 38%),
+    linear-gradient(180deg, rgba(24, 31, 57, 0.98), rgba(14, 20, 38, 0.96));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 0 0 1px rgba(214, 160, 255, 0.08),
+    0 0 24px rgba(138, 240, 255, 0.12);
 }
 
 .portal-admin-access-grid {
+  position: relative;
+  z-index: 1;
   display: grid;
-  gap: 0.9rem;
+  gap: 1rem;
   grid-template-columns: minmax(0, 1.45fr) minmax(17rem, 0.95fr);
   align-items: stretch;
 }
@@ -1299,7 +1473,8 @@ body::-webkit-scrollbar-thumb:hover {
   border-radius: 1.25rem;
   padding: 0.7rem;
   background:
-    linear-gradient(180deg, rgba(15, 20, 44, 0.9), rgba(10, 12, 31, 0.88)),
+    radial-gradient(circle at top right, rgba(137, 168, 255, 0.1), transparent 30%),
+    linear-gradient(180deg, rgba(15, 21, 41, 0.94), rgba(9, 13, 28, 0.92)),
     linear-gradient(135deg, rgba(255, 255, 255, 0.03), transparent);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.04),
@@ -1338,9 +1513,13 @@ body::-webkit-scrollbar-thumb:hover {
   min-height: 4rem;
   min-width: 9.6rem;
   align-self: stretch;
+  border: 1px solid rgba(255, 211, 119, 0.34);
+  background:
+    linear-gradient(180deg, rgba(255, 241, 122, 0.98), rgba(255, 214, 61, 0.95)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.24), transparent);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
-    0 16px 30px rgba(255, 193, 92, 0.18);
+    0 18px 32px rgba(255, 211, 119, 0.22);
 }
 
 .portal-admin-access-label {
@@ -1350,6 +1529,17 @@ body::-webkit-scrollbar-thumb:hover {
 .portal-admin-access-hint {
   grid-column: 1 / -1;
   padding-inline: 0.25rem;
+}
+
+.portal-admin-access-summary {
+  position: relative;
+  z-index: 1;
+  background:
+    radial-gradient(circle at left center, rgba(121, 245, 184, 0.12), transparent 18%),
+    linear-gradient(180deg, rgba(22, 31, 47, 0.88), rgba(15, 20, 35, 0.86));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 14px 26px rgba(2, 8, 23, 0.12);
 }
 
 .portal-admin-access-shell--secondary {
@@ -1366,20 +1556,21 @@ body::-webkit-scrollbar-thumb:hover {
 
 .portal-admin-export-button {
   min-height: 3.6rem;
+  border-color: rgba(137, 168, 255, 0.18);
   background:
-    linear-gradient(180deg, rgba(18, 24, 42, 0.9), rgba(10, 14, 28, 0.84)),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.03), transparent);
+    radial-gradient(circle at top left, rgba(138, 240, 255, 0.1), transparent 34%),
+    linear-gradient(180deg, rgba(22, 35, 60, 0.94), rgba(35, 20, 68, 0.88));
 }
 
 .portal-admin-export-button--gold {
-  border-color: rgba(255, 193, 92, 0.32);
+  border-color: rgba(255, 211, 119, 0.34);
   background:
-    linear-gradient(180deg, rgba(255, 217, 102, 0.96), rgba(255, 183, 49, 0.92)),
+    linear-gradient(180deg, rgba(255, 241, 122, 0.98), rgba(255, 214, 61, 0.94)),
     linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
   color: #231300;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.28),
-    0 16px 28px rgba(255, 193, 92, 0.22);
+    0 18px 30px rgba(255, 211, 119, 0.22);
 }
 
 .portal-admin-jumpnav--dock {
@@ -1395,7 +1586,8 @@ body::-webkit-scrollbar-thumb:hover {
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 1.15rem;
   background:
-    linear-gradient(180deg, rgba(13, 19, 34, 0.92), rgba(8, 12, 24, 0.9)),
+    radial-gradient(circle at top left, rgba(138, 240, 255, 0.08), transparent 24%),
+    linear-gradient(180deg, rgba(11, 16, 33, 0.94), rgba(7, 11, 24, 0.92)),
     linear-gradient(135deg, rgba(255, 255, 255, 0.03), transparent);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -1429,7 +1621,7 @@ body::-webkit-scrollbar-thumb:hover {
   border-radius: 0.95rem;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background:
-    linear-gradient(180deg, rgba(17, 22, 44, 0.92), rgba(11, 12, 30, 0.88)),
+    linear-gradient(180deg, rgba(14, 20, 42, 0.92), rgba(9, 12, 28, 0.88)),
     linear-gradient(135deg, rgba(255, 255, 255, 0.03), transparent);
   color: rgba(226, 232, 240, 0.88);
   font-size: 0.76rem;
@@ -1454,15 +1646,15 @@ body::-webkit-scrollbar-thumb:hover {
 }
 
 .portal-admin-tab.is-active {
-  border-color: rgba(255, 193, 92, 0.32);
+  border-color: rgba(138, 240, 255, 0.24);
   background:
-    radial-gradient(circle at top, rgba(255, 193, 92, 0.16), transparent 55%),
-    linear-gradient(180deg, rgba(25, 31, 56, 0.98), rgba(11, 13, 31, 0.94));
-  color: #fff0ba;
+    radial-gradient(circle at top, rgba(138, 240, 255, 0.14), transparent 55%),
+    linear-gradient(180deg, rgba(24, 31, 57, 0.98), rgba(13, 18, 36, 0.94));
+  color: #e9fdff;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 16px 28px rgba(255, 193, 92, 0.14),
-    0 0 0 1px rgba(255, 193, 92, 0.06);
+    0 16px 28px rgba(138, 240, 255, 0.12),
+    0 0 0 1px rgba(214, 160, 255, 0.08);
 }
 
 .portal-admin-tabs-status {
@@ -1482,7 +1674,7 @@ body::-webkit-scrollbar-thumb:hover {
   padding: 0.4rem 0.8rem;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.04);
+  background: linear-gradient(180deg, rgba(17, 23, 44, 0.9), rgba(10, 14, 28, 0.84));
   color: rgba(226, 232, 240, 0.82);
   font-size: 0.68rem;
   font-weight: 700;
@@ -1514,9 +1706,9 @@ body::-webkit-scrollbar-thumb:hover {
   border-radius: 1.2rem;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background:
-    radial-gradient(circle at top right, rgba(255, 193, 92, 0.1), transparent 34%),
-    radial-gradient(circle at 16% 8%, rgba(74, 222, 255, 0.07), transparent 22%),
-    linear-gradient(180deg, rgba(14, 20, 40, 0.96), rgba(9, 10, 26, 0.94));
+    radial-gradient(circle at top right, rgba(137, 168, 255, 0.14), transparent 34%),
+    radial-gradient(circle at 16% 8%, rgba(138, 240, 255, 0.08), transparent 24%),
+    linear-gradient(180deg, rgba(12, 18, 39, 0.97), rgba(7, 11, 25, 0.95));
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.04),
     0 18px 32px rgba(2, 8, 23, 0.16);
@@ -1554,8 +1746,9 @@ body::-webkit-scrollbar-thumb:hover {
   border-radius: 1.25rem;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background:
-    radial-gradient(circle at 84% 18%, rgba(255, 193, 92, 0.1), transparent 28%),
-    linear-gradient(180deg, rgba(17, 22, 42, 0.96), rgba(10, 12, 28, 0.92));
+    radial-gradient(circle at 84% 18%, rgba(137, 168, 255, 0.12), transparent 30%),
+    radial-gradient(circle at 18% 14%, rgba(138, 240, 255, 0.08), transparent 26%),
+    linear-gradient(180deg, rgba(14, 20, 40, 0.96), rgba(8, 12, 27, 0.92));
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.05),
     0 16px 28px rgba(2, 8, 23, 0.12);
@@ -1616,7 +1809,8 @@ body::-webkit-scrollbar-thumb:hover {
 
 .portal-admin-subpanel {
   background:
-    linear-gradient(180deg, rgba(10, 14, 28, 0.72), rgba(4, 8, 18, 0.5));
+    radial-gradient(circle at top left, rgba(138, 240, 255, 0.08), transparent 30%),
+    linear-gradient(180deg, rgba(10, 14, 28, 0.76), rgba(4, 8, 18, 0.54));
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
@@ -1627,7 +1821,7 @@ body::-webkit-scrollbar-thumb:hover {
 
 .portal-admin-subrow {
   background:
-    linear-gradient(180deg, rgba(17, 24, 42, 0.88), rgba(9, 13, 28, 0.82)),
+    linear-gradient(180deg, rgba(15, 22, 40, 0.9), rgba(8, 12, 24, 0.84)),
     linear-gradient(135deg, rgba(255, 255, 255, 0.03), transparent);
 }
 
@@ -1649,8 +1843,9 @@ body::-webkit-scrollbar-thumb:hover {
 
 .portal-admin-backup-card {
   background:
-    radial-gradient(circle at 82% 18%, rgba(255, 193, 92, 0.18), transparent 28%),
-    linear-gradient(180deg, rgba(22, 26, 47, 0.94), rgba(12, 12, 30, 0.9));
+    radial-gradient(circle at 82% 18%, rgba(137, 168, 255, 0.16), transparent 28%),
+    radial-gradient(circle at 18% 16%, rgba(138, 240, 255, 0.08), transparent 22%),
+    linear-gradient(180deg, rgba(17, 25, 48, 0.95), rgba(8, 12, 28, 0.92));
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.05),
     0 18px 30px rgba(2, 8, 23, 0.14);
@@ -1687,9 +1882,10 @@ body::-webkit-scrollbar-thumb:hover {
 
 .portal-admin-shell--verification {
   background:
-    radial-gradient(circle at top, rgba(74, 222, 255, 0.08), transparent 22%) padding-box,
-    radial-gradient(circle at 88% 0%, rgba(145, 96, 255, 0.08), transparent 22%) padding-box,
-    linear-gradient(180deg, rgba(8, 13, 26, 0.94), rgba(5, 9, 18, 0.985)) padding-box,
+    radial-gradient(circle at top, rgba(138, 240, 255, 0.1), transparent 24%) padding-box,
+    radial-gradient(circle at 88% 0%, rgba(137, 168, 255, 0.1), transparent 26%) padding-box,
+    radial-gradient(circle at 78% 100%, rgba(255, 156, 218, 0.08), transparent 28%) padding-box,
+    linear-gradient(180deg, rgba(8, 13, 26, 0.95), rgba(5, 9, 18, 0.985)) padding-box,
     var(--portal-surface-border) border-box;
 }
 
@@ -1698,8 +1894,8 @@ body::-webkit-scrollbar-thumb:hover {
   overflow: hidden;
   border-color: rgba(255, 255, 255, 0.08);
   background:
-    radial-gradient(circle at 14% 16%, rgba(74, 222, 255, 0.07), transparent 26%),
-    radial-gradient(circle at 86% 18%, rgba(145, 96, 255, 0.14), transparent 24%),
+    radial-gradient(circle at 14% 16%, rgba(138, 240, 255, 0.08), transparent 28%),
+    radial-gradient(circle at 86% 18%, rgba(137, 168, 255, 0.16), transparent 26%),
     linear-gradient(180deg, rgba(16, 19, 42, 0.95), rgba(10, 11, 29, 0.94));
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.05),
@@ -1845,8 +2041,9 @@ body::-webkit-scrollbar-thumb:hover {
 
 .portal-admin-control-card {
   background:
-    radial-gradient(circle at 84% 14%, rgba(145, 96, 255, 0.14), transparent 28%),
-    linear-gradient(180deg, rgba(18, 22, 45, 0.94), rgba(11, 12, 30, 0.92));
+    radial-gradient(circle at 84% 14%, rgba(137, 168, 255, 0.16), transparent 28%),
+    radial-gradient(circle at 16% 12%, rgba(138, 240, 255, 0.08), transparent 22%),
+    linear-gradient(180deg, rgba(18, 22, 45, 0.95), rgba(11, 12, 30, 0.92));
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.04),
     0 14px 24px rgba(2, 8, 23, 0.12);
@@ -1931,7 +2128,10 @@ body::-webkit-scrollbar-thumb:hover {
   .portal-admin-entry__proof,
   .portal-admin-control-card,
   .portal-admin-backup-card {
-    background: linear-gradient(180deg, rgba(12, 18, 32, 0.96), rgba(8, 12, 24, 0.94)) !important;
+    background:
+      radial-gradient(circle at top left, rgba(138, 240, 255, 0.08), transparent 28%),
+      radial-gradient(circle at top right, rgba(137, 168, 255, 0.1), transparent 30%),
+      linear-gradient(180deg, rgba(12, 18, 32, 0.96), rgba(8, 12, 24, 0.94)) !important;
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.04),
       0 14px 26px rgba(2, 8, 23, 0.18);
@@ -1951,6 +2151,54 @@ body::-webkit-scrollbar-thumb:hover {
   .portal-admin-kpi {
     min-height: 5.4rem;
     padding: 0.75rem;
+  }
+
+  .portal-admin-hero-top {
+    gap: 0.9rem;
+    align-items: stretch;
+  }
+
+  .portal-admin-hero-copy {
+    gap: 0.65rem;
+  }
+
+  .portal-admin-hero-back {
+    padding-inline: 0.9rem;
+    font-size: 0.76rem;
+  }
+
+  .portal-admin-hero-kicker {
+    font-size: 0.64rem;
+    letter-spacing: 0.22em;
+  }
+
+  .portal-admin-hero-title {
+    font-size: clamp(1.45rem, 9vw, 2.5rem);
+    letter-spacing: 0.04em;
+  }
+
+  .portal-admin-hero-divider {
+    margin-top: 1rem;
+  }
+
+  .portal-admin-kpi-grid {
+    justify-items: stretch;
+  }
+
+  .portal-admin-kpi--hero {
+    width: 100%;
+    min-height: 4.2rem;
+    justify-content: space-between;
+    padding: 0.85rem 1rem;
+    border-radius: 1.15rem;
+  }
+
+  .portal-admin-kpi__value {
+    font-size: 1.45rem;
+  }
+
+  .portal-admin-kpi__label {
+    font-size: 0.72rem;
   }
 
   .portal-admin-brand-row {
@@ -1975,6 +2223,7 @@ body::-webkit-scrollbar-thumb:hover {
 
   .portal-admin-access-mode-tabs {
     flex-basis: 100%;
+    padding: 0.22rem;
   }
 
   .portal-admin-mode {
@@ -1982,9 +2231,8 @@ body::-webkit-scrollbar-thumb:hover {
     padding: 0.8rem 0.9rem;
   }
 
-  .portal-admin-mode p.mt-2 {
-    margin-top: 0.35rem;
-    font-size: 0.86rem;
+  .portal-admin-mode p {
+    font-size: 0.96rem;
   }
 
   .portal-admin-access-badge {
