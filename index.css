@@ -13551,16 +13551,16 @@ body {
 
 .portal-summit-hero--immersive .portal-summit-hero__content--immersive {
   background:
-    radial-gradient(circle at 50% 76%, rgba(104, 214, 255, 0.14), transparent 18%),
-    radial-gradient(circle at 50% 18%, rgba(120, 214, 255, 0.12), transparent 24%),
-    linear-gradient(180deg, rgba(8, 18, 42, 0.96), rgba(6, 13, 32, 0.98) 48%, rgba(2, 7, 20, 1));
+    radial-gradient(circle at 50% 76%, rgba(104, 214, 255, 0.1), transparent 18%),
+    radial-gradient(circle at 50% 18%, rgba(120, 214, 255, 0.08), transparent 24%),
+    linear-gradient(180deg, rgba(6, 14, 34, 0.975), rgba(4, 10, 27, 0.99) 48%, rgba(1, 5, 16, 1));
 }
 
 .portal-summit-hero__backdrop {
   isolation: isolate;
   background:
-    linear-gradient(180deg, rgba(138, 212, 255, 0.08), rgba(4, 8, 18, 0)),
-    radial-gradient(circle at 50% 80%, rgba(94, 222, 255, 0.1), transparent 24%);
+    linear-gradient(180deg, rgba(138, 212, 255, 0.05), rgba(4, 8, 18, 0)),
+    radial-gradient(circle at 50% 80%, rgba(94, 222, 255, 0.07), transparent 24%);
 }
 
 .portal-summit-hero__backdrop-mesh {
@@ -13595,13 +13595,13 @@ body {
 .portal-summit-hero__backdrop-mesh::after {
   inset: -10% -6% 8%;
   background:
-    radial-gradient(circle at 50% 74%, rgba(93, 219, 255, 0.28), transparent 15%),
-    radial-gradient(circle at 50% 66%, rgba(128, 235, 255, 0.18), transparent 19%),
-    radial-gradient(circle at 32% 18%, rgba(124, 220, 255, 0.12), transparent 18%),
-    radial-gradient(circle at 76% 20%, rgba(101, 170, 255, 0.16), transparent 18%);
+    radial-gradient(circle at 50% 74%, rgba(93, 219, 255, 0.22), transparent 15%),
+    radial-gradient(circle at 50% 66%, rgba(128, 235, 255, 0.14), transparent 19%),
+    radial-gradient(circle at 32% 18%, rgba(124, 220, 255, 0.09), transparent 18%),
+    radial-gradient(circle at 76% 20%, rgba(101, 170, 255, 0.12), transparent 18%);
   filter: blur(34px);
   mix-blend-mode: screen;
-  opacity: 0.92;
+  opacity: 0.82;
   animation: portalHeroPosterGlow 8s ease-in-out infinite alternate;
 }
 
