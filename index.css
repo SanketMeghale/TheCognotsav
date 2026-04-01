@@ -1915,6 +1915,39 @@ body::-webkit-scrollbar-thumb:hover {
       0 18px 38px rgba(2, 8, 23, 0.22);
   }
 
+  .portal-admin-page .portal-glass,
+  .portal-admin-access-panel,
+  .portal-admin-access-shell,
+  .portal-admin-jumpnav--dock,
+  .portal-admin-statband__item,
+  .portal-admin-overview-card,
+  .portal-admin-subpanel,
+  .portal-admin-subrow,
+  .portal-admin-entry,
+  .portal-admin-entry__fact,
+  .portal-admin-entry__actions,
+  .portal-admin-entry__actions--compact,
+  .portal-admin-entry__subcard,
+  .portal-admin-entry__proof,
+  .portal-admin-control-card,
+  .portal-admin-backup-card {
+    background: linear-gradient(180deg, rgba(12, 18, 32, 0.96), rgba(8, 12, 24, 0.94)) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.04),
+      0 14px 26px rgba(2, 8, 23, 0.18);
+  }
+
+  .portal-admin-page .portal-glow-card::after,
+  .portal-admin-page .portal-glass::before,
+  .portal-admin-page .portal-glass::after,
+  .portal-admin-lockup__core::after,
+  .portal-admin-subrow--leader::after,
+  .portal-admin-entry::before,
+  .portal-admin-entry::after {
+    display: none !important;
+    content: none !important;
+  }
+
   .portal-admin-kpi {
     min-height: 5.4rem;
     padding: 0.75rem;
