@@ -15,6 +15,7 @@ import type {
 import { formatBytes, formatCurrency, shellClassName } from './utils';
 
 type AdminAccessMode = 'global' | 'event';
+type AdminView = 'overview' | 'events' | 'verification' | 'broadcast' | 'backup';
 
 type Props = {
   adminAccessMode: AdminAccessMode;
@@ -132,6 +133,7 @@ function FloatingField({ label, icon, value, type = 'text', onChange }: { label:
 }
 
 export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, adminMainKey, adminEventKey, adminEventKeySlug, adminScope, adminRows, events, announcements, backups, adminLoading, adminError, onAdminAccessModeChange, onAdminMainKeyChange, onAdminEventKeyChange, onAdminEventKeySlugChange, onLoadAdminRows, onDownload, onStatusChange, onDeleteRegistration, onToggleEventRegistrationState, onSaveReviewNote, onResendStatusEmail, onSendBroadcast, onDeleteAnnouncement, onRunBackup, onDownloadBackup }) => {
+  const [activeView, setActiveView] = useState<AdminView>('overview');
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [eventFilter, setEventFilter] = useState('all');
@@ -202,6 +204,24 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
   }, {})).sort((left, right) => right[1] - left[1])[0] || null, [adminRows, events]);
   const topTrackedEvents = useMemo(() => [...eventBuckets].sort((left, right) => right.total - left.total).slice(0, 4), [eventBuckets]);
   const recentBackup = backups[0] ?? null;
+  const adminViews = useMemo(() => {
+    const views: Array<{ key: AdminView; label: string; icon: typeof BarChart3 }> = [
+      { key: 'overview', label: 'Overview', icon: BarChart3 },
+      { key: 'verification', label: 'Registrations', icon: ShieldCheck },
+    ];
+
+    if (canManageEventControls) {
+      views.splice(1, 0, { key: 'events', label: 'Events', icon: Users });
+    }
+    if (canShowBroadcastTools) {
+      views.push({ key: 'broadcast', label: 'Broadcast', icon: Megaphone });
+    }
+    if (canShowBackupTools) {
+      views.push({ key: 'backup', label: 'Backup', icon: HardDriveDownload });
+    }
+
+    return views;
+  }, [canManageEventControls, canShowBackupTools, canShowBroadcastTools]);
   const eventControlRows = useMemo(() => events.map((event) => {
     const registrationsCount = Number(event.registrations_count || 0);
     const remainingSlots = event.max_slots === null ? null : Math.max(event.max_slots - registrationsCount, 0);
@@ -216,6 +236,12 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
       setExpandedRowId(null);
     }
   }, [expandedRowId, filteredRows]);
+
+  useEffect(() => {
+    if (!adminViews.some((view) => view.key === activeView)) {
+      setActiveView(adminViews[0]?.key ?? 'overview');
+    }
+  }, [activeView, adminViews]);
 
   return (
     <main className={`${shellClassName} portal-admin-page space-y-4 pb-10 md:space-y-8 md:pb-20`}>
@@ -321,107 +347,163 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
       </section>
       {hasResolvedAccess ? (
         <>
-        <div className="portal-admin-jumpnav portal-admin-jumpnav--dock flex flex-wrap gap-2">
-          <a href="#admin-analytics" className="magnetic-button portal-admin-jumpnav__link rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Analytics</a>
-          {canManageEventControls ? <a href="#admin-event-controls" className="magnetic-button portal-admin-jumpnav__link rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Event Controls</a> : null}
-          <a href="#admin-verification" className="magnetic-button portal-admin-jumpnav__link rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Verification</a>
-          {canShowBroadcastTools ? <a href="#admin-broadcast" className="magnetic-button portal-admin-jumpnav__link rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Broadcast</a> : null}
-          {canShowBackupTools ? <a href="#admin-backup" className="magnetic-button portal-admin-jumpnav__link rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Backup</a> : null}
+        <div className="portal-admin-tabs-shell portal-admin-jumpnav portal-admin-jumpnav--dock">
+          <div className="portal-admin-tabs-track">
+            {adminViews.map((view) => {
+              const Icon = view.icon;
+              const active = activeView === view.key;
+
+              return (
+                <button
+                  key={view.key}
+                  type="button"
+                  onClick={() => setActiveView(view.key)}
+                  className={`magnetic-button portal-admin-tab ${active ? 'is-active' : ''}`}
+                >
+                  <Icon size={16} />
+                  <span>{view.label}</span>
+                </button>
+              );
+            })}
+          </div>
+          <div className="portal-admin-tabs-status">
+            <span>{adminScope?.mode === 'event' ? `Scoped: ${scopedEventName || 'Event'}` : 'Main access active'}</span>
+            <span>{counts.all} registrations</span>
+          </div>
         </div>
 
-      <section id="admin-analytics" className="space-y-4">
-        <div data-reveal="up" className="portal-admin-statband grid grid-cols-3 gap-3">
-          <div className="portal-admin-statband__item">
-            <strong>{totalParticipants}</strong>
-            <span>Participants</span>
+      {activeView === 'overview' ? (
+        <section id="admin-overview" className="space-y-4">
+          <div data-reveal="up" className="portal-admin-statband grid grid-cols-2 gap-3 xl:grid-cols-4">
+            <div className="portal-admin-statband__item">
+              <strong>{counts.all}</strong>
+              <span>Total registrations</span>
+            </div>
+            <div className="portal-admin-statband__item">
+              <strong>{totalParticipants}</strong>
+              <span>Participants</span>
+            </div>
+            <div className="portal-admin-statband__item">
+              <strong>{counts.verified}</strong>
+              <span>Verified</span>
+            </div>
+            <div className="portal-admin-statband__item">
+              <strong>{busiestEvent ? busiestEvent[1] : eventBuckets.length}</strong>
+              <span>{busiestEvent ? busiestEvent[0] : 'Total events'}</span>
+            </div>
           </div>
-          <div className="portal-admin-statband__item">
-            <strong>{counts.verified}</strong>
-            <span>Verified</span>
-          </div>
-          <div className="portal-admin-statband__item">
-            <strong>{eventBuckets.length}</strong>
-            <span>Total events</span>
-          </div>
-        </div>
 
-        <div className="grid gap-4 xl:grid-cols-[1.08fr_0.92fr]">
-          <div data-reveal="up" className="portal-admin-shell portal-admin-shell--analytics portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-6">
-            <div className="flex items-center gap-3"><BarChart3 size={18} className="text-cyan-200" /><div><h3 className="text-xl font-bold text-white">Top competitions</h3><p className="text-sm text-slate-400">Highest registration flow across events.</p></div></div>
-            <div className="portal-admin-subpanel mt-5 rounded-[1.4rem] border border-white/10 bg-black/20 p-4">
-              <div className="space-y-3">
-                {topTrackedEvents.length > 0 ? topTrackedEvents.map((event, index) => (
-                  <div key={event.slug} className="portal-admin-subrow portal-admin-subrow--leader flex items-center justify-between gap-3 rounded-[1.15rem] border border-white/8 bg-white/[0.04] px-4 py-3">
-                    <div>
-                      <p className="text-[10px] uppercase tracking-[0.22em] text-slate-500">Rank 0{index + 1}</p>
-                      <p className="mt-1 font-semibold text-white">{event.name}</p>
+          <div className="grid gap-4 xl:grid-cols-[1.08fr_0.92fr]">
+            <div data-reveal="up" className="portal-admin-shell portal-admin-shell--analytics portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-6">
+              <div className="flex items-center gap-3"><BarChart3 size={18} className="text-cyan-200" /><div><h3 className="text-xl font-bold text-white">Top competitions</h3><p className="text-sm text-slate-400">Highest registration flow across events.</p></div></div>
+              <div className="portal-admin-subpanel mt-5 rounded-[1.4rem] border border-white/10 bg-black/20 p-4">
+                <div className="space-y-3">
+                  {topTrackedEvents.length > 0 ? topTrackedEvents.map((event, index) => (
+                    <div key={event.slug} className="portal-admin-subrow portal-admin-subrow--leader flex items-center justify-between gap-3 rounded-[1.15rem] border border-white/8 bg-white/[0.04] px-4 py-3">
+                      <div>
+                        <p className="text-[10px] uppercase tracking-[0.22em] text-slate-500">Rank 0{index + 1}</p>
+                        <p className="mt-1 font-semibold text-white">{event.name}</p>
+                      </div>
+                      <div className="text-right text-xs uppercase tracking-[0.16em] text-slate-300">
+                        <p>{event.total} total</p>
+                        <p className="mt-1 text-[10px] text-slate-500">{event.verified} verified</p>
+                      </div>
                     </div>
-                    <div className="text-right text-xs uppercase tracking-[0.16em] text-slate-300">
-                      <p>{event.total} total</p>
-                    </div>
-                  </div>
-                )) : <div className="portal-admin-empty-state rounded-[1.15rem] border border-dashed border-white/10 bg-black/10 px-4 py-4 text-sm text-slate-400">Analytics will appear after records load.</div>}
+                  )) : <div className="portal-admin-empty-state rounded-[1.15rem] border border-dashed border-white/10 bg-black/10 px-4 py-4 text-sm text-slate-400">Analytics will appear after records load.</div>}
+                </div>
               </div>
             </div>
-          </div>
 
-          <div data-reveal="up" className="space-y-4 md:space-y-6">
-            {canShowBackupTools ? <div id="admin-backup" className="portal-admin-shell portal-admin-shell--backup portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-6">
-              <div className="flex items-center gap-3"><HardDriveDownload size={18} className="text-yellow-200" /><h3 className="text-xl font-bold text-white">Backup</h3></div>
-              {recentBackup ? (
-                <div className="portal-admin-backup-card mt-5 rounded-[1.4rem] border border-white/10 p-4">
-                  <p className="font-semibold text-white">{recentBackup.file_name}</p>
-                  <p className="mt-2 text-sm text-slate-400">{new Date(recentBackup.created_at).toLocaleString()}</p>
-                  <p className="mt-1 text-xs uppercase tracking-[0.18em] text-slate-500">{formatBytes(recentBackup.size_bytes)} / {recentBackup.trigger}</p>
-                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                    <button type="button" onClick={onRunBackup} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-yellow-300/18 bg-yellow-400/10 px-4 py-3 text-sm font-bold text-yellow-100"><HardDriveDownload size={16} />Run backup</button>
-                    <button type="button" onClick={() => onDownloadBackup(recentBackup.file_name)} className="animated-gradient-button inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-bold text-slate-950"><Download size={16} />Download</button>
+            <div data-reveal="up" className="space-y-4 md:space-y-6">
+              <div className="portal-admin-shell portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-6">
+                <div className="flex items-center gap-3"><ShieldCheck size={18} className="text-emerald-200" /><h3 className="text-xl font-bold text-white">Access snapshot</h3></div>
+                <div className="portal-admin-overview-stack mt-5 grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
+                  <div className="portal-admin-overview-card portal-admin-overview-card--cyan">
+                    <span>Pending</span>
+                    <strong>{counts.pending}</strong>
+                  </div>
+                  <div className="portal-admin-overview-card portal-admin-overview-card--violet">
+                    <span>Waitlisted</span>
+                    <strong>{counts.waitlisted}</strong>
+                  </div>
+                  <div className="portal-admin-overview-card portal-admin-overview-card--amber">
+                    <span>Rejected</span>
+                    <strong>{counts.rejected}</strong>
                   </div>
                 </div>
-              ) : (
-                <div className="portal-admin-empty-state mt-5 rounded-[1.15rem] border border-dashed border-white/10 bg-black/10 px-4 py-4 text-sm text-slate-400">No backup snapshot available yet.</div>
-              )}
-            </div> : null}
+              </div>
 
-            {canShowBroadcastTools ? <div id="admin-broadcast" className="portal-admin-shell portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-6">
-            <div className="flex items-center gap-3"><Megaphone size={18} className="text-fuchsia-200" /><h3 className="text-xl font-bold text-white">Broadcast center</h3></div>
-            <div className="mt-5 grid gap-4">
-              <label className="block rounded-[1.4rem] border border-white/10 bg-white/5 p-4">
-                <span className="mb-2 block text-sm text-slate-200">Target event</span>
-                <select value={broadcastEventSlug} onChange={(event) => setBroadcastEventSlug(event.target.value)} className="floating-field-input">
-                  <option value="">All verified participants</option>
-                  {events.map((event) => <option key={event.slug} value={event.slug}>{event.name}</option>)}
-                </select>
-              </label>
-              <label className="floating-field block"><input value={broadcastTitle} onChange={(event) => setBroadcastTitle(event.target.value)} placeholder=" " className="floating-field-input" /><span className="floating-field-label">Broadcast title</span></label>
-              <label className="floating-field block"><textarea value={broadcastMessage} onChange={(event) => setBroadcastMessage(event.target.value)} placeholder=" " rows={4} className="floating-field-input min-h-[120px] resize-none" /><span className="floating-field-label">Broadcast message</span></label>
-              <label className="inline-flex items-center gap-3 rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200"><input type="checkbox" checked={broadcastPinned} onChange={(event) => setBroadcastPinned(event.target.checked)} /> Pin this on the public portal</label>
-              <button type="button" onClick={() => onSendBroadcast({ title: broadcastTitle, message: broadcastMessage, eventSlug: broadcastEventSlug, isPinned: broadcastPinned })} className="animated-gradient-button inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 font-bold text-slate-950"><Send size={16} />Publish and send</button>
-            </div>
-          </div> : null}
-          </div>
-        </div>
-
-        {announcements.length > 0 ? (
-          <div className="portal-admin-shell portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-6">
-            <div className="flex items-center justify-between gap-3">
-              <h3 className="text-xl font-bold text-white">Pinned updates</h3>
-              <span className="text-xs uppercase tracking-[0.2em] text-slate-500">{announcements.length} items</span>
-            </div>
-            <div className="mt-4 grid gap-3 lg:grid-cols-3">
-              {announcements.slice(0, 3).map((announcement) => <div key={announcement.id} className="rounded-[1.4rem] border border-white/10 bg-black/20 p-4"><div className="flex flex-wrap items-start justify-between gap-3"><div className="flex flex-wrap items-center gap-2">{announcement.is_pinned ? <span className="rounded-full border border-yellow-300/20 bg-yellow-400/10 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-yellow-100">Pinned</span> : null}{announcement.event_name ? <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-slate-200">{announcement.event_name}</span> : null}</div><button type="button" onClick={() => onDeleteAnnouncement(announcement.id)} className="magnetic-button inline-flex items-center gap-2 rounded-xl border border-rose-300/18 bg-rose-400/10 px-3 py-2 text-xs font-bold uppercase tracking-[0.16em] text-rose-100"><Trash2 size={14} />Delete</button></div><p className="mt-3 font-semibold text-white">{announcement.title}</p><p className="mt-2 text-sm text-slate-300">{announcement.message}</p></div>)}
+              {canShowBackupTools ? <div className="portal-admin-shell portal-admin-shell--backup portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-6">
+                <div className="flex items-center gap-3"><HardDriveDownload size={18} className="text-yellow-200" /><h3 className="text-xl font-bold text-white">Latest backup</h3></div>
+                {recentBackup ? (
+                  <div className="portal-admin-backup-card mt-5 rounded-[1.4rem] border border-white/10 p-4">
+                    <p className="font-semibold text-white">{recentBackup.file_name}</p>
+                    <p className="mt-2 text-sm text-slate-400">{new Date(recentBackup.created_at).toLocaleString()}</p>
+                    <p className="mt-1 text-xs uppercase tracking-[0.18em] text-slate-500">{formatBytes(recentBackup.size_bytes)} / {recentBackup.trigger}</p>
+                    <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                      <button type="button" onClick={onRunBackup} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-yellow-300/18 bg-yellow-400/10 px-4 py-3 text-sm font-bold text-yellow-100"><HardDriveDownload size={16} />Run backup</button>
+                      <button type="button" onClick={() => onDownloadBackup(recentBackup.file_name)} className="animated-gradient-button inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-bold text-slate-950"><Download size={16} />Download</button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="portal-admin-empty-state mt-5 rounded-[1.15rem] border border-dashed border-white/10 bg-black/10 px-4 py-4 text-sm text-slate-400">No backup snapshot available yet.</div>
+                )}
+              </div> : null}
             </div>
           </div>
-        ) : null}
-      </section>
 
-      {canManageEventControls ? (
+          {eventBuckets.length > 0 ? (
+            <div className="portal-admin-overview-grid grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              {eventBuckets.slice(0, 4).map((event) => (
+                <button
+                  key={event.slug}
+                  type="button"
+                  onClick={() => {
+                    setEventFilter(event.slug);
+                    setExpandedRowId(null);
+                    setActiveView('verification');
+                  }}
+                  className="portal-admin-overview-card portal-admin-overview-card--interactive text-left"
+                >
+                  <span>{event.name}</span>
+                  <strong>{event.total}</strong>
+                  <small>{event.verified} verified / {event.pending} pending</small>
+                </button>
+              ))}
+            </div>
+          ) : null}
+
+          {announcements.length > 0 ? (
+            <div className="portal-admin-shell portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-6">
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-xl font-bold text-white">Pinned updates</h3>
+                <span className="text-xs uppercase tracking-[0.2em] text-slate-500">{announcements.length} items</span>
+              </div>
+              <div className="mt-4 grid gap-3 lg:grid-cols-3">
+                {announcements.slice(0, 3).map((announcement) => <div key={announcement.id} className="rounded-[1.4rem] border border-white/10 bg-black/20 p-4"><div className="flex flex-wrap items-start justify-between gap-3"><div className="flex flex-wrap items-center gap-2">{announcement.is_pinned ? <span className="rounded-full border border-yellow-300/20 bg-yellow-400/10 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-yellow-100">Pinned</span> : null}{announcement.event_name ? <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-slate-200">{announcement.event_name}</span> : null}</div><button type="button" onClick={() => onDeleteAnnouncement(announcement.id)} className="magnetic-button inline-flex items-center gap-2 rounded-xl border border-rose-300/18 bg-rose-400/10 px-3 py-2 text-xs font-bold uppercase tracking-[0.16em] text-rose-100"><Trash2 size={14} />Delete</button></div><p className="mt-3 font-semibold text-white">{announcement.title}</p><p className="mt-2 text-sm text-slate-300">{announcement.message}</p></div>)}
+              </div>
+            </div>
+          ) : null}
+        </section>
+      ) : null}
+
+      {activeView === 'events' && canManageEventControls ? (
         <section id="admin-event-controls" data-reveal="up" className="portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-8">
           <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Event controls</p>
               <h3 className="mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron text-3xl font-black uppercase text-transparent">Stop or restart registrations</h3>
             </div>
+          </div>
+
+          <div className="portal-admin-overview-grid mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            {eventBuckets.map((event) => (
+              <div key={`event-bucket-${event.slug}`} className="portal-admin-overview-card portal-admin-overview-card--compact">
+                <span>{event.name}</span>
+                <strong>{event.total}</strong>
+                <small>{event.pending} pending / {event.verified} verified</small>
+              </div>
+            ))}
           </div>
 
           <div className="portal-admin-control-grid mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -485,6 +567,85 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
         </section>
       ) : null}
 
+      {activeView === 'broadcast' && canShowBroadcastTools ? (
+        <section id="admin-broadcast" data-reveal="up" className="portal-admin-shell portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-6">
+          <div className="flex items-center gap-3"><Megaphone size={18} className="text-fuchsia-200" /><div><h3 className="text-xl font-bold text-white">Broadcast center</h3><p className="text-sm text-slate-400">Send updates without opening a long stacked form.</p></div></div>
+          <div className="mt-5 grid gap-4 xl:grid-cols-[1fr_0.88fr]">
+            <div className="grid gap-4">
+              <label className="block rounded-[1.4rem] border border-white/10 bg-white/5 p-4">
+                <span className="mb-2 block text-sm text-slate-200">Target event</span>
+                <select value={broadcastEventSlug} onChange={(event) => setBroadcastEventSlug(event.target.value)} className="floating-field-input">
+                  <option value="">All verified participants</option>
+                  {events.map((event) => <option key={event.slug} value={event.slug}>{event.name}</option>)}
+                </select>
+              </label>
+              <label className="floating-field block"><input value={broadcastTitle} onChange={(event) => setBroadcastTitle(event.target.value)} placeholder=" " className="floating-field-input" /><span className="floating-field-label">Broadcast title</span></label>
+              <label className="floating-field block"><textarea value={broadcastMessage} onChange={(event) => setBroadcastMessage(event.target.value)} placeholder=" " rows={5} className="floating-field-input min-h-[140px] resize-none" /><span className="floating-field-label">Broadcast message</span></label>
+              <label className="inline-flex items-center gap-3 rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200"><input type="checkbox" checked={broadcastPinned} onChange={(event) => setBroadcastPinned(event.target.checked)} /> Pin this on the public portal</label>
+              <button type="button" onClick={() => onSendBroadcast({ title: broadcastTitle, message: broadcastMessage, eventSlug: broadcastEventSlug, isPinned: broadcastPinned })} className="animated-gradient-button inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 font-bold text-slate-950"><Send size={16} />Publish and send</button>
+            </div>
+            <div className="space-y-4">
+              <div className="portal-admin-shell portal-admin-shell--backup rounded-[1.5rem] border border-white/10 bg-black/20 p-4">
+                <p className="text-xs uppercase tracking-[0.24em] text-fuchsia-200/80">Pinned updates</p>
+                <div className="mt-4 space-y-3">
+                  {announcements.slice(0, 3).map((announcement) => (
+                    <div key={`broadcast-${announcement.id}`} className="rounded-[1.1rem] border border-white/10 bg-white/[0.04] p-3">
+                      <p className="font-semibold text-white">{announcement.title}</p>
+                      <p className="mt-2 text-sm text-slate-300">{announcement.message}</p>
+                    </div>
+                  ))}
+                  {announcements.length === 0 ? <div className="portal-admin-empty-state rounded-[1.15rem] border border-dashed border-white/10 bg-black/10 px-4 py-4 text-sm text-slate-400">No pinned announcements yet.</div> : null}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      {activeView === 'backup' && canShowBackupTools ? (
+        <section id="admin-backup" data-reveal="up" className="portal-admin-shell portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-6">
+          <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.35em] text-yellow-200/80">Recovery center</p>
+              <h3 className="mt-2 bg-gradient-to-r from-yellow-200 via-amber-300 to-orange-300 bg-clip-text font-orbitron text-3xl font-black uppercase text-transparent">Backup and download</h3>
+            </div>
+            <button type="button" onClick={onRunBackup} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-yellow-300/18 bg-yellow-400/10 px-4 py-3 text-sm font-bold text-yellow-100"><HardDriveDownload size={16} />Run backup</button>
+          </div>
+          <div className="mt-5 grid gap-4 xl:grid-cols-[0.98fr_1.02fr]">
+            <div className="portal-admin-backup-card rounded-[1.4rem] border border-white/10 p-4">
+              {recentBackup ? (
+                <>
+                  <p className="font-semibold text-white">{recentBackup.file_name}</p>
+                  <p className="mt-2 text-sm text-slate-400">{new Date(recentBackup.created_at).toLocaleString()}</p>
+                  <p className="mt-1 text-xs uppercase tracking-[0.18em] text-slate-500">{formatBytes(recentBackup.size_bytes)} / {recentBackup.trigger}</p>
+                  <button type="button" onClick={() => onDownloadBackup(recentBackup.file_name)} className="animated-gradient-button mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-bold text-slate-950"><Download size={16} />Download latest</button>
+                </>
+              ) : (
+                <div className="portal-admin-empty-state rounded-[1.15rem] border border-dashed border-white/10 bg-black/10 px-4 py-4 text-sm text-slate-400">No backup snapshot available yet.</div>
+              )}
+            </div>
+            <div className="portal-admin-shell rounded-[1.4rem] border border-white/10 bg-black/20 p-4">
+              <p className="text-xs uppercase tracking-[0.24em] text-slate-400">Recent backup files</p>
+              <div className="mt-4 space-y-3">
+                {backups.slice(0, 5).map((backup) => (
+                  <div key={backup.file_name} className="portal-admin-subrow rounded-[1.05rem] border border-white/10 px-4 py-3">
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <p className="font-semibold text-white">{backup.file_name}</p>
+                        <p className="mt-1 text-xs uppercase tracking-[0.16em] text-slate-500">{new Date(backup.created_at).toLocaleString()} / {formatBytes(backup.size_bytes)}</p>
+                      </div>
+                      <button type="button" onClick={() => onDownloadBackup(backup.file_name)} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold uppercase tracking-[0.16em] text-white"><Download size={14} />Download</button>
+                    </div>
+                  </div>
+                ))}
+                {backups.length === 0 ? <div className="portal-admin-empty-state rounded-[1.15rem] border border-dashed border-white/10 bg-black/10 px-4 py-4 text-sm text-slate-400">No backup history yet.</div> : null}
+              </div>
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      {activeView === 'verification' ? (
       <section id="admin-verification" data-reveal="up" className="portal-admin-shell portal-admin-shell--verification portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-8">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
           <div>
@@ -651,6 +812,7 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
           {adminRows.length > 0 && filteredRows.length === 0 && !adminLoading ? <div className="portal-admin-empty-state rounded-[1.5rem] border border-dashed border-white/10 bg-black/10 p-5 text-sm text-slate-400">No registrations match the current search or status filter.</div> : null}
         </div>
       </section>
+      ) : null}
         </>
       ) : null}
       {proofModal ? <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(5,8,16,0.88)] px-4 py-6 backdrop-blur-md"><div className="max-h-[92vh] w-full max-w-5xl overflow-auto rounded-[2rem] border border-white/10 bg-[linear-gradient(145deg,rgba(12,20,35,0.98),rgba(18,27,45,0.96))] p-5 md:p-6"><div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-[11px] uppercase tracking-[0.3em] text-cyan-200/80">Payment proof zoom</p><h4 className="mt-2 text-xl font-bold text-white">{proofModal.team_name}</h4></div><button type="button" onClick={() => setProofModal(null)} className="magnetic-button rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white">Close</button></div><div className="mt-5 grid gap-5 lg:grid-cols-[1.1fr_0.9fr]"><div className="overflow-hidden rounded-[1.6rem] border border-white/10 bg-black/20 p-3"><img src={proofModal.payment_screenshot_path || ''} alt={`${proofModal.team_name} payment proof`} className="w-full rounded-[1.2rem] object-contain" /></div><div className="space-y-4"><div className="rounded-[1.4rem] border border-white/10 bg-black/20 p-4"><p className="text-xs uppercase tracking-[0.2em] text-slate-400">Reference</p><p className="mt-2 break-all font-semibold text-white">{proofModal.payment_reference || 'No payment reference'}</p></div><div className="rounded-[1.4rem] border border-white/10 bg-black/20 p-4"><p className="text-xs uppercase tracking-[0.2em] text-slate-400">Contact</p><p className="mt-2 text-white">{proofModal.contact_name}</p><p className="mt-1 text-slate-300">{proofModal.contact_email}</p><p className="mt-1 text-slate-300">{proofModal.contact_phone}</p></div></div></div></div></div> : null}
