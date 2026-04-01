@@ -66,8 +66,32 @@ function normalizeEventToken(value: string | null | undefined) {
     .replace(/^-+|-+$/g, '');
 }
 
-function matchesEventAlias(row: Pick<AdminRegistration, 'event_slug' | 'event_name'>, event: Pick<EventRecord, 'slug' | 'name'>) {
+function resolveAdminEventSlug(row: Pick<AdminRegistration, 'event_slug' | 'event_name' | 'total_amount' | 'participants' | 'notes' | 'review_note'>) {
   const rowSlug = normalizeEventToken(row.event_slug);
+  if (rowSlug !== 'techxcelerate') {
+    return rowSlug;
+  }
+
+  const noteBlob = `${row.event_name || ''} ${row.notes || ''} ${row.review_note || ''}`.toLowerCase();
+  if (noteBlob.includes('poster')) {
+    return 'techxcelerate-poster-presentation';
+  }
+
+  const participantCount = Array.isArray(row.participants) ? row.participants.length : 0;
+  if (Number(row.total_amount) > 0 && Number(row.total_amount) < 200 && participantCount > 0 && participantCount <= 2) {
+    return 'techxcelerate-poster-presentation';
+  }
+
+  return rowSlug;
+}
+
+function resolveAdminEventName(row: Pick<AdminRegistration, 'event_slug' | 'event_name' | 'total_amount' | 'participants' | 'notes' | 'review_note'>, events: EventRecord[]) {
+  const effectiveSlug = resolveAdminEventSlug(row);
+  return events.find((event) => normalizeEventToken(event.slug) === effectiveSlug)?.name || row.event_name;
+}
+
+function matchesEventAlias(row: Pick<AdminRegistration, 'event_slug' | 'event_name' | 'total_amount' | 'participants' | 'notes' | 'review_note'>, event: Pick<EventRecord, 'slug' | 'name'>) {
+  const rowSlug = resolveAdminEventSlug(row);
   const eventSlug = normalizeEventToken(event.slug);
   if (rowSlug && eventSlug) {
     return rowSlug === eventSlug;
@@ -172,7 +196,10 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
     });
   }, [adminRows, eventFilter, events, searchQuery, statusFilter]);
   const totalParticipants = adminRows.reduce((sum, row) => sum + row.participants.length, 0);
-  const busiestEvent = useMemo(() => Object.entries(adminRows.reduce<Record<string, number>>((collection, row) => ({ ...collection, [row.event_name]: (collection[row.event_name] || 0) + 1 }), {})).sort((left, right) => right[1] - left[1])[0] || null, [adminRows]);
+  const busiestEvent = useMemo(() => Object.entries(adminRows.reduce<Record<string, number>>((collection, row) => {
+    const eventName = resolveAdminEventName(row, events);
+    return { ...collection, [eventName]: (collection[eventName] || 0) + 1 };
+  }, {})).sort((left, right) => right[1] - left[1])[0] || null, [adminRows, events]);
   const topTrackedEvents = useMemo(() => [...eventBuckets].sort((left, right) => right.total - left.total).slice(0, 4), [eventBuckets]);
   const eventControlRows = useMemo(() => events.map((event) => {
     const registrationsCount = Number(event.registrations_count || 0);
@@ -441,7 +468,7 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
                           <Eye size={12} className="text-cyan-200" />
                         </span>
                       </button>
-                      <p className="mt-2 text-sm text-slate-300">{row.event_name}</p>
+                      <p className="mt-2 text-sm text-slate-300">{resolveAdminEventName(row, events)}</p>
                       <p className="mt-1 text-xs uppercase tracking-[0.16em] text-slate-500">{row.date_label} / {row.time_label}</p>
                     </div>
                     <div className="flex flex-wrap gap-2">
