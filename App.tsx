@@ -345,17 +345,10 @@ function PremiumBrochureStripBase() {
   useEffect(() => {
     posterSlides.forEach((poster) => {
       const image = new Image();
+      image.decoding = 'async';
       image.src = poster.src;
     });
   }, []);
-
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      setActivePosterIndex((current) => (current + 1) % posterSlides.length);
-    }, 4500);
-
-    return () => window.clearInterval(timer);
-  }, [posterSlides.length]);
 
   const activePoster = posterSlides[activePosterIndex];
 
@@ -388,11 +381,13 @@ function PremiumBrochureStripBase() {
             <div className="portal-brochure-poster-frame__glow" aria-hidden="true" />
             <div className="portal-brochure-poster-frame__inner">
               <img
-                key={activePoster.src}
                 src={activePoster.src}
                 alt={activePoster.alt}
                 loading="eager"
-                decoding="sync"
+                decoding="async"
+                fetchPriority="high"
+                width={2000}
+                height={1545}
                 className="portal-brochure-poster-frame__image"
               />
             </div>
