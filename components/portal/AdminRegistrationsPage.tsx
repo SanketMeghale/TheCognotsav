@@ -36,6 +36,7 @@ type Props = {
   onDownload: (format: 'csv' | 'xlsx', eventSlug?: string) => void;
   onStatusChange: (registrationId: string, status: 'verified' | 'rejected' | 'pending') => void;
   onDeleteRegistration: (registrationId: string) => void;
+  onReassignRegistrationEvent: (registrationId: string, eventSlug: 'techxcelerate' | 'techxcelerate-poster-presentation') => void;
   onToggleEventRegistrationState: (eventSlug: string, enabled: boolean) => void;
   onSaveReviewNote: (registrationId: string, reviewNote: string) => void;
   onResendStatusEmail: (registrationId: string) => void;
@@ -66,7 +67,12 @@ function normalizeEventToken(value: string | null | undefined) {
     .replace(/^-+|-+$/g, '');
 }
 
-function resolveAdminEventSlug(row: Pick<AdminRegistration, 'event_slug' | 'event_name' | 'total_amount' | 'participants' | 'notes' | 'review_note'>) {
+function resolveAdminEventSlug(row: Pick<AdminRegistration, 'event_slug' | 'event_name' | 'admin_event_override_slug' | 'total_amount' | 'participants' | 'notes' | 'review_note'>) {
+  const overrideSlug = normalizeEventToken(row.admin_event_override_slug);
+  if (overrideSlug) {
+    return overrideSlug;
+  }
+
   const rowSlug = normalizeEventToken(row.event_slug);
   if (rowSlug !== 'techxcelerate') {
     return rowSlug;
@@ -85,12 +91,12 @@ function resolveAdminEventSlug(row: Pick<AdminRegistration, 'event_slug' | 'even
   return rowSlug;
 }
 
-function resolveAdminEventName(row: Pick<AdminRegistration, 'event_slug' | 'event_name' | 'total_amount' | 'participants' | 'notes' | 'review_note'>, events: EventRecord[]) {
+function resolveAdminEventName(row: Pick<AdminRegistration, 'event_slug' | 'event_name' | 'admin_event_override_slug' | 'total_amount' | 'participants' | 'notes' | 'review_note'>, events: EventRecord[]) {
   const effectiveSlug = resolveAdminEventSlug(row);
   return events.find((event) => normalizeEventToken(event.slug) === effectiveSlug)?.name || row.event_name;
 }
 
-function matchesEventAlias(row: Pick<AdminRegistration, 'event_slug' | 'event_name' | 'total_amount' | 'participants' | 'notes' | 'review_note'>, event: Pick<EventRecord, 'slug' | 'name'>) {
+function matchesEventAlias(row: Pick<AdminRegistration, 'event_slug' | 'event_name' | 'admin_event_override_slug' | 'total_amount' | 'participants' | 'notes' | 'review_note'>, event: Pick<EventRecord, 'slug' | 'name'>) {
   const rowSlug = resolveAdminEventSlug(row);
   const eventSlug = normalizeEventToken(event.slug);
   if (rowSlug && eventSlug) {
@@ -131,7 +137,7 @@ function FloatingField({ label, icon, value, type = 'text', onChange }: { label:
   );
 }
 
-export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, adminMainKey, adminEventKey, adminEventKeySlug, adminScope, adminRows, events, announcements, backups, adminLoading, adminError, onAdminAccessModeChange, onAdminMainKeyChange, onAdminEventKeyChange, onAdminEventKeySlugChange, onLoadAdminRows, onDownload, onStatusChange, onDeleteRegistration, onToggleEventRegistrationState, onSaveReviewNote, onResendStatusEmail, onSendBroadcast, onDeleteAnnouncement, onRunBackup, onDownloadBackup }) => {
+export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, adminMainKey, adminEventKey, adminEventKeySlug, adminScope, adminRows, events, announcements, backups, adminLoading, adminError, onAdminAccessModeChange, onAdminMainKeyChange, onAdminEventKeyChange, onAdminEventKeySlugChange, onLoadAdminRows, onDownload, onStatusChange, onDeleteRegistration, onReassignRegistrationEvent, onToggleEventRegistrationState, onSaveReviewNote, onResendStatusEmail, onSendBroadcast, onDeleteAnnouncement, onRunBackup, onDownloadBackup }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [eventFilter, setEventFilter] = useState('all');
@@ -455,8 +461,12 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
           </div>
         </div>
         <div className="mt-6 space-y-4">
-          {filteredRows.map((row) => (
-            <article key={row.id} className="portal-admin-entry rounded-[1.7rem] border border-white/10 bg-[linear-gradient(145deg,rgba(12,20,35,0.92),rgba(18,27,45,0.82))] p-4 md:p-5">
+          {filteredRows.map((row) => {
+            const effectiveEventSlug = resolveAdminEventSlug(row);
+            const canReassignTechxcelerate = effectiveEventSlug === 'techxcelerate' || effectiveEventSlug === 'techxcelerate-poster-presentation';
+
+            return (
+              <article key={row.id} className="portal-admin-entry rounded-[1.7rem] border border-white/10 bg-[linear-gradient(145deg,rgba(12,20,35,0.92),rgba(18,27,45,0.82))] p-4 md:p-5">
               <div className="portal-admin-entry__top flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-start gap-3">
@@ -501,6 +511,16 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
 
                 <div className="portal-admin-entry__actions grid gap-2 sm:grid-cols-2 xl:min-w-[240px] xl:grid-cols-1">
                   <button type="button" onClick={() => onResendStatusEmail(row.id)} className="portal-admin-entry__action magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-blue-300/20 bg-blue-500/10 px-4 py-3 text-sm font-bold text-blue-100"><RotateCcw size={16} />Resend email</button>
+                  {canReassignTechxcelerate ? (
+                    <button
+                      type="button"
+                      onClick={() => onReassignRegistrationEvent(row.id, effectiveEventSlug === 'techxcelerate' ? 'techxcelerate-poster-presentation' : 'techxcelerate')}
+                      className="portal-admin-entry__action magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-fuchsia-300/20 bg-fuchsia-500/10 px-4 py-3 text-sm font-bold text-fuchsia-100"
+                    >
+                      <RotateCcw size={16} />
+                      {effectiveEventSlug === 'techxcelerate' ? 'Move to Poster Presentation' : 'Move to Project Expo'}
+                    </button>
+                  ) : null}
                   <button type="button" onClick={() => onStatusChange(row.id, 'verified')} className="portal-admin-entry__action magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-emerald-300/20 bg-emerald-400/10 px-4 py-3 text-sm font-bold text-emerald-100"><CheckCircle2 size={16} />Approve</button>
                   <button type="button" onClick={() => onStatusChange(row.id, 'pending')} className="portal-admin-entry__action magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-amber-300/20 bg-amber-400/10 px-4 py-3 text-sm font-bold text-amber-100"><Clock3 size={16} />Pending</button>
                   <button type="button" onClick={() => onStatusChange(row.id, 'rejected')} className="portal-admin-entry__action magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-rose-300/20 bg-rose-400/10 px-4 py-3 text-sm font-bold text-rose-100"><XCircle size={16} />Reject</button>
@@ -572,8 +592,9 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
                   </div>
                 </div>
               ) : null}
-            </article>
-          ))}
+              </article>
+            );
+          })}
           {adminRows.length === 0 && !adminLoading ? <div className="portal-admin-empty-state rounded-[1.5rem] border border-dashed border-white/10 bg-black/10 p-5 text-sm text-slate-400">Load the admin records to review proofs, approve entries, and run exports.</div> : null}
           {adminRows.length > 0 && filteredRows.length === 0 && !adminLoading ? <div className="portal-admin-empty-state rounded-[1.5rem] border border-dashed border-white/10 bg-black/10 p-5 text-sm text-slate-400">No registrations match the current search or status filter.</div> : null}
         </div>

@@ -2196,6 +2196,7 @@ async function fetchAdminRegistrations(whereClause = '', params = []) {
         r.status,
         r.notes,
         r.review_note,
+        r.admin_event_override_slug,
         r.attendance_status,
         r.attendance_marked_at,
         r.verified_at,
@@ -2941,6 +2942,94 @@ app.patch('/api/admin/registrations/:id/status', requireAdmin, async (req, res) 
     promotedRegistration,
     statusChanged: previousStatus !== status,
   });
+});
+
+app.patch('/api/admin/registrations/:id/event', requireAdmin, async (req, res) => {
+  const { id } = req.params;
+  const targetEventSlug = String(req.body?.eventSlug || '').trim().toLowerCase();
+
+  if (!['techxcelerate', 'techxcelerate-poster-presentation'].includes(targetEventSlug)) {
+    return res.status(400).json({ error: 'Invalid target event.' });
+  }
+
+  const currentResult = await pool.query(
+    `
+      SELECT id, event_slug
+      FROM registrations
+      WHERE id = $1
+      LIMIT 1
+    `,
+    [id],
+  );
+
+  if (currentResult.rowCount === 0) {
+    return res.status(404).json({ error: 'Registration not found.' });
+  }
+
+  const currentEventSlug = String(currentResult.rows[0].event_slug || '').trim().toLowerCase();
+  if (!['techxcelerate', 'techxcelerate-poster-presentation'].includes(currentEventSlug)) {
+    return res.status(400).json({ error: 'Only Techxcelerate registrations can be reassigned here.' });
+  }
+
+  if (!hasScopedEventAccess(req, currentEventSlug) || !hasScopedEventAccess(req, targetEventSlug)) {
+    return res.status(403).json({ error: 'This access key cannot reassign this registration.' });
+  }
+
+  const participantsResult = await pool.query(
+    `
+      SELECT COUNT(*)::int AS participant_count
+      FROM registration_participants
+      WHERE registration_id = $1
+    `,
+    [id],
+  );
+  const participantCount = Number(participantsResult.rows[0]?.participant_count ?? 0);
+
+  const eventResult = await pool.query(
+    `
+      SELECT slug, min_members, max_members
+      FROM events
+      WHERE slug = $1
+      LIMIT 1
+    `,
+    [targetEventSlug],
+  );
+
+  if (eventResult.rowCount === 0) {
+    return res.status(404).json({ error: 'Target event not found.' });
+  }
+
+  const targetEvent = eventResult.rows[0];
+  const minMembers = Number(targetEvent.min_members ?? 1);
+  const maxMembers = Number(targetEvent.max_members ?? minMembers);
+
+  if (participantCount < minMembers || participantCount > maxMembers) {
+    return res.status(400).json({
+      error: `This registration has ${participantCount} participants, but ${targetEventSlug === 'techxcelerate' ? 'Project Expo' : 'Poster Presentation'} allows ${minMembers} to ${maxMembers}.`,
+    });
+  }
+
+  await pool.query(
+    `
+      UPDATE registrations
+      SET event_slug = $2,
+          admin_event_override_slug = $2,
+          updated_at = NOW()
+      WHERE id = $1
+    `,
+    [id, targetEventSlug],
+  );
+
+  const registration = await fetchAdminRegistrationById(
+    id,
+    req.adminAccess?.mode === 'event' ? req.adminAccess.eventSlug : null,
+  );
+
+  if (!registration) {
+    return res.status(404).json({ error: 'Registration not found.' });
+  }
+
+  return res.json({ registration });
 });
 
 app.patch('/api/admin/registrations/:id/review-note', requireAdmin, async (req, res) => {
