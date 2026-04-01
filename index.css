@@ -8673,17 +8673,17 @@ footer {
 
   .portal-competition-section {
     padding: 0.78rem;
-    border-color: rgba(255, 255, 255, 0.04);
-    background: transparent;
-    box-shadow: none;
+    border-color: rgba(255, 255, 255, 0.06);
+    background: linear-gradient(180deg, rgba(6, 10, 18, 0.98), rgba(4, 7, 14, 0.995));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
   }
 
   .portal-competition-group {
     gap: 0.82rem;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    box-shadow: none;
+    padding: 0.78rem;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    background: linear-gradient(180deg, rgba(8, 12, 20, 0.96), rgba(5, 9, 16, 0.99));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
   }
 
   .portal-competition-section::after,
@@ -8795,7 +8795,7 @@ footer {
   }
 
   .portal-competition-group {
-    padding: 0;
+    padding: 0.66rem;
   }
 
   .portal-competition-group__title {
