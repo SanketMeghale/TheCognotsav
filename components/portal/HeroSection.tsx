@@ -7,7 +7,9 @@ import {
 import type { LucideIcon } from 'lucide-react';
 import { parsePortalEventDate } from './utils';
 
-type Props = {};
+type Props = {
+  adminTriggerProps?: React.ButtonHTMLAttributes<HTMLButtonElement>;
+};
 type HeroTone = 'amber' | 'blue' | 'cyan' | 'emerald' | 'orange' | 'pink' | 'rose' | 'violet';
 type BackdropPill = {
   label: string;
@@ -137,7 +139,7 @@ function getHeroCountdownSummary(
   return `${Number(days?.value || '0')}d ${hours?.value || '00'}h ${minutes?.value || '00'}m`;
 }
 
-export const HeroSection: React.FC<Props> = memo(() => {
+export const HeroSection: React.FC<Props> = memo(({ adminTriggerProps }) => {
   const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
@@ -208,15 +210,20 @@ export const HeroSection: React.FC<Props> = memo(() => {
             ))}
           </div>
 
-          <div className="portal-summit-hero__crest" aria-hidden="true">
+          <button
+            type="button"
+            className="portal-summit-hero__crest"
+            aria-label="CEAS logo"
+            {...adminTriggerProps}
+          >
             <img
               src="/images/ceas-hero-badge-crop.png"
-              alt=""
+              alt="CEAS logo"
               className="portal-summit-hero__crest-image"
               loading="eager"
               decoding="async"
             />
-          </div>
+          </button>
           <p className="portal-summit-hero__eyebrow portal-summit-hero__eyebrow--immersive">CEAS PRESENTS</p>
           <h1 className="portal-summit-hero__title portal-summit-hero__title--immersive" aria-label="COGNOTSAV 2K26">
             <span className="portal-summit-hero__title-line portal-summit-hero__title-line--main" data-text="COGNOTSAV">

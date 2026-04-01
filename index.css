@@ -11772,7 +11772,18 @@ body {
   justify-content: center;
   width: 4rem;
   margin-bottom: 0.05rem;
-  pointer-events: none;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+
+.portal-summit-hero__crest:focus-visible {
+  outline: 2px solid rgba(125, 211, 252, 0.82);
+  outline-offset: 0.35rem;
+  border-radius: 999px;
 }
 
 .portal-summit-hero__crest-image {

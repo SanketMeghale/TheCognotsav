@@ -1244,19 +1244,19 @@ export const App: React.FC = () => {
     }, SECRET_ADMIN_HOLD_MS);
   };
 
-  const handleSecretAdminClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleSecretAdminClick = (event: React.MouseEvent<HTMLElement>) => {
     if (!secretAdminHoldTriggeredRef.current) return;
 
     event.preventDefault();
     secretAdminHoldTriggeredRef.current = false;
   };
 
-  const handleSecretAdminDoubleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleSecretAdminDoubleClick = (event: React.MouseEvent<HTMLElement>) => {
     event.preventDefault();
     handleSecretAdminTap();
   };
 
-  const handleSecretAdminTouchEnd = (event: React.TouchEvent<HTMLAnchorElement>) => {
+  const handleSecretAdminTouchEnd = (event: React.TouchEvent<HTMLElement>) => {
     if (secretAdminHoldTriggeredRef.current) {
       event.preventDefault();
       secretAdminHoldTriggeredRef.current = false;
@@ -2195,13 +2195,6 @@ export const App: React.FC = () => {
             <a
               href="#overview"
               className="portal-brand-card portal-brand-card--nav flex min-w-0 flex-1 items-center gap-3 rounded-[1.4rem] px-3 py-2 transition hover:border-slate-200/18 hover:bg-white/[0.06] lg:flex-none"
-              onClick={handleSecretAdminClick}
-              onDoubleClick={handleSecretAdminDoubleClick}
-              onTouchEnd={handleSecretAdminTouchEnd}
-              onPointerDown={startSecretAdminHold}
-              onPointerUp={clearSecretAdminHold}
-              onPointerLeave={clearSecretAdminHold}
-              onPointerCancel={clearSecretAdminHold}
               title="Home"
             >
               <div className="portal-brand-logo-frame">
@@ -2313,7 +2306,17 @@ export const App: React.FC = () => {
       ) : (
         <>
           <main className={`${shellClassName} space-y-5 pb-8 md:space-y-8 md:pb-12`}>
-            <HeroSection />
+            <HeroSection
+              adminTriggerProps={{
+                onClick: handleSecretAdminClick,
+                onDoubleClick: handleSecretAdminDoubleClick,
+                onTouchEnd: handleSecretAdminTouchEnd,
+                onPointerDown: startSecretAdminHold,
+                onPointerUp: clearSecretAdminHold,
+                onPointerLeave: clearSecretAdminHold,
+                onPointerCancel: clearSecretAdminHold,
+              }}
+            />
 
             <PremiumBrochureStrip />
 
@@ -2383,13 +2386,6 @@ export const App: React.FC = () => {
                 <a
                   href="#overview"
                   className="portal-bottom-dock__logo"
-                  onClick={handleSecretAdminClick}
-                  onDoubleClick={handleSecretAdminDoubleClick}
-                  onTouchEnd={handleSecretAdminTouchEnd}
-                  onPointerDown={startSecretAdminHold}
-                  onPointerUp={clearSecretAdminHold}
-                  onPointerLeave={clearSecretAdminHold}
-                  onPointerCancel={clearSecretAdminHold}
                 >
                   <span className="portal-bottom-dock__logo-core">
                     <img src="/images/ceasposter.jpeg" alt="CEAS logo" className="portal-bottom-dock__logo-image" />
