@@ -188,6 +188,10 @@ function parseEventAdminKeys(rawValue) {
 }
 
 const eventAdminKeys = parseEventAdminKeys(rawEventAdminKeys);
+const groupedAdminEventSlugs = new Map([
+  ['techxcelerate', ['techxcelerate', 'techxcelerate-poster-presentation']],
+  ['techxcelerate-poster-presentation', ['techxcelerate', 'techxcelerate-poster-presentation']],
+]);
 
 function resolveAdminAccess(key) {
   const normalizedKey = String(key || '').trim();
@@ -204,6 +208,15 @@ function resolveAdminAccess(key) {
   }
 
   return null;
+}
+
+function resolveScopedAdminEventSlugs(eventSlug) {
+  const normalizedSlug = String(eventSlug || '').trim();
+  if (!normalizedSlug) {
+    return [];
+  }
+
+  return groupedAdminEventSlugs.get(normalizedSlug) || [normalizedSlug];
 }
 
 async function buildAdminAccessPayload(access) {
@@ -498,7 +511,7 @@ function hasScopedEventAccess(req, eventSlug) {
     return true;
   }
 
-  return req.adminAccess.eventSlug === eventSlug;
+  return resolveScopedAdminEventSlugs(req.adminAccess.eventSlug).includes(eventSlug);
 }
 
 function resolveAdminExportScope(req) {
@@ -506,16 +519,16 @@ function resolveAdminExportScope(req) {
 
   if (req.adminAccess?.mode === 'event') {
     return {
-      scopeClause: 'WHERE r.event_slug = $1',
-      scopeParams: [req.adminAccess.eventSlug],
+      scopeClause: 'WHERE r.event_slug = ANY($1::text[])',
+      scopeParams: [resolveScopedAdminEventSlugs(req.adminAccess.eventSlug)],
       eventSlug: req.adminAccess.eventSlug,
     };
   }
 
   if (requestedEventSlug) {
     return {
-      scopeClause: 'WHERE r.event_slug = $1',
-      scopeParams: [requestedEventSlug],
+      scopeClause: 'WHERE r.event_slug = ANY($1::text[])',
+      scopeParams: [resolveScopedAdminEventSlugs(requestedEventSlug)],
       eventSlug: requestedEventSlug,
     };
   }
@@ -2217,7 +2230,7 @@ async function fetchAdminRegistrations(whereClause = '', params = []) {
 
 async function fetchAdminRegistrationById(registrationId, eventSlug = null) {
   const rows = eventSlug
-    ? await fetchAdminRegistrations('WHERE r.id = $1 AND r.event_slug = $2', [registrationId, eventSlug])
+    ? await fetchAdminRegistrations('WHERE r.id = $1 AND r.event_slug = ANY($2::text[])', [registrationId, resolveScopedAdminEventSlugs(eventSlug)])
     : await fetchAdminRegistrations('WHERE r.id = $1', [registrationId]);
   return rows[0] ?? null;
 }
@@ -3024,7 +3037,7 @@ app.patch('/api/admin/registrations/:id/attendance', requireAdmin, async (req, r
 app.get('/api/admin/registrations', requireAdmin, async (req, res) => {
   const rows =
     req.adminAccess?.mode === 'event'
-      ? await fetchAdminRegistrations('WHERE r.event_slug = $1', [req.adminAccess.eventSlug])
+      ? await fetchAdminRegistrations('WHERE r.event_slug = ANY($1::text[])', [resolveScopedAdminEventSlugs(req.adminAccess.eventSlug)])
       : await fetchAdminRegistrations();
   const access = await buildAdminAccessPayload(req.adminAccess);
   res.json({ rows, access });

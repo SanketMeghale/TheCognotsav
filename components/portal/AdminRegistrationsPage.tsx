@@ -10,11 +10,9 @@ import type {
   AdminRegistration,
   BackupSnapshot,
   EventRecord,
-  ParticipantDraft,
   PortalAnnouncement,
-  SpecialRegistrationPayload,
 } from './types';
-import { formatBytes, formatCurrency, getTeamLabel, makeParticipants, shellClassName } from './utils';
+import { formatBytes, formatCurrency, shellClassName } from './utils';
 
 type AdminAccessMode = 'global' | 'event';
 
@@ -30,7 +28,6 @@ type Props = {
   backups: BackupSnapshot[];
   adminLoading: boolean;
   adminError: string;
-  specialRegistrationSubmitting: boolean;
   onAdminAccessModeChange: (value: AdminAccessMode) => void;
   onAdminMainKeyChange: (value: string) => void;
   onAdminEventKeyChange: (value: string) => void;
@@ -40,7 +37,6 @@ type Props = {
   onStatusChange: (registrationId: string, status: 'verified' | 'rejected' | 'pending') => void;
   onDeleteRegistration: (registrationId: string) => void;
   onToggleEventRegistrationState: (eventSlug: string, enabled: boolean) => void;
-  onCreateSpecialRegistration: (payload: SpecialRegistrationPayload) => Promise<boolean>;
   onSaveReviewNote: (registrationId: string, reviewNote: string) => void;
   onResendStatusEmail: (registrationId: string) => void;
   onSendBroadcast: (payload: { title: string; message: string; eventSlug: string; isPinned: boolean }) => void;
@@ -50,21 +46,6 @@ type Props = {
 };
 
 type StatusFilter = 'all' | 'pending' | 'verified' | 'waitlisted' | 'rejected';
-type SpecialRegistrationForm = {
-  eventSlug: string;
-  teamName: string;
-  collegeName: string;
-  departmentName: string;
-  yearOfStudy: string;
-  contactName: string;
-  contactEmail: string;
-  contactPhone: string;
-  paymentMethod: 'cash' | 'upi' | 'free';
-  paymentReference: string;
-  notes: string;
-  markVerified: boolean;
-  participants: ParticipantDraft[];
-};
 
 const statusStyles: Record<string, string> = {
   pending: 'border-amber-300/25 bg-amber-400/10 text-amber-100',
@@ -156,25 +137,7 @@ function FloatingField({ label, icon, value, type = 'text', onChange }: { label:
   );
 }
 
-function createSpecialRegistrationForm(eventSlug = '', participantCount = 1): SpecialRegistrationForm {
-  return {
-    eventSlug,
-    teamName: '',
-    collegeName: '',
-    departmentName: 'Not Provided',
-    yearOfStudy: 'Not Provided',
-    contactName: '',
-    contactEmail: '',
-    contactPhone: '',
-    paymentMethod: 'cash',
-    paymentReference: '',
-    notes: '',
-    markVerified: true,
-    participants: makeParticipants(Math.max(1, participantCount)),
-  };
-}
-
-export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, adminMainKey, adminEventKey, adminEventKeySlug, adminScope, adminRows, events, announcements, backups, adminLoading, adminError, specialRegistrationSubmitting, onAdminAccessModeChange, onAdminMainKeyChange, onAdminEventKeyChange, onAdminEventKeySlugChange, onLoadAdminRows, onDownload, onStatusChange, onDeleteRegistration, onToggleEventRegistrationState, onCreateSpecialRegistration, onSaveReviewNote, onResendStatusEmail, onSendBroadcast, onDeleteAnnouncement, onRunBackup, onDownloadBackup }) => {
+export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, adminMainKey, adminEventKey, adminEventKeySlug, adminScope, adminRows, events, announcements, backups, adminLoading, adminError, onAdminAccessModeChange, onAdminMainKeyChange, onAdminEventKeyChange, onAdminEventKeySlugChange, onLoadAdminRows, onDownload, onStatusChange, onDeleteRegistration, onToggleEventRegistrationState, onSaveReviewNote, onResendStatusEmail, onSendBroadcast, onDeleteAnnouncement, onRunBackup, onDownloadBackup }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [eventFilter, setEventFilter] = useState('all');
@@ -187,7 +150,6 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
   const [broadcastEventSlug, setBroadcastEventSlug] = useState('');
   const [broadcastPinned, setBroadcastPinned] = useState(true);
   const [exportEventSlug, setExportEventSlug] = useState('all');
-  const [specialForm, setSpecialForm] = useState<SpecialRegistrationForm>(() => createSpecialRegistrationForm());
   const scopedEventSlug = adminScope?.mode === 'event' ? adminScope.event_slug : null;
   const scopedEventName = adminScope?.mode === 'event' ? adminScope.event_name : null;
   const hasResolvedAccess = Boolean(adminScope);
@@ -211,19 +173,6 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
   useEffect(() => {
     setExportEventSlug(scopedEventSlug || 'all');
   }, [scopedEventSlug]);
-
-  useEffect(() => {
-    if (!scopedEventSlug) return;
-
-    const scopedEvent = events.find((event) => event.slug === scopedEventSlug) || null;
-    const participantCount = Math.max(1, scopedEvent?.min_members || 1);
-    setSpecialForm((current) => ({
-      ...current,
-      eventSlug: scopedEventSlug,
-      teamName: current.teamName,
-      participants: Array.from({ length: participantCount }, (_, index) => current.participants[index] ?? makeParticipants(1)[0]),
-    }));
-  }, [events, scopedEventSlug]);
 
   const counts = useMemo(() => ({ all: adminRows.length, pending: adminRows.filter((row) => row.status === 'pending').length, verified: adminRows.filter((row) => row.status === 'verified').length, waitlisted: adminRows.filter((row) => row.status === 'waitlisted').length, rejected: adminRows.filter((row) => row.status === 'rejected').length }), [adminRows]);
   const eventBuckets = useMemo(() => events.map((event) => {
@@ -253,7 +202,6 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
     });
   }, [adminRows, eventFilter, events, searchQuery, statusFilter]);
   const totalParticipants = adminRows.reduce((sum, row) => sum + row.participants.length, 0);
-  const specialDeskCount = adminRows.filter((row) => row.registration_source === 'special-desk').length;
   const busiestEvent = useMemo(() => Object.entries(adminRows.reduce<Record<string, number>>((collection, row) => ({ ...collection, [row.event_name]: (collection[row.event_name] || 0) + 1 }), {})).sort((left, right) => right[1] - left[1])[0] || null, [adminRows]);
   const topTrackedEvents = useMemo(() => [...eventBuckets].sort((left, right) => right.total - left.total).slice(0, 4), [eventBuckets]);
   const eventControlRows = useMemo(() => events.map((event) => {
@@ -265,116 +213,11 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
       remainingSlots,
     };
   }), [events]);
-  const selectedSpecialEvent = useMemo(
-    () => events.find((event) => event.slug === (scopedEventSlug || specialForm.eventSlug)) || null,
-    [events, scopedEventSlug, specialForm.eventSlug],
-  );
-  const specialParticipantCount = specialForm.participants.length;
-  const canSubmitSpecialRegistration =
-    Boolean(selectedSpecialEvent)
-    && Boolean(specialForm.collegeName.trim())
-    && Boolean(specialForm.contactName.trim())
-    && Boolean(specialForm.contactEmail.trim())
-    && Boolean(specialForm.contactPhone.trim())
-    && specialForm.participants.slice(1).every((participant) =>
-      Boolean(participant.fullName.trim())
-      && Boolean(participant.email.trim())
-      && Boolean(participant.phone.trim()),
-    );
-
   useEffect(() => {
     if (expandedRowId && !filteredRows.some((row) => row.id === expandedRowId)) {
       setExpandedRowId(null);
     }
   }, [expandedRowId, filteredRows]);
-
-  const updateSpecialParticipants = (count: number) => {
-    setSpecialForm((current) => ({
-      ...current,
-      participants: Array.from({ length: count }, (_, index) => current.participants[index] ?? makeParticipants(1)[0]),
-    }));
-  };
-
-  const handleSpecialEventSelection = (eventSlug: string) => {
-    const nextEvent = events.find((event) => event.slug === eventSlug) || null;
-    const nextCount = Math.max(1, nextEvent?.min_members || 1);
-    setSpecialForm((current) => ({
-      ...current,
-      eventSlug,
-      teamName: nextEvent?.min_members === 1 && nextEvent.max_members === 1 ? current.teamName || current.contactName : current.teamName,
-      participants: Array.from({ length: nextCount }, (_, index) => current.participants[index] ?? makeParticipants(1)[0]),
-    }));
-  };
-
-  const focusSpecialDesk = () => {
-    if (typeof document === 'undefined') return;
-
-    document.getElementById('admin-special-desk')?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start',
-    });
-  };
-
-  const primeSpecialDeskForEvent = (eventSlug: string) => {
-    handleSpecialEventSelection(eventSlug);
-    focusSpecialDesk();
-  };
-
-  const handleSpecialParticipantChange = (index: number, field: keyof ParticipantDraft, value: string) => {
-    setSpecialForm((current) => ({
-      ...current,
-      participants: current.participants.map((participant, participantIndex) =>
-        participantIndex === index ? { ...participant, [field]: value } : participant,
-      ),
-    }));
-  };
-
-  const handleSpecialSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    if (!selectedSpecialEvent) {
-      return;
-    }
-
-    const participants = specialForm.participants.map((participant, index) =>
-      index === 0
-        ? {
-            fullName: specialForm.contactName.trim(),
-            email: specialForm.contactEmail.trim(),
-            phone: specialForm.contactPhone.trim(),
-          }
-        : {
-            fullName: participant.fullName.trim(),
-            email: participant.email.trim(),
-            phone: participant.phone.trim(),
-          },
-    );
-
-    const created = await onCreateSpecialRegistration({
-      eventSlug: selectedSpecialEvent.slug,
-      teamName: specialForm.teamName.trim() || specialForm.contactName.trim(),
-      collegeName: specialForm.collegeName.trim(),
-      departmentName: specialForm.departmentName.trim() || 'Not Provided',
-      yearOfStudy: specialForm.yearOfStudy.trim() || 'Not Provided',
-      contactName: specialForm.contactName.trim(),
-      contactEmail: specialForm.contactEmail.trim(),
-      contactPhone: specialForm.contactPhone.trim(),
-      paymentMethod: specialForm.paymentMethod,
-      paymentReference: specialForm.paymentReference.trim(),
-      notes: specialForm.notes.trim(),
-      markVerified: specialForm.markVerified,
-      participants,
-    });
-
-    if (!created) {
-      return;
-    }
-
-    setSpecialForm((current) => ({
-      ...createSpecialRegistrationForm(scopedEventSlug || selectedSpecialEvent.slug, Math.max(1, selectedSpecialEvent.min_members)),
-      paymentMethod: current.paymentMethod,
-      markVerified: current.markVerified,
-    }));
-  };
 
   return (
     <main className={`${shellClassName} portal-admin-page space-y-4 pb-10 md:space-y-8 md:pb-20`}>
@@ -455,7 +298,6 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
         <div className="portal-admin-jumpnav flex flex-wrap gap-2">
           <a href="#admin-analytics" className="magnetic-button portal-admin-jumpnav__link rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Analytics</a>
           {canManageEventControls ? <a href="#admin-event-controls" className="magnetic-button portal-admin-jumpnav__link rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Event Controls</a> : null}
-          <a href="#admin-special-desk" className="magnetic-button portal-admin-jumpnav__link rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Special Desk</a>
           <a href="#admin-verification" className="magnetic-button portal-admin-jumpnav__link rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Verification</a>
           {canShowBroadcastTools ? <a href="#admin-broadcast" className="magnetic-button portal-admin-jumpnav__link rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white">Broadcast</a> : null}
         </div>
@@ -577,13 +419,6 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
                         Restart
                       </button>
                     )}
-                    <button
-                      type="button"
-                      onClick={() => primeSpecialDeskForEvent(event.slug)}
-                      className="magnetic-button inline-flex items-center justify-center rounded-xl border border-cyan-300/18 bg-cyan-400/10 px-3.5 py-2 text-xs font-bold uppercase tracking-[0.16em] text-cyan-100"
-                    >
-                      Special Register
-                    </button>
                   </div>
                 </article>
               );
@@ -591,198 +426,6 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
           </div>
         </section>
       ) : null}
-
-      <section id="admin-special-desk" data-reveal="up" className="portal-admin-shell portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-8">
-        <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-          <div>
-            <p className="text-[11px] uppercase tracking-[0.35em] text-blue-300/80">On-the-spot operations</p>
-            <h3 className="mt-2 bg-gradient-to-r from-cyan-300 via-sky-400 to-emerald-300 bg-clip-text font-orbitron text-3xl font-black uppercase text-transparent">Special registration desk</h3>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300">
-              Fast admin-only registration flow for walk-ins, special approvals, and desk entries. Lead contact details automatically become the first participant.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <span className="rounded-full border border-cyan-300/18 bg-cyan-400/10 px-4 py-2 text-xs uppercase tracking-[0.22em] text-cyan-100">
-              Special desk {specialDeskCount}
-            </span>
-            {selectedSpecialEvent ? (
-              <span className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs uppercase tracking-[0.22em] text-slate-100">
-                {getTeamLabel(selectedSpecialEvent)}
-              </span>
-            ) : null}
-          </div>
-        </div>
-
-        <form onSubmit={handleSpecialSubmit} className="mt-6 grid gap-5 xl:grid-cols-[0.92fr_1.08fr]">
-          <div className="space-y-4">
-            <div className="rounded-[1.35rem] border border-white/10 bg-black/20 p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Desk setup</p>
-              <div className="mt-4 grid gap-4 md:grid-cols-2">
-                <label className="block rounded-[1.15rem] border border-white/10 bg-white/5 p-4">
-                  <span className="mb-2 block text-sm text-slate-200">Competition</span>
-                  <select
-                    value={scopedEventSlug || specialForm.eventSlug}
-                    onChange={(event) => handleSpecialEventSelection(event.target.value)}
-                    disabled={Boolean(scopedEventSlug)}
-                    className="floating-field-input disabled:opacity-70"
-                  >
-                    <option value="">Choose an event</option>
-                    {events.map((event) => (
-                      <option key={`special-${event.slug}`} value={event.slug}>{event.name}</option>
-                    ))}
-                  </select>
-                  <p className="mt-3 text-xs text-slate-400">
-                    {scopedEventSlug
-                      ? `Locked to ${scopedEventName || 'your assigned event'}.`
-                      : 'Select the competition for this special desk entry.'}
-                  </p>
-                </label>
-
-                <label className="block rounded-[1.15rem] border border-white/10 bg-white/5 p-4">
-                  <span className="mb-2 block text-sm text-slate-200">Team size</span>
-                  <select
-                    value={specialParticipantCount}
-                    onChange={(event) => updateSpecialParticipants(Number(event.target.value))}
-                    disabled={!selectedSpecialEvent}
-                    className="floating-field-input disabled:opacity-70"
-                  >
-                    {selectedSpecialEvent
-                      ? Array.from(
-                        { length: selectedSpecialEvent.max_members - selectedSpecialEvent.min_members + 1 },
-                        (_, index) => selectedSpecialEvent.min_members + index,
-                      ).map((count) => (
-                        <option key={`special-size-${count}`} value={count}>{count} participant{count === 1 ? '' : 's'}</option>
-                      ))
-                      : <option value={1}>Select an event first</option>}
-                  </select>
-                  <p className="mt-3 text-xs text-slate-400">
-                    {selectedSpecialEvent
-                      ? `Allowed range: ${selectedSpecialEvent.min_members} to ${selectedSpecialEvent.max_members} participants.`
-                      : 'Team size unlocks after selecting an event.'}
-                  </p>
-                </label>
-              </div>
-
-              {selectedSpecialEvent ? (
-                <div className="mt-4 grid gap-3 md:grid-cols-3">
-                  <div className="rounded-[1.1rem] border border-white/10 bg-black/20 p-3">
-                    <p className="text-[10px] uppercase tracking-[0.18em] text-slate-500">Venue</p>
-                    <p className="mt-2 text-sm font-semibold text-white">{selectedSpecialEvent.venue}</p>
-                  </div>
-                  <div className="rounded-[1.1rem] border border-white/10 bg-black/20 p-3">
-                    <p className="text-[10px] uppercase tracking-[0.18em] text-slate-500">Slots</p>
-                    <p className="mt-2 text-sm font-semibold text-white">
-                      {selectedSpecialEvent.max_slots === null ? 'Open' : `${Math.max(selectedSpecialEvent.max_slots - selectedSpecialEvent.registrations_count, 0)} left`}
-                    </p>
-                  </div>
-                  <div className="rounded-[1.1rem] border border-white/10 bg-black/20 p-3">
-                    <p className="text-[10px] uppercase tracking-[0.18em] text-slate-500">Waitlist</p>
-                    <p className="mt-2 text-sm font-semibold text-white">{selectedSpecialEvent.waitlist_count}</p>
-                  </div>
-                </div>
-              ) : null}
-            </div>
-
-            <div className="rounded-[1.35rem] border border-white/10 bg-black/20 p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Payment and approval</p>
-              <div className="mt-4 grid gap-4 md:grid-cols-2">
-                <label className="block rounded-[1.15rem] border border-white/10 bg-white/5 p-4">
-                  <span className="mb-2 block text-sm text-slate-200">Payment mode</span>
-                  <select
-                    value={specialForm.paymentMethod}
-                    onChange={(event) => setSpecialForm((current) => ({ ...current, paymentMethod: event.target.value as SpecialRegistrationPayload['paymentMethod'] }))}
-                    className="floating-field-input"
-                  >
-                    <option value="cash">Cash received</option>
-                    <option value="upi">UPI received</option>
-                    <option value="free">Free entry</option>
-                  </select>
-                </label>
-
-                <label className="block rounded-[1.15rem] border border-white/10 bg-white/5 p-4">
-                  <span className="mb-2 block text-sm text-slate-200">
-                    {specialForm.paymentMethod === 'upi' ? 'Transaction reference' : 'Desk reference'}
-                  </span>
-                  <input
-                    value={specialForm.paymentReference}
-                    onChange={(event) => setSpecialForm((current) => ({ ...current, paymentReference: event.target.value }))}
-                    placeholder={specialForm.paymentMethod === 'upi' ? 'Enter UPI transaction ID' : 'Optional note or receipt number'}
-                    className="floating-field-input"
-                  />
-                </label>
-              </div>
-
-              <label className="mt-4 inline-flex items-center gap-3 rounded-[1.2rem] border border-emerald-300/18 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-100">
-                <input
-                  type="checkbox"
-                  checked={specialForm.markVerified}
-                  onChange={(event) => setSpecialForm((current) => ({ ...current, markVerified: event.target.checked }))}
-                />
-                Instantly mark this desk registration as verified
-              </label>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div className="rounded-[1.35rem] border border-white/10 bg-black/20 p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Lead contact</p>
-              <div className="mt-4 grid gap-4 md:grid-cols-2">
-                <FloatingField label="Team name or participant name" icon={<Users size={18} />} value={specialForm.teamName} onChange={(value) => setSpecialForm((current) => ({ ...current, teamName: value }))} />
-                <FloatingField label="College name" icon={<ShieldCheck size={18} />} value={specialForm.collegeName} onChange={(value) => setSpecialForm((current) => ({ ...current, collegeName: value }))} />
-                <FloatingField label="Department" icon={<ShieldCheck size={18} />} value={specialForm.departmentName} onChange={(value) => setSpecialForm((current) => ({ ...current, departmentName: value }))} />
-                <FloatingField label="Year of study" icon={<Clock3 size={18} />} value={specialForm.yearOfStudy} onChange={(value) => setSpecialForm((current) => ({ ...current, yearOfStudy: value }))} />
-                <FloatingField label="Lead contact name" icon={<Users size={18} />} value={specialForm.contactName} onChange={(value) => setSpecialForm((current) => ({ ...current, contactName: value }))} />
-                <FloatingField label="Lead contact email" icon={<Mail size={18} />} value={specialForm.contactEmail} onChange={(value) => setSpecialForm((current) => ({ ...current, contactEmail: value }))} />
-                <div className="md:col-span-2">
-                  <FloatingField label="Lead contact phone" icon={<ShieldCheck size={18} />} value={specialForm.contactPhone} onChange={(value) => setSpecialForm((current) => ({ ...current, contactPhone: value }))} />
-                </div>
-              </div>
-            </div>
-
-            {specialParticipantCount > 1 ? (
-              <div className="rounded-[1.35rem] border border-white/10 bg-black/20 p-4">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Additional participants</p>
-                  <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-slate-200">
-                    Lead uses contact info
-                  </span>
-                </div>
-                <div className="mt-4 space-y-3">
-                  {specialForm.participants.slice(1).map((participant, index) => {
-                    const participantIndex = index + 1;
-                    return (
-                      <div key={`special-member-${participantIndex}`} className="grid gap-3 rounded-[1.2rem] border border-white/10 bg-white/[0.04] p-4 md:grid-cols-3">
-                        <input value={participant.fullName} onChange={(event) => handleSpecialParticipantChange(participantIndex, 'fullName', event.target.value)} placeholder={`Member ${participantIndex + 1} name`} className="floating-field-input" />
-                        <input value={participant.email} onChange={(event) => handleSpecialParticipantChange(participantIndex, 'email', event.target.value)} placeholder={`Member ${participantIndex + 1} email`} className="floating-field-input" />
-                        <input value={participant.phone} onChange={(event) => handleSpecialParticipantChange(participantIndex, 'phone', event.target.value)} placeholder={`Member ${participantIndex + 1} phone`} className="floating-field-input" />
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            ) : null}
-
-            <label className="block rounded-[1.35rem] border border-white/10 bg-black/20 p-4">
-              <span className="mb-2 block text-xs uppercase tracking-[0.2em] text-slate-400">Desk note</span>
-              <textarea
-                value={specialForm.notes}
-                onChange={(event) => setSpecialForm((current) => ({ ...current, notes: event.target.value }))}
-                rows={4}
-                placeholder="Optional note for free entry, organizer approval, or special handling."
-                className="floating-field-input min-h-[112px] resize-none"
-              />
-            </label>
-
-            <button
-              type="submit"
-              disabled={!canSubmitSpecialRegistration || specialRegistrationSubmitting}
-              className="animated-gradient-button inline-flex w-full items-center justify-center gap-2 rounded-2xl px-5 py-4 text-base font-bold text-slate-950 disabled:opacity-60"
-            >
-              {specialRegistrationSubmitting ? 'Creating special registration...' : 'Create special registration'}
-            </button>
-          </div>
-        </form>
-      </section>
 
       <section id="admin-verification" data-reveal="up" className="portal-admin-shell portal-admin-shell--verification portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-8">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
@@ -833,7 +476,6 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
                     </div>
                     <div className="flex flex-wrap gap-2">
                       <span className={`portal-admin-entry__badge rounded-full border px-3 py-1 text-xs uppercase tracking-[0.2em] ${statusStyles[row.status] || 'border-white/10 bg-white/5 text-white'}`}>{prettyStatus(row.status)}</span>
-                      {row.registration_source === 'special-desk' ? <span className="portal-admin-entry__badge rounded-full border border-cyan-300/18 bg-cyan-400/10 px-3 py-1 text-xs uppercase tracking-[0.18em] text-cyan-100">Special Desk</span> : null}
                       <span className="portal-admin-entry__badge rounded-full border border-blue-300/18 bg-blue-400/10 px-3 py-1 text-xs uppercase tracking-[0.18em] text-blue-100">{row.participants.length} participants</span>
                       {row.duplicate_email_count > 0 ? <span className="portal-admin-entry__badge inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-400/10 px-3 py-1 text-xs uppercase tracking-[0.18em] text-amber-100"><AlertTriangle size={12} />Email x{row.duplicate_email_count}</span> : null}
                       {row.duplicate_phone_count > 0 ? <span className="portal-admin-entry__badge inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-400/10 px-3 py-1 text-xs uppercase tracking-[0.18em] text-amber-100"><AlertTriangle size={12} />Phone x{row.duplicate_phone_count}</span> : null}

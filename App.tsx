@@ -13,7 +13,6 @@ import type {
   PortalAlert,
   PortalAnnouncement,
   RegistrationReceipt,
-  SpecialRegistrationPayload,
 } from './components/portal/types.ts';
 import { makeParticipants, shellClassName } from './components/portal/utils.ts';
 
@@ -64,6 +63,20 @@ function attemptChunkReloadRecovery(error: unknown): Promise<never> {
 
 function loadLazyModule<T>(loader: () => Promise<T>) {
   return loader().catch((error) => attemptChunkReloadRecovery(error));
+}
+
+const groupedAdminEventSlugs: Record<string, string[]> = {
+  techxcelerate: ['techxcelerate', 'techxcelerate-poster-presentation'],
+  'techxcelerate-poster-presentation': ['techxcelerate', 'techxcelerate-poster-presentation'],
+};
+
+function getAdminScopeSlugs(eventSlug: string | null | undefined) {
+  const normalizedSlug = String(eventSlug || '').trim();
+  if (!normalizedSlug) {
+    return [];
+  }
+
+  return groupedAdminEventSlugs[normalizedSlug] || [normalizedSlug];
 }
 
 const loadAdminRegistrationsPage = () => import('./components/portal/AdminRegistrationsPage.tsx');
@@ -908,7 +921,6 @@ export const App: React.FC = () => {
   const [adminScope, setAdminScope] = useState<AdminAccessScope | null>(null);
   const [adminLoading, setAdminLoading] = useState(false);
   const [adminError, setAdminError] = useState('');
-  const [specialRegistrationSubmitting, setSpecialRegistrationSubmitting] = useState(false);
   const [hashRoute, setHashRoute] = useState(() =>
     typeof window === 'undefined' ? '' : window.location.hash.toLowerCase(),
   );
@@ -1797,7 +1809,8 @@ export const App: React.FC = () => {
           throw new Error('This key has full-dashboard access. Switch to the main key option to use it.');
         }
 
-        if (access.event_slug !== adminEventKeySlug) {
+        const allowedEventSlugs = getAdminScopeSlugs(access.event_slug);
+        if (!allowedEventSlugs.includes(adminEventKeySlug)) {
           const selectedEventName =
             events.find((event) => event.slug === adminEventKeySlug)?.name || 'the selected event';
           throw new Error(
@@ -2069,75 +2082,6 @@ export const App: React.FC = () => {
     }
   };
 
-  const createSpecialRegistration = async (payload: SpecialRegistrationPayload) => {
-    setAdminError('');
-    setSpecialRegistrationSubmitting(true);
-    try {
-      const response = await fetch('/api/admin/registrations/special', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-admin-key': adminKey,
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const { data, rawText } = await readApiBody<{
-        error?: string;
-        registration?: AdminRegistration;
-        notification?: AdminNotificationSummary | null;
-        event?: EventRecord | null;
-        waitlistPosition?: number | null;
-      }>(response);
-
-      if (!response.ok) {
-        throw new Error(getApiErrorMessage(response, data, rawText, 'Failed to create special registration.'));
-      }
-
-      if (!data?.registration) {
-        throw new Error('Special registration was created, but the refreshed registration details were missing.');
-      }
-
-      setAdminRows((current) => {
-        const nextRows = current.filter((row) => row.id !== data.registration?.id);
-        return [data.registration, ...nextRows];
-      });
-
-      if (data.event) {
-        setEvents((current) =>
-          current.map((event) => (event.slug === data.event?.slug ? data.event : event)),
-        );
-      } else {
-        await refreshEvents();
-      }
-
-      const baseMessage =
-        data.registration.status === 'verified'
-          ? `Special registration ${data.registration.registration_code} created and verified.`
-          : data.registration.status === 'waitlisted'
-            ? `Special registration ${data.registration.registration_code} added to the waitlist.`
-            : `Special registration ${data.registration.registration_code} created for review.`;
-
-      const notificationMessage =
-        data.notification?.delivery_status === 'sent'
-          ? ' Confirmation email sent.'
-          : data.notification?.delivery_status === 'failed'
-            ? ` Email failed: ${data.notification.error_message || 'delivery error.'}`
-            : data.notification?.delivery_status === 'skipped'
-              ? ` Email skipped: ${data.notification.error_message || 'email is not configured.'}`
-              : '';
-
-      setToastClosing(false);
-      setToastMessage(`${baseMessage}${notificationMessage}`);
-      return true;
-    } catch (error) {
-      setAdminError(error instanceof Error ? error.message : 'Failed to create special registration.');
-      return false;
-    } finally {
-      setSpecialRegistrationSubmitting(false);
-    }
-  };
-
   const sendBroadcast = async (payload: {
     title: string;
     message: string;
@@ -2392,7 +2336,6 @@ export const App: React.FC = () => {
             backups={backupSnapshots}
             adminLoading={adminLoading}
             adminError={adminError}
-            specialRegistrationSubmitting={specialRegistrationSubmitting}
             onAdminAccessModeChange={(value) => {
               setAdminAccessMode(value);
               setAdminError('');
@@ -2414,7 +2357,6 @@ export const App: React.FC = () => {
             onStatusChange={updateAdminStatus}
             onDeleteRegistration={deleteAdminRegistration}
             onToggleEventRegistrationState={toggleEventRegistrationState}
-            onCreateSpecialRegistration={createSpecialRegistration}
             onSaveReviewNote={saveReviewNote}
             onResendStatusEmail={resendAdminStatusEmail}
             onSendBroadcast={sendBroadcast}

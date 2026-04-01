@@ -168,22 +168,6 @@ export type ParticipantDraft = {
   phone: string;
 };
 
-export type SpecialRegistrationPayload = {
-  eventSlug: string;
-  teamName: string;
-  collegeName: string;
-  departmentName: string;
-  yearOfStudy: string;
-  contactName: string;
-  contactEmail: string;
-  contactPhone: string;
-  paymentMethod: 'cash' | 'upi' | 'free';
-  paymentReference: string;
-  notes: string;
-  markVerified: boolean;
-  participants: ParticipantDraft[];
-};
-
 export type RegistrationReceipt = {
   registrationCode: string;
   eventName: string;
