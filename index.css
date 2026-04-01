@@ -4050,6 +4050,17 @@ img {
     filter var(--portal-glow-transition);
 }
 
+.portal-event-showcase.portal-glass,
+.portal-event-section.portal-glass {
+  background:
+    radial-gradient(circle at top right, rgba(56, 189, 248, 0.12), transparent 24%) padding-box,
+    radial-gradient(circle at left bottom, rgba(251, 191, 36, 0.1), transparent 24%) padding-box,
+    linear-gradient(145deg, rgba(10, 15, 28, 0.98), rgba(5, 9, 18, 0.99)) padding-box,
+    var(--portal-surface-border) border-box;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
 .portal-title-xl {
   font-size: clamp(1.65rem, 6vw, 3.4rem);
   line-height: 1.04;
@@ -8315,9 +8326,29 @@ footer {
   gap: 2.4rem;
 }
 
+.portal-competition-section {
+  border: 1px solid rgba(94, 234, 255, 0.14);
+  background:
+    radial-gradient(circle at top right, rgba(56, 189, 248, 0.12), transparent 24%),
+    radial-gradient(circle at bottom left, rgba(15, 118, 110, 0.12), transparent 24%),
+    linear-gradient(180deg, rgba(8, 13, 24, 0.98), rgba(4, 7, 14, 0.995));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 28px 60px rgba(2, 8, 23, 0.34);
+}
+
 .portal-competition-group {
   display: grid;
   gap: 1rem;
+  border-radius: 1.55rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(circle at top right, rgba(56, 189, 248, 0.08), transparent 22%),
+    linear-gradient(180deg, rgba(11, 17, 31, 0.98), rgba(6, 10, 19, 0.995));
+  padding: 1.15rem;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 20px 40px rgba(2, 8, 23, 0.22);
 }
 
 .portal-competition-group__header {
@@ -8627,6 +8658,14 @@ footer {
     gap: 2rem;
   }
 
+  .portal-competition-section {
+    padding: 0.95rem;
+  }
+
+  .portal-competition-group {
+    padding: 0.92rem;
+  }
+
   .portal-competition-group__header {
     align-items: flex-start;
     flex-direction: column;
@@ -8705,6 +8744,14 @@ footer {
 }
 
 @media (max-width: 420px) {
+  .portal-competition-section {
+    padding: 0.8rem;
+  }
+
+  .portal-competition-group {
+    padding: 0.8rem;
+  }
+
   .portal-competition-group__title {
     font-size: 1.42rem;
   }

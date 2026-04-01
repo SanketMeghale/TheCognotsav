@@ -155,7 +155,7 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
   };
 
   return (
-    <section id="registration-panel" className="portal-glow-card rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(5,8,18,0.9))] p-3 sm:p-5 md:p-6">
+    <section id="registration-panel" className="portal-competition-section portal-glow-card rounded-[2rem] p-3 sm:p-5 md:p-6">
       <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
         <div>
           <p className="text-[11px] uppercase tracking-[0.28em] text-fuchsia-300/85">Main Attractions</p>
