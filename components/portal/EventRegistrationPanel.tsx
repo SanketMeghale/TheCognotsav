@@ -257,18 +257,20 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const payableAmount = selectedEvent ? resolveEventAmount(selectedEvent, teamSize) : 0;
   const customQrImagePath = selectedEvent?.payment_qr_image_path?.trim() || '';
   const hasCustomQrImage = Boolean(customQrImagePath);
+  const prefersDynamicPaymentQr = selectedEvent?.slug === 'techxcelerate';
   const customQrObjectPosition = selectedEvent ? resolveCustomQrObjectPosition(selectedEvent.slug) : 'center center';
   const customQrScale = selectedEvent ? resolveCustomQrScale(selectedEvent.slug) : 1;
   const primaryUpiId = selectedEvent?.payment_upi?.trim() || '';
   const primaryPayee = selectedEvent?.payment_payee?.trim() || selectedEvent.name;
   const primaryUpiLink = primaryUpiId ? `upi://pay?pa=${primaryUpiId}&pn=${encodeURIComponent(primaryPayee)}&am=${payableAmount}&cu=INR&tn=${encodeURIComponent(selectedEvent.name)}` : '';
   const primaryQrUrl = primaryUpiLink ? `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(primaryUpiLink)}` : '';
-  const primaryPaymentQrSrc = hasCustomQrImage ? customQrImagePath : primaryQrUrl;
+  const primaryPaymentQrSrc = hasCustomQrImage && !prefersDynamicPaymentQr ? customQrImagePath : primaryQrUrl;
   const fallbackUpiLink = `upi://pay?pa=${FALLBACK_PAYMENT_UPI_ID}&pn=${encodeURIComponent(FALLBACK_PAYMENT_PAYEE)}&am=${payableAmount}&cu=INR&tn=${encodeURIComponent(`${selectedEvent.name} Backup Payment`)}`;
   const activeUpiId = useBackupScanner ? FALLBACK_PAYMENT_UPI_ID : primaryUpiId;
   const activePayee = useBackupScanner ? FALLBACK_PAYMENT_PAYEE : primaryPayee;
   const activeUpiLink = useBackupScanner ? fallbackUpiLink : primaryUpiLink;
   const paymentQrSrc = useBackupScanner ? FALLBACK_PAYMENT_QR_IMAGE : primaryPaymentQrSrc;
+  const usingCustomQrImage = hasCustomQrImage && !useBackupScanner && !prefersDynamicPaymentQr;
   const canOpenPaymentApp = typeof window !== 'undefined' && /Android|iPhone|iPad|iPod/i.test(window.navigator.userAgent);
   const isSoloEvent = selectedEvent.min_members === 1 && !selectedEvent.is_team_event;
   const registrationPaused = selectedEvent.registration_enabled === false;
@@ -597,13 +599,13 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                       <QrCode size={18} />
                       <p className="text-sm font-semibold">{useBackupScanner ? 'Backup payment QR' : 'Event payment QR'}</p>
                     </div>
-                    <div className={`mt-3 flex items-center justify-center overflow-hidden rounded-[1.2rem] p-3 ${hasCustomQrImage ? 'aspect-square bg-white' : 'aspect-square bg-white'}`}>
+                    <div className="mt-3 flex aspect-square items-center justify-center overflow-hidden rounded-[1.2rem] bg-white p-3">
                       {paymentQrSrc ? (
                         <img
                           src={paymentQrSrc}
                           alt={`${selectedEvent.name} ${useBackupScanner ? 'backup ' : ''}payment QR`}
-                          className={hasCustomQrImage && !useBackupScanner ? 'h-full w-full rounded-[0.9rem] object-cover' : 'h-full w-full max-w-[12rem] object-contain'}
-                          style={hasCustomQrImage && !useBackupScanner ? { objectPosition: customQrObjectPosition, transform: `scale(${customQrScale})` } : undefined}
+                          className={usingCustomQrImage ? 'h-full w-full rounded-[0.9rem] object-cover' : 'h-full w-full max-w-[12rem] object-contain'}
+                          style={usingCustomQrImage ? { objectPosition: customQrObjectPosition, transform: `scale(${customQrScale})` } : undefined}
                         />
                       ) : (
                         <div className="h-full w-full max-w-[12rem] rounded-[1rem] bg-slate-200/30" />
@@ -641,7 +643,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                       <p className="text-xs uppercase tracking-[0.16em] text-slate-500">{useBackupScanner ? 'Backup Payee' : 'Payee Name'}</p>
                       <p className="mt-2 text-sm font-semibold text-white">{activePayee}</p>
                     </div>
-                    {!activeUpiId && hasCustomQrImage && !useBackupScanner ? (
+                    {!activeUpiId && usingCustomQrImage ? (
                       <p className="mt-3 text-xs leading-6 text-slate-300">
                         Use the QR image above to complete payment for this event.
                       </p>
