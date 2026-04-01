@@ -1275,7 +1275,8 @@ export const App: React.FC = () => {
 
   const handleSecretAdminDoubleClick = (event: React.MouseEvent<HTMLElement>) => {
     event.preventDefault();
-    handleSecretAdminTap();
+    secretAdminLastTapRef.current = 0;
+    openAdminPanel();
   };
 
   const handleSecretAdminTouchEnd = (event: React.TouchEvent<HTMLElement>) => {
