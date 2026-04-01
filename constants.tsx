@@ -205,7 +205,7 @@ export const ANNOUNCEMENTS = [
 
 export const UPI_MAPPING: Record<string, { id: string; payee: string }> = {
   'tech-kbc': { id: 'sahilbhatti292005@okaxis', payee: 'Sahil Bhatti' },
-  utopia: { id: 'siddhideshpande11@okhdfcbank', payee: 'Siddhi Deshpande' },
+  utopia: { id: '9850560091@ibl', payee: 'TRUPTI SANJAY JADHAV' },
   'googler-hunt': { id: 'siddhideshpande11@okhdfcbank', payee: 'Siddhi Deshpande' },
   'bgmi-esports': { id: 'kawadeakshay23@okaxis', payee: 'Akshay Kawade' },
   'ff-esports': { id: 'kawadeakshay23@okaxis', payee: 'Akshay Kawade' },

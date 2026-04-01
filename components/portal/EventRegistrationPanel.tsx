@@ -197,12 +197,23 @@ function resolveEventAmount(event: EventRecord, participantCount: number) {
     return Math.min(Math.max(1, participantCount) * 50, 200);
   }
 
+  if (event.slug === 'utopia') {
+    return 250;
+  }
+
   if (event.slug === 'techxcelerate-poster-presentation') {
     return Math.max(1, participantCount) * 50;
   }
 
   return Number(event.registration_fee || 0);
 }
+
+const paymentOverridesBySlug: Record<string, { upiId: string; payee: string }> = {
+  utopia: {
+    upiId: '9850560091@ibl',
+    payee: 'TRUPTI SANJAY JADHAV',
+  },
+};
 
 function resolveCustomQrObjectPosition(eventSlug: string) {
   switch (eventSlug) {
@@ -259,13 +270,14 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const selectedTheme = selectedEvent ? categoryThemes[selectedEvent.category] || categoryThemes.Technical : categoryThemes.Technical;
   const selectedHandbook = selectedEvent ? handbookBySlug[selectedEvent.slug] : null;
   const payableAmount = selectedEvent ? resolveEventAmount(selectedEvent, teamSize) : 0;
+  const paymentOverride = selectedEvent ? paymentOverridesBySlug[selectedEvent.slug] : null;
   const customQrImagePath = selectedEvent?.payment_qr_image_path?.trim() || '';
   const hasCustomQrImage = Boolean(customQrImagePath);
-  const prefersDynamicPaymentQr = selectedEvent?.slug === 'techxcelerate' || selectedEvent?.slug === 'rang-manch';
+  const prefersDynamicPaymentQr = selectedEvent?.slug === 'techxcelerate' || selectedEvent?.slug === 'rang-manch' || selectedEvent?.slug === 'utopia';
   const customQrObjectPosition = selectedEvent ? resolveCustomQrObjectPosition(selectedEvent.slug) : 'center center';
   const customQrScale = selectedEvent ? resolveCustomQrScale(selectedEvent.slug) : 1;
-  const primaryUpiId = selectedEvent?.payment_upi?.trim() || '';
-  const primaryPayee = selectedEvent?.payment_payee?.trim() || selectedEvent.name;
+  const primaryUpiId = selectedEvent?.payment_upi?.trim() || paymentOverride?.upiId || '';
+  const primaryPayee = paymentOverride?.payee || selectedEvent?.payment_payee?.trim() || selectedEvent.name;
   const primaryUpiLink = primaryUpiId ? `upi://pay?pa=${primaryUpiId}&pn=${encodeURIComponent(primaryPayee)}&am=${payableAmount}&cu=INR&tn=${encodeURIComponent(selectedEvent.name)}` : '';
   const primaryQrUrl = primaryUpiLink ? `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(primaryUpiLink)}` : '';
   const primaryPaymentQrSrc = hasCustomQrImage && !prefersDynamicPaymentQr ? customQrImagePath : primaryQrUrl;
