@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   AlertTriangle, ArrowLeft, BarChart3, CheckCircle2, Clock3, Download,
-  Eye, EyeOff, FileSpreadsheet, HardDriveDownload, Mail, Megaphone,
+  ChevronDown, ChevronUp, Eye, EyeOff, FileSpreadsheet, HardDriveDownload, Mail, Megaphone,
   RotateCcw, Save, Search, Send, ShieldCheck, Trash2, Users, XCircle,
 } from 'lucide-react';
 import type {
@@ -457,50 +457,62 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
         <div className="mt-6 space-y-4">
           {filteredRows.map((row) => (
             <article key={row.id} className="portal-admin-entry rounded-[1.7rem] border border-white/10 bg-[linear-gradient(145deg,rgba(12,20,35,0.92),rgba(18,27,45,0.82))] p-4 md:p-5">
-              <div className="portal-admin-entry__top flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-start gap-3">
-                    <div className="min-w-0 flex-1">
+              <div className="portal-admin-entry__header flex flex-col gap-4">
+                <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
                       <button type="button" onClick={() => setExpandedRowId((current) => current === row.id ? null : row.id)} className="portal-admin-entry__trigger min-w-0 text-left">
                         <p className="truncate text-lg font-semibold text-white">{row.team_name}</p>
-                        <span className="portal-admin-entry__code mt-2 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.2em] text-slate-200">
-                          {row.registration_code}
-                          <Eye size={12} className="text-cyan-200" />
-                        </span>
                       </button>
-                      <p className="mt-2 text-sm text-slate-300">{resolveAdminEventName(row, events)}</p>
-                      <p className="mt-1 text-xs uppercase tracking-[0.16em] text-slate-500">{row.date_label} / {row.time_label}</p>
+                      <span className={`portal-admin-entry__badge rounded-full border px-3 py-1 text-[11px] uppercase tracking-[0.2em] ${statusStyles[row.status] || 'border-white/10 bg-white/5 text-white'}`}>{prettyStatus(row.status)}</span>
+                      <span className="portal-admin-entry__code inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-slate-200">
+                        {row.registration_code}
+                        <Eye size={12} className="text-cyan-200" />
+                      </span>
                     </div>
-                    <div className="flex flex-wrap gap-2">
-                      <span className={`portal-admin-entry__badge rounded-full border px-3 py-1 text-xs uppercase tracking-[0.2em] ${statusStyles[row.status] || 'border-white/10 bg-white/5 text-white'}`}>{prettyStatus(row.status)}</span>
-                      <span className="portal-admin-entry__badge rounded-full border border-blue-300/18 bg-blue-400/10 px-3 py-1 text-xs uppercase tracking-[0.18em] text-blue-100">{row.participants.length} participants</span>
-                      {row.duplicate_email_count > 0 ? <span className="portal-admin-entry__badge inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-400/10 px-3 py-1 text-xs uppercase tracking-[0.18em] text-amber-100"><AlertTriangle size={12} />Email x{row.duplicate_email_count}</span> : null}
-                      {row.duplicate_phone_count > 0 ? <span className="portal-admin-entry__badge inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-400/10 px-3 py-1 text-xs uppercase tracking-[0.18em] text-amber-100"><AlertTriangle size={12} />Phone x{row.duplicate_phone_count}</span> : null}
-                      {row.duplicate_payment_count > 0 ? <span className="portal-admin-entry__badge inline-flex items-center gap-2 rounded-full border border-rose-300/20 bg-rose-400/10 px-3 py-1 text-xs uppercase tracking-[0.18em] text-rose-100"><AlertTriangle size={12} />Payment x{row.duplicate_payment_count}</span> : null}
+                    <div className="portal-admin-entry__quickline mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-300">
+                      <span>{resolveAdminEventName(row, events)}</span>
+                      <span className="portal-admin-entry__meta-dot" aria-hidden="true" />
+                      <span>{row.participants.length} {row.participants.length === 1 ? 'participant' : 'participants'}</span>
+                      <span className="portal-admin-entry__meta-dot" aria-hidden="true" />
+                      <span>{row.date_label}</span>
                     </div>
                   </div>
 
-                  <div className="portal-admin-entry__facts mt-4 grid gap-3 md:grid-cols-3">
-                    <div className="portal-admin-entry__fact rounded-[1.2rem] border border-white/10 bg-black/20 p-3">
-                      <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400">Lead contact</p>
-                      <p className="mt-2 text-sm font-semibold text-white">{row.contact_name}</p>
-                      <p className="mt-1 truncate text-sm text-slate-300">{row.contact_email}</p>
+                  <div className="flex items-center justify-between gap-2 lg:flex-col lg:items-end">
+                    <div className="flex flex-wrap justify-end gap-2">
+                      {row.duplicate_email_count > 0 ? <span className="portal-admin-entry__badge inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-400/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-amber-100"><AlertTriangle size={12} />Email x{row.duplicate_email_count}</span> : null}
+                      {row.duplicate_phone_count > 0 ? <span className="portal-admin-entry__badge inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-400/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-amber-100"><AlertTriangle size={12} />Phone x{row.duplicate_phone_count}</span> : null}
+                      {row.duplicate_payment_count > 0 ? <span className="portal-admin-entry__badge inline-flex items-center gap-2 rounded-full border border-rose-300/20 bg-rose-400/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-rose-100"><AlertTriangle size={12} />Payment x{row.duplicate_payment_count}</span> : null}
                     </div>
-                    <div className="portal-admin-entry__fact rounded-[1.2rem] border border-white/10 bg-black/20 p-3">
-                      <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400">Venue</p>
-                      <p className="mt-2 text-sm font-semibold text-white">{row.venue}</p>
-                      <p className="mt-1 text-sm text-slate-300">{row.contact_phone}</p>
-                    </div>
-                    <div className="portal-admin-entry__fact rounded-[1.2rem] border border-white/10 bg-black/20 p-3">
-                      <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400">Payment</p>
-                      <p className="mt-2 text-sm font-semibold text-white">{formatCurrency(row.total_amount)}</p>
-                      <p className="mt-1 truncate text-sm text-slate-300">{row.payment_reference || 'No payment reference'}</p>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setExpandedRowId((current) => current === row.id ? null : row.id)}
+                      className="portal-admin-entry__expand magnetic-button inline-flex items-center gap-2 rounded-full border border-cyan-300/18 bg-cyan-400/10 px-3 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-cyan-100"
+                    >
+                      {expandedRowId === row.id ? 'Hide' : 'Details'}
+                      {expandedRowId === row.id ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                    </button>
                   </div>
                 </div>
 
-                <div className="portal-admin-entry__actions grid gap-2 sm:grid-cols-2 xl:min-w-[240px] xl:grid-cols-1">
-                  <button type="button" onClick={() => onResendStatusEmail(row.id)} className="portal-admin-entry__action magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-blue-300/20 bg-blue-500/10 px-4 py-3 text-sm font-bold text-blue-100"><RotateCcw size={16} />Resend email</button>
+                <div className="portal-admin-entry__summary grid gap-3 md:grid-cols-3">
+                  <div className="portal-admin-entry__fact rounded-[1.1rem] border border-white/10 bg-black/20 px-3 py-3">
+                    <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400">Email</p>
+                    <p className="mt-2 truncate text-sm font-semibold text-white">{row.contact_email}</p>
+                  </div>
+                  <div className="portal-admin-entry__fact rounded-[1.1rem] border border-white/10 bg-black/20 px-3 py-3">
+                    <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400">Venue</p>
+                    <p className="mt-2 text-sm font-semibold text-white">{row.venue}</p>
+                  </div>
+                  <div className="portal-admin-entry__fact rounded-[1.1rem] border border-white/10 bg-black/20 px-3 py-3">
+                    <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400">Payment</p>
+                    <p className="mt-2 text-sm font-semibold text-white">{formatCurrency(row.total_amount)}</p>
+                  </div>
+                </div>
+
+                <div className={`portal-admin-entry__actions portal-admin-entry__actions--compact grid gap-2 ${canDeleteRegistrations ? 'sm:grid-cols-5' : 'sm:grid-cols-4'}`}>
+                  <button type="button" onClick={() => onResendStatusEmail(row.id)} className="portal-admin-entry__action magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-blue-300/20 bg-blue-500/10 px-4 py-3 text-sm font-bold text-blue-100"><RotateCcw size={16} />Resend</button>
                   <button type="button" onClick={() => onStatusChange(row.id, 'verified')} className="portal-admin-entry__action magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-emerald-300/20 bg-emerald-400/10 px-4 py-3 text-sm font-bold text-emerald-100"><CheckCircle2 size={16} />Approve</button>
                   <button type="button" onClick={() => onStatusChange(row.id, 'pending')} className="portal-admin-entry__action magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-amber-300/20 bg-amber-400/10 px-4 py-3 text-sm font-bold text-amber-100"><Clock3 size={16} />Pending</button>
                   <button type="button" onClick={() => onStatusChange(row.id, 'rejected')} className="portal-admin-entry__action magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-rose-300/20 bg-rose-400/10 px-4 py-3 text-sm font-bold text-rose-100"><XCircle size={16} />Reject</button>
