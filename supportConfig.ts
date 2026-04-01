@@ -37,6 +37,10 @@ export const EVENT_SUPPORT_MAPPING: Record<string, SupportMember[]> = {
     { name: "Prerna C.", phone: "8767927244" },
     { name: "Akshay Kawade", phone: "9766205339" },
   ],
+  "techxcelerate-poster-presentation": [
+    { name: "Prerna C.", phone: "8767927244" },
+    { name: "Akshay Kawade", phone: "9766205339" },
+  ],
   "utopia": [
     { name: "Deepika Nikam", phone: "7276062794" },
     { name: "Siddhi Deshpande", phone: "7620322275" },

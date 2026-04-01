@@ -561,7 +561,7 @@ function getEventSlotSnapshot(event, registrationsCount) {
 }
 
 function resolveRegistrationAmount(event, participantCount) {
-  if (event?.slug === 'rang-manch') {
+  if (event?.slug === 'rang-manch' || event?.slug === 'techxcelerate-poster-presentation') {
     return Math.max(1, Number(participantCount) || 1) * 50;
   }
 

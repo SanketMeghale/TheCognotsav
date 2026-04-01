@@ -40,6 +40,7 @@ const eventIconBySlug: Record<string, typeof CalendarDays> = {
   'tech-kbc': Cpu,
   'googler-hunt': Search,
   techxcelerate: Rocket,
+  'techxcelerate-poster-presentation': Rocket,
   utopia: MonitorUp,
   'rang-manch': Sparkles,
   'squid-game': Trophy,

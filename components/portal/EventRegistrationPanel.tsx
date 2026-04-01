@@ -64,6 +64,15 @@ const categoryThemes: Record<string, { badge: string; button: string; surface: s
   },
 };
 
+const techxcelerateSharedRules = [
+  'All submissions must be original',
+  'Bring laptop, model, or backup presentation as needed',
+  'Paper format should follow standard structure',
+  'Late entries will not be accepted',
+];
+
+const techxcelerateHandbookUrl = '/handbooks/techxcelerate.docx';
+
 const handbookBySlug: Record<string, {
   theme: string;
   overview: string;
@@ -99,11 +108,19 @@ const handbookBySlug: Record<string, {
   },
   techxcelerate: {
     theme: 'Future Tech and Innovation',
-    overview: 'Innovation showcase for posters, projects, and papers with strong technical presentation.',
-    highlights: ['Poster competition at Rs 50 per participant', 'Project or paper presentation at Rs 200 per team', 'Project demo or PPT allowed', 'Presentation plus Q and A based judging'],
-    rules: ['All submissions must be original', 'Bring laptop, model, or backup presentation as needed', 'Paper format should follow standard structure', 'Late entries will not be accepted'],
-    handbookUrl: '/handbooks/techxcelerate.docx',
-    quickDetails: ['Format: Solo / Team', 'Fee: Rs 50 / Rs 200', 'Type: Poster, Project, Paper'],
+    overview: 'Innovation showcase for working projects and technical demos with strong presentation, judging, and Q and A.',
+    highlights: ['1 to 4 members per team', 'Rs 200 per team', 'Project demo or PPT allowed', 'Presentation plus Q and A based judging'],
+    rules: techxcelerateSharedRules,
+    handbookUrl: techxcelerateHandbookUrl,
+    quickDetails: ['Format: Solo / Team', 'Fee: Rs 200 per team', 'Type: Project Expo'],
+  },
+  'techxcelerate-poster-presentation': {
+    theme: 'Future Tech and Innovation',
+    overview: 'Technical poster showcase for ideas, concepts, and research stories with the same handbook and judging flow.',
+    highlights: ['1 to 4 participants per entry', 'Rs 50 per participant', 'Poster-based presentation format', 'Presentation plus Q and A based judging'],
+    rules: techxcelerateSharedRules,
+    handbookUrl: techxcelerateHandbookUrl,
+    quickDetails: ['Format: Solo / Team', 'Fee: Rs 50 per participant', 'Type: Poster Presentation'],
   },
   'bgmi-esports': {
     theme: 'Enter the Arena. Survive the Battle.',
@@ -176,7 +193,7 @@ function SectionCard({ title, subtitle, children }: { title: string; subtitle: s
 }
 
 function resolveEventAmount(event: EventRecord, participantCount: number) {
-  if (event.slug === 'rang-manch') {
+  if (event.slug === 'rang-manch' || event.slug === 'techxcelerate-poster-presentation') {
     return Math.max(1, participantCount) * 50;
   }
 
@@ -190,6 +207,7 @@ function resolveCustomQrObjectPosition(eventSlug: string) {
     case 'tech-kbc':
       return 'center 50%';
     case 'techxcelerate':
+    case 'techxcelerate-poster-presentation':
     case 'utopia':
     case 'googler-hunt':
       return 'center 52%';
@@ -254,6 +272,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const canOpenPaymentApp = typeof window !== 'undefined' && /Android|iPhone|iPad|iPod/i.test(window.navigator.userAgent);
   const isSoloEvent = selectedEvent.min_members === 1 && !selectedEvent.is_team_event;
   const registrationPaused = selectedEvent.registration_enabled === false;
+  const usesPerParticipantFee = selectedEvent.slug === 'rang-manch' || selectedEvent.slug === 'techxcelerate-poster-presentation';
   const scrollBehavior = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
     ? 'auto'
     : 'smooth';
@@ -605,7 +624,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                     <div className="mt-3 rounded-[1.05rem] border border-amber-300/16 bg-amber-400/10 p-3">
                       <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Payable Amount</p>
                       <p className="mt-2 text-lg font-semibold text-white">{formatCurrency(payableAmount)}</p>
-                      {selectedEvent.slug === 'rang-manch' ? <p className="mt-1 text-xs text-slate-300">Calculated at Rs 50 per participant.</p> : null}
+                      {usesPerParticipantFee ? <p className="mt-1 text-xs text-slate-300">Calculated at Rs 50 per participant.</p> : null}
                     </div>
                     {activeUpiId ? (
                       <div className="mt-3 rounded-[1.05rem] border border-white/10 bg-black/20 p-3">
