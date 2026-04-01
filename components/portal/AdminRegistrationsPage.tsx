@@ -148,6 +148,7 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
   const [exportEventSlug, setExportEventSlug] = useState('all');
   const scopedEventSlug = adminScope?.mode === 'event' ? adminScope.event_slug : null;
   const scopedEventName = adminScope?.mode === 'event' ? adminScope.event_name : null;
+  const isGlobalAccess = adminScope?.mode !== 'event';
   const hasResolvedAccess = Boolean(adminScope);
   const activeDraftKey = adminAccessMode === 'global' ? adminMainKey : adminEventKey;
   const selectedDraftEventName = events.find((event) => event.slug === adminEventKeySlug)?.name || '';
@@ -268,12 +269,21 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
             <h2 className="mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron text-2xl font-black uppercase text-transparent md:text-4xl">Operations dashboard</h2>
           </div>
           {hasResolvedAccess ? (
-            <div className="portal-admin-kpi-grid grid grid-cols-2 gap-3 sm:grid-cols-4">
-              <a href="#admin-analytics" className="portal-admin-kpi portal-admin-kpi--cyan"><p className="text-xs uppercase tracking-[0.24em] text-cyan-100/80">Registrations</p><p className="mt-2 text-3xl font-black text-white">{counts.all}</p></a>
-              <a href="#admin-analytics" className="portal-admin-kpi portal-admin-kpi--violet"><p className="text-xs uppercase tracking-[0.24em] text-fuchsia-100/80">Participants</p><p className="mt-2 text-3xl font-black text-white">{totalParticipants}</p></a>
-              <a href="#admin-verification" className="portal-admin-kpi portal-admin-kpi--emerald"><p className="text-xs uppercase tracking-[0.24em] text-emerald-100/80">Verified</p><p className="mt-2 text-3xl font-black text-white">{counts.verified}</p></a>
-              <a href="#admin-analytics" className="portal-admin-kpi portal-admin-kpi--amber"><p className="text-xs uppercase tracking-[0.24em] text-yellow-100/80">Focus event</p><p className="mt-2 text-sm font-semibold text-white">{busiestEvent ? `${busiestEvent[0]} (${busiestEvent[1]})` : 'Waiting to load'}</p></a>
-            </div>
+            isGlobalAccess ? (
+              <div className="portal-admin-kpi-grid grid grid-cols-1 gap-3 sm:grid-cols-1">
+                <a href="#admin-overview" className="portal-admin-kpi portal-admin-kpi--cyan">
+                  <p className="text-xs uppercase tracking-[0.24em] text-cyan-100/80">Total registrations</p>
+                  <p className="mt-2 text-3xl font-black text-white">{counts.all}</p>
+                </a>
+              </div>
+            ) : (
+              <div className="portal-admin-kpi-grid grid grid-cols-2 gap-3 sm:grid-cols-4">
+                <a href="#admin-overview" className="portal-admin-kpi portal-admin-kpi--cyan"><p className="text-xs uppercase tracking-[0.24em] text-cyan-100/80">Registrations</p><p className="mt-2 text-3xl font-black text-white">{counts.all}</p></a>
+                <a href="#admin-overview" className="portal-admin-kpi portal-admin-kpi--violet"><p className="text-xs uppercase tracking-[0.24em] text-fuchsia-100/80">Participants</p><p className="mt-2 text-3xl font-black text-white">{totalParticipants}</p></a>
+                <a href="#admin-verification" className="portal-admin-kpi portal-admin-kpi--emerald"><p className="text-xs uppercase tracking-[0.24em] text-emerald-100/80">Verified</p><p className="mt-2 text-3xl font-black text-white">{counts.verified}</p></a>
+                <a href="#admin-overview" className="portal-admin-kpi portal-admin-kpi--amber"><p className="text-xs uppercase tracking-[0.24em] text-yellow-100/80">Focus event</p><p className="mt-2 text-sm font-semibold text-white">{busiestEvent ? `${busiestEvent[0]} (${busiestEvent[1]})` : 'Waiting to load'}</p></a>
+              </div>
+            )
           ) : null}
         </div>
         <div className="portal-admin-access-panel mt-6 rounded-[1.6rem] border border-white/10 bg-black/20 p-4 md:p-5">
@@ -374,26 +384,35 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
 
       {activeView === 'overview' ? (
         <section id="admin-overview" className="space-y-4">
-          <div data-reveal="up" className="portal-admin-statband grid grid-cols-2 gap-3 xl:grid-cols-4">
-            <div className="portal-admin-statband__item">
-              <strong>{counts.all}</strong>
-              <span>Total registrations</span>
+          {isGlobalAccess ? (
+            <div data-reveal="up" className="portal-admin-statband grid grid-cols-1 gap-3">
+              <div className="portal-admin-statband__item">
+                <strong>{counts.all}</strong>
+                <span>Total registrations</span>
+              </div>
             </div>
-            <div className="portal-admin-statband__item">
-              <strong>{totalParticipants}</strong>
-              <span>Participants</span>
+          ) : (
+            <div data-reveal="up" className="portal-admin-statband grid grid-cols-2 gap-3 xl:grid-cols-4">
+              <div className="portal-admin-statband__item">
+                <strong>{counts.all}</strong>
+                <span>Total registrations</span>
+              </div>
+              <div className="portal-admin-statband__item">
+                <strong>{totalParticipants}</strong>
+                <span>Participants</span>
+              </div>
+              <div className="portal-admin-statband__item">
+                <strong>{counts.verified}</strong>
+                <span>Verified</span>
+              </div>
+              <div className="portal-admin-statband__item">
+                <strong>{busiestEvent ? busiestEvent[1] : eventBuckets.length}</strong>
+                <span>{busiestEvent ? busiestEvent[0] : 'Total events'}</span>
+              </div>
             </div>
-            <div className="portal-admin-statband__item">
-              <strong>{counts.verified}</strong>
-              <span>Verified</span>
-            </div>
-            <div className="portal-admin-statband__item">
-              <strong>{busiestEvent ? busiestEvent[1] : eventBuckets.length}</strong>
-              <span>{busiestEvent ? busiestEvent[0] : 'Total events'}</span>
-            </div>
-          </div>
+          )}
 
-          <div className="grid gap-4 xl:grid-cols-[1.08fr_0.92fr]">
+          <div className="grid gap-4">
             <div data-reveal="up" className="portal-admin-shell portal-admin-shell--analytics portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-6">
               <div className="flex items-center gap-3"><BarChart3 size={18} className="text-cyan-200" /><div><h3 className="text-xl font-bold text-white">Top competitions</h3><p className="text-sm text-slate-400">Highest registration flow across events.</p></div></div>
               <div className="portal-admin-subpanel mt-5 rounded-[1.4rem] border border-white/10 bg-black/20 p-4">
@@ -406,49 +425,11 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
                       </div>
                       <div className="text-right text-xs uppercase tracking-[0.16em] text-slate-300">
                         <p>{event.total} total</p>
-                        <p className="mt-1 text-[10px] text-slate-500">{event.verified} verified</p>
                       </div>
                     </div>
                   )) : <div className="portal-admin-empty-state rounded-[1.15rem] border border-dashed border-white/10 bg-black/10 px-4 py-4 text-sm text-slate-400">Analytics will appear after records load.</div>}
                 </div>
               </div>
-            </div>
-
-            <div data-reveal="up" className="space-y-4 md:space-y-6">
-              <div className="portal-admin-shell portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-6">
-                <div className="flex items-center gap-3"><ShieldCheck size={18} className="text-emerald-200" /><h3 className="text-xl font-bold text-white">Access snapshot</h3></div>
-                <div className="portal-admin-overview-stack mt-5 grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
-                  <div className="portal-admin-overview-card portal-admin-overview-card--cyan">
-                    <span>Pending</span>
-                    <strong>{counts.pending}</strong>
-                  </div>
-                  <div className="portal-admin-overview-card portal-admin-overview-card--violet">
-                    <span>Waitlisted</span>
-                    <strong>{counts.waitlisted}</strong>
-                  </div>
-                  <div className="portal-admin-overview-card portal-admin-overview-card--amber">
-                    <span>Rejected</span>
-                    <strong>{counts.rejected}</strong>
-                  </div>
-                </div>
-              </div>
-
-              {canShowBackupTools ? <div className="portal-admin-shell portal-admin-shell--backup portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-6">
-                <div className="flex items-center gap-3"><HardDriveDownload size={18} className="text-yellow-200" /><h3 className="text-xl font-bold text-white">Latest backup</h3></div>
-                {recentBackup ? (
-                  <div className="portal-admin-backup-card mt-5 rounded-[1.4rem] border border-white/10 p-4">
-                    <p className="font-semibold text-white">{recentBackup.file_name}</p>
-                    <p className="mt-2 text-sm text-slate-400">{new Date(recentBackup.created_at).toLocaleString()}</p>
-                    <p className="mt-1 text-xs uppercase tracking-[0.18em] text-slate-500">{formatBytes(recentBackup.size_bytes)} / {recentBackup.trigger}</p>
-                    <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                      <button type="button" onClick={onRunBackup} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-yellow-300/18 bg-yellow-400/10 px-4 py-3 text-sm font-bold text-yellow-100"><HardDriveDownload size={16} />Run backup</button>
-                      <button type="button" onClick={() => onDownloadBackup(recentBackup.file_name)} className="animated-gradient-button inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-bold text-slate-950"><Download size={16} />Download</button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="portal-admin-empty-state mt-5 rounded-[1.15rem] border border-dashed border-white/10 bg-black/10 px-4 py-4 text-sm text-slate-400">No backup snapshot available yet.</div>
-                )}
-              </div> : null}
             </div>
           </div>
 
@@ -467,7 +448,7 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
                 >
                   <span>{event.name}</span>
                   <strong>{event.total}</strong>
-                  <small>{event.verified} verified / {event.pending} pending</small>
+                  <small>{event.total} registrations</small>
                 </button>
               ))}
             </div>
