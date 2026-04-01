@@ -373,6 +373,7 @@ function PremiumBrochureStripBase() {
             <div className="portal-brochure-poster-frame__glow" aria-hidden="true" />
             <div className="portal-brochure-poster-frame__inner">
               <img
+                key={activePoster.src}
                 src={activePoster.src}
                 alt={activePoster.alt}
                 loading="eager"
