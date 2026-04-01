@@ -196,8 +196,48 @@ const techxceleratePresentationLinks = {
   online: 'https://chat.whatsapp.com/DuoLgaR6qKP5Qxk91MSaX9?mode=gi_t',
   offline: 'https://chat.whatsapp.com/FcAY4bfsJO6FxIrmHvFvun?mode=gi_t',
 };
-const utopiaApprovedGroupLink = 'https://chat.whatsapp.com/C8RKDGK2uzT4X5K14jY2aZ?mode=gi_t';
-const techxceleratePosterApprovedGroupLink = 'https://chat.whatsapp.com/Hc0jW5nOPdXEumjhKF8DeY?mode=gi_t';
+const approvedEventGroupInvitesBySlug = {
+  utopia: {
+    label: 'Utopia Coordination Group',
+    description: 'Join the approved Utopia coordination group using the link below.',
+    url: 'https://chat.whatsapp.com/C8RKDGK2uzT4X5K14jY2aZ?mode=gi_t',
+  },
+  'techxcelerate-poster-presentation': {
+    label: 'Poster Presentation Group',
+    description: 'Join the approved poster presentation WhatsApp group using the link below.',
+    url: 'https://chat.whatsapp.com/Hc0jW5nOPdXEumjhKF8DeY?mode=gi_t',
+  },
+  'rang-manch': {
+    label: 'Rangmanch Group',
+    description: 'Join the approved Rangmanch WhatsApp group using the link below.',
+    url: 'https://chat.whatsapp.com/LvgFchylCdgK5Xbbu1VzDU?mode=gi_t',
+  },
+  'bgmi-esports': {
+    label: 'BGMI Group',
+    description: 'Join the approved BGMI WhatsApp group using the link below.',
+    url: 'https://chat.whatsapp.com/CyDIwE1Z7ky2r4Wujblsyk?mode=gi_t',
+  },
+  'ff-esports': {
+    label: 'Free Fire Group',
+    description: 'Join the approved Free Fire WhatsApp group using the link below.',
+    url: 'https://chat.whatsapp.com/HpxDAWRTU5fGXXC0A3o2xz?mode=gi_t',
+  },
+  'googler-hunt': {
+    label: 'Tech Treasure Hunt Group',
+    description: 'Join the approved Tech Treasure Hunt WhatsApp group using the link below.',
+    url: 'https://chat.whatsapp.com/LZk7ck6HRaaGqR9K5dB5FO?mode=gi_t',
+  },
+  'tech-kbc': {
+    label: 'TechKBC Group',
+    description: 'Join the approved TechKBC WhatsApp group using the link below.',
+    url: 'https://chat.whatsapp.com/LwAxdDHh7Cy7MsANkykcBV?mode=gi_t',
+  },
+  'squid-game': {
+    label: 'Squid Game Group',
+    description: 'Join the approved Squid Game WhatsApp group using the link below.',
+    url: 'https://chat.whatsapp.com/E8zUFhcozZQ3BUxIZXtIUT?mode=gi_t',
+  },
+};
 
 function resolveAdminAccess(key) {
   const normalizedKey = String(key || '').trim();
@@ -248,23 +288,7 @@ function resolveApprovedEventGroupInvite(registration) {
     return null;
   }
 
-  if (registration?.event_slug === 'utopia') {
-    return {
-      label: 'Utopia Coordination Group',
-      description: 'Join the approved Utopia coordination group using the link below.',
-      url: utopiaApprovedGroupLink,
-    };
-  }
-
-  if (registration?.event_slug === 'techxcelerate-poster-presentation') {
-    return {
-      label: 'Poster Presentation Group',
-      description: 'Join the approved poster presentation WhatsApp group using the link below.',
-      url: techxceleratePosterApprovedGroupLink,
-    };
-  }
-
-  return null;
+  return approvedEventGroupInvitesBySlug[registration?.event_slug] || null;
 }
 
 async function buildAdminAccessPayload(access) {
