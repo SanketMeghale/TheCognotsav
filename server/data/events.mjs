@@ -229,9 +229,9 @@ export const eventSeed = [
     is_team_event: true,
     poster_path: '/images/hackathon.jpg',
     intro_video_url: optimizeCloudinaryVideo('https://res.cloudinary.com/dkxddhawc/video/upload/v1774094875/utopia_am7x4t.mp4'),
-    payment_upi: 'kawadeakshay23@okaxis',
-    payment_payee: 'Akshay Kawade',
-    payment_qr_image_path: '/images/akshay-payment-qr.jpg',
+    payment_upi: null,
+    payment_payee: 'TRUPTISANJAY JADHAV',
+    payment_qr_image_path: '/images/utopia-payment-qr.png',
     coordinators: [
       { name: 'Trupti J.', phone: '9850560091' },
       { name: 'Dipika N.', phone: '7276062794' },

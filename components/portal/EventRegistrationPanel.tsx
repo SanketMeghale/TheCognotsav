@@ -262,7 +262,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const payableAmount = selectedEvent ? resolveEventAmount(selectedEvent, teamSize) : 0;
   const customQrImagePath = selectedEvent?.payment_qr_image_path?.trim() || '';
   const hasCustomQrImage = Boolean(customQrImagePath);
-  const prefersDynamicPaymentQr = selectedEvent?.slug === 'techxcelerate' || selectedEvent?.slug === 'rang-manch' || selectedEvent?.slug === 'utopia';
+  const prefersDynamicPaymentQr = selectedEvent?.slug === 'techxcelerate' || selectedEvent?.slug === 'rang-manch';
   const customQrObjectPosition = selectedEvent ? resolveCustomQrObjectPosition(selectedEvent.slug) : 'center center';
   const customQrScale = selectedEvent ? resolveCustomQrScale(selectedEvent.slug) : 1;
   const primaryUpiId = selectedEvent?.payment_upi?.trim() || '';
