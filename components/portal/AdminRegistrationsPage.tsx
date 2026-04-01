@@ -66,46 +66,16 @@ function normalizeEventToken(value: string | null | undefined) {
     .replace(/^-+|-+$/g, '');
 }
 
-function buildEventAliases(...values: Array<string | null | undefined>) {
-  const aliases = new Set<string>();
-
-  values.forEach((value) => {
-    const raw = String(value || '').trim();
-    if (!raw) return;
-
-    const normalized = normalizeEventToken(raw);
-    if (normalized) aliases.add(normalized);
-
-    const withoutBrackets = raw.replace(/\([^)]*\)/g, ' ').trim();
-    const normalizedWithoutBrackets = normalizeEventToken(withoutBrackets);
-    if (normalizedWithoutBrackets) aliases.add(normalizedWithoutBrackets);
-
-    normalized
-      .split('-')
-      .filter(Boolean)
-      .forEach((part) => aliases.add(part));
-
-    normalizedWithoutBrackets
-      .split('-')
-      .filter(Boolean)
-      .forEach((part) => aliases.add(part));
-  });
-
-  return aliases;
-}
-
 function matchesEventAlias(row: Pick<AdminRegistration, 'event_slug' | 'event_name'>, event: Pick<EventRecord, 'slug' | 'name'>) {
-  const rowAliases = buildEventAliases(row.event_slug, row.event_name);
-  const eventAliases = buildEventAliases(event.slug, event.name);
-
-  for (const alias of eventAliases) {
-    if (rowAliases.has(alias)) {
-      return true;
-    }
+  const rowSlug = normalizeEventToken(row.event_slug);
+  const eventSlug = normalizeEventToken(event.slug);
+  if (rowSlug && eventSlug) {
+    return rowSlug === eventSlug;
   }
 
-  const rowCombined = Array.from(rowAliases).join(' ');
-  return Array.from(eventAliases).some((alias) => alias.length > 3 && rowCombined.includes(alias));
+  const rowName = normalizeEventToken(row.event_name);
+  const eventName = normalizeEventToken(event.name);
+  return Boolean(rowName && eventName && rowName === eventName);
 }
 
 function NotificationPanel({ notification }: { notification: AdminNotificationSummary | null | undefined }) {
