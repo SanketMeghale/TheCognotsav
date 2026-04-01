@@ -549,23 +549,6 @@ function PortalLoaderBase({ label = 'Loading...', compact = false }: { label?: s
 
 const PortalLoader = memo(PortalLoaderBase);
 
-function PortalWelcomeSplashBase({ exiting = false }: { exiting?: boolean }) {
-  return (
-    <div className={`portal-welcome-overlay ${exiting ? 'is-exiting' : ''}`} aria-hidden="true">
-      <div className="portal-welcome-lockup">
-        <div className="portal-welcome-logo-shell">
-          <div className="portal-welcome-logo-frame">
-            <img src="/images/ceasposter.jpeg" alt="CEAS logo" className="portal-welcome-logo" />
-          </div>
-        </div>
-        <h2 className="portal-welcome-title">COGNOTSAV 2K26</h2>
-      </div>
-    </div>
-  );
-}
-
-const PortalWelcomeSplash = memo(PortalWelcomeSplashBase);
-
 async function readApiBody<T>(response: Response): Promise<ApiReadResult<T>> {
   const rawText = await response.text();
   if (!rawText.trim()) {
@@ -896,8 +879,6 @@ function buildValidationErrors(
 export const App: React.FC = () => {
   type AdminAccessMode = 'global' | 'event';
 
-  const initialHashRef = useRef(typeof window === 'undefined' ? '' : window.location.hash.toLowerCase());
-  const welcomeSplashPlayedRef = useRef(false);
   const [events, setEvents] = useState<EventRecord[]>([]);
   const [portalAlerts, setPortalAlerts] = useState<PortalAlert[]>([]);
   const [announcements, setAnnouncements] = useState<PortalAnnouncement[]>([]);
@@ -936,8 +917,6 @@ export const App: React.FC = () => {
   const [toastClosing, setToastClosing] = useState(false);
   const [navScrolled, setNavScrolled] = useState(false);
   const [navigationLoading, setNavigationLoading] = useState(false);
-  const [showWelcomeSplash, setShowWelcomeSplash] = useState(false);
-  const [welcomeSplashClosing, setWelcomeSplashClosing] = useState(false);
   const navScrollFrameRef = useRef<number | null>(null);
   const secretAdminLastTapRef = useRef(0);
   const secretAdminHoldTimerRef = useRef<number | null>(null);
@@ -1230,63 +1209,6 @@ export const App: React.FC = () => {
   const isDepartmentPage = hashRoute === '#department';
   const isEventPage = Boolean(eventPageSlug);
   const isFrontLandingPage = !isAdminPage && !isTimelinePage && !isDepartmentPage && !isEventPage;
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return undefined;
-
-    const initialHash = initialHashRef.current;
-    const initialRouteIsFrontLandingPage =
-      !initialHash.startsWith('#admin-registrations') &&
-      !initialHash.startsWith('#events/') &&
-      initialHash !== '#timeline' &&
-      initialHash !== '#department';
-
-    if (!isFrontLandingPage || !initialRouteIsFrontLandingPage) {
-      setShowWelcomeSplash(false);
-      setWelcomeSplashClosing(false);
-      return undefined;
-    }
-
-    if (welcomeSplashPlayedRef.current) {
-      return undefined;
-    }
-
-    welcomeSplashPlayedRef.current = true;
-    setShowWelcomeSplash(true);
-    setWelcomeSplashClosing(false);
-
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const closingDelay = prefersReducedMotion ? 360 : 2050;
-    const finishDelay = prefersReducedMotion ? 620 : 2580;
-    const closingTimer = window.setTimeout(() => setWelcomeSplashClosing(true), closingDelay);
-    const finishTimer = window.setTimeout(() => {
-      setShowWelcomeSplash(false);
-      setWelcomeSplashClosing(false);
-    }, finishDelay);
-
-    return () => {
-      window.clearTimeout(closingTimer);
-      window.clearTimeout(finishTimer);
-    };
-  }, [isFrontLandingPage]);
-
-  useEffect(() => {
-    if (!showWelcomeSplash || typeof document === 'undefined') return undefined;
-
-    const { body, documentElement } = document;
-    const previousBodyOverflow = body.style.overflow;
-    const previousBodyTouchAction = body.style.touchAction;
-    const previousDocumentOverflow = documentElement.style.overflow;
-    body.style.overflow = 'hidden';
-    body.style.touchAction = 'none';
-    documentElement.style.overflow = 'hidden';
-
-    return () => {
-      body.style.overflow = previousBodyOverflow;
-      body.style.touchAction = previousBodyTouchAction;
-      documentElement.style.overflow = previousDocumentOverflow;
-    };
-  }, [showWelcomeSplash]);
 
   const showFrontBottomDock = !isAdminPage && !isEventPage && !isDepartmentPage;
   const activeBottomDock =
@@ -2263,8 +2185,6 @@ export const App: React.FC = () => {
       <div className="portal-orb portal-orb--violet" />
       <div className="portal-orb portal-orb--cyan" />
       <div className="portal-orb portal-orb--blue" />
-      {showWelcomeSplash ? <PortalWelcomeSplash exiting={welcomeSplashClosing} /> : null}
-
       {toastMessage ? (
         <div className="fixed inset-x-0 top-5 z-50 flex justify-center px-4">
           <div

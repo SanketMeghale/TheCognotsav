@@ -68,6 +68,7 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
   const [activeFilter, setActiveFilter] = useState<(typeof filterOrder)[number]>('All');
   const [now, setNow] = useState(() => new Date());
   const [activeVideoSlug, setActiveVideoSlug] = useState<string | null>(null);
+  const [videoReadyState, setVideoReadyState] = useState<Record<string, boolean>>({});
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
   const videoShellRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
@@ -134,6 +135,9 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
         video.volume = 0;
         video.controls = false;
         video.loop = true;
+        if (video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
+          video.load();
+        }
         const playPromise = video.play();
         if (playPromise && typeof playPromise.catch === 'function') {
           playPromise.catch(() => {});
@@ -216,6 +220,8 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
                       const handleOpenEvent = () => onSelectEvent(event.slug);
                       const hasIntroVideo = Boolean(event.intro_video_url);
                       const isVideoActive = activeVideoSlug === event.slug;
+                      const isVideoReady = Boolean(videoReadyState[event.slug]);
+                      const isVideoVisible = isVideoActive && isVideoReady;
                       const statusLabel = event.registration_enabled === false
                         ? 'Registration paused'
                         : liveState.label === 'Registration Open'
@@ -264,18 +270,21 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
                                   alt={event.name}
                                   loading="lazy"
                                   decoding="async"
-                                  className={`portal-competition-card__video-poster ${isVideoActive ? 'is-hidden' : ''}`}
+                                  className={`portal-competition-card__video-poster ${isVideoVisible ? 'is-hidden' : ''}`}
                                 />
                                 <video
                                   ref={(node) => {
                                     videoRefs.current[event.slug] = node;
                                   }}
-                                  className={`portal-competition-card__video ${isVideoActive ? 'is-visible' : ''}`}
-                                  preload="metadata"
+                                  className={`portal-competition-card__video ${isVideoVisible ? 'is-visible' : ''}`}
+                                  preload="none"
                                   playsInline
                                   loop
                                   muted
                                   poster={event.poster_path}
+                                  onLoadedData={() => {
+                                    setVideoReadyState((current) => (current[event.slug] ? current : { ...current, [event.slug]: true }));
+                                  }}
                                 >
                                   <source src={event.intro_video_url} type="video/mp4" />
                                   Your browser does not support the event intro video.
