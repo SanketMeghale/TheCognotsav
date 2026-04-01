@@ -724,16 +724,22 @@ function formatStatusTitle(status) {
 }
 
 function buildEmailInfoGrid(items) {
-  return items
+  const rows = items
     .map(
-      (item) => `
-        <div style="border-radius:18px;padding:14px 16px;background:linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.04));border:1px solid rgba(255,255,255,0.08);box-shadow:inset 0 1px 0 rgba(255,255,255,0.04);">
-          <div style="font-size:10px;letter-spacing:0.24em;text-transform:uppercase;color:#94a3b8;font-weight:700;">${item.label}</div>
-          <div style="margin-top:6px;color:${item.valueColor || '#ffffff'};font-size:${item.compact ? '13px' : '16px'};line-height:${item.compact ? '1.6' : '1.45'};font-weight:700;word-break:break-word;">${item.value}</div>
+      (item, index) => `
+        <div class="portal-email-detail-row" style="padding:${index === 0 ? '0 0 11px' : '11px 0'};${index > 0 ? 'border-top:1px solid rgba(255,255,255,0.08);' : ''}">
+          <div class="portal-email-detail-label" style="font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:#94a3b8;font-weight:700;">${item.label}</div>
+          <div class="portal-email-detail-value" style="margin-top:5px;color:${item.valueColor || '#ffffff'};font-size:${item.compact ? '13px' : '15px'};line-height:${item.compact ? '1.55' : '1.42'};font-weight:700;word-break:break-word;">${item.value}</div>
         </div>
       `,
     )
     .join('');
+
+  return `
+    <div class="portal-email-panel" style="border-radius:18px;padding:14px 16px;background:linear-gradient(180deg,rgba(255,255,255,0.075),rgba(255,255,255,0.035));border:1px solid rgba(255,255,255,0.08);box-shadow:inset 0 1px 0 rgba(255,255,255,0.04);">
+      ${rows}
+    </div>
+  `;
 }
 
 function buildPortalEmailHtml({
@@ -745,48 +751,86 @@ function buildPortalEmailHtml({
   badgeLabel = '',
   sections = [],
   notice = '',
+  topAction = '',
   bodyAfterGrid = '',
   footerCopy = 'Thank you for participating in CEAS COGNOTSAV 2026.',
 }) {
   const logoUrl = 'https://res.cloudinary.com/dkxddhawc/image/upload/v1774197829/Screenshot_2026-03-22_220018_oln02p.png';
-  const safeBadge = badgeLabel ? `<div style="display:inline-flex;align-items:center;border-radius:999px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.06);padding:8px 12px;font-size:11px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:${accentTone};">${badgeLabel}</div>` : '';
+  const safeBadge = badgeLabel ? `<div class="portal-email-badge" style="display:inline-flex;align-items:center;border-radius:999px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.06);padding:7px 11px;font-size:10px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:${accentTone};">${badgeLabel}</div>` : '';
   const safeNotice = notice
-    ? `<div style="margin-top:18px;border-radius:18px;padding:16px;background:linear-gradient(135deg,rgba(251,191,36,0.12),rgba(251,191,36,0.06));border:1px solid rgba(251,191,36,0.18);color:#fef3c7;line-height:1.7;">${notice}</div>`
+    ? `<div class="portal-email-notice" style="margin-top:14px;border-radius:16px;padding:14px 15px;background:linear-gradient(135deg,rgba(251,191,36,0.12),rgba(251,191,36,0.06));border:1px solid rgba(251,191,36,0.18);color:#fef3c7;line-height:1.65;">${notice}</div>`
+    : '';
+  const safeTopAction = topAction
+    ? `<div class="portal-email-top-action" style="margin-top:14px;">${topAction}</div>`
     : '';
   const safeAfterGrid = bodyAfterGrid
-    ? `<div style="margin-top:18px;color:#cbd5e1;line-height:1.75;">${bodyAfterGrid}</div>`
+    ? `<div class="portal-email-after" style="margin-top:14px;color:#cbd5e1;line-height:1.68;">${bodyAfterGrid}</div>`
     : '';
+  const safeSections = sections
+    .filter(Boolean)
+    .map((section) => `<div class="portal-email-section" style="margin-top:12px;">${section}</div>`)
+    .join('');
 
   return `
-    <div style="margin:0;padding:30px 16px;background:radial-gradient(circle at top left,rgba(251,191,36,0.16),transparent 22%),radial-gradient(circle at bottom right,rgba(34,211,238,0.14),transparent 22%),linear-gradient(180deg,#08111f 0%,#0f172a 100%);font-family:Inter,Arial,sans-serif;color:#e2e8f0;">
-      <div style="max-width:680px;margin:0 auto;border-radius:28px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);background:linear-gradient(145deg,#111827,#171b2e);box-shadow:0 30px 72px rgba(2,8,23,0.38);">
-        <div style="position:relative;padding:22px 24px 24px;background:${accentGradient};border-bottom:1px solid rgba(255,255,255,0.08);">
+    <div class="portal-email-shell" style="margin:0;padding:22px 12px;background:radial-gradient(circle at top left,rgba(251,191,36,0.16),transparent 22%),radial-gradient(circle at bottom right,rgba(34,211,238,0.14),transparent 22%),linear-gradient(180deg,#08111f 0%,#0f172a 100%);font-family:Inter,Arial,sans-serif;color:#e2e8f0;">
+      <style>
+        @media only screen and (max-width: 620px) {
+          .portal-email-shell { padding: 14px 8px !important; }
+          .portal-email-card { border-radius: 22px !important; }
+          .portal-email-header { padding: 16px 16px 18px !important; }
+          .portal-email-logo { width: 60px !important; height: 60px !important; border-radius: 18px !important; }
+          .portal-email-logo img { border-radius: 13px !important; }
+          .portal-email-association { font-size: 8px !important; letter-spacing: 0.26em !important; }
+          .portal-email-brand { font-size: 18px !important; letter-spacing: 0.08em !important; }
+          .portal-email-title { font-size: 22px !important; line-height: 1.16 !important; }
+          .portal-email-body { padding: 16px !important; }
+          .portal-email-badge { font-size: 9px !important; letter-spacing: 0.15em !important; }
+          .portal-email-intro,
+          .portal-email-after,
+          .portal-email-notice,
+          .portal-email-footer,
+          .portal-email-inline-note,
+          .portal-email-panel,
+          .portal-email-pass-note { font-size: 13px !important; line-height: 1.58 !important; }
+          .portal-email-panel { padding: 12px 13px !important; }
+          .portal-email-detail-row { padding-top: 9px !important; padding-bottom: 9px !important; }
+          .portal-email-detail-label { font-size: 9px !important; letter-spacing: 0.18em !important; }
+          .portal-email-detail-value { font-size: 13px !important; line-height: 1.48 !important; }
+          .portal-email-button { display: block !important; width: 100% !important; box-sizing: border-box !important; padding: 13px 14px !important; font-size: 11px !important; }
+          .portal-email-top-action,
+          .portal-email-section,
+          .portal-email-notice,
+          .portal-email-after,
+          .portal-email-footer { margin-top: 12px !important; }
+        }
+      </style>
+      <div class="portal-email-card" style="max-width:560px;margin:0 auto;border-radius:26px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);background:linear-gradient(145deg,#111827,#171b2e);box-shadow:0 24px 56px rgba(2,8,23,0.34);">
+        <div class="portal-email-header" style="position:relative;padding:18px 20px 20px;background:${accentGradient};border-bottom:1px solid rgba(255,255,255,0.08);">
           <div style="position:relative;z-index:1;text-align:center;">
-            <div style="display:inline-block;width:84px;height:84px;border-radius:24px;padding:6px;background:linear-gradient(180deg,rgba(255,255,255,0.24),rgba(203,213,225,0.1));border:1px solid rgba(255,255,255,0.16);box-shadow:inset 0 1px 0 rgba(255,255,255,0.48),0 12px 24px rgba(2,8,23,0.2);">
-              <img src="${logoUrl}" alt="CEAS logo" style="display:block;width:100%;height:100%;object-fit:cover;border-radius:18px;" />
+            <div class="portal-email-logo" style="display:inline-block;width:70px;height:70px;border-radius:22px;padding:5px;background:linear-gradient(180deg,rgba(255,255,255,0.24),rgba(203,213,225,0.1));border:1px solid rgba(255,255,255,0.16);box-shadow:inset 0 1px 0 rgba(255,255,255,0.48),0 10px 22px rgba(2,8,23,0.18);">
+              <img src="${logoUrl}" alt="CEAS logo" style="display:block;width:100%;height:100%;object-fit:cover;border-radius:16px;" />
             </div>
           </div>
-          <div style="display:flex;align-items:center;justify-content:center;gap:14px;position:relative;z-index:1;margin-top:14px;text-align:center;">
+          <div style="display:flex;align-items:center;justify-content:center;gap:12px;position:relative;z-index:1;margin-top:12px;text-align:center;">
             <div>
-              <div style="font-size:10px;letter-spacing:0.38em;text-transform:uppercase;color:#bfdbfe;font-weight:700;">Computer Engineering Association</div>
-              <div style="margin-top:6px;font-family:Orbitron,Inter,Arial,sans-serif;font-size:24px;line-height:1.1;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#ffffff;">CEAS COGNOTSAV 2026</div>
+              <div class="portal-email-association" style="font-size:9px;letter-spacing:0.32em;text-transform:uppercase;color:#bfdbfe;font-weight:700;">Computer Engineering Association</div>
+              <div class="portal-email-brand" style="margin-top:5px;font-family:Orbitron,Inter,Arial,sans-serif;font-size:20px;line-height:1.08;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#ffffff;">CEAS COGNOTSAV 2026</div>
             </div>
           </div>
-          <div style="position:relative;z-index:1;margin-top:18px;">
-            <div style="font-size:11px;letter-spacing:0.34em;text-transform:uppercase;color:#dbeafe;font-weight:700;">${overline}</div>
-            <h1 style="margin:12px 0 0;font-size:30px;line-height:1.12;color:#ffffff;">${title}</h1>
+          <div style="position:relative;z-index:1;margin-top:15px;">
+            <div style="font-size:10px;letter-spacing:0.28em;text-transform:uppercase;color:#dbeafe;font-weight:700;">${overline}</div>
+            <h1 class="portal-email-title" style="margin:9px 0 0;font-size:26px;line-height:1.12;color:#ffffff;">${title}</h1>
           </div>
         </div>
-        <div style="padding:24px;">
+        <div class="portal-email-body" style="padding:18px;">
           <div>
             ${safeBadge}
-            <div style="margin-top:${badgeLabel ? '18px' : '0'};color:#cbd5e1;line-height:1.75;">${intro}</div>
-            <div style="margin-top:18px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;">
-              ${sections.join('')}
-            </div>
+            <div class="portal-email-intro" style="margin-top:${badgeLabel ? '14px' : '0'};color:#cbd5e1;line-height:1.68;">${intro}</div>
+            ${safeTopAction}
+            ${safeSections}
             ${safeNotice}
             ${safeAfterGrid}
-            <div style="margin-top:22px;border-radius:18px;padding:16px;background:linear-gradient(135deg,rgba(59,130,246,0.12),rgba(168,85,247,0.1));border:1px solid rgba(96,165,250,0.18);color:#dbeafe;line-height:1.7;">
+            <div class="portal-email-footer" style="margin-top:16px;border-radius:16px;padding:14px 15px;background:linear-gradient(135deg,rgba(59,130,246,0.12),rgba(168,85,247,0.1));border:1px solid rgba(96,165,250,0.18);color:#dbeafe;line-height:1.62;">
               ${footerCopy}
             </div>
           </div>
@@ -873,18 +917,22 @@ function buildStatusEmail(registration, appUrl = resolvePublicAppUrl()) {
   const safeStatusLabel = escapeHtml(getPaymentStatusLabel(registration.status));
   const safePaymentReference = escapeHtml(registration.payment_reference || 'Pending manual entry');
   const safeTotalAmount = escapeHtml(`INR ${registration.total_amount}`);
+  const verifiedPassTopAction = registration.status === 'verified'
+    ? `
+        <div style="border-radius:16px;padding:14px;background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(34,211,238,0.1));border:1px solid rgba(52,211,153,0.18);">
+          <div style="font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:#b7ffde;font-weight:800;">Official Pass Ready</div>
+          <div class="portal-email-pass-note" style="margin-top:7px;color:#ecfdf5;line-height:1.58;">Your official event pass is now available in this email. Please download or save this email as a PDF, and show the pass with your registration code at event time.</div>
+          <div style="margin-top:12px;text-align:center;">
+            <a class="portal-email-button" href="${passLink}" style="display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:linear-gradient(90deg,#67e8f9,#fbbf24);color:#041018;text-decoration:none;padding:12px 20px;font-size:12px;font-weight:800;letter-spacing:0.11em;text-transform:uppercase;">Open / Download Official Pass</a>
+          </div>
+          <div class="portal-email-inline-note" style="margin-top:9px;font-size:11px;color:#cbd5e1;line-height:1.55;">If needed, open this link in your browser: <span style="color:#ffffff;word-break:break-all;">${passLink}</span></div>
+        </div>
+      `
+    : '';
   const verifiedPassInstructions = registration.status === 'verified'
     ? `
-        <div style="margin-top:18px;border-radius:20px;padding:18px;background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(34,211,238,0.1));border:1px solid rgba(52,211,153,0.18);color:#ecfdf5;line-height:1.75;">
-          <strong style="display:block;margin-bottom:8px;font-size:15px;color:#ffffff;">Official verified pass issued</strong>
-          Your official event pass is now available in this email. Please download or save this email as a PDF, and show the pass with your registration code at event time.
-        </div>
-        <div style="margin-top:16px;border-radius:20px;padding:18px;background:linear-gradient(180deg,rgba(15,23,42,0.78),rgba(255,255,255,0.04));border:1px solid rgba(255,255,255,0.08);text-align:center;">
+        <div style="margin-top:14px;border-radius:16px;padding:14px;background:linear-gradient(180deg,rgba(15,23,42,0.78),rgba(255,255,255,0.04));border:1px solid rgba(255,255,255,0.08);text-align:center;">
           <div style="font-size:12px;color:#cbd5e1;line-height:1.65;">Carry this pass and share registration code <strong style="color:#ffffff;">${safeRegistrationCode}</strong> during venue verification.</div>
-        </div>
-        <div style="margin-top:16px;text-align:center;">
-          <a href="${passLink}" style="display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:linear-gradient(90deg,#67e8f9,#fbbf24);color:#041018;text-decoration:none;padding:13px 22px;font-size:13px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;">Open / Download Official Pass</a>
-          <div style="margin-top:10px;font-size:12px;color:#cbd5e1;line-height:1.65;">If needed, open this link in your browser: <span style="color:#ffffff;word-break:break-all;">${passLink}</span></div>
         </div>
       `
     : '';
@@ -911,6 +959,7 @@ function buildStatusEmail(registration, appUrl = resolvePublicAppUrl()) {
     accentGradient: 'linear-gradient(90deg,rgba(59,130,246,0.2),rgba(168,85,247,0.16),rgba(236,72,153,0.18))',
     accentTone: accentColor,
     badgeLabel: safeStatusLabel,
+    topAction: verifiedPassTopAction,
     sections: [gridSections],
     notice: registration.review_note ? `Organizer note: ${escapeHtml(registration.review_note)}` : '',
     bodyAfterGrid: `${safeNextStep}${verifiedPassInstructions}`,
