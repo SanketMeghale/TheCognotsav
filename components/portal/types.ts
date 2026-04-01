@@ -3,6 +3,8 @@ export type CoordinatorContact = {
   phone: string;
 };
 
+export type RegistrationSource = 'online' | 'special-desk';
+
 export type EventRecord = {
   id: number;
   slug: string;
@@ -44,6 +46,7 @@ export type LookupResult = {
   team_name: string;
   contact_name: string;
   contact_email: string;
+  registration_source: RegistrationSource | null;
   status: string;
   payment_method: string | null;
   payment_reference: string | null;
@@ -124,6 +127,7 @@ export type AdminRegistration = {
   contact_name: string;
   contact_email: string;
   contact_phone: string;
+  registration_source: RegistrationSource | null;
   payment_reference: string | null;
   payment_method?: string | null;
   payment_screenshot_path?: string | null;
@@ -162,6 +166,22 @@ export type ParticipantDraft = {
   fullName: string;
   email: string;
   phone: string;
+};
+
+export type SpecialRegistrationPayload = {
+  eventSlug: string;
+  teamName: string;
+  collegeName: string;
+  departmentName: string;
+  yearOfStudy: string;
+  contactName: string;
+  contactEmail: string;
+  contactPhone: string;
+  paymentMethod: 'cash' | 'upi' | 'free';
+  paymentReference: string;
+  notes: string;
+  markVerified: boolean;
+  participants: ParticipantDraft[];
 };
 
 export type RegistrationReceipt = {

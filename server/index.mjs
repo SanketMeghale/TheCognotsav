@@ -1356,7 +1356,10 @@ function buildRegistrationTimeline(registration, notifications) {
     {
       id: 'submitted',
       label: 'Submitted',
-      description: `Registration created for ${registration.event_name}.`,
+      description:
+        registration.registration_source === 'special-desk'
+          ? `Special desk registration created for ${registration.event_name}.`
+          : `Registration created for ${registration.event_name}.`,
       at: registration.created_at,
       state: 'done',
     },
@@ -1418,6 +1421,7 @@ async function fetchLookupRegistrations(query) {
         r.team_name,
         r.contact_name,
         r.contact_email,
+        r.registration_source,
         r.payment_method,
         r.payment_reference,
         r.status,
@@ -1868,6 +1872,7 @@ async function writeBackupSnapshot(trigger = 'manual') {
         r.contact_name,
         r.contact_email,
         r.contact_phone,
+        r.registration_source,
         r.payment_method,
         r.payment_reference,
         r.total_amount,
@@ -1989,6 +1994,7 @@ async function fetchAdminRegistrations(whereClause = '', params = []) {
         r.contact_name,
         r.contact_email,
         r.contact_phone,
+        r.registration_source,
         r.payment_method,
         r.payment_reference,
         r.payment_screenshot_path,
@@ -2308,15 +2314,15 @@ app.post('/api/registrations', async (req, res) => {
       `
         INSERT INTO registrations (
           id, registration_code, event_slug, team_name, college_name, department_name,
-          year_of_study, contact_name, contact_email, contact_phone, payment_method,
+          year_of_study, contact_name, contact_email, contact_phone, registration_source, payment_method,
           payment_reference, payment_screenshot_path, payment_provider_order_id,
           payment_provider_payment_id, payment_provider_signature, total_amount, status, notes, invite_token
         )
         VALUES (
           $1, $2, $3, $4, $5, $6,
           $7, $8, $9, $10, $11,
-          $12, $13, $14, $15, $16,
-          $17, $18, $19, $20
+          $12, $13, $14, $15, $16, $17,
+          $18, $19, $20, $21
         )
       `,
       [
@@ -2330,6 +2336,7 @@ app.post('/api/registrations', async (req, res) => {
         String(contactName).trim(),
         normalizeEmail(contactEmail),
         String(contactPhone).trim(),
+        'online',
         'upi',
         paymentReference ? String(paymentReference).trim() : null,
         paymentScreenshotPath,
@@ -2412,6 +2419,253 @@ app.post('/api/registrations', async (req, res) => {
     await client.query('ROLLBACK');
     return res.status(500).json({
       error: error instanceof Error ? error.message : 'Registration failed.',
+    });
+  } finally {
+    client.release();
+  }
+});
+
+app.post('/api/admin/registrations/special', requireAdmin, async (req, res) => {
+  const {
+    eventSlug,
+    teamName,
+    collegeName,
+    departmentName,
+    yearOfStudy,
+    contactName,
+    contactEmail,
+    contactPhone,
+    paymentMethod,
+    paymentReference,
+    notes,
+    participants,
+    markVerified,
+  } = req.body || {};
+
+  const normalizedEventSlug = String(eventSlug || '').trim();
+  const normalizedTeamName = String(teamName || '').trim() || String(contactName || '').trim();
+  const normalizedCollegeName = String(collegeName || '').trim();
+  const normalizedDepartmentName = String(departmentName || '').trim() || 'Not Provided';
+  const normalizedYearOfStudy = String(yearOfStudy || '').trim() || 'Not Provided';
+  const normalizedContactName = String(contactName || '').trim();
+  const normalizedContactEmail = normalizeEmail(contactEmail);
+  const normalizedContactPhone = String(contactPhone || '').trim();
+  const normalizedPaymentMethod = String(paymentMethod || '').trim().toLowerCase();
+  const normalizedPaymentReference = String(paymentReference || '').trim();
+  const normalizedNotes = String(notes || '').trim();
+
+  if (
+    !normalizedEventSlug ||
+    !normalizedTeamName ||
+    !normalizedCollegeName ||
+    !normalizedContactName ||
+    !normalizedContactEmail ||
+    !normalizedContactPhone ||
+    !Array.isArray(participants) ||
+    participants.length === 0
+  ) {
+    return res.status(400).json({ error: 'Missing required special registration fields.' });
+  }
+
+  if (!['cash', 'upi', 'free'].includes(normalizedPaymentMethod)) {
+    return res.status(400).json({ error: 'Invalid payment method for special registration.' });
+  }
+
+  const eventResult = await pool.query(
+    `
+      SELECT *, is_active AS registration_enabled
+      FROM events
+      WHERE slug = $1
+      LIMIT 1
+    `,
+    [normalizedEventSlug],
+  );
+
+  const event = eventResult.rows[0] ?? null;
+  if (!event) {
+    return res.status(404).json({ error: 'Selected event is not available.' });
+  }
+
+  if (!hasScopedEventAccess(req, normalizedEventSlug)) {
+    return res.status(403).json({ error: 'This access key can create registrations only for its assigned event.' });
+  }
+
+  if (participants.length < event.min_members || participants.length > event.max_members) {
+    return res.status(400).json({
+      error: `This event accepts ${event.min_members} to ${event.max_members} participants.`,
+    });
+  }
+
+  const preparedParticipants = participants.map((participant, index) => ({
+    fullName: String(participant?.fullName || '').trim(),
+    email: normalizeEmail(participant?.email),
+    phone: String(participant?.phone || '').trim(),
+    isLead: index === 0,
+  }));
+
+  if (preparedParticipants.some((participant) => !participant.fullName || !participant.email || !participant.phone)) {
+    return res.status(400).json({ error: 'Participant details are incomplete.' });
+  }
+
+  const registrationId = randomUUID();
+  const registrationCode = buildRegistrationCode();
+  const inviteToken = buildInviteToken();
+  const totalAmount =
+    normalizedPaymentMethod === 'free'
+      ? 0
+      : resolveRegistrationAmount(event, preparedParticipants.length);
+
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    if (normalizedPaymentReference) {
+      const duplicatePaymentResult = await client.query(
+        `
+          SELECT registration_code
+          FROM registrations
+          WHERE payment_reference = $1
+            AND status <> 'rejected'
+          LIMIT 1
+        `,
+        [normalizedPaymentReference],
+      );
+
+      if (duplicatePaymentResult.rowCount > 0) {
+        throw new Error('This payment reference is already linked to another registration.');
+      }
+    }
+
+    let initialStatus = Boolean(markVerified) ? 'verified' : 'pending';
+    let waitlistPosition = null;
+
+    if (event.max_slots !== null) {
+      const slotResult = await client.query(
+        `
+          SELECT
+            COUNT(*) FILTER (WHERE status NOT IN ('rejected', 'waitlisted'))::int AS registration_count,
+            COUNT(*) FILTER (WHERE status = 'waitlisted')::int AS waitlist_count
+          FROM registrations
+          WHERE event_slug = $1
+        `,
+        [normalizedEventSlug],
+      );
+      const registrationCount = slotResult.rows[0]?.registration_count ?? 0;
+      const waitlistCount = slotResult.rows[0]?.waitlist_count ?? 0;
+
+      if (registrationCount >= event.max_slots) {
+        initialStatus = 'waitlisted';
+        waitlistPosition = waitlistCount + 1;
+      }
+    }
+
+    await client.query(
+      `
+        INSERT INTO registrations (
+          id, registration_code, event_slug, team_name, college_name, department_name,
+          year_of_study, contact_name, contact_email, contact_phone, registration_source, payment_method,
+          payment_reference, payment_screenshot_path, payment_provider_order_id,
+          payment_provider_payment_id, payment_provider_signature, total_amount, status, verified_at, notes, invite_token
+        )
+        VALUES (
+          $1, $2, $3, $4, $5, $6,
+          $7, $8, $9, $10, $11, $12,
+          $13, $14, $15, $16, $17, $18,
+          $19, $20, $21, $22
+        )
+      `,
+      [
+        registrationId,
+        registrationCode,
+        normalizedEventSlug,
+        normalizedTeamName,
+        normalizedCollegeName,
+        normalizedDepartmentName,
+        normalizedYearOfStudy,
+        normalizedContactName,
+        normalizedContactEmail,
+        normalizedContactPhone,
+        'special-desk',
+        normalizedPaymentMethod,
+        normalizedPaymentReference || null,
+        null,
+        null,
+        null,
+        null,
+        totalAmount,
+        initialStatus,
+        initialStatus === 'verified' ? new Date().toISOString() : null,
+        normalizedNotes || null,
+        inviteToken,
+      ],
+    );
+
+    for (let index = 0; index < preparedParticipants.length; index += 1) {
+      const participant = preparedParticipants[index];
+
+      await client.query(
+        `
+          INSERT INTO registration_participants (
+            registration_id, full_name, email, phone, is_lead
+          )
+          VALUES ($1, $2, $3, $4, $5)
+        `,
+        [
+          registrationId,
+          participant.fullName,
+          participant.email,
+          participant.phone,
+          participant.isLead,
+        ],
+      );
+    }
+
+    await client.query('COMMIT');
+
+    const notificationRegistration = {
+      id: registrationId,
+      event_slug: normalizedEventSlug,
+      registration_code: registrationCode,
+      team_name: normalizedTeamName,
+      college_name: normalizedCollegeName,
+      department_name: normalizedDepartmentName,
+      year_of_study: normalizedYearOfStudy,
+      contact_name: normalizedContactName,
+      contact_email: normalizedContactEmail,
+      contact_phone: normalizedContactPhone,
+      registration_source: 'special-desk',
+      payment_method: normalizedPaymentMethod,
+      payment_reference: normalizedPaymentReference || null,
+      total_amount: totalAmount,
+      status: initialStatus,
+      notes: normalizedNotes || null,
+      participants: preparedParticipants.map(({ isLead, ...participant }) => participant),
+      review_note: null,
+      event_name: event.name,
+      date_label: event.date_label,
+      time_label: event.time_label,
+      venue: event.venue,
+    };
+
+    const notification = await sendStatusNotification(notificationRegistration);
+    const registration = await fetchAdminRegistrationById(
+      registrationId,
+      req.adminAccess?.mode === 'event' ? req.adminAccess.eventSlug : null,
+    );
+    const refreshedEvents = await fetchActiveEventsWithCounts();
+    const refreshedEvent = refreshedEvents.find((item) => item.slug === normalizedEventSlug) || null;
+
+    return res.status(201).json({
+      success: true,
+      registration,
+      notification,
+      event: refreshedEvent,
+      waitlistPosition,
+    });
+  } catch (error) {
+    await client.query('ROLLBACK');
+    return res.status(500).json({
+      error: error instanceof Error ? error.message : 'Special registration failed.',
     });
   } finally {
     client.release();
@@ -2822,6 +3076,7 @@ app.get('/api/admin/export.csv', requireAdmin, async (req, res) => {
         r.college_name,
         r.contact_name,
         r.contact_phone,
+        r.registration_source,
         r.payment_reference,
         r.total_amount,
         r.status,
@@ -2848,6 +3103,7 @@ app.get('/api/admin/export.csv', requireAdmin, async (req, res) => {
     'college_name',
     'contact_name',
     'contact_phone',
+    'registration_source',
     'payment_reference',
     'participants',
     'total_amount',
@@ -2880,6 +3136,7 @@ app.get('/api/admin/export.xlsx', requireAdmin, async (req, res) => {
         r.college_name AS "College",
         r.contact_name AS "Contact Name",
         r.contact_phone AS "Contact Phone",
+        r.registration_source AS "Source",
         r.payment_reference AS "Payment Reference",
         COALESCE(string_agg(
           p.full_name || ' <' || p.email || '> (' || p.phone || ')',
