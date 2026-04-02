@@ -3574,6 +3574,7 @@ app.get('/api/admin/export.csv', requireAdmin, async (req, res) => {
       SELECT
         r.registration_code,
         e.name AS event_name,
+        r.presentation_mode,
         r.team_name,
         r.college_name,
         r.contact_name,
@@ -3601,6 +3602,7 @@ app.get('/api/admin/export.csv', requireAdmin, async (req, res) => {
   const headers = [
     'registration_code',
     'event_name',
+    'presentation_mode',
     'team_name',
     'college_name',
     'contact_name',
@@ -3632,8 +3634,14 @@ app.get('/api/admin/export.xlsx', requireAdmin, async (req, res) => {
   const result = await pool.query(
     `
       SELECT
+        e.slug AS event_slug,
         r.registration_code AS "Registration Code",
         e.name AS "Event",
+        CASE
+          WHEN r.presentation_mode = 'online' THEN 'Online'
+          WHEN r.presentation_mode = 'offline' THEN 'Offline'
+          ELSE ''
+        END AS "Presentation Mode",
         r.team_name AS "Team Name",
         r.college_name AS "College",
         r.contact_name AS "Contact Name",
@@ -3652,15 +3660,35 @@ app.get('/api/admin/export.xlsx', requireAdmin, async (req, res) => {
       JOIN events e ON e.slug = r.event_slug
       LEFT JOIN registration_participants p ON p.registration_id = r.id
       ${scopeClause}
-      GROUP BY r.id, e.name
-      ORDER BY r.created_at DESC
+      GROUP BY r.id, e.slug, e.name
+      ORDER BY e.name ASC, r.created_at DESC
     `,
     scopeParams,
   );
 
   const workbook = XLSX.utils.book_new();
-  const worksheet = XLSX.utils.json_to_sheet(result.rows);
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Registrations');
+  const rowsByEventSlug = result.rows.reduce((collection, row) => {
+    const eventRows = collection.get(row.event_slug) || [];
+    const { event_slug: _eventSlug, ...sheetRow } = row;
+    eventRows.push(sheetRow);
+    collection.set(row.event_slug, eventRows);
+    return collection;
+  }, new Map());
+
+  for (const [sheetIndex, [, rows]] of [...rowsByEventSlug.entries()].entries()) {
+    const sheetNameSeed = String(rows[0]?.Event || `Registrations ${sheetIndex + 1}`)
+      .replace(/[\\/?*\[\]:]/g, ' ')
+      .trim();
+    const sheetName = sheetNameSeed.slice(0, 31) || `Registrations ${sheetIndex + 1}`;
+    const worksheet = XLSX.utils.json_to_sheet(rows);
+    XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+  }
+
+  if (workbook.SheetNames.length === 0) {
+    const worksheet = XLSX.utils.json_to_sheet([]);
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Registrations');
+  }
+
   const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
 
   res.setHeader(
