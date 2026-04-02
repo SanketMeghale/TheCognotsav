@@ -554,7 +554,12 @@ app.use('/api/registrations', registrationLimiter);
 app.use('/api/admin', adminLimiter);
 
 app.use((req, res, next) => {
-  if (req.path.startsWith('/api') || req.path.startsWith('/uploads') || req.path.startsWith('/pass/')) {
+  if (
+    req.path.startsWith('/api') ||
+    req.path.startsWith('/uploads') ||
+    req.path === '/pass' ||
+    req.path.startsWith('/pass/')
+  ) {
     return next();
   }
   res.sendFile(path.resolve(process.cwd(), 'dist', 'index.html'));
@@ -562,6 +567,44 @@ app.use((req, res, next) => {
 
 function buildRegistrationCode() {
   return `CGN-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+}
+
+function safelyDecodeUriComponent(value) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
+function extractRegistrationCodeCandidate(value) {
+  const initialValue = String(value || '').replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
+  if (!initialValue) {
+    return '';
+  }
+
+  const variants = [initialValue];
+  let currentValue = initialValue;
+  for (let index = 0; index < 3; index += 1) {
+    const decodedValue = safelyDecodeUriComponent(currentValue);
+    if (!decodedValue || decodedValue === currentValue) {
+      break;
+    }
+    variants.push(decodedValue);
+    currentValue = decodedValue;
+  }
+
+  for (const variant of variants) {
+    const directMatch = String(variant).match(/cgn[\s-]*[a-z0-9]{6,10}/i);
+    if (directMatch) {
+      const compactCode = directMatch[0].replace(/[^a-z0-9]/gi, '').toUpperCase();
+      return compactCode.length > 3
+        ? `${compactCode.slice(0, 3)}-${compactCode.slice(3)}`
+        : compactCode;
+    }
+  }
+
+  return initialValue;
 }
 
 function normalizeEmail(value) {
@@ -1118,8 +1161,8 @@ function buildStatusEmail(registration, appUrl = resolvePublicAppUrl()) {
   const eventLine = `${registration.event_name} / ${registration.date_label} / ${registration.time_label}`;
   const salutation = registration.contact_name || registration.team_name || 'Participant';
   const statusTitle = formatStatusTitle(registration.status);
-  const passLink = `${appUrl}/pass/${encodeURIComponent(registration.registration_code)}`;
-  const passDownloadLink = `${passLink}?download=true`;
+  const passLink = `${appUrl}/pass?code=${encodeURIComponent(registration.registration_code)}`;
+  const passDownloadLink = `${passLink}&download=true`;
   const trackerLink = `${appUrl}/#tracker`;
   const techxceleratePresentationInvite = resolveTechxceleratePresentationLink(registration);
   const approvedEventGroupInvite = resolveApprovedEventGroupInvite(registration);
@@ -2678,13 +2721,20 @@ app.get('/api/registrations/lookup', async (req, res) => {
   res.json(rows);
 });
 
-app.get('/pass/:registrationCode', async (req, res) => {
-  const rawRegistrationCode = String(req.params.registrationCode || '').trim();
-  const normalizedRegistrationCode = rawRegistrationCode.toLowerCase();
+app.get(['/pass', '/pass/:registrationCode'], async (req, res) => {
+  const rawRegistrationCode = String(
+    req.params.registrationCode ||
+      req.query?.code ||
+      req.query?.registrationCode ||
+      req.query?.registration_code ||
+      '',
+  ).trim();
+  const extractedRegistrationCode = extractRegistrationCodeCandidate(rawRegistrationCode || req.originalUrl || '');
+  const normalizedRegistrationCode = extractedRegistrationCode.toLowerCase();
   const compactRegistrationCode = normalizedRegistrationCode.replace(/[^a-z0-9]/g, '');
   const downloadRequested = ['1', 'true', 'yes'].includes(String(req.query?.download || '').trim().toLowerCase());
 
-  if (!normalizedRegistrationCode) {
+  if (!compactRegistrationCode) {
     return res.status(400).send('Invalid registration code.');
   }
 
