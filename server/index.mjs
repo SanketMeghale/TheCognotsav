@@ -929,13 +929,134 @@ function buildPortalEmailHtml({
   `;
 }
 
+function formatCompactCurrency(amount) {
+  const numericAmount = Number(amount || 0);
+  if (!Number.isFinite(numericAmount)) {
+    return '₹0';
+  }
+
+  return `₹${numericAmount}`;
+}
+
+function buildCompactEmailButton({ href, label, gradient, textColor = '#ffffff', border = 'transparent' }) {
+  if (!href || !label) {
+    return '';
+  }
+
+  return `
+    <a
+      class="portal-compact-button"
+      href="${escapeHtml(href)}"
+      style="display:block;width:100%;box-sizing:border-box;border-radius:16px;border:1px solid ${border};background:${gradient};padding:13px 16px;color:${textColor};text-decoration:none;text-align:center;font-size:12px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;"
+    >
+      ${escapeHtml(label)}
+    </a>
+  `;
+}
+
+function buildCompactVerifiedStatusEmail({
+  statusLabel,
+  passLink,
+  secondaryAction,
+  eventName,
+  dateLabel,
+  timeLabel,
+  venue,
+  amountLabel,
+  registrationCode,
+  note,
+}) {
+  const logoUrl = 'https://res.cloudinary.com/dkxddhawc/image/upload/v1774197829/Screenshot_2026-03-22_220018_oln02p.png';
+  const primaryActionHtml = buildCompactEmailButton({
+    href: passLink,
+    label: 'Download Pass',
+    gradient: 'linear-gradient(90deg,#36c3ff 0%,#a855f7 55%,#ec4899 100%)',
+  });
+  const secondaryActionHtml = buildCompactEmailButton({
+    href: secondaryAction?.href,
+    label: secondaryAction?.label,
+    gradient: 'linear-gradient(90deg,rgba(34,197,94,0.22) 0%,rgba(16,185,129,0.16) 100%)',
+    textColor: '#dcfce7',
+    border: 'rgba(74,222,128,0.45)',
+  });
+  const fallbackLinks = [
+    `Pass link: <a href="${escapeHtml(passLink)}" style="color:#e9f3ff;text-decoration:none;word-break:break-all;">${escapeHtml(passLink)}</a>`,
+    secondaryAction?.href
+      ? `${escapeHtml(secondaryAction.fallbackLabel || secondaryAction.label)}: <a href="${escapeHtml(secondaryAction.href)}" style="color:#e9f3ff;text-decoration:none;word-break:break-all;">${escapeHtml(secondaryAction.href)}</a>`
+      : '',
+  ].filter(Boolean).join('<br />');
+
+  return `
+    <div class="portal-compact-shell" style="margin:0;padding:18px 8px;background:radial-gradient(circle at top left,rgba(36,99,235,0.22),transparent 24%),radial-gradient(circle at bottom right,rgba(236,72,153,0.2),transparent 26%),linear-gradient(180deg,#060b18 0%,#0b1222 100%);font-family:Inter,Arial,sans-serif;color:#e5eefb;">
+      <style>
+        @media only screen and (max-width: 620px) {
+          .portal-compact-shell { padding: 10px 6px !important; }
+          .portal-compact-card { border-radius: 22px !important; }
+          .portal-compact-header { padding: 14px 16px 16px !important; }
+          .portal-compact-body { padding: 16px !important; }
+          .portal-compact-logo { width: 52px !important; height: 52px !important; border-radius: 15px !important; }
+          .portal-compact-brand { font-size: 9px !important; letter-spacing: 0.18em !important; }
+          .portal-compact-status { margin-top: 12px !important; font-size: 10px !important; }
+          .portal-compact-ticket { font-size: 34px !important; }
+          .portal-compact-title { font-size: 15px !important; }
+          .portal-compact-copy,
+          .portal-compact-detail,
+          .portal-compact-note,
+          .portal-compact-fallback { font-size: 12px !important; line-height: 1.5 !important; }
+          .portal-compact-button { padding: 12px 14px !important; font-size: 11px !important; }
+        }
+      </style>
+      <div class="portal-compact-card" style="max-width:386px;margin:0 auto;overflow:hidden;border-radius:24px;border:1px solid rgba(255,255,255,0.08);background:linear-gradient(180deg,#11162a 0%,#151128 100%);box-shadow:0 22px 56px rgba(2,8,23,0.42);">
+        <div class="portal-compact-header" style="padding:16px 18px 18px;text-align:center;background:radial-gradient(circle at left top,rgba(59,130,246,0.22),transparent 35%),radial-gradient(circle at right top,rgba(236,72,153,0.24),transparent 38%),linear-gradient(180deg,rgba(15,23,42,0.8),rgba(24,24,46,0.86));border-bottom:1px solid rgba(148,163,184,0.18);">
+          <div class="portal-compact-logo" style="display:inline-flex;width:58px;height:58px;padding:4px;border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,0.24),rgba(203,213,225,0.08));border:1px solid rgba(255,255,255,0.14);">
+            <img src="${logoUrl}" alt="CEAS logo" style="display:block;width:100%;height:100%;object-fit:cover;border-radius:14px;" />
+          </div>
+          <div class="portal-compact-brand" style="margin-top:12px;font-size:10px;font-weight:800;letter-spacing:0.22em;text-transform:uppercase;color:#f8fafc;">CEAS COGNOTSAV 2026</div>
+          <div class="portal-compact-status" style="display:inline-flex;align-items:center;gap:7px;margin-top:14px;padding:8px 12px;border-radius:999px;background:rgba(15,23,42,0.55);border:1px solid rgba(74,222,128,0.24);font-size:11px;font-weight:700;color:#dcfce7;">
+            <span style="font-size:15px;line-height:1;">✅</span>
+            <span>${statusLabel}</span>
+          </div>
+        </div>
+        <div class="portal-compact-body" style="padding:18px 18px 16px;">
+          <div class="portal-compact-ticket" style="font-size:40px;line-height:1;text-align:center;">🎫</div>
+          <div class="portal-compact-title" style="margin-top:10px;text-align:center;font-size:17px;font-weight:800;color:#ffffff;">Your Pass is Ready</div>
+          <div class="portal-compact-copy" style="margin-top:6px;text-align:center;font-size:12px;line-height:1.55;color:#cbd5e1;">Download your official pass and keep it ready for event entry.</div>
+          <div style="margin-top:14px;display:grid;gap:10px;">
+            ${primaryActionHtml}
+            ${secondaryActionHtml}
+          </div>
+          <div style="margin-top:16px;border-top:1px solid rgba(148,163,184,0.16);padding-top:12px;">
+            <div class="portal-compact-detail" style="display:flex;align-items:flex-start;gap:10px;padding:6px 0;font-size:13px;line-height:1.45;color:#f8fafc;"><span style="width:18px;text-align:center;">📍</span><span>${eventName}</span></div>
+            <div class="portal-compact-detail" style="display:flex;align-items:flex-start;gap:10px;padding:6px 0;font-size:13px;line-height:1.45;color:#dbeafe;"><span style="width:18px;text-align:center;">🗓</span><span>${dateLabel} · ${timeLabel}</span></div>
+            <div class="portal-compact-detail" style="display:flex;align-items:flex-start;gap:10px;padding:6px 0;font-size:13px;line-height:1.45;color:#f8fafc;"><span style="width:18px;text-align:center;">📌</span><span>${venue}</span></div>
+            <div class="portal-compact-detail" style="display:flex;align-items:flex-start;gap:10px;padding:6px 0;font-size:13px;line-height:1.45;color:#fde68a;"><span style="width:18px;text-align:center;">₹</span><span>${amountLabel}</span></div>
+            <div class="portal-compact-detail" style="display:flex;align-items:flex-start;gap:10px;padding:6px 0;font-size:13px;line-height:1.45;color:#dbeafe;"><span style="width:18px;text-align:center;">🔑</span><span>${registrationCode}</span></div>
+          </div>
+          ${note
+            ? `<div class="portal-compact-note" style="margin-top:12px;border-top:1px solid rgba(148,163,184,0.16);padding-top:12px;font-size:12px;line-height:1.55;color:#cbd5e1;">${note}</div>`
+            : ''}
+          <div class="portal-compact-fallback" style="margin-top:12px;font-size:11px;line-height:1.6;color:#94a3b8;">${fallbackLinks}</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 function buildStatusEmail(registration, appUrl = resolvePublicAppUrl()) {
   const eventLine = `${registration.event_name} / ${registration.date_label} / ${registration.time_label}`;
   const salutation = registration.contact_name || registration.team_name || 'Participant';
   const statusTitle = formatStatusTitle(registration.status);
   const passLink = `${appUrl}/pass/${encodeURIComponent(registration.registration_code)}`;
+  const trackerLink = `${appUrl}/#tracker`;
   const techxceleratePresentationInvite = resolveTechxceleratePresentationLink(registration);
   const approvedEventGroupInvite = resolveApprovedEventGroupInvite(registration);
+  const verifiedTextSecondaryLink = registration.status === 'verified'
+    ? techxceleratePresentationInvite
+      ? `WhatsApp group: ${techxceleratePresentationInvite.url}`
+      : approvedEventGroupInvite
+        ? `WhatsApp group: ${approvedEventGroupInvite.url}`
+        : `Tracker: ${trackerLink}`
+    : null;
 
   const introByStatus = {
     verified:
@@ -979,6 +1100,7 @@ function buildStatusEmail(registration, appUrl = resolvePublicAppUrl()) {
           `Amount paid: INR ${registration.total_amount}`,
           `Payment reference: ${registration.payment_reference || 'Pending manual entry'}`,
           `Official pass: ${passLink}`,
+          ...(verifiedTextSecondaryLink ? [verifiedTextSecondaryLink] : []),
         ]
       : []),
     ...(techxceleratePresentationInvite
@@ -1014,6 +1136,31 @@ function buildStatusEmail(registration, appUrl = resolvePublicAppUrl()) {
   const safeStatusLabel = escapeHtml(getPaymentStatusLabel(registration.status));
   const safePaymentReference = escapeHtml(registration.payment_reference || 'Pending manual entry');
   const safeTotalAmount = escapeHtml(`INR ${registration.total_amount}`);
+  const safeCompactAmount = escapeHtml(formatCompactCurrency(registration.total_amount));
+  const safeDateLabel = escapeHtml(registration.date_label);
+  const safeTimeLabel = escapeHtml(registration.time_label);
+  const verifiedSecondaryAction = registration.status === 'verified'
+    ? techxceleratePresentationInvite
+      ? {
+          label: 'Join WhatsApp',
+          href: techxceleratePresentationInvite.url,
+          fallbackLabel: 'WhatsApp link',
+          note: 'Use the approved presentation coordination WhatsApp group for event updates.',
+        }
+      : approvedEventGroupInvite
+        ? {
+            label: 'Join WhatsApp',
+            href: approvedEventGroupInvite.url,
+            fallbackLabel: 'WhatsApp link',
+            note: approvedEventGroupInvite.description,
+          }
+        : {
+            label: 'Open Tracker',
+            href: trackerLink,
+            fallbackLabel: 'Tracker link',
+            note: 'Open the tracker anytime for the latest official event updates.',
+          }
+    : null;
   const techxceleratePresentationInviteHtml = techxceleratePresentationInvite
     ? `
         <div style="margin-top:14px;border-radius:16px;padding:14px;background:linear-gradient(135deg,rgba(59,130,246,0.12),rgba(34,211,238,0.08));border:1px solid rgba(96,165,250,0.18);">
@@ -1080,18 +1227,35 @@ function buildStatusEmail(registration, appUrl = resolvePublicAppUrl()) {
       : []),
   ]);
 
-  const html = buildPortalEmailHtml({
-    overline: 'Registration Update',
-    title: safeStatusTitle,
-    intro: `Hi ${safeSalutation},<br /><br />${safeIntro}`,
-    accentGradient: 'linear-gradient(90deg,rgba(59,130,246,0.2),rgba(168,85,247,0.16),rgba(236,72,153,0.18))',
-    accentTone: accentColor,
-    badgeLabel: safeStatusLabel,
-    topAction: verifiedPassTopAction,
-    sections: [gridSections],
-    notice: registration.review_note ? `Organizer note: ${escapeHtml(registration.review_note)}` : '',
-    bodyAfterGrid: `${safeNextStep}${techxceleratePresentationInviteHtml}${registration.status === 'verified' ? '' : approvedEventGroupInviteHtml}${verifiedPassInstructions}`,
-  });
+  const html = registration.status === 'verified'
+    ? buildCompactVerifiedStatusEmail({
+        statusLabel: safeStatusLabel,
+        passLink,
+        secondaryAction: verifiedSecondaryAction,
+        eventName: safeEventName,
+        dateLabel: safeDateLabel,
+        timeLabel: safeTimeLabel,
+        venue: safeVenue,
+        amountLabel: safeCompactAmount,
+        registrationCode: safeRegistrationCode,
+        note: [
+          escapeHtml('Keep this pass ready for the verification desk.'),
+          verifiedSecondaryAction?.note ? escapeHtml(verifiedSecondaryAction.note) : '',
+          registration.review_note ? `Organizer note: ${escapeHtml(registration.review_note)}` : '',
+        ].filter(Boolean).join('<br />'),
+      })
+    : buildPortalEmailHtml({
+        overline: 'Registration Update',
+        title: safeStatusTitle,
+        intro: `Hi ${safeSalutation},<br /><br />${safeIntro}`,
+        accentGradient: 'linear-gradient(90deg,rgba(59,130,246,0.2),rgba(168,85,247,0.16),rgba(236,72,153,0.18))',
+        accentTone: accentColor,
+        badgeLabel: safeStatusLabel,
+        topAction: verifiedPassTopAction,
+        sections: [gridSections],
+        notice: registration.review_note ? `Organizer note: ${escapeHtml(registration.review_note)}` : '',
+        bodyAfterGrid: `${safeNextStep}${techxceleratePresentationInviteHtml}${registration.status === 'verified' ? '' : approvedEventGroupInviteHtml}${verifiedPassInstructions}`,
+      });
 
   return {
     subject,
