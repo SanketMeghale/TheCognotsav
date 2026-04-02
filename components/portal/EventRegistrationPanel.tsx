@@ -209,17 +209,13 @@ function resolveEventAmount(event: EventRecord, participantCount: number) {
 }
 
 const paymentOverridesBySlug: Record<string, { upiId: string; payee: string }> = {
-  'squid-game': {
-    upiId: '9890959580@axl',
-    payee: 'Tejaswini Sunil Gangurde',
-  },
   utopia: {
     upiId: '9850560091@ibl',
     payee: 'TRUPTI SANJAY JADHAV',
   },
 };
 
-const dynamicPaymentQrEventSlugs = new Set(['squid-game', 'techxcelerate', 'rang-manch', 'utopia']);
+const dynamicPaymentQrEventSlugs = new Set(['techxcelerate', 'rang-manch', 'utopia']);
 
 function resolveCustomQrObjectPosition(eventSlug: string) {
   switch (eventSlug) {
