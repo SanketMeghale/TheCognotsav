@@ -591,16 +591,16 @@ function resolveAdminExportScope(req) {
 
   if (req.adminAccess?.mode === 'event') {
     return {
-      scopeClause: 'WHERE r.event_slug = ANY($1::text[])',
-      scopeParams: [resolveScopedAdminEventSlugs(req.adminAccess.eventSlug)],
+      scopeClause: 'WHERE r.event_slug = $1',
+      scopeParams: [req.adminAccess.eventSlug],
       eventSlug: req.adminAccess.eventSlug,
     };
   }
 
   if (requestedEventSlug) {
     return {
-      scopeClause: 'WHERE r.event_slug = ANY($1::text[])',
-      scopeParams: [resolveScopedAdminEventSlugs(requestedEventSlug)],
+      scopeClause: 'WHERE r.event_slug = $1',
+      scopeParams: [requestedEventSlug],
       eventSlug: requestedEventSlug,
     };
   }
@@ -3572,9 +3572,14 @@ app.get('/api/admin/export.csv', requireAdmin, async (req, res) => {
   const result = await pool.query(
     `
       SELECT
+        e.slug AS event_slug,
         r.registration_code,
         e.name AS event_name,
-        r.presentation_mode,
+        CASE
+          WHEN r.presentation_mode = 'online' THEN 'Online'
+          WHEN r.presentation_mode = 'offline' THEN 'Offline'
+          ELSE ''
+        END AS presentation_mode,
         r.team_name,
         r.college_name,
         r.contact_name,
@@ -3599,10 +3604,10 @@ app.get('/api/admin/export.csv', requireAdmin, async (req, res) => {
     scopeParams,
   );
 
+  const includePresentationMode = result.rows.some((row) => row.event_slug === 'techxcelerate');
   const headers = [
     'registration_code',
     'event_name',
-    'presentation_mode',
     'team_name',
     'college_name',
     'contact_name',
@@ -3614,6 +3619,9 @@ app.get('/api/admin/export.csv', requireAdmin, async (req, res) => {
     'status',
     'created_at',
   ];
+  if (includePresentationMode) {
+    headers.splice(2, 0, 'presentation_mode');
+  }
 
   const csvRows = [
     headers.join(','),
@@ -3669,9 +3677,12 @@ app.get('/api/admin/export.xlsx', requireAdmin, async (req, res) => {
   const workbook = XLSX.utils.book_new();
   const rowsByEventSlug = result.rows.reduce((collection, row) => {
     const eventRows = collection.get(row.event_slug) || [];
-    const { event_slug: _eventSlug, ...sheetRow } = row;
+    const { event_slug: rowEventSlug, ...sheetRow } = row;
+    if (rowEventSlug !== 'techxcelerate') {
+      delete sheetRow['Presentation Mode'];
+    }
     eventRows.push(sheetRow);
-    collection.set(row.event_slug, eventRows);
+    collection.set(rowEventSlug, eventRows);
     return collection;
   }, new Map());
 
