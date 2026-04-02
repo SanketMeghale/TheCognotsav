@@ -1119,6 +1119,7 @@ function buildStatusEmail(registration, appUrl = resolvePublicAppUrl()) {
   const salutation = registration.contact_name || registration.team_name || 'Participant';
   const statusTitle = formatStatusTitle(registration.status);
   const passLink = `${appUrl}/pass/${encodeURIComponent(registration.registration_code)}`;
+  const passDownloadLink = `${passLink}?download=true`;
   const trackerLink = `${appUrl}/#tracker`;
   const techxceleratePresentationInvite = resolveTechxceleratePresentationLink(registration);
   const approvedEventGroupInvite = resolveApprovedEventGroupInvite(registration);
@@ -1177,7 +1178,7 @@ function buildStatusEmail(registration, appUrl = resolvePublicAppUrl()) {
       ? [
           `Amount paid: INR ${registration.total_amount}`,
           `Payment reference: ${registration.payment_reference || 'Pending manual entry'}`,
-          `Official pass: ${passLink}`,
+          `Official pass: ${passDownloadLink}`,
           ...(verifiedTextSecondaryLink ? [verifiedTextSecondaryLink] : []),
         ]
       : []),
@@ -1269,7 +1270,7 @@ function buildStatusEmail(registration, appUrl = resolvePublicAppUrl()) {
           <div style="font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:#b7ffde;font-weight:800;">Official Pass Ready</div>
           <div class="portal-email-pass-note" style="margin-top:7px;color:#ecfdf5;line-height:1.58;">Your official event pass is now available in this email. Please download or save this email as a PDF, and show the pass with your registration code at event time.</div>
           <div style="margin-top:12px;text-align:center;">
-            <a class="portal-email-button" href="${passLink}" style="display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:linear-gradient(90deg,#67e8f9,#fbbf24);color:#041018;text-decoration:none;padding:12px 20px;font-size:12px;font-weight:800;letter-spacing:0.11em;text-transform:uppercase;">Open / Download Official Pass</a>
+            <a class="portal-email-button" href="${passDownloadLink}" style="display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:linear-gradient(90deg,#67e8f9,#fbbf24);color:#041018;text-decoration:none;padding:12px 20px;font-size:12px;font-weight:800;letter-spacing:0.11em;text-transform:uppercase;">Open / Download Official Pass</a>
           </div>
           ${approvedEventGroupInvite
             ? `
@@ -1278,7 +1279,7 @@ function buildStatusEmail(registration, appUrl = resolvePublicAppUrl()) {
               </div>
             `
             : ''}
-          <div class="portal-email-inline-note" style="margin-top:9px;font-size:11px;color:#cbd5e1;line-height:1.55;">If needed, open this link in your browser: <span style="color:#ffffff;word-break:break-all;">${passLink}</span></div>
+          <div class="portal-email-inline-note" style="margin-top:9px;font-size:11px;color:#cbd5e1;line-height:1.55;">If needed, open this link in your browser: <span style="color:#ffffff;word-break:break-all;">${passDownloadLink}</span></div>
         </div>
       `
     : '';
@@ -1308,7 +1309,7 @@ function buildStatusEmail(registration, appUrl = resolvePublicAppUrl()) {
   const html = registration.status === 'verified'
     ? buildCompactVerifiedStatusEmail({
         statusLabel: safeStatusLabel,
-        passLink,
+        passLink: passDownloadLink,
         secondaryAction: verifiedSecondaryAction,
         eventName: safeEventName,
         dateLabel: safeDateLabel,
@@ -2105,10 +2106,12 @@ function buildBroadcastEmail(registration, announcement) {
   };
 }
 
-function buildVerifiedPassPage(registration, appUrl = resolvePublicAppUrl()) {
+function buildVerifiedPassPage(registration, appUrl = resolvePublicAppUrl(), options = {}) {
   const logoUrl = 'https://res.cloudinary.com/dkxddhawc/image/upload/v1774197829/Screenshot_2026-03-22_220018_oln02p.png';
   const statusLabel = formatStatusTitle(registration.status);
   const isVerified = registration.status === 'verified';
+  const autoPrint = String(options?.download || '').trim().toLowerCase() === 'true';
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(buildQrValue(registration.registration_code))}`;
   const leadCopy = isVerified
     ? 'This is your official verified Cognotsav pass. Download or print it, then show this pass with your registration code during event-time verification.'
     : registration.status === 'waitlisted'
@@ -2151,6 +2154,11 @@ function buildVerifiedPassPage(registration, appUrl = resolvePublicAppUrl()) {
           .body { position: relative; z-index: 1; padding: 20px; }
           .badge { display: inline-flex; border-radius: 999px; border: 1px solid rgba(52,211,153,0.22); background: linear-gradient(90deg, rgba(16,185,129,0.14), rgba(34,211,238,0.1)); padding: 8px 12px; font-size: 11px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: #d1fae5; }
           .lead { margin-top: 14px; color: #cbd5e1; line-height: 1.6; }
+          .hero { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(220px, 0.85fr); gap: 14px; margin-top: 16px; align-items: start; }
+          .qr-card { border-radius: 22px; border: 1px solid rgba(255,255,255,0.08); background: linear-gradient(180deg, rgba(15,23,42,0.78), rgba(255,255,255,0.04)); padding: 14px; text-align: center; }
+          .qr-frame { display: inline-flex; border-radius: 18px; background: #ffffff; padding: 10px; }
+          .qr-frame img { width: 176px; height: 176px; display: block; }
+          .qr-copy { margin-top: 10px; color: #cbd5e1; font-size: 12px; line-height: 1.55; }
           .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 16px; }
           .cell { border-radius: 18px; padding: 12px 14px; background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04)); border: 1px solid rgba(255,255,255,0.08); }
           .label { font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase; color: #94a3b8; font-weight: 700; }
@@ -2161,14 +2169,14 @@ function buildVerifiedPassPage(registration, appUrl = resolvePublicAppUrl()) {
           .button { display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; padding: 12px 20px; font-size: 13px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none; border: 0; cursor: pointer; }
           .button-primary { background: linear-gradient(90deg, #67e8f9, #fbbf24); color: #041018; }
           .button-secondary { border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.06); color: #ffffff; }
-          @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } .title { font-size: 22px; } }
+          @media (max-width: 720px) { .hero, .grid { grid-template-columns: 1fr; } .title { font-size: 22px; } .qr-frame img { width: 160px; height: 160px; } }
           @page { size: A4; margin: 10mm; }
           @media print {
             .actions { display: none; }
             body { background: #ffffff; }
             .wrap { min-height: auto; padding: 0; display: block; }
             .card { width: 100%; box-shadow: none; border-color: #cbd5e1; background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); break-inside: avoid; }
-            .cell, .notice { background: rgba(248,250,252,0.92); }
+            .cell, .notice, .qr-card { background: rgba(248,250,252,0.92); }
             .lead, .hint { color: #334155; }
             .value { color: #0f172a; }
           }
@@ -2184,14 +2192,24 @@ function buildVerifiedPassPage(registration, appUrl = resolvePublicAppUrl()) {
             </div>
             <div class="body">
               <div class="badge" style="${badgeStyle}">${escapeHtml(statusLabel)}</div>
-              <div class="lead">${escapeHtml(leadCopy)}</div>
-              <div class="grid">
-                <div class="cell"><div class="label">Registration code</div><div class="value">${escapeHtml(registration.registration_code)}</div></div>
-                <div class="cell"><div class="label">Event</div><div class="value">${escapeHtml(registration.event_name)}</div></div>
-                <div class="cell"><div class="label">Team / Participant</div><div class="value">${escapeHtml(registration.team_name)}</div></div>
-                <div class="cell"><div class="label">Contact</div><div class="value">${escapeHtml(registration.contact_name)}<br />${escapeHtml(registration.contact_email)}</div></div>
-                <div class="cell"><div class="label">Schedule</div><div class="value">${escapeHtml(registration.date_label)}<br />${escapeHtml(registration.time_label)}</div></div>
-                <div class="cell"><div class="label">Venue</div><div class="value">${escapeHtml(registration.venue)}</div></div>
+              <div class="hero">
+                <div>
+                  <div class="lead">${escapeHtml(leadCopy)}</div>
+                  <div class="grid">
+                    <div class="cell"><div class="label">Registration code</div><div class="value">${escapeHtml(registration.registration_code)}</div></div>
+                    <div class="cell"><div class="label">Event</div><div class="value">${escapeHtml(registration.event_name)}</div></div>
+                    <div class="cell"><div class="label">Team / Participant</div><div class="value">${escapeHtml(registration.team_name)}</div></div>
+                    <div class="cell"><div class="label">Contact</div><div class="value">${escapeHtml(registration.contact_name)}<br />${escapeHtml(registration.contact_email)}</div></div>
+                    <div class="cell"><div class="label">Schedule</div><div class="value">${escapeHtml(registration.date_label)}<br />${escapeHtml(registration.time_label)}</div></div>
+                    <div class="cell"><div class="label">Venue</div><div class="value">${escapeHtml(registration.venue)}</div></div>
+                  </div>
+                </div>
+                <div class="qr-card">
+                  <div class="qr-frame">
+                    <img src="${escapeHtml(qrUrl)}" alt="Registration QR" />
+                  </div>
+                  <div class="qr-copy">Show this QR and registration code at the verification desk.</div>
+                </div>
               </div>
               <div class="notice">
                 <p class="hint">${escapeHtml(hintCopy)}</p>
@@ -2203,6 +2221,7 @@ function buildVerifiedPassPage(registration, appUrl = resolvePublicAppUrl()) {
             </div>
           </div>
         </div>
+        ${autoPrint ? `<script>window.addEventListener('load', () => { window.setTimeout(() => { if (typeof window.print === 'function') { window.print(); } }, 450); });</script>` : ''}
       </body>
     </html>
   `;
@@ -2663,6 +2682,7 @@ app.get('/pass/:registrationCode', async (req, res) => {
   const rawRegistrationCode = String(req.params.registrationCode || '').trim();
   const normalizedRegistrationCode = rawRegistrationCode.toLowerCase();
   const compactRegistrationCode = normalizedRegistrationCode.replace(/[^a-z0-9]/g, '');
+  const downloadRequested = ['1', 'true', 'yes'].includes(String(req.query?.download || '').trim().toLowerCase());
 
   if (!normalizedRegistrationCode) {
     return res.status(400).send('Invalid registration code.');
@@ -2696,7 +2716,7 @@ app.get('/pass/:registrationCode', async (req, res) => {
   }
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  return res.send(buildVerifiedPassPage(registration, resolvePublicAppUrl(req)));
+  return res.send(buildVerifiedPassPage(registration, resolvePublicAppUrl(req), { download: downloadRequested }));
 });
 
 app.post('/api/registrations', async (req, res) => {
