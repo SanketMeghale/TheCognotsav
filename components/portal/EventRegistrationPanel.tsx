@@ -215,7 +215,12 @@ const paymentOverridesBySlug: Record<string, { upiId: string; payee: string }> =
   },
 };
 
-const dynamicPaymentQrEventSlugs = new Set(['techxcelerate', 'rang-manch', 'utopia']);
+const dynamicPaymentQrEventSlugs = new Set([
+  'techxcelerate',
+  'techxcelerate-poster-presentation',
+  'rang-manch',
+  'utopia',
+]);
 
 function resolveCustomQrObjectPosition(eventSlug: string) {
   switch (eventSlug) {
