@@ -2547,8 +2547,11 @@ app.get('/api/registrations/lookup', async (req, res) => {
 });
 
 app.get('/pass/:registrationCode', async (req, res) => {
-  const registrationCode = String(req.params.registrationCode || '').trim().toUpperCase();
-  if (!registrationCode) {
+  const rawRegistrationCode = String(req.params.registrationCode || '').trim();
+  const normalizedRegistrationCode = rawRegistrationCode.toLowerCase();
+  const compactRegistrationCode = normalizedRegistrationCode.replace(/[^a-z0-9]/g, '');
+
+  if (!normalizedRegistrationCode) {
     return res.status(400).send('Invalid registration code.');
   }
 
@@ -2566,10 +2569,11 @@ app.get('/pass/:registrationCode', async (req, res) => {
         e.venue
       FROM registrations r
       JOIN events e ON e.slug = r.event_slug
-      WHERE UPPER(r.registration_code) = $1
+      WHERE LOWER(r.registration_code) = $1
+         OR REPLACE(LOWER(r.registration_code), '-', '') = $2
       LIMIT 1
     `,
-    [registrationCode],
+    [normalizedRegistrationCode, compactRegistrationCode],
   );
 
   const registration = result.rows[0] ?? null;
