@@ -209,11 +209,17 @@ function resolveEventAmount(event: EventRecord, participantCount: number) {
 }
 
 const paymentOverridesBySlug: Record<string, { upiId: string; payee: string }> = {
+  'squid-game': {
+    upiId: '9890959580@axl',
+    payee: 'Tejaswini Sunil Gangurde',
+  },
   utopia: {
     upiId: '9850560091@ibl',
     payee: 'TRUPTI SANJAY JADHAV',
   },
 };
+
+const dynamicPaymentQrEventSlugs = new Set(['squid-game', 'techxcelerate', 'rang-manch', 'utopia']);
 
 function resolveCustomQrObjectPosition(eventSlug: string) {
   switch (eventSlug) {
@@ -273,7 +279,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const paymentOverride = selectedEvent ? paymentOverridesBySlug[selectedEvent.slug] : null;
   const customQrImagePath = selectedEvent?.payment_qr_image_path?.trim() || '';
   const hasCustomQrImage = Boolean(customQrImagePath);
-  const prefersDynamicPaymentQr = selectedEvent?.slug === 'techxcelerate' || selectedEvent?.slug === 'rang-manch' || selectedEvent?.slug === 'utopia';
+  const prefersDynamicPaymentQr = dynamicPaymentQrEventSlugs.has(selectedEvent?.slug || '');
   const customQrObjectPosition = selectedEvent ? resolveCustomQrObjectPosition(selectedEvent.slug) : 'center center';
   const customQrScale = selectedEvent ? resolveCustomQrScale(selectedEvent.slug) : 1;
   const primaryUpiId = selectedEvent?.payment_upi?.trim() || paymentOverride?.upiId || '';

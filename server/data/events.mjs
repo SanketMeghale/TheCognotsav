@@ -99,7 +99,7 @@ export const eventSeed = [
     is_team_event: false,
     poster_path: '/images/squidgame.jpg',
     intro_video_url: optimizeCloudinaryVideo('https://res.cloudinary.com/dkxddhawc/video/upload/v1774094901/squid_game_i2l62h.mp4'),
-    payment_upi: null,
+    payment_upi: '9890959580@axl',
     payment_payee: 'Tejaswini Sunil Gangurde',
     payment_qr_image_path: '/images/squid-game-payment-qr.jpg',
     coordinators: [
