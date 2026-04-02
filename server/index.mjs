@@ -107,7 +107,7 @@ function resolveRequestPublicAppUrl(req) {
 }
 
 function resolvePublicAppUrl(req) {
-  return resolveRequestPublicAppUrl(req) || publicAppUrl || `http://localhost:${port}`;
+  return publicAppUrl || resolveRequestPublicAppUrl(req) || `http://localhost:${port}`;
 }
 
 function buildAllowedOriginSet() {
