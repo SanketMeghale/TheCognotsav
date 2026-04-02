@@ -210,7 +210,7 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
       pending: rowsForEvent.filter((row) => row.status === 'pending').length,
       verified: rowsForEvent.filter((row) => row.status === 'verified').length,
     };
-  }).filter((event) => event.total > 0), [adminRows, events]);
+  }), [adminRows, events]);
   const filteredRows = useMemo(() => {
     const normalizedSearch = searchQuery.trim().toLowerCase();
     const normalizedEventFilter = normalizeEventToken(eventFilter);
@@ -231,7 +231,10 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
     const eventName = resolveAdminEventName(row, events);
     return { ...collection, [eventName]: (collection[eventName] || 0) + 1 };
   }, {})).sort((left, right) => right[1] - left[1])[0] || null, [adminRows, events]);
-  const topTrackedEvents = useMemo(() => [...eventBuckets].sort((left, right) => right.total - left.total).slice(0, 4), [eventBuckets]);
+  const rankedTrackedEvents = useMemo(
+    () => [...eventBuckets].sort((left, right) => (right.total - left.total) || left.name.localeCompare(right.name)),
+    [eventBuckets],
+  );
   const recentBackup = backups[0] ?? null;
   const adminViews = useMemo(() => {
     if (!isGlobalAccess) {
@@ -420,15 +423,15 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
                 <BarChart3 size={24} />
               </div>
               <div>
-                <h3 className="text-2xl font-bold text-white">Top Competitions</h3>
-                <p className="mt-1 text-sm text-slate-400">Highest registration flow across events.</p>
+                <h3 className="text-2xl font-bold text-white">Competition Counts</h3>
+                <p className="mt-1 text-sm text-slate-400">Live registration totals across all events.</p>
               </div>
             </div>
 
             <div className="portal-admin-overview-leaderboard__panel mt-5 rounded-[1.35rem] border border-white/10 p-3 md:p-4">
-              {topTrackedEvents.length > 0 ? (
+              {rankedTrackedEvents.length > 0 ? (
                 <div className="space-y-1">
-                  {topTrackedEvents.slice(0, 5).map((event, index) => (
+                  {rankedTrackedEvents.map((event, index) => (
                     <button
                       key={event.slug}
                       type="button"
