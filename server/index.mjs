@@ -1042,6 +1042,78 @@ function buildCompactVerifiedStatusEmail({
   `;
 }
 
+function buildCompactPendingStatusEmail({
+  statusLabel,
+  eventName,
+  dateLabel,
+  timeLabel,
+  venue,
+  amountLabel,
+  registrationCode,
+  trackerLink,
+  note = '',
+}) {
+  const logoUrl = 'https://res.cloudinary.com/dkxddhawc/image/upload/v1774197829/Screenshot_2026-03-22_220018_oln02p.png';
+  const fallbackLinks = trackerLink
+    ? `Tracker link: <a href="${escapeHtml(trackerLink)}" style="color:#e9f3ff;text-decoration:none;word-break:break-all;">${escapeHtml(trackerLink)}</a>`
+    : '';
+
+  return `
+    <div class="portal-pending-shell" style="margin:0;padding:18px 8px;background:radial-gradient(circle at top left,rgba(36,99,235,0.22),transparent 24%),radial-gradient(circle at bottom right,rgba(236,72,153,0.2),transparent 26%),linear-gradient(180deg,#060b18 0%,#0b1222 100%);font-family:Inter,Arial,sans-serif;color:#e5eefb;">
+      <style>
+        @media only screen and (max-width: 620px) {
+          .portal-pending-shell { padding: 10px 6px !important; }
+          .portal-pending-card { border-radius: 22px !important; }
+          .portal-pending-header { padding: 14px 16px 16px !important; }
+          .portal-pending-body { padding: 16px !important; }
+          .portal-pending-logo { width: 52px !important; height: 52px !important; border-radius: 15px !important; }
+          .portal-pending-brand { font-size: 9px !important; letter-spacing: 0.18em !important; }
+          .portal-pending-title { font-size: 15px !important; }
+          .portal-pending-copy,
+          .portal-pending-chip,
+          .portal-pending-detail,
+          .portal-pending-note,
+          .portal-pending-fallback,
+          .portal-pending-footer { font-size: 12px !important; line-height: 1.5 !important; }
+          .portal-pending-section-title { font-size: 13px !important; }
+        }
+      </style>
+      <div class="portal-pending-card" style="max-width:386px;margin:0 auto;overflow:hidden;border-radius:24px;border:1px solid rgba(255,255,255,0.08);background:linear-gradient(180deg,#11162a 0%,#151128 100%);box-shadow:0 22px 56px rgba(2,8,23,0.42);">
+        <div class="portal-pending-header" style="padding:16px 18px 18px;text-align:center;background:radial-gradient(circle at left top,rgba(59,130,246,0.22),transparent 35%),radial-gradient(circle at right top,rgba(236,72,153,0.24),transparent 38%),linear-gradient(180deg,rgba(15,23,42,0.8),rgba(24,24,46,0.86));border-bottom:1px solid rgba(148,163,184,0.18);">
+          <div class="portal-pending-logo" style="display:inline-flex;width:58px;height:58px;padding:4px;border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,0.24),rgba(203,213,225,0.08));border:1px solid rgba(255,255,255,0.14);">
+            <img src="${logoUrl}" alt="CEAS logo" style="display:block;width:100%;height:100%;object-fit:cover;border-radius:14px;" />
+          </div>
+          <div class="portal-pending-brand" style="margin-top:12px;font-size:10px;font-weight:800;letter-spacing:0.22em;text-transform:uppercase;color:#f8fafc;">CEAS COGNOTSAV 2026</div>
+          <div class="portal-pending-title" style="margin-top:18px;font-size:17px;font-weight:800;color:#f6d77c;">Registration Under Review</div>
+        </div>
+        <div class="portal-pending-body" style="padding:18px 18px 16px;">
+          <div class="portal-pending-chip" style="display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;border:1px solid rgba(245,158,11,0.18);background:rgba(15,23,42,0.55);font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#f6d77c;">
+            <span aria-hidden="true">&#9203;</span>
+            <span>${statusLabel}</span>
+          </div>
+          <div class="portal-pending-copy" style="margin-top:14px;font-size:13px;line-height:1.58;color:#dbe4f1;">No action is required until we complete the review.</div>
+          <div style="margin-top:16px;border-radius:18px;border:1px solid rgba(217,70,239,0.28);background:linear-gradient(180deg,rgba(96,165,250,0.08),rgba(236,72,153,0.08));padding:14px 14px 12px;">
+            <div class="portal-pending-section-title" style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;color:#f6d77c;">
+              <span aria-hidden="true">&#9203;</span>
+              <span>${statusLabel}</span>
+            </div>
+            <div style="margin-top:10px;border-top:1px solid rgba(148,163,184,0.16);padding-top:8px;">
+              <div class="portal-pending-detail" style="display:flex;align-items:flex-start;gap:10px;padding:7px 0;font-size:13px;line-height:1.45;color:#f8fafc;"><span style="width:18px;text-align:center;">&#128205;</span><span>${eventName}</span></div>
+              <div class="portal-pending-detail" style="display:flex;align-items:flex-start;gap:10px;padding:7px 0;font-size:13px;line-height:1.45;color:#b9f5ec;"><span style="width:18px;text-align:center;">&#128197;</span><span>${dateLabel} &middot; ${timeLabel}</span></div>
+              <div class="portal-pending-detail" style="display:flex;align-items:flex-start;gap:10px;padding:7px 0;font-size:13px;line-height:1.45;color:#f8fafc;"><span style="width:18px;text-align:center;">&#128204;</span><span>${venue}</span></div>
+              <div class="portal-pending-detail" style="display:flex;align-items:flex-start;gap:10px;padding:7px 0;font-size:13px;line-height:1.45;color:#fde68a;"><span style="width:18px;text-align:center;">&#8377;</span><span>${amountLabel}</span></div>
+              <div class="portal-pending-detail" style="display:flex;align-items:flex-start;gap:10px;padding:7px 0;font-size:13px;line-height:1.45;color:#dbeafe;"><span style="width:18px;text-align:center;">&#128273;</span><span>${registrationCode}</span></div>
+            </div>
+          </div>
+          <div class="portal-pending-note" style="margin-top:14px;font-size:12px;line-height:1.58;color:#dbe4f1;">We will notify you once the verification is done.${note ? `<br />${note}` : ''}</div>
+          <div class="portal-pending-footer" style="margin-top:14px;border-radius:16px;border:1px solid rgba(148,163,184,0.14);background:linear-gradient(180deg,rgba(30,41,59,0.6),rgba(49,46,129,0.28));padding:11px 13px;font-size:12px;line-height:1.55;color:#cbd5e1;">Thank you for participating in CEAS COGNOTSAV 2026.</div>
+          ${fallbackLinks ? `<div class="portal-pending-fallback" style="margin-top:12px;font-size:11px;line-height:1.6;color:#94a3b8;">${fallbackLinks}</div>` : ''}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 function buildStatusEmail(registration, appUrl = resolvePublicAppUrl()) {
   const eventLine = `${registration.event_name} / ${registration.date_label} / ${registration.time_label}`;
   const salutation = registration.contact_name || registration.team_name || 'Participant';
@@ -1095,6 +1167,12 @@ function buildStatusEmail(registration, appUrl = resolvePublicAppUrl()) {
     `Schedule: ${eventLine}`,
     `Venue: ${registration.venue}`,
     `Current status: ${getPaymentStatusLabel(registration.status)}`,
+    ...(registration.status === 'pending'
+      ? [
+          `Amount: INR ${registration.total_amount}`,
+          `Tracker: ${trackerLink}`,
+        ]
+      : []),
     ...(registration.status === 'verified'
       ? [
           `Amount paid: INR ${registration.total_amount}`,
@@ -1244,6 +1322,18 @@ function buildStatusEmail(registration, appUrl = resolvePublicAppUrl()) {
           registration.review_note ? `Organizer note: ${escapeHtml(registration.review_note)}` : '',
         ].filter(Boolean).join('<br />'),
       })
+    : registration.status === 'pending'
+      ? buildCompactPendingStatusEmail({
+          statusLabel: safeStatusLabel,
+          eventName: safeEventName,
+          dateLabel: safeDateLabel,
+          timeLabel: safeTimeLabel,
+          venue: safeVenue,
+          amountLabel: safeCompactAmount,
+          registrationCode: safeRegistrationCode,
+          trackerLink,
+          note: registration.review_note ? `Organizer note: ${escapeHtml(registration.review_note)}` : '',
+        })
     : buildPortalEmailHtml({
         overline: 'Registration Update',
         title: safeStatusTitle,
@@ -2017,6 +2107,29 @@ function buildBroadcastEmail(registration, announcement) {
 
 function buildVerifiedPassPage(registration, appUrl = resolvePublicAppUrl()) {
   const logoUrl = 'https://res.cloudinary.com/dkxddhawc/image/upload/v1774197829/Screenshot_2026-03-22_220018_oln02p.png';
+  const statusLabel = formatStatusTitle(registration.status);
+  const isVerified = registration.status === 'verified';
+  const leadCopy = isVerified
+    ? 'This is your official verified Cognotsav pass. Download or print it, then show this pass with your registration code during event-time verification.'
+    : registration.status === 'waitlisted'
+      ? 'Your registration is currently on the waitlist. Keep this pass page and registration code saved while you track future status updates.'
+      : registration.status === 'rejected'
+        ? 'Your registration needs an update before approval. Keep this pass page and registration code handy while you coordinate with organizers.'
+        : 'Your registration is under review. Keep this pass page and registration code saved until organizer verification is completed.';
+  const hintCopy = isVerified
+    ? 'Carry this pass and share your registration code at the venue entry desk for verification.'
+    : registration.status === 'waitlisted'
+      ? 'Use the tracker regularly. If a slot opens, your status will be updated and this pass page will reflect it.'
+      : registration.status === 'rejected'
+        ? 'Please review the latest organizer note in the tracker and resubmit the required details if needed.'
+        : 'Use the tracker to follow approval progress. Once verified, this same pass link will act as your official event pass.';
+  const badgeStyle = isVerified
+    ? 'border: 1px solid rgba(52,211,153,0.22); background: linear-gradient(90deg, rgba(16,185,129,0.14), rgba(34,211,238,0.1)); color: #d1fae5;'
+    : registration.status === 'waitlisted'
+      ? 'border: 1px solid rgba(251,191,36,0.22); background: linear-gradient(90deg, rgba(245,158,11,0.14), rgba(251,191,36,0.12)); color: #fde68a;'
+      : registration.status === 'rejected'
+        ? 'border: 1px solid rgba(251,113,133,0.22); background: linear-gradient(90deg, rgba(244,63,94,0.16), rgba(251,113,133,0.12)); color: #fecdd3;'
+        : 'border: 1px solid rgba(96,165,250,0.22); background: linear-gradient(90deg, rgba(59,130,246,0.16), rgba(34,211,238,0.1)); color: #bfdbfe;';
 
   return `
     <!doctype html>
@@ -2045,7 +2158,7 @@ function buildVerifiedPassPage(registration, appUrl = resolvePublicAppUrl()) {
           .notice { margin-top: 16px; border-radius: 20px; padding: 14px 16px; background: linear-gradient(180deg, rgba(15,23,42,0.78), rgba(255,255,255,0.04)); border: 1px solid rgba(255,255,255,0.08); }
           .hint { margin: 0; color: #cbd5e1; font-size: 12px; line-height: 1.6; }
           .actions { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
-          .button { display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; padding: 12px 20px; font-size: 13px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none; }
+          .button { display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; padding: 12px 20px; font-size: 13px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none; border: 0; cursor: pointer; }
           .button-primary { background: linear-gradient(90deg, #67e8f9, #fbbf24); color: #041018; }
           .button-secondary { border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.06); color: #ffffff; }
           @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } .title { font-size: 22px; } }
@@ -2070,8 +2183,8 @@ function buildVerifiedPassPage(registration, appUrl = resolvePublicAppUrl()) {
               <h1 class="title">Official Event Pass</h1>
             </div>
             <div class="body">
-              <div class="badge">Verified Registration</div>
-              <div class="lead">This is your official verified Cognotsav pass. Download or print it, then show this pass with your registration code during event-time verification.</div>
+              <div class="badge" style="${badgeStyle}">${escapeHtml(statusLabel)}</div>
+              <div class="lead">${escapeHtml(leadCopy)}</div>
               <div class="grid">
                 <div class="cell"><div class="label">Registration code</div><div class="value">${escapeHtml(registration.registration_code)}</div></div>
                 <div class="cell"><div class="label">Event</div><div class="value">${escapeHtml(registration.event_name)}</div></div>
@@ -2081,10 +2194,10 @@ function buildVerifiedPassPage(registration, appUrl = resolvePublicAppUrl()) {
                 <div class="cell"><div class="label">Venue</div><div class="value">${escapeHtml(registration.venue)}</div></div>
               </div>
               <div class="notice">
-                <p class="hint">Carry this pass and share your registration code at the venue entry desk for verification.</p>
+                <p class="hint">${escapeHtml(hintCopy)}</p>
               </div>
               <div class="actions">
-                <a class="button button-primary" href="javascript:window.print()">Print / Save PDF</a>
+                <button type="button" class="button button-primary" onclick="window.print()">Print / Save PDF</button>
                 <a class="button button-secondary" href="${appUrl}/#tracker">Open Tracker</a>
               </div>
             </div>
@@ -2563,6 +2676,7 @@ app.get('/pass/:registrationCode', async (req, res) => {
         r.contact_name,
         r.contact_email,
         r.status,
+        r.review_note,
         e.name AS event_name,
         e.date_label,
         e.time_label,
@@ -2579,10 +2693,6 @@ app.get('/pass/:registrationCode', async (req, res) => {
   const registration = result.rows[0] ?? null;
   if (!registration) {
     return res.status(404).send('Pass not found.');
-  }
-
-  if (registration.status !== 'verified') {
-    return res.status(403).send('Official pass is available only after verification.');
   }
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
