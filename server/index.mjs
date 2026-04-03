@@ -1161,7 +1161,7 @@ function buildStatusEmail(registration, appUrl = resolvePublicAppUrl()) {
   const eventLine = `${registration.event_name} / ${registration.date_label} / ${registration.time_label}`;
   const salutation = registration.contact_name || registration.team_name || 'Participant';
   const statusTitle = formatStatusTitle(registration.status);
-  const passLink = `${appUrl}/pass?code=${encodeURIComponent(registration.registration_code)}`;
+  const passLink = `${appUrl}/pass?id=${encodeURIComponent(registration.id || '')}&code=${encodeURIComponent(registration.registration_code)}&email=${encodeURIComponent(registration.contact_email || '')}`;
   const passDownloadLink = `${passLink}&download=true`;
   const trackerLink = `${appUrl}/#tracker`;
   const techxceleratePresentationInvite = resolveTechxceleratePresentationLink(registration);
@@ -1819,6 +1819,10 @@ function escapeHtml(value) {
   });
 }
 
+function serializeInlineJson(value) {
+  return JSON.stringify(value).replaceAll('<', '\\u003c');
+}
+
 function formatAttendanceStatusLabel(status) {
   if (status === 'arrived') return 'Arrived';
   if (status === 'checked-in') return 'Checked in';
@@ -1926,7 +1930,8 @@ function buildRegistrationTimeline(registration, notifications) {
 }
 
 async function fetchLookupRegistrations(query) {
-  const normalized = query.toLowerCase();
+  const normalized = String(query || '').trim().toLowerCase();
+  const compactNormalized = normalized.replace(/[^a-z0-9]/g, '');
   const result = await pool.query(
     `
       SELECT
@@ -1968,10 +1973,11 @@ async function fetchLookupRegistrations(query) {
       FROM registrations r
       JOIN events e ON e.slug = r.event_slug
       WHERE LOWER(r.registration_code) = $1
+         OR ($2::text <> '' AND REGEXP_REPLACE(LOWER(r.registration_code), '[^a-z0-9]', '', 'g') = $2)
          OR LOWER(r.contact_email) = $1
       ORDER BY r.created_at DESC
     `,
-    [normalized],
+    [normalized, compactNormalized],
   );
 
   if (result.rowCount === 0) {
@@ -2265,6 +2271,262 @@ function buildVerifiedPassPage(registration, appUrl = resolvePublicAppUrl(), opt
           </div>
         </div>
         ${autoPrint ? `<script>window.addEventListener('load', () => { window.setTimeout(() => { if (typeof window.print === 'function') { window.print(); } }, 450); });</script>` : ''}
+      </body>
+    </html>
+  `;
+}
+
+function buildPassLookupRecoveryPage(appUrl = resolvePublicAppUrl(), options = {}) {
+  const prefilledQuery = String(options?.prefilledQuery || '').trim();
+  const fallbackEmail = String(options?.fallbackEmail || '').trim().toLowerCase();
+  const downloadRequested = Boolean(options?.download);
+  const initialQuery = prefilledQuery || fallbackEmail;
+  const encodedInitialQuery = escapeHtml(initialQuery);
+  const trackerHref = `${appUrl}/#tracker`;
+  const lookupEndpoint = `${appUrl}/api/registrations/lookup`;
+
+  return `
+    <!doctype html>
+    <html lang="en">
+      <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Recover Event Pass</title>
+        <style>
+          * { box-sizing: border-box; }
+          body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 20px;
+            font-family: Inter, Arial, sans-serif;
+            color: #e5eefb;
+            background:
+              radial-gradient(circle at top left, rgba(59,130,246,0.18), transparent 26%),
+              radial-gradient(circle at bottom right, rgba(236,72,153,0.16), transparent 24%),
+              linear-gradient(180deg, #07111d 0%, #0f172a 100%);
+          }
+          .card {
+            width: min(100%, 620px);
+            border-radius: 28px;
+            border: 1px solid rgba(148,163,184,0.18);
+            background: linear-gradient(180deg, rgba(15,23,42,0.9), rgba(17,24,39,0.92));
+            box-shadow: 0 30px 80px rgba(2,8,23,0.4);
+            padding: 24px;
+          }
+          .eyebrow {
+            font-size: 11px;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            color: #93c5fd;
+            font-weight: 800;
+          }
+          h1 {
+            margin: 12px 0 0;
+            font-family: Orbitron, Inter, Arial, sans-serif;
+            font-size: 28px;
+            line-height: 1.15;
+            text-transform: uppercase;
+            color: #fff;
+          }
+          p {
+            margin: 12px 0 0;
+            color: #cbd5e1;
+            line-height: 1.65;
+          }
+          form {
+            margin-top: 18px;
+            display: grid;
+            gap: 12px;
+          }
+          input {
+            width: 100%;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 18px;
+            padding: 14px 16px;
+            font-size: 15px;
+            color: #fff;
+            background: rgba(255,255,255,0.06);
+            outline: none;
+          }
+          input::placeholder {
+            color: #94a3b8;
+          }
+          .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+          }
+          .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 999px;
+            padding: 12px 18px;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            text-decoration: none;
+            border: 0;
+            cursor: pointer;
+          }
+          .button-primary {
+            background: linear-gradient(90deg, #67e8f9, #fbbf24);
+            color: #041018;
+          }
+          .button-secondary {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: #fff;
+          }
+          .status {
+            margin-top: 14px;
+            border-radius: 18px;
+            border: 1px solid rgba(148,163,184,0.18);
+            background: rgba(15,23,42,0.55);
+            padding: 14px;
+            color: #cbd5e1;
+            min-height: 56px;
+          }
+          .status strong {
+            color: #fff;
+          }
+          .results {
+            margin-top: 14px;
+            display: grid;
+            gap: 10px;
+          }
+          .result {
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.04);
+            padding: 14px;
+          }
+          .result-title {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 800;
+            color: #fff;
+          }
+          .result-copy {
+            margin: 8px 0 0;
+            font-size: 13px;
+            color: #cbd5e1;
+          }
+          .result-link {
+            margin-top: 12px;
+          }
+          @media (max-width: 640px) {
+            .card { padding: 18px; border-radius: 22px; }
+            h1 { font-size: 24px; }
+            .actions { flex-direction: column; }
+            .button { width: 100%; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="card">
+          <div class="eyebrow">Pass Recovery</div>
+          <h1>We Couldn't Match That Pass Link Yet</h1>
+          <p>This can happen when a mobile app rewrites the pass URL. Search using your registration code or contact email and we'll reopen the correct pass.</p>
+          <form id="pass-recovery-form">
+            <input id="pass-recovery-input" type="text" placeholder="Enter registration code or contact email" value="${encodedInitialQuery}" />
+            <div class="actions">
+              <button type="submit" class="button button-primary">Recover Pass</button>
+              <a class="button button-secondary" href="${escapeHtml(trackerHref)}">Open Tracker</a>
+            </div>
+          </form>
+          <div id="pass-recovery-status" class="status">Trying to recover your pass...</div>
+          <div id="pass-recovery-results" class="results"></div>
+        </div>
+        <script>
+          const lookupEndpoint = ${serializeInlineJson(lookupEndpoint)};
+          const passBaseUrl = ${serializeInlineJson(appUrl)};
+          const preserveDownload = ${downloadRequested ? 'true' : 'false'};
+          const initialQuery = ${serializeInlineJson(initialQuery)};
+          const form = document.getElementById('pass-recovery-form');
+          const input = document.getElementById('pass-recovery-input');
+          const statusNode = document.getElementById('pass-recovery-status');
+          const resultsNode = document.getElementById('pass-recovery-results');
+
+          function setStatus(message) {
+            statusNode.textContent = message;
+          }
+
+          function buildPassHref(result) {
+            const params = new URLSearchParams();
+            if (result.id) params.set('id', result.id);
+            if (result.registration_code) params.set('code', result.registration_code);
+            if (result.contact_email) params.set('email', result.contact_email);
+            if (preserveDownload) params.set('download', 'true');
+            return passBaseUrl.replace(/\\/+$/, '') + '/pass?' + params.toString();
+          }
+
+          function renderResults(results) {
+            resultsNode.innerHTML = '';
+            for (const result of results) {
+              const wrapper = document.createElement('div');
+              wrapper.className = 'result';
+              const linkHref = buildPassHref(result);
+              wrapper.innerHTML = [
+                '<p class="result-title">' + result.team_name + '</p>',
+                '<p class="result-copy">' + result.event_name + ' / ' + result.registration_code + '</p>',
+                '<p class="result-copy">' + result.date_label + ' / ' + result.time_label + ' / ' + result.venue + '</p>',
+                '<div class="result-link"><a class="button button-primary" href="' + linkHref + '">Open Pass</a></div>',
+              ].join('');
+              resultsNode.appendChild(wrapper);
+            }
+          }
+
+          async function recoverPass(query) {
+            const normalizedQuery = String(query || '').trim();
+            if (!normalizedQuery) {
+              setStatus('Enter your registration code or contact email to recover the pass.');
+              resultsNode.innerHTML = '';
+              return;
+            }
+
+            setStatus('Checking the latest registration records...');
+            resultsNode.innerHTML = '';
+
+            try {
+              const response = await fetch(lookupEndpoint + '?query=' + encodeURIComponent(normalizedQuery), { credentials: 'same-origin' });
+              if (!response.ok) {
+                throw new Error('Lookup failed.');
+              }
+
+              const results = await response.json();
+              if (!Array.isArray(results) || results.length === 0) {
+                setStatus('No registration matched that search. Please verify the code or use the tracker.');
+                return;
+              }
+
+              if (results.length === 1) {
+                setStatus('Pass found. Opening it now...');
+                window.location.replace(buildPassHref(results[0]));
+                return;
+              }
+
+              setStatus('Multiple registrations matched this email. Choose the correct event pass below.');
+              renderResults(results);
+            } catch (error) {
+              setStatus('Pass recovery failed. Please open the tracker and search manually.');
+            }
+          }
+
+          form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            recoverPass(input.value);
+          });
+
+          if (initialQuery) {
+            recoverPass(initialQuery);
+          } else {
+            setStatus('Enter your registration code or contact email to recover the pass.');
+          }
+        </script>
       </body>
     </html>
   `;
@@ -2729,12 +2991,15 @@ app.get(['/pass', '/pass/:registrationCode'], async (req, res) => {
       req.query?.registration_code ||
       '',
   ).trim();
+  const rawRegistrationId = String(req.query?.id || '').trim();
+  const rawInviteToken = String(req.query?.token || req.query?.inviteToken || '').trim();
+  const rawContactEmail = normalizeEmail(req.query?.email || req.query?.contactEmail || '');
   const extractedRegistrationCode = extractRegistrationCodeCandidate(rawRegistrationCode || req.originalUrl || '');
   const normalizedRegistrationCode = extractedRegistrationCode.toLowerCase();
   const compactRegistrationCode = normalizedRegistrationCode.replace(/[^a-z0-9]/g, '');
   const downloadRequested = ['1', 'true', 'yes'].includes(String(req.query?.download || '').trim().toLowerCase());
 
-  if (!compactRegistrationCode) {
+  if (!rawRegistrationId && !rawInviteToken && !compactRegistrationCode && !rawContactEmail) {
     return res.status(400).send('Invalid registration code.');
   }
 
@@ -2753,16 +3018,25 @@ app.get(['/pass', '/pass/:registrationCode'], async (req, res) => {
         e.venue
       FROM registrations r
       JOIN events e ON e.slug = r.event_slug
-      WHERE LOWER(r.registration_code) = $1
-         OR REPLACE(LOWER(r.registration_code), '-', '') = $2
+      WHERE ($1::text <> '' AND r.id = $1)
+         OR ($2::text <> '' AND r.invite_token = $2)
+         OR ($3::text <> '' AND LOWER(r.registration_code) = $3)
+         OR ($4::text <> '' AND REGEXP_REPLACE(LOWER(r.registration_code), '[^a-z0-9]', '', 'g') = $4)
       LIMIT 1
     `,
-    [normalizedRegistrationCode, compactRegistrationCode],
+    [rawRegistrationId, rawInviteToken, normalizedRegistrationCode, compactRegistrationCode],
   );
 
   const registration = result.rows[0] ?? null;
   if (!registration) {
-    return res.status(404).send('Pass not found.');
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    return res.status(200).send(
+      buildPassLookupRecoveryPage(resolvePublicAppUrl(req), {
+        prefilledQuery: extractedRegistrationCode || rawRegistrationCode,
+        fallbackEmail: rawContactEmail,
+        download: downloadRequested,
+      }),
+    );
   }
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
