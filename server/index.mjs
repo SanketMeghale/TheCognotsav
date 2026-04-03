@@ -1579,6 +1579,7 @@ async function getNotificationReadyRegistration(registrationId) {
         r.contact_email,
         r.contact_phone,
         r.presentation_mode,
+        r.project_title,
         r.payment_reference,
         r.total_amount,
         r.status,
@@ -2689,6 +2690,7 @@ async function writeBackupSnapshot(trigger = 'manual') {
         r.contact_name,
         r.contact_email,
         r.contact_phone,
+        r.project_title,
         r.registration_source,
         r.payment_method,
         r.payment_reference,
@@ -2811,6 +2813,7 @@ async function fetchAdminRegistrations(whereClause = '', params = []) {
         r.contact_name,
         r.contact_email,
         r.contact_phone,
+        r.project_title,
         r.registration_source,
         r.payment_method,
         r.payment_reference,
@@ -3054,6 +3057,7 @@ app.post('/api/registrations', async (req, res) => {
     contactEmail,
     contactPhone,
     presentationMode,
+    projectTitle,
     paymentReference,
     paymentScreenshotDataUrl,
     notes,
@@ -3100,8 +3104,13 @@ app.post('/api/registrations', async (req, res) => {
   }
 
   const normalizedPresentationMode = String(presentationMode || '').trim().toLowerCase();
+  const normalizedProjectTitle = String(projectTitle || '').trim();
   if (event.slug === 'techxcelerate' && !['online', 'offline'].includes(normalizedPresentationMode)) {
     return res.status(400).json({ error: 'Choose online or offline presentation for Techxcelerate Project Expo.' });
+  }
+
+  if (event.slug === 'techxcelerate' && !normalizedProjectTitle) {
+    return res.status(400).json({ error: 'Project title is required for Techxcelerate Project Expo.' });
   }
 
   const registrationId = randomUUID();
@@ -3159,14 +3168,14 @@ app.post('/api/registrations', async (req, res) => {
         INSERT INTO registrations (
           id, registration_code, event_slug, team_name, college_name, department_name,
           year_of_study, contact_name, contact_email, contact_phone, registration_source, payment_method,
-          presentation_mode, payment_reference, payment_screenshot_path, payment_provider_order_id,
+          presentation_mode, project_title, payment_reference, payment_screenshot_path, payment_provider_order_id,
           payment_provider_payment_id, payment_provider_signature, total_amount, status, notes, invite_token
         )
         VALUES (
           $1, $2, $3, $4, $5, $6,
           $7, $8, $9, $10, $11,
-          $12, $13, $14, $15, $16, $17, $18,
-          $19, $20, $21, $22
+          $12, $13, $14, $15, $16, $17, $18, $19,
+          $20, $21, $22, $23
         )
       `,
       [
@@ -3183,6 +3192,7 @@ app.post('/api/registrations', async (req, res) => {
         'online',
         'upi',
         event.slug === 'techxcelerate' ? normalizedPresentationMode : null,
+        event.slug === 'techxcelerate' ? normalizedProjectTitle : null,
         paymentReference ? String(paymentReference).trim() : null,
         paymentScreenshotPath,
         null,
@@ -3231,6 +3241,7 @@ app.post('/api/registrations', async (req, res) => {
       contact_email: normalizeEmail(contactEmail),
       contact_phone: String(contactPhone).trim(),
       presentation_mode: event.slug === 'techxcelerate' ? normalizedPresentationMode : null,
+      project_title: event.slug === 'techxcelerate' ? normalizedProjectTitle : null,
       payment_reference: paymentReference ? String(paymentReference).trim() : null,
       total_amount: totalAmount,
       status: initialStatus,
@@ -3281,6 +3292,7 @@ app.post('/api/admin/registrations/special', requireAdmin, async (req, res) => {
     contactName,
     contactEmail,
     contactPhone,
+    projectTitle,
     paymentMethod,
     paymentReference,
     notes,
@@ -3296,6 +3308,7 @@ app.post('/api/admin/registrations/special', requireAdmin, async (req, res) => {
   const normalizedContactName = String(contactName || '').trim();
   const normalizedContactEmail = normalizeEmail(contactEmail);
   const normalizedContactPhone = String(contactPhone || '').trim();
+  const normalizedProjectTitle = String(projectTitle || '').trim();
   const normalizedPaymentMethod = String(paymentMethod || '').trim().toLowerCase();
   const normalizedPaymentReference = String(paymentReference || '').trim();
   const normalizedNotes = String(notes || '').trim();
@@ -3410,14 +3423,14 @@ app.post('/api/admin/registrations/special', requireAdmin, async (req, res) => {
         INSERT INTO registrations (
           id, registration_code, event_slug, team_name, college_name, department_name,
           year_of_study, contact_name, contact_email, contact_phone, registration_source, payment_method,
-          payment_reference, payment_screenshot_path, payment_provider_order_id,
+          project_title, payment_reference, payment_screenshot_path, payment_provider_order_id,
           payment_provider_payment_id, payment_provider_signature, total_amount, status, verified_at, notes, invite_token
         )
         VALUES (
           $1, $2, $3, $4, $5, $6,
           $7, $8, $9, $10, $11, $12,
-          $13, $14, $15, $16, $17, $18,
-          $19, $20, $21, $22
+          $13, $14, $15, $16, $17, $18, $19,
+          $20, $21, $22, $23
         )
       `,
       [
@@ -3433,6 +3446,7 @@ app.post('/api/admin/registrations/special', requireAdmin, async (req, res) => {
         normalizedContactPhone,
         'special-desk',
         normalizedPaymentMethod,
+        normalizedEventSlug === 'techxcelerate' ? normalizedProjectTitle || null : null,
         normalizedPaymentReference || null,
         null,
         null,
@@ -3479,6 +3493,7 @@ app.post('/api/admin/registrations/special', requireAdmin, async (req, res) => {
       contact_name: normalizedContactName,
       contact_email: normalizedContactEmail,
       contact_phone: normalizedContactPhone,
+      project_title: normalizedEventSlug === 'techxcelerate' ? normalizedProjectTitle || null : null,
       registration_source: 'special-desk',
       payment_method: normalizedPaymentMethod,
       payment_reference: normalizedPaymentReference || null,
@@ -3924,6 +3939,7 @@ app.get('/api/admin/export.csv', requireAdmin, async (req, res) => {
           WHEN r.presentation_mode = 'offline' THEN 'Offline'
           ELSE ''
         END AS presentation_mode,
+        COALESCE(r.project_title, '') AS project_title,
         r.team_name,
         r.college_name,
         r.contact_name,
@@ -3949,6 +3965,7 @@ app.get('/api/admin/export.csv', requireAdmin, async (req, res) => {
   );
 
   const includePresentationMode = result.rows.some((row) => row.event_slug === 'techxcelerate');
+  const includeProjectTitle = result.rows.some((row) => row.event_slug === 'techxcelerate');
   const headers = [
     'registration_code',
     'event_name',
@@ -3965,6 +3982,9 @@ app.get('/api/admin/export.csv', requireAdmin, async (req, res) => {
   ];
   if (includePresentationMode) {
     headers.splice(2, 0, 'presentation_mode');
+  }
+  if (includeProjectTitle) {
+    headers.splice(includePresentationMode ? 3 : 2, 0, 'project_title');
   }
 
   const csvRows = [
@@ -3994,6 +4014,7 @@ app.get('/api/admin/export.xlsx', requireAdmin, async (req, res) => {
           WHEN r.presentation_mode = 'offline' THEN 'Offline'
           ELSE ''
         END AS "Presentation Mode",
+        COALESCE(r.project_title, '') AS "Project Title",
         r.team_name AS "Team Name",
         r.college_name AS "College",
         r.contact_name AS "Contact Name",
@@ -4024,6 +4045,7 @@ app.get('/api/admin/export.xlsx', requireAdmin, async (req, res) => {
     const { event_slug: rowEventSlug, ...sheetRow } = row;
     if (rowEventSlug !== 'techxcelerate') {
       delete sheetRow['Presentation Mode'];
+      delete sheetRow['Project Title'];
     }
     eventRows.push(sheetRow);
     collection.set(rowEventSlug, eventRows);

@@ -64,6 +64,7 @@ export async function initDatabase() {
       contact_email TEXT NOT NULL,
       contact_phone TEXT NOT NULL,
       presentation_mode TEXT,
+      project_title TEXT,
       registration_source TEXT NOT NULL DEFAULT 'online',
       payment_method TEXT NOT NULL DEFAULT 'upi',
       payment_reference TEXT,
@@ -138,6 +139,7 @@ export async function initDatabase() {
     ALTER TABLE events ADD COLUMN IF NOT EXISTS coordinators JSONB NOT NULL DEFAULT '[]'::jsonb;
     ALTER TABLE registrations ADD COLUMN IF NOT EXISTS payment_method TEXT NOT NULL DEFAULT 'upi';
     ALTER TABLE registrations ADD COLUMN IF NOT EXISTS presentation_mode TEXT;
+    ALTER TABLE registrations ADD COLUMN IF NOT EXISTS project_title TEXT;
     ALTER TABLE registrations ADD COLUMN IF NOT EXISTS registration_source TEXT NOT NULL DEFAULT 'online';
     ALTER TABLE registrations ADD COLUMN IF NOT EXISTS payment_screenshot_path TEXT;
     ALTER TABLE registrations ADD COLUMN IF NOT EXISTS payment_provider_order_id TEXT;

@@ -127,6 +127,7 @@ export type AdminRegistration = {
   contact_name: string;
   contact_email: string;
   contact_phone: string;
+  project_title?: string | null;
   registration_source: RegistrationSource | null;
   payment_reference: string | null;
   payment_method?: string | null;

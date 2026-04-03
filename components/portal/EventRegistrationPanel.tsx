@@ -15,6 +15,7 @@ type FormState = {
   contactEmail: string;
   contactPhone: string;
   presentationMode: string;
+  projectTitle: string;
   paymentReference: string;
   notes: string;
   participants: ParticipantDraft[];
@@ -300,6 +301,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const registrationPaused = selectedEvent.registration_enabled === false;
   const usesPerParticipantFee = selectedEvent.slug === 'rang-manch' || selectedEvent.slug === 'techxcelerate-poster-presentation';
   const showsPresentationModeSelector = selectedEvent.slug === 'techxcelerate';
+  const showsProjectTitleField = selectedEvent.slug === 'techxcelerate';
   const scrollBehavior = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
     ? 'auto'
     : 'smooth';
@@ -564,6 +566,18 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                       </select>
                       {showError('presentationMode') ? <span className="floating-field-error">{showError('presentationMode')}</span> : null}
                     </label>
+                  ) : null}
+                  {showsProjectTitleField ? (
+                    <div className="sm:col-span-2">
+                      <FloatingField
+                        label="Project title"
+                        value={form.projectTitle}
+                        onChange={(value) => onFormFieldChange('projectTitle', value)}
+                        onBlur={() => onFieldBlur('projectTitle')}
+                        error={showError('projectTitle')}
+                        required
+                      />
+                    </div>
                   ) : null}
                   {isSoloEvent ? null : (
                     <div className="sm:col-span-2">

@@ -134,6 +134,7 @@ type FormState = {
   contactEmail: string;
   contactPhone: string;
   presentationMode: string;
+  projectTitle: string;
   paymentReference: string;
   notes: string;
   participants: ParticipantDraft[];
@@ -836,6 +837,10 @@ function buildValidationErrors(
     errors.presentationMode = 'Choose online or offline presentation.';
   }
 
+  if (selectedEvent?.slug === 'techxcelerate' && !form.projectTitle.trim()) {
+    errors.projectTitle = 'Project title is required for Project Expo.';
+  }
+
   if (!form.paymentReference.trim()) {
     errors.paymentReference = 'Transaction ID is required.';
   } else if (form.paymentReference.trim().length < 6) {
@@ -925,6 +930,7 @@ export const App: React.FC = () => {
     contactEmail: '',
     contactPhone: '',
     presentationMode: '',
+    projectTitle: '',
     paymentReference: '',
     notes: '',
     participants: makeParticipants(1),
@@ -1554,6 +1560,7 @@ export const App: React.FC = () => {
           contactEmail: form.contactEmail,
           contactPhone: form.contactPhone,
           presentationMode: form.presentationMode,
+          projectTitle: form.projectTitle,
           paymentMethod: 'upi',
           paymentReference: form.paymentReference,
           paymentScreenshotDataUrl,
@@ -1624,6 +1631,7 @@ export const App: React.FC = () => {
         contactEmail: '',
         contactPhone: '',
         presentationMode: '',
+        projectTitle: '',
         paymentReference: '',
         notes: '',
         participants: makeParticipants(selectedEvent.min_members),
