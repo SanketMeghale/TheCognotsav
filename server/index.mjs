@@ -2,6 +2,7 @@ import 'dotenv/config';
 import cors from 'cors';
 import express from 'express';
 import { rateLimit } from 'express-rate-limit';
+import { google } from 'googleapis';
 import helmet from 'helmet';
 import nodemailer from 'nodemailer';
 import XLSX from 'xlsx';
@@ -47,6 +48,34 @@ const brevoApiKey = String(process.env.BREVO_API_KEY || '').trim();
 const resendConfigured = Boolean(resendApiKey && smtpFromEmail);
 const brevoConfigured = Boolean(brevoApiKey && smtpFromEmail);
 const smtpConfigured = Boolean(smtpHost && smtpPort && smtpFromEmail);
+const googleSheetsEnabled = String(process.env.GOOGLE_SHEETS_ENABLED || '').trim().toLowerCase() === 'true';
+const googleSheetsSpreadsheetId = String(process.env.GOOGLE_SHEETS_SPREADSHEET_ID || '').trim();
+const googleServiceAccountEmail = String(process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || '').trim();
+const googleServiceAccountPrivateKey = String(process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY || '')
+  .replace(/\\n/g, '\n')
+  .trim();
+const googleSheetsConfigured = Boolean(
+  googleSheetsEnabled &&
+  googleSheetsSpreadsheetId &&
+  googleServiceAccountEmail &&
+  googleServiceAccountPrivateKey,
+);
+const googleSheetsHeaders = [
+  'registration_id',
+  'registration_code',
+  'event_name',
+  'team_name',
+  'contact_name',
+  'contact_email',
+  'contact_phone',
+  'college_name',
+  'participants',
+  'presentation_mode',
+  'project_title',
+  'total_amount',
+];
+let googleSheetsConfigurationWarningShown = false;
+let googleSheetsService = null;
 const IST_OFFSET_MINUTES = 330;
 const EVENT_START_REMINDER_WINDOW_MS = 60 * 60 * 1000;
 const REGISTRATION_CLOSING_WINDOW_MS = 24 * 60 * 60 * 1000;
@@ -659,6 +688,216 @@ function buildAdminExportFileName(extension, eventSlug) {
   return eventSlug
     ? `participant-registrations-${String(eventSlug).trim()}.${extension}`
     : `participant-registrations.${extension}`;
+}
+
+function buildGoogleSheetsRange(tabName, range) {
+  const escapedTabName = String(tabName || '').replaceAll("'", "''");
+  return `'${escapedTabName}'!${range}`;
+}
+
+function formatGoogleSheetsPresentationMode(eventSlug, presentationMode) {
+  if (eventSlug !== 'techxcelerate') {
+    return '';
+  }
+
+  if (presentationMode === 'online') return 'Online';
+  if (presentationMode === 'offline') return 'Offline';
+  return '';
+}
+
+function buildGoogleSheetsRowValues(row) {
+  return [
+    row.registration_id,
+    row.registration_code,
+    row.event_name,
+    row.team_name,
+    row.contact_name,
+    row.contact_email,
+    row.contact_phone,
+    row.college_name,
+    row.participants,
+    row.presentation_mode,
+    row.project_title,
+    row.total_amount,
+  ];
+}
+
+function getGoogleSheetsService() {
+  if (!googleSheetsConfigured) {
+    return null;
+  }
+
+  if (!googleSheetsService) {
+    const auth = new google.auth.JWT({
+      email: googleServiceAccountEmail,
+      key: googleServiceAccountPrivateKey,
+      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+    });
+
+    googleSheetsService = google.sheets({ version: 'v4', auth });
+  }
+
+  return googleSheetsService;
+}
+
+async function fetchGoogleSheetsEventTabs() {
+  const result = await pool.query(
+    `
+      SELECT slug
+      FROM events
+      ORDER BY name ASC
+    `,
+  );
+
+  return result.rows.map((row) => row.slug);
+}
+
+async function fetchVerifiedRegistrationsForGoogleSheets() {
+  const result = await pool.query(
+    `
+      SELECT
+        r.id AS registration_id,
+        r.registration_code,
+        r.event_slug,
+        e.name AS event_name,
+        r.team_name,
+        r.contact_name,
+        r.contact_email,
+        r.contact_phone,
+        r.college_name,
+        CASE
+          WHEN r.event_slug = 'techxcelerate' AND r.presentation_mode = 'online' THEN 'Online'
+          WHEN r.event_slug = 'techxcelerate' AND r.presentation_mode = 'offline' THEN 'Offline'
+          ELSE ''
+        END AS presentation_mode,
+        CASE
+          WHEN r.event_slug = 'techxcelerate' THEN COALESCE(r.project_title, '')
+          ELSE ''
+        END AS project_title,
+        r.total_amount,
+        COALESCE(string_agg(
+          p.full_name || ' <' || p.email || '> (' || p.phone || ')',
+          ' | '
+          ORDER BY p.id
+        ), '') AS participants
+      FROM registrations r
+      JOIN events e ON e.slug = r.event_slug
+      LEFT JOIN registration_participants p ON p.registration_id = r.id
+      WHERE r.status = 'verified'
+      GROUP BY r.id, e.name
+      ORDER BY e.name ASC, COALESCE(r.verified_at, r.updated_at, r.created_at) ASC, r.created_at ASC
+    `,
+  );
+
+  return result.rows.map((row) => ({
+    ...row,
+    presentation_mode: formatGoogleSheetsPresentationMode(row.event_slug, row.presentation_mode?.toLowerCase?.() || row.presentation_mode),
+  }));
+}
+
+async function ensureGoogleSheetsTabs(sheets, tabNames) {
+  const spreadsheet = await sheets.spreadsheets.get({
+    spreadsheetId: googleSheetsSpreadsheetId,
+    fields: 'sheets(properties(title))',
+  });
+
+  const existingTabs = new Set(
+    (spreadsheet.data.sheets || [])
+      .map((sheet) => sheet.properties?.title)
+      .filter(Boolean),
+  );
+  const missingTabs = tabNames.filter((tabName) => !existingTabs.has(tabName));
+
+  if (missingTabs.length === 0) {
+    return;
+  }
+
+  await sheets.spreadsheets.batchUpdate({
+    spreadsheetId: googleSheetsSpreadsheetId,
+    requestBody: {
+      requests: missingTabs.map((tabName) => ({
+        addSheet: {
+          properties: {
+            title: tabName,
+            gridProperties: {
+              frozenRowCount: 1,
+            },
+          },
+        },
+      })),
+    },
+  });
+}
+
+async function syncVerifiedRegistrationsToGoogleSheets() {
+  const sheets = getGoogleSheetsService();
+  if (!sheets) {
+    return;
+  }
+
+  const [rows, tabNames] = await Promise.all([
+    fetchVerifiedRegistrationsForGoogleSheets(),
+    fetchGoogleSheetsEventTabs(),
+  ]);
+
+  await ensureGoogleSheetsTabs(sheets, tabNames);
+
+  const rowsByEventSlug = rows.reduce((collection, row) => {
+    const eventRows = collection.get(row.event_slug) || [];
+    eventRows.push(row);
+    collection.set(row.event_slug, eventRows);
+    return collection;
+  }, new Map());
+
+  for (const tabName of tabNames) {
+    await sheets.spreadsheets.values.update({
+      spreadsheetId: googleSheetsSpreadsheetId,
+      range: buildGoogleSheetsRange(tabName, 'A1:L1'),
+      valueInputOption: 'RAW',
+      requestBody: {
+        values: [googleSheetsHeaders],
+      },
+    });
+
+    await sheets.spreadsheets.values.clear({
+      spreadsheetId: googleSheetsSpreadsheetId,
+      range: buildGoogleSheetsRange(tabName, 'A2:L'),
+    });
+
+    const eventRows = (rowsByEventSlug.get(tabName) || []).map(buildGoogleSheetsRowValues);
+    if (eventRows.length === 0) {
+      continue;
+    }
+
+    await sheets.spreadsheets.values.update({
+      spreadsheetId: googleSheetsSpreadsheetId,
+      range: buildGoogleSheetsRange(tabName, 'A2:L'),
+      valueInputOption: 'RAW',
+      requestBody: {
+        values: eventRows,
+      },
+    });
+  }
+}
+
+async function safelySyncVerifiedRegistrationsToGoogleSheets(reason) {
+  if (!googleSheetsEnabled) {
+    return;
+  }
+
+  if (!googleSheetsConfigured) {
+    if (!googleSheetsConfigurationWarningShown) {
+      console.warn('Google Sheets sync is enabled, but one or more Google Sheets env vars are missing. Verified registrations will stay in PostgreSQL only.');
+      googleSheetsConfigurationWarningShown = true;
+    }
+    return;
+  }
+
+  try {
+    await syncVerifiedRegistrationsToGoogleSheets();
+  } catch (error) {
+    console.error(`Google Sheets sync failed after ${reason}`, error);
+  }
 }
 
 function getPaymentStatusLabel(status) {
@@ -3515,6 +3754,7 @@ app.post('/api/admin/registrations/special', requireAdmin, async (req, res) => {
     );
     const refreshedEvents = await fetchActiveEventsWithCounts();
     const refreshedEvent = refreshedEvents.find((item) => item.slug === normalizedEventSlug) || null;
+    await safelySyncVerifiedRegistrationsToGoogleSheets('special registration');
 
     return res.status(201).json({
       success: true,
@@ -3596,6 +3836,7 @@ app.patch('/api/admin/registrations/:id/status', requireAdmin, async (req, res) 
     id,
     req.adminAccess?.mode === 'event' ? req.adminAccess.eventSlug : null,
   );
+  await safelySyncVerifiedRegistrationsToGoogleSheets('status update');
   return res.json({
     registration: refreshedRegistration,
     notification,
@@ -3682,6 +3923,8 @@ app.delete('/api/admin/registrations/:id', requireAdmin, async (req, res) => {
   if (registration.status !== 'rejected' && registration.status !== 'waitlisted') {
     promotedRegistration = await promoteNextWaitlistedRegistration(registration.event_slug, { req });
   }
+
+  await safelySyncVerifiedRegistrationsToGoogleSheets('registration delete');
 
   return res.json({
     success: true,
@@ -4085,6 +4328,7 @@ app.use((error, _req, res, _next) => {
 });
 
 await initDatabase();
+await safelySyncVerifiedRegistrationsToGoogleSheets('server start');
 startSmartNotificationWorker();
 startBackupWorker();
 
@@ -4092,6 +4336,13 @@ app.listen(port, () => {
   console.log(`Portal API running on http://localhost:${port}`);
   if (!usesExplicitPersistentStorage) {
     console.warn('Uploads and backups are using the app working directory. On ephemeral hosting, attach persistent storage or uploaded payment screenshots may disappear after restart or redeploy.');
+  }
+  if (googleSheetsEnabled) {
+    if (googleSheetsConfigured) {
+      console.log('Google Sheets sync enabled for verified registrations.');
+    } else {
+      console.warn('Google Sheets sync is enabled, but the Google Sheets env vars are incomplete.');
+    }
   }
   if (resendConfigured) {
     console.log('Transactional emails enabled via Resend API.');
