@@ -222,18 +222,18 @@ const paymentOverridesBySlug: Record<string, { upiId: string; payee: string }> =
 
 const dynamicPaymentQrEventSlugs = new Set([
   'rang-manch',
+  'techxcelerate',
+  'techxcelerate-poster-presentation',
   'utopia',
+]);
+
+const brandedDynamicPaymentQrEventSlugs = new Set([
+  'techxcelerate',
+  'techxcelerate-poster-presentation',
 ]);
 
 const containedCustomQrEventSlugs = new Set([
-  'techxcelerate',
-  'techxcelerate-poster-presentation',
   'utopia',
-]);
-
-const tallCustomQrEventSlugs = new Set([
-  'techxcelerate',
-  'techxcelerate-poster-presentation',
 ]);
 
 function resolveCustomQrObjectPosition(eventSlug: string) {
@@ -307,9 +307,14 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const activePayee = useBackupScanner ? FALLBACK_PAYMENT_PAYEE : primaryPayee;
   const activeUpiLink = useBackupScanner ? fallbackUpiLink : primaryUpiLink;
   const paymentQrSrc = useBackupScanner ? FALLBACK_PAYMENT_QR_IMAGE : primaryPaymentQrSrc;
+  const usesBrandedDynamicPaymentQr = !useBackupScanner && brandedDynamicPaymentQrEventSlugs.has(selectedEvent.slug) && Boolean(primaryQrUrl);
   const usingCustomQrImage = hasCustomQrImage && !useBackupScanner && !prefersDynamicPaymentQr;
   const usesContainedCustomQr = usingCustomQrImage && containedCustomQrEventSlugs.has(selectedEvent.slug);
-  const usesTallCustomQr = usingCustomQrImage && tallCustomQrEventSlugs.has(selectedEvent.slug);
+  const scannerAmountLabel = selectedEvent.slug === 'techxcelerate'
+    ? 'Scanner amount preset: Rs 200 per team'
+    : selectedEvent.slug === 'techxcelerate-poster-presentation'
+      ? `Scanner amount preset: Rs ${payableAmount} (${teamSize} x Rs 50 per member)`
+      : '';
   const canOpenPaymentApp = typeof window !== 'undefined' && /Android|iPhone|iPad|iPod/i.test(window.navigator.userAgent);
   const isSoloEvent = selectedEvent.min_members === 1 && !selectedEvent.is_team_event;
   const registrationPaused = selectedEvent.registration_enabled === false;
@@ -670,10 +675,36 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                       <p className="text-sm font-semibold">{useBackupScanner ? 'Backup payment QR' : 'Event payment QR'}</p>
                     </div>
                     <div
-                      className={`mt-3 flex items-center justify-center overflow-hidden rounded-[1.2rem] p-3 ${usesTallCustomQr ? '' : 'aspect-square'} ${usesTallCustomQr ? 'bg-[#eef2f7]' : usesContainedCustomQr ? 'bg-[#050505]' : 'bg-white'}`}
-                      style={usesTallCustomQr ? { aspectRatio: '0.8' } : undefined}
+                      className={`mt-3 flex items-center justify-center overflow-hidden rounded-[1.2rem] p-3 ${usesBrandedDynamicPaymentQr ? '' : 'aspect-square'} ${usesContainedCustomQr ? 'bg-[#050505]' : usesBrandedDynamicPaymentQr ? 'bg-[#eef2f7]' : 'bg-white'}`}
+                      style={usesBrandedDynamicPaymentQr ? { aspectRatio: '0.8' } : undefined}
                     >
-                      {paymentQrSrc ? (
+                      {usesBrandedDynamicPaymentQr ? (
+                        <div className="w-full max-w-[18rem] rounded-[1.75rem] bg-[#e9eef6] p-4 text-slate-700 shadow-[0_18px_36px_rgba(15,23,42,0.18)]">
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-sky-500 to-indigo-500 text-sm font-black uppercase tracking-[0.18em] text-white">
+                              PC
+                            </div>
+                            <div className="min-w-0">
+                              <p className="truncate text-lg font-semibold text-slate-700">{primaryPayee}</p>
+                              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+                                {selectedEvent.slug === 'techxcelerate' ? 'Project Expo Scanner' : 'Poster Presentation Scanner'}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="mt-4 rounded-[1.45rem] bg-white p-4 shadow-[0_10px_24px_rgba(15,23,42,0.08)]">
+                            <div className="mx-auto aspect-square w-full max-w-[14.5rem] rounded-[1.2rem] bg-white p-2">
+                              <img
+                                src={primaryQrUrl}
+                                alt={`${selectedEvent.name} payment QR`}
+                                className="h-full w-full object-contain"
+                              />
+                            </div>
+                            <p className="mt-4 text-center text-[15px] font-semibold text-slate-700">UPI ID: {primaryUpiId}</p>
+                            <p className="mt-2 text-center text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">{scannerAmountLabel}</p>
+                          </div>
+                        </div>
+                      ) : paymentQrSrc ? (
                         <img
                           src={paymentQrSrc}
                           alt={`${selectedEvent.name} ${useBackupScanner ? 'backup ' : ''}payment QR`}
