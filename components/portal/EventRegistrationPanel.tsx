@@ -221,9 +221,13 @@ const paymentOverridesBySlug: Record<string, { upiId: string; payee: string }> =
 };
 
 const dynamicPaymentQrEventSlugs = new Set([
+  'rang-manch',
+  'utopia',
+]);
+
+const containedCustomQrEventSlugs = new Set([
   'techxcelerate',
   'techxcelerate-poster-presentation',
-  'rang-manch',
   'utopia',
 ]);
 
@@ -299,7 +303,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const activeUpiLink = useBackupScanner ? fallbackUpiLink : primaryUpiLink;
   const paymentQrSrc = useBackupScanner ? FALLBACK_PAYMENT_QR_IMAGE : primaryPaymentQrSrc;
   const usingCustomQrImage = hasCustomQrImage && !useBackupScanner && !prefersDynamicPaymentQr;
-  const usesContainedCustomQr = usingCustomQrImage && selectedEvent.slug === 'utopia';
+  const usesContainedCustomQr = usingCustomQrImage && containedCustomQrEventSlugs.has(selectedEvent.slug);
   const canOpenPaymentApp = typeof window !== 'undefined' && /Android|iPhone|iPad|iPod/i.test(window.navigator.userAgent);
   const isSoloEvent = selectedEvent.min_members === 1 && !selectedEvent.is_team_event;
   const registrationPaused = selectedEvent.registration_enabled === false;

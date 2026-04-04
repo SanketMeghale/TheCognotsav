@@ -209,7 +209,8 @@ export const UPI_MAPPING: Record<string, { id: string; payee: string }> = {
   'googler-hunt': { id: 'siddhideshpande11@okhdfcbank', payee: 'Siddhi Deshpande' },
   'bgmi-esports': { id: 'kawadeakshay23@okaxis', payee: 'Akshay Kawade' },
   'ff-esports': { id: 'kawadeakshay23@okaxis', payee: 'Akshay Kawade' },
-  techxcelerate: { id: 'kawadeakshay23@okaxis', payee: 'Akshay Kawade' },
+  techxcelerate: { id: 'preranac90-1@okaxis', payee: 'Prerana Chavan' },
+  'techxcelerate-poster-presentation': { id: 'preranac90-1@okaxis', payee: 'Prerana Chavan' },
   'rang-manch': { id: 'chaitanyamagar418@okhdfcbank', payee: 'Chaitanya Magar' },
   'squid-game': { id: 'siddhideshpande11@okhdfcbank', payee: 'Siddhi Deshpande' },
 };
