@@ -179,7 +179,7 @@ export const eventSeed = [
     intro_video_url: optimizeCloudinaryVideo('https://res.cloudinary.com/dkxddhawc/video/upload/v1774094887/techacclerate_eopgpp.mp4'),
     payment_upi: 'preranac90-1@okaxis',
     payment_payee: 'Prerana Chavan',
-    payment_qr_image_path: '/images/prerana-payment-qr.png',
+    payment_qr_image_path: '/images/prerana-payment-scanner.png',
     coordinators: [
       { name: 'Prerna C.', phone: '8767927244' },
       { name: 'Akashy K.', phone: '9766205339' },
@@ -205,7 +205,7 @@ export const eventSeed = [
     intro_video_url: optimizeCloudinaryVideo('https://res.cloudinary.com/dkxddhawc/video/upload/v1774094887/techacclerate_eopgpp.mp4'),
     payment_upi: 'preranac90-1@okaxis',
     payment_payee: 'Prerana Chavan',
-    payment_qr_image_path: '/images/prerana-payment-qr.png',
+    payment_qr_image_path: '/images/prerana-payment-scanner.png',
     coordinators: [
       { name: 'Prerna C.', phone: '8767927244' },
       { name: 'Akashy K.', phone: '9766205339' },

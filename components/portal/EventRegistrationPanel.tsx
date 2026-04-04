@@ -231,6 +231,11 @@ const containedCustomQrEventSlugs = new Set([
   'utopia',
 ]);
 
+const tallCustomQrEventSlugs = new Set([
+  'techxcelerate',
+  'techxcelerate-poster-presentation',
+]);
+
 function resolveCustomQrObjectPosition(eventSlug: string) {
   switch (eventSlug) {
     case 'squid-game':
@@ -304,6 +309,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
   const paymentQrSrc = useBackupScanner ? FALLBACK_PAYMENT_QR_IMAGE : primaryPaymentQrSrc;
   const usingCustomQrImage = hasCustomQrImage && !useBackupScanner && !prefersDynamicPaymentQr;
   const usesContainedCustomQr = usingCustomQrImage && containedCustomQrEventSlugs.has(selectedEvent.slug);
+  const usesTallCustomQr = usingCustomQrImage && tallCustomQrEventSlugs.has(selectedEvent.slug);
   const canOpenPaymentApp = typeof window !== 'undefined' && /Android|iPhone|iPad|iPod/i.test(window.navigator.userAgent);
   const isSoloEvent = selectedEvent.min_members === 1 && !selectedEvent.is_team_event;
   const registrationPaused = selectedEvent.registration_enabled === false;
@@ -663,7 +669,10 @@ export const EventRegistrationPanel: React.FC<Props> = ({
                       <QrCode size={18} />
                       <p className="text-sm font-semibold">{useBackupScanner ? 'Backup payment QR' : 'Event payment QR'}</p>
                     </div>
-                    <div className={`mt-3 flex aspect-square items-center justify-center overflow-hidden rounded-[1.2rem] p-3 ${usesContainedCustomQr ? 'bg-[#050505]' : 'bg-white'}`}>
+                    <div
+                      className={`mt-3 flex items-center justify-center overflow-hidden rounded-[1.2rem] p-3 ${usesTallCustomQr ? '' : 'aspect-square'} ${usesTallCustomQr ? 'bg-[#eef2f7]' : usesContainedCustomQr ? 'bg-[#050505]' : 'bg-white'}`}
+                      style={usesTallCustomQr ? { aspectRatio: '0.8' } : undefined}
+                    >
                       {paymentQrSrc ? (
                         <img
                           src={paymentQrSrc}
