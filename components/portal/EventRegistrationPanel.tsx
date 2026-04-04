@@ -147,7 +147,7 @@ const handbookBySlug: Record<string, {
     highlights: ['1 to 4 members per team', 'Round 1: Rapid Resolve with 15 MCQs in 30 minutes', 'Round 2: The Chain for the top 5 teams with 11 unlock-based questions', 'Clue system reduces points but helps progress in both rounds'],
     rules: ['The event is hosted entirely on the platform with no internet shortcuts', 'Only the top 5 teams from Round 1 advance to Round 2', 'Wildcard questions can appear and have no clue option', 'Wrong attempts in Round 2 start penalty deductions from the 6th wrong attempt onward'],
     handbookUrl: '/handbooks/googler-hunt.pdf',
-    quickDetails: ['Format: Team quiz / treasure hunt', 'Fee: Rs 200 per team', 'Rounds: Rapid Resolve + The Chain'],
+    quickDetails: ['Format: Team quiz / treasure hunt', 'Fee: Rs 50 per participant', 'Rounds: Rapid Resolve + The Chain'],
   },
   utopia: {
     theme: 'Concept. Code. Conquer.',
@@ -196,6 +196,10 @@ function SectionCard({ title, subtitle, children }: { title: string; subtitle: s
 function resolveEventAmount(event: EventRecord, participantCount: number) {
   if (event.slug === 'rang-manch') {
     return Math.min(Math.max(1, participantCount) * 50, 200);
+  }
+
+  if (event.slug === 'googler-hunt') {
+    return Math.max(1, participantCount) * 50;
   }
 
   if (event.slug === 'utopia') {

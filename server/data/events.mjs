@@ -143,9 +143,9 @@ export const eventSeed = [
     description:
       'Clue-solving technical hunt that benefits from clear team validation and centralized participant data.',
     prize: 'INR 5,000',
-    registration_fee: 200,
-    registration_fee_label: 'INR 200 per squad',
-    min_members: 4,
+    registration_fee: 50,
+    registration_fee_label: 'INR 50 per participant (max INR 200)',
+    min_members: 1,
     max_members: 4,
     max_slots: 30,
     is_team_event: true,

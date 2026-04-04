@@ -969,6 +969,10 @@ function resolveRegistrationAmount(event, participantCount) {
     return Math.min(Math.max(1, Number(participantCount) || 1) * 50, 200);
   }
 
+  if (event?.slug === 'googler-hunt') {
+    return Math.max(1, Number(participantCount) || 1) * 50;
+  }
+
   if (event?.slug === 'techxcelerate-poster-presentation') {
     return Math.max(1, Number(participantCount) || 1) * 50;
   }
