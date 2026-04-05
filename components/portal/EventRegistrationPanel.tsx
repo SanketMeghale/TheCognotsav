@@ -233,6 +233,7 @@ const brandedDynamicPaymentQrEventSlugs = new Set([
 ]);
 
 const containedCustomQrEventSlugs = new Set([
+  'tech-kbc',
   'utopia',
 ]);
 
@@ -254,8 +255,6 @@ function resolveCustomQrObjectPosition(eventSlug: string) {
 
 function resolveCustomQrScale(eventSlug: string) {
   switch (eventSlug) {
-    case 'tech-kbc':
-      return 1.22;
     default:
       return 1;
   }
