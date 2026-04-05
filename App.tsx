@@ -847,18 +847,18 @@ function LiveUpdatesStripBase({ events, announcements, loading }: LiveUpdatesStr
             </h3>
           </div>
 
-          <a href="#registration-panel" className="inline-flex items-center gap-2 self-start rounded-full border border-white/10 bg-white/[0.05] px-4 py-3 text-sm font-semibold text-white transition hover:border-fuchsia-300/20 hover:bg-fuchsia-400/10">
+          <a href="#registration-panel" className="inline-flex items-center gap-2 self-start rounded-full border border-white/10 bg-white/[0.05] px-3.5 py-2.5 text-[13px] font-semibold text-white transition hover:border-fuchsia-300/20 hover:bg-fuchsia-400/10 sm:px-4 sm:py-3 sm:text-sm">
             Browse all competitions
             <ArrowRight size={15} />
           </a>
         </div>
 
-        <div className="mt-6 flex gap-4 overflow-x-auto pb-3 pr-1 snap-x">
+        <div className="mt-6 flex gap-3 overflow-x-auto pb-3 pr-1 snap-x sm:gap-4">
           {loading && events.length === 0
             ? Array.from({ length: 4 }).map((_, index) => (
                 <div
                   key={index}
-                  className="min-w-[272px] flex-none snap-start rounded-[1.6rem] border border-white/10 bg-[linear-gradient(180deg,rgba(22,16,38,0.96),rgba(11,10,18,0.98))] p-5"
+                  className="min-w-[238px] flex-none snap-start rounded-[1.35rem] border border-white/10 bg-[linear-gradient(180deg,rgba(22,16,38,0.96),rgba(11,10,18,0.98))] p-4 sm:min-w-[272px] sm:rounded-[1.6rem] sm:p-5"
                 >
                   <div className="flex gap-2">
                     <div className="h-7 w-24 animate-pulse rounded-full bg-white/10" />
@@ -875,7 +875,7 @@ function LiveUpdatesStripBase({ events, announcements, loading }: LiveUpdatesStr
                 <a
                   key={card.id}
                   href={card.href}
-                  className={`group min-w-[272px] flex-none snap-start rounded-[1.6rem] border p-5 transition duration-300 hover:-translate-y-1 ${card.tone?.shellClassName || 'border-white/10 bg-black/30'}`}
+                  className={`group min-w-[238px] flex-none snap-start rounded-[1.35rem] border p-4 transition duration-300 hover:-translate-y-1 sm:min-w-[272px] sm:rounded-[1.6rem] sm:p-5 ${card.tone?.shellClassName || 'border-white/10 bg-black/30'}`}
                   style={card.tone?.glowStyle}
                 >
                   <div className="flex flex-wrap gap-2">
@@ -888,11 +888,11 @@ function LiveUpdatesStripBase({ events, announcements, loading }: LiveUpdatesStr
                   </div>
 
                   <div className="mt-5">
-                    <h4 className="text-[1.45rem] font-black leading-tight text-white">{card.eventName}</h4>
-                    <p className="mt-2 max-w-[17rem] text-base leading-6 text-slate-100/92">{card.body}</p>
+                    <h4 className="text-[1.18rem] font-black leading-tight text-white sm:text-[1.45rem]">{card.eventName}</h4>
+                    <p className="mt-2 max-w-[15rem] text-[0.92rem] leading-5 text-slate-100/92 sm:max-w-[17rem] sm:text-base sm:leading-6">{card.body}</p>
                   </div>
 
-                  <div className="mt-6 space-y-3 text-sm text-slate-300">
+                  <div className="mt-5 space-y-2.5 text-[13px] text-slate-300 sm:mt-6 sm:space-y-3 sm:text-sm">
                     <div className="flex items-center gap-2">
                       <Clock3 size={15} className="text-white/70" />
                       <span>{card.schedule}</span>
@@ -901,7 +901,7 @@ function LiveUpdatesStripBase({ events, announcements, loading }: LiveUpdatesStr
                   </div>
 
                   <div className="mt-6 border-t border-white/10 pt-4">
-                    <span className={`inline-flex w-full items-center justify-between rounded-full border px-4 py-3 text-sm font-semibold transition ${card.tone?.buttonClassName || 'border-white/10 bg-white/5 text-white'}`}>
+                    <span className={`inline-flex w-full items-center justify-between rounded-full border px-3.5 py-2.5 text-[13px] font-semibold transition sm:px-4 sm:py-3 sm:text-sm ${card.tone?.buttonClassName || 'border-white/10 bg-white/5 text-white'}`}>
                       <span>{card.ctaLabel}</span>
                       <ArrowRight size={15} className="transition duration-300 group-hover:translate-x-1" />
                     </span>
