@@ -853,29 +853,30 @@ function LiveUpdatesStripBase({ events, announcements, loading }: LiveUpdatesStr
           </a>
         </div>
 
-        <div className="mt-6 flex gap-3 overflow-x-auto pb-3 pr-1 snap-x sm:gap-4">
+        <div className="mt-5 grid gap-3 sm:mt-6 sm:flex sm:gap-4 sm:overflow-x-auto sm:pb-3 sm:pr-1 sm:snap-x">
           {loading && events.length === 0
             ? Array.from({ length: 4 }).map((_, index) => (
                 <div
                   key={index}
-                  className="min-w-[238px] flex-none snap-start rounded-[1.35rem] border border-white/10 bg-[linear-gradient(180deg,rgba(22,16,38,0.96),rgba(11,10,18,0.98))] p-4 sm:min-w-[272px] sm:rounded-[1.6rem] sm:p-5"
+                  className="w-full rounded-[1.2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(22,16,38,0.96),rgba(11,10,18,0.98))] p-3.5 sm:min-w-[272px] sm:flex-none sm:snap-start sm:rounded-[1.6rem] sm:p-5"
                 >
                   <div className="flex gap-2">
                     <div className="h-7 w-24 animate-pulse rounded-full bg-white/10" />
                     <div className="h-7 w-24 animate-pulse rounded-full bg-white/10" />
                   </div>
-                  <div className="mt-6 h-7 w-32 animate-pulse rounded-full bg-white/10" />
-                  <div className="mt-3 h-5 w-44 animate-pulse rounded-full bg-white/10" />
-                  <div className="mt-6 h-4 w-36 animate-pulse rounded-full bg-white/10" />
-                  <div className="mt-3 h-4 w-40 animate-pulse rounded-full bg-white/10" />
-                  <div className="mt-6 h-11 animate-pulse rounded-full bg-white/10" />
+                  <div className="mt-4 h-6 w-32 animate-pulse rounded-full bg-white/10 sm:mt-6 sm:h-7" />
+                  <div className="mt-2.5 h-4 w-44 animate-pulse rounded-full bg-white/10 sm:mt-3 sm:h-5" />
+                  <div className="mt-4 h-3 w-full animate-pulse rounded-full bg-white/10 sm:mt-5" />
+                  <div className="mt-4 h-4 w-36 animate-pulse rounded-full bg-white/10 sm:mt-5" />
+                  <div className="mt-2.5 h-4 w-40 animate-pulse rounded-full bg-white/10 sm:mt-3" />
+                  <div className="mt-4 h-10 animate-pulse rounded-full bg-white/10 sm:mt-5 sm:h-11" />
                 </div>
               ))
             : cards.map((card) => (
                 <a
                   key={card.id}
                   href={card.href}
-                  className={`group min-w-[238px] flex-none snap-start rounded-[1.35rem] border p-4 transition duration-300 hover:-translate-y-1 sm:min-w-[272px] sm:rounded-[1.6rem] sm:p-5 ${card.tone?.shellClassName || 'border-white/10 bg-black/30'}`}
+                  className={`group w-full rounded-[1.2rem] border p-3.5 transition duration-300 hover:-translate-y-1 sm:min-w-[272px] sm:flex-none sm:snap-start sm:rounded-[1.6rem] sm:p-5 ${card.tone?.shellClassName || 'border-white/10 bg-black/30'}`}
                   style={card.tone?.glowStyle}
                 >
                   <div className="flex flex-wrap gap-2">
@@ -887,27 +888,28 @@ function LiveUpdatesStripBase({ events, announcements, loading }: LiveUpdatesStr
                     </span>
                   </div>
 
-                  <div className="mt-5">
-                    <h4 className="text-[1.18rem] font-black leading-tight text-white sm:text-[1.45rem]">{card.eventName}</h4>
-                    <p className="mt-2 max-w-[15rem] text-[0.92rem] leading-5 text-slate-100/92 sm:max-w-[17rem] sm:text-base sm:leading-6">{card.body}</p>
+                  <div className="mt-4 sm:mt-5">
+                    <h4 className="text-[1.08rem] font-black leading-tight text-white sm:text-[1.45rem]">{card.eventName}</h4>
+                    <p className="mt-1.5 max-w-full text-[0.86rem] leading-5 text-slate-100/92 line-clamp-2 sm:mt-2 sm:max-w-[17rem] sm:text-base sm:leading-6 sm:line-clamp-none">{card.body}</p>
                   </div>
 
-                  <div className="mt-5 space-y-2.5 text-[13px] text-slate-300 sm:mt-6 sm:space-y-3 sm:text-sm">
+                  <div className="mt-4 space-y-2 text-[12px] text-slate-300 sm:mt-6 sm:space-y-3 sm:text-sm">
                     <div className="flex items-center gap-2">
                       <Clock3 size={15} className="text-white/70" />
                       <span>{card.schedule}</span>
                     </div>
-                    <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">{card.detail}</p>
+                    <div className="h-[4px] overflow-hidden rounded-full bg-white/10">
+                      <div className={`h-full rounded-full ${card.tone?.railClassName || 'bg-white/10'}`} style={{ width: '68%' }} />
+                    </div>
+                    <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400 sm:text-[11px] sm:tracking-[0.18em]">{card.detail}</p>
                   </div>
 
-                  <div className="mt-6 border-t border-white/10 pt-4">
-                    <span className={`inline-flex w-full items-center justify-between rounded-full border px-3.5 py-2.5 text-[13px] font-semibold transition sm:px-4 sm:py-3 sm:text-sm ${card.tone?.buttonClassName || 'border-white/10 bg-white/5 text-white'}`}>
+                  <div className="mt-4 border-t border-white/10 pt-3 sm:mt-6 sm:pt-4">
+                    <span className={`inline-flex w-full items-center justify-between rounded-full border px-3 py-2 text-[12px] font-semibold transition sm:px-4 sm:py-3 sm:text-sm ${card.tone?.buttonClassName || 'border-white/10 bg-white/5 text-white'}`}>
                       <span>{card.ctaLabel}</span>
                       <ArrowRight size={15} className="transition duration-300 group-hover:translate-x-1" />
                     </span>
                   </div>
-
-                  <div className={`mt-4 h-[3px] rounded-full ${card.tone?.railClassName || 'bg-white/10'}`} aria-hidden="true" />
                 </a>
               ))}
         </div>
