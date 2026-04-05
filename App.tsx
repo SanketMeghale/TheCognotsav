@@ -340,6 +340,7 @@ type LiveUpdateCard = {
   body: string;
   schedule?: string;
   detail?: string;
+  progressWidth?: number;
   href: string;
   ctaLabel: string;
   primaryTag?: string;
@@ -742,6 +743,7 @@ function buildNeonLiveUpdateCards(events: EventRecord[]): LiveUpdateCard[] {
         body: 'is gaining traction across the event lineup.',
         schedule: '07 Apr 2026 - 02:00 PM',
         detail: '2 members - INR 100 per team',
+        progressWidth: 82,
         href: '#registration-panel',
         ctaLabel: 'Explore Events',
         primaryTag: 'Hot Event',
@@ -754,6 +756,7 @@ function buildNeonLiveUpdateCards(events: EventRecord[]): LiveUpdateCard[] {
         body: 'is one of the boldest crowd picks on the festival slate.',
         schedule: '08 Apr 2026 - 09:00 AM',
         detail: 'Solo - INR 50 per person',
+        progressWidth: 74,
         href: '#registration-panel',
         ctaLabel: 'Explore Events',
         primaryTag: 'Hot Pick',
@@ -795,6 +798,15 @@ function buildNeonLiveUpdateCards(events: EventRecord[]): LiveUpdateCard[] {
       + (event.registration_enabled !== false ? 8 : 0);
   };
 
+  const getProgressWidth = (event: EventRecord, { isHot, isLimited, startsSoon }: { isHot: boolean; isLimited: boolean; startsSoon: boolean }, index: number) => {
+    const slotRatio = typeof event.max_slots === 'number' && event.max_slots > 0
+      ? Math.round((event.registrations_count / event.max_slots) * 100)
+      : null;
+    const fallbackWidth = 60 + ((index % 4) * 6);
+    const derivedWidth = slotRatio ?? (isLimited ? 84 : isHot ? 78 : startsSoon ? 72 : fallbackWidth);
+    return Math.max(54, Math.min(94, derivedWidth));
+  };
+
   return [...events]
     .sort((left, right) => {
       const scoreDelta = getPriority(right) - getPriority(left);
@@ -818,6 +830,7 @@ function buildNeonLiveUpdateCards(events: EventRecord[]): LiveUpdateCard[] {
         body: getLiveUpdateLine(event, { isHot, isLimited, startsSoon }),
         schedule: event.time_label ? `${event.date_label} - ${event.time_label}` : event.date_label,
         detail: `${getTeamLabel(event)} - ${event.registration_fee_label || 'Entry details live'}`,
+        progressWidth: getProgressWidth(event, { isHot, isLimited, startsSoon }, index),
         href: `#events/${event.slug}`,
         ctaLabel: event.registration_enabled === false ? 'View Details' : 'Register Now',
         primaryTag: isHot ? 'Hot Event' : getEventCategoryLabel(event),
@@ -853,60 +866,71 @@ function LiveUpdatesStripBase({ events, announcements, loading }: LiveUpdatesStr
           </a>
         </div>
 
-        <div className="mt-5 grid gap-3 sm:mt-6 sm:flex sm:gap-4 sm:overflow-x-auto sm:pb-3 sm:pr-1 sm:snap-x">
+        <div className="mt-5 grid gap-3 sm:mt-6 lg:grid-cols-2 2xl:grid-cols-3">
           {loading && events.length === 0
             ? Array.from({ length: 4 }).map((_, index) => (
                 <div
                   key={index}
-                  className="w-full rounded-[1.1rem] border border-white/10 bg-[linear-gradient(180deg,rgba(22,16,38,0.96),rgba(11,10,18,0.98))] p-3 sm:min-w-[272px] sm:flex-none sm:snap-start sm:rounded-[1.6rem] sm:p-5"
+                  className="rounded-[1.15rem] border border-white/10 bg-[linear-gradient(180deg,rgba(22,16,38,0.96),rgba(11,10,18,0.98))] p-3.5 sm:rounded-[1.45rem] sm:p-4"
                 >
-                  <div className="flex gap-2">
-                    <div className="h-7 w-24 animate-pulse rounded-full bg-white/10" />
-                    <div className="h-7 w-24 animate-pulse rounded-full bg-white/10" />
+                  <div className="flex flex-wrap gap-1.5">
+                    <div className="h-6 w-24 animate-pulse rounded-full bg-white/10" />
+                    <div className="h-6 w-24 animate-pulse rounded-full bg-white/10" />
                   </div>
-                  <div className="mt-3 h-6 w-32 animate-pulse rounded-full bg-white/10 sm:mt-6 sm:h-7" />
-                  <div className="mt-3 h-3 w-full animate-pulse rounded-full bg-white/10 sm:mt-5" />
-                  <div className="mt-3 h-4 w-36 animate-pulse rounded-full bg-white/10 sm:mt-5" />
-                  <div className="mt-2 h-4 w-40 animate-pulse rounded-full bg-white/10 sm:mt-3" />
-                  <div className="mt-3 h-9 animate-pulse rounded-full bg-white/10 sm:mt-5 sm:h-11" />
+                  <div className="mt-3 h-6 w-32 animate-pulse rounded-full bg-white/10" />
+                  <div className="mt-3 space-y-2">
+                    <div className="h-3 w-40 animate-pulse rounded-full bg-white/10" />
+                    <div className="h-[4px] w-full animate-pulse rounded-full bg-white/10" />
+                    <div className="h-3 w-36 animate-pulse rounded-full bg-white/10" />
+                  </div>
+                  <div className="mt-3 h-10 animate-pulse rounded-full bg-white/10 lg:ml-auto lg:w-40" />
                 </div>
               ))
             : cards.map((card) => (
                 <a
                   key={card.id}
                   href={card.href}
-                  className={`group w-full rounded-[1.1rem] border p-3 transition duration-300 hover:-translate-y-1 sm:min-w-[272px] sm:flex-none sm:snap-start sm:rounded-[1.6rem] sm:p-5 ${card.tone?.shellClassName || 'border-white/10 bg-black/30'}`}
+                  className={`group flex h-full rounded-[1.15rem] border p-3.5 transition duration-300 hover:-translate-y-1 sm:rounded-[1.45rem] sm:p-4 ${card.tone?.shellClassName || 'border-white/10 bg-black/30'}`}
                   style={card.tone?.glowStyle}
                 >
-                  <div className="flex flex-wrap gap-2">
-                    <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.16em] sm:px-3 sm:py-1 sm:text-[10px] sm:tracking-[0.18em] ${card.tone?.accentPillClassName || 'border-white/10 bg-white/5 text-white'}`}>
-                      {card.primaryTag}
-                    </span>
-                    <span className="inline-flex items-center rounded-full border border-white/10 bg-white/[0.06] px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.16em] text-slate-200 sm:px-3 sm:py-1 sm:text-[10px] sm:tracking-[0.18em]">
-                      {card.secondaryTag}
-                    </span>
-                  </div>
+                  <div className="flex w-full flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap gap-1.5">
+                        <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.16em] sm:px-3 sm:py-1 sm:text-[10px] sm:tracking-[0.18em] ${card.tone?.accentPillClassName || 'border-white/10 bg-white/5 text-white'}`}>
+                          {card.primaryTag}
+                        </span>
+                        <span className="inline-flex items-center rounded-full border border-white/10 bg-white/[0.06] px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.16em] text-slate-200 sm:px-3 sm:py-1 sm:text-[10px] sm:tracking-[0.18em]">
+                          {card.secondaryTag}
+                        </span>
+                      </div>
 
-                  <div className="mt-3 sm:mt-5">
-                    <h4 className="text-[1rem] font-black leading-tight text-white sm:text-[1.45rem]">{card.eventName}</h4>
-                  </div>
+                      <div className="mt-2.5 sm:mt-3">
+                        <h4 className="text-[1.02rem] font-black leading-tight text-white sm:text-[1.28rem] xl:text-[1.38rem]">{card.eventName}</h4>
+                      </div>
 
-                  <div className="mt-3 space-y-1.5 text-[11px] text-slate-300 sm:mt-6 sm:space-y-3 sm:text-sm">
-                    <div className="flex items-center gap-2">
-                      <Clock3 size={15} className="text-white/70" />
-                      <span>{card.schedule}</span>
+                      <div className="mt-2.5 space-y-2 text-[11px] text-slate-300 sm:text-[12px]">
+                        <div className="flex items-center gap-2">
+                          <Clock3 size={14} className="text-white/70" />
+                          <span>{card.schedule}</span>
+                        </div>
+                        <div className="flex items-center gap-2.5">
+                          <div className="h-[4px] flex-1 overflow-hidden rounded-full bg-white/10">
+                            <div className={`h-full rounded-full ${card.tone?.railClassName || 'bg-white/10'}`} style={{ width: `${card.progressWidth ?? 68}%` }} />
+                          </div>
+                          <span className="text-[9px] font-semibold uppercase tracking-[0.16em] text-slate-300/80 sm:text-[10px]">
+                            {card.secondaryTag}
+                          </span>
+                        </div>
+                        <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400 sm:text-[10px] sm:tracking-[0.18em]">{card.detail}</p>
+                      </div>
                     </div>
-                    <div className="h-[4px] overflow-hidden rounded-full bg-white/10">
-                      <div className={`h-full rounded-full ${card.tone?.railClassName || 'bg-white/10'}`} style={{ width: '68%' }} />
-                    </div>
-                    <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400 sm:text-[11px] sm:tracking-[0.18em]">{card.detail}</p>
-                  </div>
 
-                  <div className="mt-3 border-t border-white/10 pt-2.5 sm:mt-6 sm:pt-4">
-                    <span className={`inline-flex w-full items-center justify-between rounded-full border px-3 py-1.5 text-[12px] font-semibold transition sm:px-4 sm:py-3 sm:text-sm ${card.tone?.buttonClassName || 'border-white/10 bg-white/5 text-white'}`}>
-                      <span>{card.ctaLabel}</span>
-                      <ArrowRight size={15} className="transition duration-300 group-hover:translate-x-1" />
-                    </span>
+                    <div className="border-t border-white/10 pt-2.5 lg:ml-4 lg:flex lg:w-[168px] lg:flex-none lg:items-end lg:border-l lg:border-t-0 lg:pl-4 lg:pt-0">
+                      <span className={`inline-flex w-full items-center justify-between rounded-full border px-3 py-1.5 text-[12px] font-semibold transition sm:px-4 sm:text-sm ${card.tone?.buttonClassName || 'border-white/10 bg-white/5 text-white'}`}>
+                        <span>{card.ctaLabel}</span>
+                        <ArrowRight size={15} className="transition duration-300 group-hover:translate-x-1" />
+                      </span>
+                    </div>
                   </div>
                 </a>
               ))}
@@ -999,16 +1023,26 @@ const PortalSectionFallback = memo(PortalSectionFallbackBase);
 function DeferredSectionBase({
   children,
   fallback,
-  rootMargin = '320px 0px',
+  rootMargin = '640px 0px',
   className = '',
+  renderOnIdle = false,
 }: {
   children: React.ReactNode;
   fallback: React.ReactNode;
   rootMargin?: string;
   className?: string;
+  renderOnIdle?: boolean;
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [shouldRender, setShouldRender] = useState(() => typeof window !== 'undefined' && !('IntersectionObserver' in window));
+
+  useEffect(() => {
+    if (!renderOnIdle || shouldRender || typeof window === 'undefined') {
+      return undefined;
+    }
+
+    return scheduleBrowserIdleTask(() => setShouldRender(true));
+  }, [renderOnIdle, shouldRender]);
 
   useEffect(() => {
     if (shouldRender || typeof window === 'undefined') {
@@ -1710,13 +1744,21 @@ export const App: React.FC = () => {
     return () => window.clearTimeout(timer);
   }, [navigationLoading, hashRoute]);
 
-  useEffect(() => scheduleBrowserIdleTask(() => {
-    void loadEventRegistrationPanel();
-    void loadFAQSection();
-    void loadTrackerAdminPanel();
-    void loadPortalFooter();
-    void loadTimelinePage();
-  }), []);
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return undefined;
+    }
+
+    const warmupTimer = window.setTimeout(() => {
+      void loadEventRegistrationPanel();
+      void loadFAQSection();
+      void loadTrackerAdminPanel();
+      void loadPortalFooter();
+      void loadTimelinePage();
+    }, 120);
+
+    return () => window.clearTimeout(warmupTimer);
+  }, []);
 
   const eventPageSlug = hashRoute.startsWith('#events/') ? hashRoute.slice('#events/'.length) : '';
   const isAdminPage = hashRoute.startsWith('#admin-registrations');
@@ -2874,7 +2916,7 @@ export const App: React.FC = () => {
               onSelectEvent={handleSelectEvent}
             />
 
-            <DeferredSection className="portal-deferred-section" fallback={<PortalSectionFallback label="Loading tracker..." />}>
+            <DeferredSection className="portal-deferred-section" fallback={<PortalSectionFallback label="Loading tracker..." />} renderOnIdle>
               <Suspense fallback={<PortalSectionFallback label="Loading tracker..." />}>
                 <TrackerAdminPanel
                   lookupQuery={lookupQuery}
@@ -2899,7 +2941,7 @@ export const App: React.FC = () => {
               </Suspense>
             </DeferredSection>
 
-            <DeferredSection className="portal-deferred-section" fallback={<PortalSectionFallback label="Loading FAQs..." />}>
+            <DeferredSection className="portal-deferred-section" fallback={<PortalSectionFallback label="Loading FAQs..." />} renderOnIdle>
               <Suspense fallback={<PortalSectionFallback label="Loading FAQs..." />}>
                 <FAQSection />
               </Suspense>
@@ -2956,7 +2998,7 @@ export const App: React.FC = () => {
         </>
       ) : null}
 
-      <DeferredSection className="portal-deferred-section" fallback={<PortalSectionFallback label="Loading footer..." />} rootMargin="220px 0px">
+      <DeferredSection className="portal-deferred-section" fallback={<PortalSectionFallback label="Loading footer..." />} rootMargin="520px 0px" renderOnIdle>
         <Suspense fallback={<PortalSectionFallback label="Loading footer..." />}>
           <PortalFooter />
         </Suspense>
