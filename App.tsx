@@ -331,7 +331,6 @@ const LastYearPhotosStrip = memo(LastYearPhotosStripBase);
 type LiveUpdatesStripProps = {
   events: EventRecord[];
   announcements: PortalAnnouncement[];
-  totalRegistrations: number;
   loading: boolean;
 };
 
@@ -514,15 +513,13 @@ function buildLiveUpdateCards(events: EventRecord[], announcements: PortalAnnoun
   }
 
   const hotEventBody = hotEvent
-    ? hotEvent.registrations_count > 0
-      ? `${hotEvent.name} is drawing the strongest response right now with ${hotEvent.registrations_count} registration${hotEvent.registrations_count === 1 ? '' : 's'} already logged.`
-      : `${hotEvent.name} stands out early with its ${hotEvent.category.toLowerCase()} format, ${hotEvent.prize} prize pool, and strong on-ground appeal.`
+    ? `${hotEvent.name} stands out early with its ${hotEvent.category.toLowerCase()} format, ${hotEvent.prize} prize pool, and strong on-ground appeal.`
     : 'The biggest event pulse will surface here as registrations sync in.';
   const limitedSlots = limitedSlotEvent ? getRemainingSlots(limitedSlotEvent) : null;
   const limitedSlotBody = limitedSlotEvent
     ? limitedSlots !== null && limitedSlots < (limitedSlotEvent.max_slots ?? 0)
-      ? `${limitedSlotEvent.name} has ${limitedSlots} ${limitedSlots === 1 ? 'slot' : 'slots'} left out of ${limitedSlotEvent.max_slots}. Teams that wait may end up on the waitlist instead.`
-      : `${limitedSlotEvent.name} runs on a tighter-capacity format with ${limitedSlotEvent.max_slots} total slots, so early registration is the safer move.`
+      ? `${limitedSlotEvent.name} is one of the tighter-capacity events on the schedule, so teams that wait too long may end up missing the best shot at a confirmed slot.`
+      : `${limitedSlotEvent.name} runs on a tighter-capacity format, so early registration is the safer move.`
     : 'Keep an eye on limited-capacity formats first if you want the easiest path to a confirmed spot.';
   const nextEventStart = nextEvent ? getEventStartDate(nextEvent) : null;
   const nextEventBody = nextEvent
@@ -551,7 +548,7 @@ function buildLiveUpdateCards(events: EventRecord[], announcements: PortalAnnoun
       eyebrow: 'Seats Filling Fast',
       title: limitedSlotEvent ? `${limitedSlotEvent.name} is a limited-slot pick` : 'Capacity watch is active',
       body: limitedSlotBody,
-      meta: limitedSlotEvent ? `${limitedSlotEvent.max_slots} total slots • ${limitedSlotEvent.date_label}` : 'Registration timing matters',
+      meta: limitedSlotEvent ? `${limitedSlotEvent.category} • ${limitedSlotEvent.date_label}` : 'Registration timing matters',
       href: limitedSlotEvent ? `#events/${limitedSlotEvent.slug}` : '#registration-panel',
       ctaLabel: limitedSlotEvent ? 'Secure this slot' : 'Reserve early',
       icon: 'sparkles',
@@ -590,13 +587,12 @@ function buildLiveUpdateCards(events: EventRecord[], announcements: PortalAnnoun
   ];
 }
 
-function LiveUpdatesStripBase({ events, announcements, totalRegistrations, loading }: LiveUpdatesStripProps) {
+function LiveUpdatesStripBase({ events, announcements, loading }: LiveUpdatesStripProps) {
   const cards = buildLiveUpdateCards(events, announcements);
-  const openEventsCount = events.filter((event) => event.registration_enabled).length;
   const stats = [
     { label: 'Events live', value: loading && events.length === 0 ? '...' : String(events.length) },
-    { label: 'Registrations logged', value: loading && events.length === 0 ? 'Syncing' : String(totalRegistrations) },
     { label: 'Pinned notices', value: loading && events.length === 0 ? '...' : String(announcements.length) },
+    { label: 'Festival dates', value: '07-08 Apr' },
   ];
 
   return (
@@ -636,7 +632,7 @@ function LiveUpdatesStripBase({ events, announcements, totalRegistrations, loadi
           <p className="mt-5 text-xs uppercase tracking-[0.2em] text-slate-500">
             {loading && events.length === 0
               ? 'Syncing live event data...'
-              : `${openEventsCount || events.length} event${openEventsCount === 1 ? '' : 's'} currently open for registration.`}
+              : 'Event highlights and organizer notices refresh here as the portal updates.'}
           </p>
         </div>
 
@@ -1639,7 +1635,6 @@ export const App: React.FC = () => {
     return () => window.cancelAnimationFrame(animationFrame);
   }, [isTimelinePage, hashRoute]);
 
-  const totalRegistrations = events.reduce((sum, event) => sum + event.registrations_count, 0);
   const visibleAnnouncements = announcements
     .filter((announcement) => isAnnouncementActive(announcement))
     .slice(0, 8);
@@ -2621,7 +2616,6 @@ export const App: React.FC = () => {
             <LiveUpdatesStrip
               events={events}
               announcements={visibleAnnouncements}
-              totalRegistrations={totalRegistrations}
               loading={loadingEvents}
             />
 
