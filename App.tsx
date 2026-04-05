@@ -14,7 +14,7 @@ import type {
   PortalAnnouncement,
   RegistrationReceipt,
 } from './components/portal/types.ts';
-import { makeParticipants, shellClassName } from './components/portal/utils.ts';
+import { getTeamLabel, makeParticipants, shellClassName } from './components/portal/utils.ts';
 
 const CHUNK_RELOAD_STORAGE_KEY = 'cognotsav_chunk_reload_attempt_ts';
 const CHUNK_RELOAD_COOLDOWN_MS = 60_000;
@@ -336,16 +336,30 @@ type LiveUpdatesStripProps = {
 
 type LiveUpdateCard = {
   id: string;
-  eyebrow: string;
-  title: string;
+  eventName?: string;
   body: string;
-  meta: string;
+  schedule?: string;
+  detail?: string;
   href: string;
   ctaLabel: string;
-  icon: 'bell' | 'clock' | 'sparkles' | 'trophy';
-  surfaceClassName: string;
-  iconClassName: string;
-  ctaClassName: string;
+  primaryTag?: string;
+  secondaryTag?: string;
+  tone?: LiveUpdateTone;
+  eyebrow?: string;
+  title?: string;
+  meta?: string;
+  icon?: 'bell' | 'clock' | 'sparkles' | 'trophy';
+  surfaceClassName?: string;
+  iconClassName?: string;
+  ctaClassName?: string;
+};
+
+type LiveUpdateTone = {
+  shellClassName: string;
+  accentPillClassName: string;
+  buttonClassName: string;
+  railClassName: string;
+  glowStyle: React.CSSProperties;
 };
 
 const EVENT_MONTH_INDEX: Record<string, number> = {
@@ -361,6 +375,80 @@ const EVENT_MONTH_INDEX: Record<string, number> = {
   oct: 9,
   nov: 10,
   dec: 11,
+};
+
+const LIVE_UPDATE_TONE_PRESETS: Record<string, LiveUpdateTone> = {
+  ember: {
+    shellClassName: 'border-[#ff9b52]/55 bg-[linear-gradient(180deg,rgba(57,24,12,0.96),rgba(19,11,20,0.96))]',
+    accentPillClassName: 'border-[#ffb173]/45 bg-[rgba(255,154,82,0.14)] text-[#ffd3ad]',
+    buttonClassName: 'border-[#ffb173]/45 bg-[linear-gradient(90deg,rgba(255,154,82,0.16),rgba(255,154,82,0.06))] text-[#ffe5cf] hover:bg-[linear-gradient(90deg,rgba(255,154,82,0.22),rgba(255,154,82,0.1))]',
+    railClassName: 'bg-[linear-gradient(90deg,rgba(255,154,82,0.95),rgba(255,205,166,0.12))]',
+    glowStyle: {
+      boxShadow: '0 0 0 1px rgba(255,155,82,0.22), 0 0 34px rgba(255,120,40,0.16), inset 0 1px 0 rgba(255,220,190,0.08)',
+    },
+  },
+  rose: {
+    shellClassName: 'border-[#ff7ab6]/55 bg-[linear-gradient(180deg,rgba(52,17,34,0.96),rgba(18,10,23,0.96))]',
+    accentPillClassName: 'border-[#ff97c6]/45 bg-[rgba(255,122,182,0.14)] text-[#ffd0e4]',
+    buttonClassName: 'border-[#ff97c6]/45 bg-[linear-gradient(90deg,rgba(255,122,182,0.16),rgba(255,122,182,0.06))] text-[#ffe3ef] hover:bg-[linear-gradient(90deg,rgba(255,122,182,0.22),rgba(255,122,182,0.1))]',
+    railClassName: 'bg-[linear-gradient(90deg,rgba(255,122,182,0.95),rgba(255,208,228,0.12))]',
+    glowStyle: {
+      boxShadow: '0 0 0 1px rgba(255,122,182,0.22), 0 0 34px rgba(255,72,163,0.16), inset 0 1px 0 rgba(255,215,233,0.08)',
+    },
+  },
+  violet: {
+    shellClassName: 'border-[#9b8cff]/55 bg-[linear-gradient(180deg,rgba(31,20,57,0.96),rgba(13,10,24,0.96))]',
+    accentPillClassName: 'border-[#b0a5ff]/45 bg-[rgba(155,140,255,0.14)] text-[#e0dbff]',
+    buttonClassName: 'border-[#b0a5ff]/45 bg-[linear-gradient(90deg,rgba(155,140,255,0.16),rgba(155,140,255,0.06))] text-[#eeeaff] hover:bg-[linear-gradient(90deg,rgba(155,140,255,0.22),rgba(155,140,255,0.1))]',
+    railClassName: 'bg-[linear-gradient(90deg,rgba(155,140,255,0.95),rgba(224,219,255,0.12))]',
+    glowStyle: {
+      boxShadow: '0 0 0 1px rgba(155,140,255,0.22), 0 0 34px rgba(113,86,255,0.18), inset 0 1px 0 rgba(233,228,255,0.08)',
+    },
+  },
+  emerald: {
+    shellClassName: 'border-[#62f7a0]/55 bg-[linear-gradient(180deg,rgba(17,44,33,0.96),rgba(10,17,19,0.96))]',
+    accentPillClassName: 'border-[#8affbc]/45 bg-[rgba(98,247,160,0.14)] text-[#d8ffe7]',
+    buttonClassName: 'border-[#8affbc]/45 bg-[linear-gradient(90deg,rgba(98,247,160,0.16),rgba(98,247,160,0.06))] text-[#e9fff1] hover:bg-[linear-gradient(90deg,rgba(98,247,160,0.22),rgba(98,247,160,0.1))]',
+    railClassName: 'bg-[linear-gradient(90deg,rgba(98,247,160,0.95),rgba(216,255,231,0.12))]',
+    glowStyle: {
+      boxShadow: '0 0 0 1px rgba(98,247,160,0.22), 0 0 34px rgba(37,210,126,0.16), inset 0 1px 0 rgba(219,255,232,0.08)',
+    },
+  },
+  cyan: {
+    shellClassName: 'border-[#58d9ff]/55 bg-[linear-gradient(180deg,rgba(13,37,54,0.96),rgba(10,13,27,0.96))]',
+    accentPillClassName: 'border-[#8be6ff]/45 bg-[rgba(88,217,255,0.14)] text-[#d8f7ff]',
+    buttonClassName: 'border-[#8be6ff]/45 bg-[linear-gradient(90deg,rgba(88,217,255,0.16),rgba(88,217,255,0.06))] text-[#e8fbff] hover:bg-[linear-gradient(90deg,rgba(88,217,255,0.22),rgba(88,217,255,0.1))]',
+    railClassName: 'bg-[linear-gradient(90deg,rgba(88,217,255,0.95),rgba(216,247,255,0.12))]',
+    glowStyle: {
+      boxShadow: '0 0 0 1px rgba(88,217,255,0.22), 0 0 34px rgba(36,193,255,0.16), inset 0 1px 0 rgba(214,248,255,0.08)',
+    },
+  },
+};
+
+const LIVE_UPDATE_TONE_BY_SLUG: Record<string, LiveUpdateTone> = {
+  'squid-game': LIVE_UPDATE_TONE_PRESETS.ember,
+  'rang-manch': LIVE_UPDATE_TONE_PRESETS.rose,
+  'tech-kbc': LIVE_UPDATE_TONE_PRESETS.violet,
+  'googler-hunt': LIVE_UPDATE_TONE_PRESETS.violet,
+  'bgmi-esports': LIVE_UPDATE_TONE_PRESETS.emerald,
+  'ff-esports': LIVE_UPDATE_TONE_PRESETS.emerald,
+  techxcelerate: LIVE_UPDATE_TONE_PRESETS.cyan,
+  'techxcelerate-poster-presentation': LIVE_UPDATE_TONE_PRESETS.cyan,
+  utopia: LIVE_UPDATE_TONE_PRESETS.rose,
+};
+
+const LIVE_UPDATE_FALLBACK_TONES = [
+  LIVE_UPDATE_TONE_PRESETS.ember,
+  LIVE_UPDATE_TONE_PRESETS.rose,
+  LIVE_UPDATE_TONE_PRESETS.violet,
+  LIVE_UPDATE_TONE_PRESETS.emerald,
+  LIVE_UPDATE_TONE_PRESETS.cyan,
+];
+
+const EVENT_CATEGORY_LABELS: Record<string, string> = {
+  gaming: 'Esports',
+  fun: 'Hot Pick',
+  technical: 'Tech Event',
 };
 
 function getEventStartDate(event: EventRecord) {
@@ -423,6 +511,64 @@ function trimUpdateCopy(value: string, maxLength = 118) {
   }
 
   return `${normalized.slice(0, maxLength - 1).trimEnd()}...`;
+}
+
+function getEventCategoryLabel(event: EventRecord) {
+  const normalized = String(event.category || '').trim().toLowerCase();
+  return EVENT_CATEGORY_LABELS[normalized] || (event.category || 'Featured');
+}
+
+function getLiveUpdateTone(event: EventRecord, index: number) {
+  if (LIVE_UPDATE_TONE_BY_SLUG[event.slug]) {
+    return LIVE_UPDATE_TONE_BY_SLUG[event.slug];
+  }
+
+  const normalizedCategory = String(event.category || '').trim().toLowerCase();
+  if (normalizedCategory === 'gaming') {
+    return LIVE_UPDATE_TONE_PRESETS.emerald;
+  }
+
+  if (normalizedCategory === 'fun') {
+    return LIVE_UPDATE_TONE_PRESETS.ember;
+  }
+
+  return LIVE_UPDATE_FALLBACK_TONES[index % LIVE_UPDATE_FALLBACK_TONES.length];
+}
+
+function getLiveUpdateLine(event: EventRecord, options: { isHot: boolean; isLimited: boolean; startsSoon: boolean }) {
+  if (event.registration_enabled === false) {
+    return 'details are live and the next organizer notice will guide the registration window.';
+  }
+
+  if (options.isLimited) {
+    return 'is a limited-slot pick worth locking in early.';
+  }
+
+  if (options.startsSoon) {
+    return `goes live ${getRelativeScheduleLabel(getEventStartDate(event))} and is moving into its final prep window.`;
+  }
+
+  if (options.isHot) {
+    return 'is gaining traction across the event lineup.';
+  }
+
+  return 'is open for teams looking for a fresh competition pick.';
+}
+
+function buildLiveUpdateTicker(events: EventRecord[], announcements: PortalAnnouncement[]) {
+  const items = [
+    announcements[0] ? trimUpdateCopy(announcements[0].title, 42) : null,
+    'Limited slots',
+    'Schedules live',
+    'Register early',
+    'Tracker active',
+  ];
+
+  if (events.some((event) => event.registration_enabled === false)) {
+    items.push('Organizer updates rolling out');
+  }
+
+  return Array.from(new Set(items.filter((item): item is string => Boolean(item))));
 }
 
 function buildLiveUpdateCards(events: EventRecord[], announcements: PortalAnnouncement[]): LiveUpdateCard[] {
@@ -587,91 +733,194 @@ function buildLiveUpdateCards(events: EventRecord[], announcements: PortalAnnoun
   ];
 }
 
+function buildNeonLiveUpdateCards(events: EventRecord[]): LiveUpdateCard[] {
+  if (!events.length) {
+    return [
+      {
+        id: 'fallback-tech',
+        eventName: 'TechKBC',
+        body: 'is gaining traction across the event lineup.',
+        schedule: '07 Apr 2026 - 02:00 PM',
+        detail: '2 members - INR 100 per team',
+        href: '#registration-panel',
+        ctaLabel: 'Explore Events',
+        primaryTag: 'Hot Event',
+        secondaryTag: 'Filling Fast',
+        tone: LIVE_UPDATE_TONE_PRESETS.violet,
+      },
+      {
+        id: 'fallback-fun',
+        eventName: 'Squid Game',
+        body: 'is one of the boldest crowd picks on the festival slate.',
+        schedule: '08 Apr 2026 - 09:00 AM',
+        detail: 'Solo - INR 50 per person',
+        href: '#registration-panel',
+        ctaLabel: 'Explore Events',
+        primaryTag: 'Hot Pick',
+        secondaryTag: 'Coming Up',
+        tone: LIVE_UPDATE_TONE_PRESETS.ember,
+      },
+    ];
+  }
+
+  const now = Date.now();
+  const activeEvents = events.filter((event) => event.registration_enabled !== false);
+  const rankingPool = activeEvents.length ? activeEvents : events;
+  const hotEventSlugs = new Set(
+    [...rankingPool]
+      .sort((left, right) => right.registrations_count - left.registrations_count || left.name.localeCompare(right.name))
+      .slice(0, Math.min(3, rankingPool.length))
+      .map((event) => event.slug),
+  );
+  const limitedEventSlugs = new Set(
+    [...rankingPool]
+      .filter((event) => typeof event.max_slots === 'number' && event.max_slots > 0)
+      .sort((left, right) => {
+        const leftRemaining = getRemainingSlots(left) ?? Number.MAX_SAFE_INTEGER;
+        const rightRemaining = getRemainingSlots(right) ?? Number.MAX_SAFE_INTEGER;
+        const leftRatio = left.max_slots ? leftRemaining / left.max_slots : Number.MAX_SAFE_INTEGER;
+        const rightRatio = right.max_slots ? rightRemaining / right.max_slots : Number.MAX_SAFE_INTEGER;
+        return leftRatio - rightRatio || leftRemaining - rightRemaining;
+      })
+      .slice(0, Math.min(3, rankingPool.length))
+      .map((event) => event.slug),
+  );
+
+  const getPriority = (event: EventRecord) => {
+    const eventStart = getEventStartDate(event)?.getTime() ?? Number.MAX_SAFE_INTEGER;
+    const startsSoon = eventStart >= now && eventStart - now <= 48 * 60 * 60 * 1000;
+    return (hotEventSlugs.has(event.slug) ? 30 : 0)
+      + (limitedEventSlugs.has(event.slug) ? 22 : 0)
+      + (startsSoon ? 14 : 0)
+      + (event.registration_enabled !== false ? 8 : 0);
+  };
+
+  return [...events]
+    .sort((left, right) => {
+      const scoreDelta = getPriority(right) - getPriority(left);
+      if (scoreDelta !== 0) {
+        return scoreDelta;
+      }
+
+      const leftStart = getEventStartDate(left)?.getTime() ?? Number.MAX_SAFE_INTEGER;
+      const rightStart = getEventStartDate(right)?.getTime() ?? Number.MAX_SAFE_INTEGER;
+      return leftStart - rightStart || left.name.localeCompare(right.name);
+    })
+    .map((event, index) => {
+      const eventStart = getEventStartDate(event)?.getTime() ?? Number.MAX_SAFE_INTEGER;
+      const startsSoon = eventStart >= now && eventStart - now <= 48 * 60 * 60 * 1000;
+      const isHot = hotEventSlugs.has(event.slug);
+      const isLimited = limitedEventSlugs.has(event.slug);
+
+      return {
+        id: event.slug,
+        eventName: event.name,
+        body: getLiveUpdateLine(event, { isHot, isLimited, startsSoon }),
+        schedule: event.time_label ? `${event.date_label} - ${event.time_label}` : event.date_label,
+        detail: `${getTeamLabel(event)} - ${event.registration_fee_label || 'Entry details live'}`,
+        href: `#events/${event.slug}`,
+        ctaLabel: event.registration_enabled === false ? 'View Details' : 'Register Now',
+        primaryTag: isHot ? 'Hot Event' : getEventCategoryLabel(event),
+        secondaryTag: event.registration_enabled === false ? 'Updates Soon' : isLimited ? 'Filling Fast' : startsSoon ? 'Coming Up' : 'Open Now',
+        tone: getLiveUpdateTone(event, index),
+      };
+    });
+}
+
 function LiveUpdatesStripBase({ events, announcements, loading }: LiveUpdatesStripProps) {
-  const cards = buildLiveUpdateCards(events, announcements);
-  const stats = [
-    { label: 'Events live', value: loading && events.length === 0 ? '...' : String(events.length) },
-    { label: 'Pinned notices', value: loading && events.length === 0 ? '...' : String(announcements.length) },
-    { label: 'Festival dates', value: '07-08 Apr' },
-  ];
+  const cards = useMemo(() => buildNeonLiveUpdateCards(events), [events]);
+  const tickerItems = useMemo(() => buildLiveUpdateTicker(events, announcements), [announcements, events]);
 
   return (
-    <section id="updates" className="portal-glow-card portal-glass overflow-hidden rounded-[1.8rem] p-4 md:rounded-[2rem] md:p-6" data-reveal="fade-up">
-      <div className="grid gap-4 xl:grid-cols-[0.96fr_1.34fr]">
-        <div className="rounded-[1.55rem] border border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.16),transparent_36%),linear-gradient(155deg,rgba(7,18,34,0.98),rgba(17,24,39,0.94))] p-5 shadow-[0_24px_80px_rgba(2,8,23,0.22)] md:p-6">
-          <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/16 bg-cyan-400/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.28em] text-cyan-100">
-            <Bell size={14} />
-            Live Updates
-          </div>
-          <h2 className="mt-4 max-w-xl font-orbitron text-3xl font-black uppercase leading-tight text-white md:text-[2.3rem]">
-            What matters most before teams lock their slot
-          </h2>
-          <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300">
-            Fresh signals from the portal so participants can spot the hot events, the limited-capacity entries, and the notices that actually need attention.
-          </p>
+    <section id="updates" className="portal-glow-card portal-glass relative overflow-hidden rounded-[1.8rem] p-4 md:rounded-[2rem] md:p-6" data-reveal="fade-up">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,122,182,0.12),transparent_26%),radial-gradient(circle_at_15%_35%,rgba(88,217,255,0.12),transparent_24%),linear-gradient(180deg,rgba(14,12,30,0.96),rgba(8,9,18,0.98))]" aria-hidden="true" />
+      <div className="absolute inset-0 opacity-30" style={{ backgroundImage: 'linear-gradient(180deg, rgba(255,255,255,0.05) 0, rgba(255,255,255,0.02) 1px, transparent 1px)', backgroundSize: '100% 28px' }} aria-hidden="true" />
+      <div className="absolute -left-16 top-8 h-36 w-36 rounded-full bg-fuchsia-500/12 blur-3xl" aria-hidden="true" />
+      <div className="absolute bottom-0 right-10 h-40 w-40 rounded-full bg-cyan-500/12 blur-3xl" aria-hidden="true" />
 
-          <div className="mt-6 grid gap-3 sm:grid-cols-3 xl:grid-cols-1 2xl:grid-cols-3">
-            {stats.map((stat) => (
-              <div key={stat.label} className="rounded-[1.2rem] border border-white/10 bg-white/[0.04] px-4 py-4">
-                <p className="text-[10px] uppercase tracking-[0.22em] text-slate-400">{stat.label}</p>
-                <p className="mt-2 text-xl font-black text-white">{stat.value}</p>
-              </div>
-            ))}
+      <div className="relative">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-[11px] uppercase tracking-[0.32em] text-fuchsia-200/85">Live Updates</p>
+            <h3 className="mt-3 font-orbitron text-3xl font-black uppercase text-transparent sm:text-4xl" style={{ backgroundImage: 'linear-gradient(90deg,#ffc7dd 0%,#ffffff 46%,#b9b0ff 100%)', WebkitBackgroundClip: 'text', backgroundClip: 'text' }}>
+              Hot Events - Filling Fast
+            </h3>
+            <p className="mt-3 max-w-3xl text-sm text-slate-300">
+              Every competition in one neon showcase, tuned to feel like the reference and easier to scan at a glance.
+            </p>
           </div>
 
-          <div className="mt-6 flex flex-wrap gap-3">
-            <a href="#registration-panel" className="portal-premium-button portal-premium-button--primary inline-flex items-center gap-2">
-              Browse events
-              <ArrowRight size={14} />
-            </a>
-            <a href="#tracker" className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-4 py-3 text-sm font-semibold text-slate-100 transition hover:border-cyan-300/18 hover:bg-cyan-400/10">
-              Open tracker
-            </a>
-          </div>
-
-          <p className="mt-5 text-xs uppercase tracking-[0.2em] text-slate-500">
-            {loading && events.length === 0
-              ? 'Syncing live event data...'
-              : 'Event highlights and organizer notices refresh here as the portal updates.'}
-          </p>
+          <a href="#registration-panel" className="inline-flex items-center gap-2 self-start rounded-full border border-white/10 bg-white/[0.05] px-4 py-3 text-sm font-semibold text-white transition hover:border-fuchsia-300/20 hover:bg-fuchsia-400/10">
+            Browse all competitions
+            <ArrowRight size={15} />
+          </a>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          {cards.map((card) => {
-            const icon = card.icon === 'trophy'
-              ? <Trophy size={18} />
-              : card.icon === 'sparkles'
-                ? <Sparkles size={18} />
-                : card.icon === 'clock'
-                  ? <Clock3 size={18} />
-                  : <Bell size={18} />;
-
-            return (
-              <a
-                key={card.id}
-                href={card.href}
-                className={`group rounded-[1.55rem] border p-5 shadow-[0_20px_70px_rgba(2,8,23,0.18)] transition duration-300 hover:-translate-y-1 hover:border-white/16 ${card.surfaceClassName}`}
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="min-w-0">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.26em] text-slate-300">{card.eyebrow}</p>
-                    <h3 className="mt-3 text-xl font-black leading-tight text-white">{card.title}</h3>
+        <div className="mt-6 flex gap-4 overflow-x-auto pb-3 pr-1 snap-x">
+          {loading && events.length === 0
+            ? Array.from({ length: 4 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="min-w-[272px] flex-none snap-start rounded-[1.6rem] border border-white/10 bg-[linear-gradient(180deg,rgba(22,16,38,0.96),rgba(11,10,18,0.98))] p-5"
+                >
+                  <div className="flex gap-2">
+                    <div className="h-7 w-24 animate-pulse rounded-full bg-white/10" />
+                    <div className="h-7 w-24 animate-pulse rounded-full bg-white/10" />
                   </div>
-                  <span className={`inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border ${card.iconClassName}`}>
-                    {icon}
-                  </span>
+                  <div className="mt-6 h-7 w-32 animate-pulse rounded-full bg-white/10" />
+                  <div className="mt-3 h-5 w-44 animate-pulse rounded-full bg-white/10" />
+                  <div className="mt-6 h-4 w-36 animate-pulse rounded-full bg-white/10" />
+                  <div className="mt-3 h-4 w-40 animate-pulse rounded-full bg-white/10" />
+                  <div className="mt-6 h-11 animate-pulse rounded-full bg-white/10" />
                 </div>
-                <p className="mt-4 text-sm leading-6 text-slate-200">{card.body}</p>
-                <div className="mt-5 flex items-center justify-between gap-3 border-t border-white/10 pt-4">
-                  <span className="text-xs uppercase tracking-[0.18em] text-slate-400">{card.meta}</span>
-                  <span className={`inline-flex items-center gap-2 text-sm font-semibold ${card.ctaClassName}`}>
-                    {card.ctaLabel}
-                    <ArrowRight size={15} className="transition duration-300 group-hover:translate-x-1" />
-                  </span>
-                </div>
-              </a>
-            );
-          })}
+              ))
+            : cards.map((card) => (
+                <a
+                  key={card.id}
+                  href={card.href}
+                  className={`group min-w-[272px] flex-none snap-start rounded-[1.6rem] border p-5 transition duration-300 hover:-translate-y-1 ${card.tone?.shellClassName || 'border-white/10 bg-black/30'}`}
+                  style={card.tone?.glowStyle}
+                >
+                  <div className="flex flex-wrap gap-2">
+                    <span className={`inline-flex items-center rounded-full border px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] ${card.tone?.accentPillClassName || 'border-white/10 bg-white/5 text-white'}`}>
+                      {card.primaryTag}
+                    </span>
+                    <span className="inline-flex items-center rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-200">
+                      {card.secondaryTag}
+                    </span>
+                  </div>
+
+                  <div className="mt-5">
+                    <h4 className="text-[1.45rem] font-black leading-tight text-white">{card.eventName}</h4>
+                    <p className="mt-2 max-w-[17rem] text-base leading-6 text-slate-100/92">{card.body}</p>
+                  </div>
+
+                  <div className="mt-6 space-y-3 text-sm text-slate-300">
+                    <div className="flex items-center gap-2">
+                      <Clock3 size={15} className="text-white/70" />
+                      <span>{card.schedule}</span>
+                    </div>
+                    <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">{card.detail}</p>
+                  </div>
+
+                  <div className="mt-6 border-t border-white/10 pt-4">
+                    <span className={`inline-flex w-full items-center justify-between rounded-full border px-4 py-3 text-sm font-semibold transition ${card.tone?.buttonClassName || 'border-white/10 bg-white/5 text-white'}`}>
+                      <span>{card.ctaLabel}</span>
+                      <ArrowRight size={15} className="transition duration-300 group-hover:translate-x-1" />
+                    </span>
+                  </div>
+
+                  <div className={`mt-4 h-[3px] rounded-full ${card.tone?.railClassName || 'bg-white/10'}`} aria-hidden="true" />
+                </a>
+              ))}
+        </div>
+
+        <div className="mt-2 flex flex-wrap items-center justify-center gap-2 text-[11px] uppercase tracking-[0.24em] text-slate-300/75">
+          {tickerItems.map((item) => (
+            <span key={item} className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-2">
+              {item}
+            </span>
+          ))}
         </div>
       </div>
     </section>
