@@ -845,9 +845,6 @@ function LiveUpdatesStripBase({ events, announcements, loading }: LiveUpdatesStr
             <h3 className="mt-3 font-orbitron text-3xl font-black uppercase text-transparent sm:text-4xl" style={{ backgroundImage: 'linear-gradient(90deg,#ffc7dd 0%,#ffffff 46%,#b9b0ff 100%)', WebkitBackgroundClip: 'text', backgroundClip: 'text' }}>
               Hot Events - Filling Fast
             </h3>
-            <p className="mt-3 max-w-3xl text-sm text-slate-300">
-              Every competition in one neon showcase, tuned to feel like the reference and easier to scan at a glance.
-            </p>
           </div>
 
           <a href="#registration-panel" className="inline-flex items-center gap-2 self-start rounded-full border border-white/10 bg-white/[0.05] px-4 py-3 text-sm font-semibold text-white transition hover:border-fuchsia-300/20 hover:bg-fuchsia-400/10">
