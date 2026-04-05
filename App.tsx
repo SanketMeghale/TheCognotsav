@@ -328,89 +328,361 @@ function LastYearPhotosStripBase() {
 
 const LastYearPhotosStrip = memo(LastYearPhotosStripBase);
 
-function PremiumBrochureStripBase() {
-  const posterSlides = [
+type LiveUpdatesStripProps = {
+  events: EventRecord[];
+  announcements: PortalAnnouncement[];
+  totalRegistrations: number;
+  loading: boolean;
+};
+
+type LiveUpdateCard = {
+  id: string;
+  eyebrow: string;
+  title: string;
+  body: string;
+  meta: string;
+  href: string;
+  ctaLabel: string;
+  icon: 'bell' | 'clock' | 'sparkles' | 'trophy';
+  surfaceClassName: string;
+  iconClassName: string;
+  ctaClassName: string;
+};
+
+const EVENT_MONTH_INDEX: Record<string, number> = {
+  jan: 0,
+  feb: 1,
+  mar: 2,
+  apr: 3,
+  may: 4,
+  jun: 5,
+  jul: 6,
+  aug: 7,
+  sep: 8,
+  oct: 9,
+  nov: 10,
+  dec: 11,
+};
+
+function getEventStartDate(event: EventRecord) {
+  const dateMatch = event.date_label.match(/^(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})$/);
+  const timeMatch = event.time_label.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+
+  if (!dateMatch || !timeMatch) {
+    const fallback = new Date(`${event.date_label} ${event.time_label}`);
+    return Number.isNaN(fallback.getTime()) ? null : fallback;
+  }
+
+  const [, dayLabel, monthLabel, yearLabel] = dateMatch;
+  const [, hourLabel, minuteLabel, meridiemLabel] = timeMatch;
+  const monthIndex = EVENT_MONTH_INDEX[monthLabel.toLowerCase()];
+
+  if (monthIndex === undefined) {
+    return null;
+  }
+
+  const rawHour = Number(hourLabel) % 12;
+  const hour = rawHour + (meridiemLabel.toUpperCase() === 'PM' ? 12 : 0);
+  return new Date(Number(yearLabel), monthIndex, Number(dayLabel), hour, Number(minuteLabel));
+}
+
+function getRemainingSlots(event: EventRecord) {
+  if (typeof event.max_slots !== 'number') {
+    return null;
+  }
+
+  return Math.max(event.max_slots - event.registrations_count, 0);
+}
+
+function getRelativeScheduleLabel(date: Date | null) {
+  if (!date) {
+    return 'soon';
+  }
+
+  const diffMs = date.getTime() - Date.now();
+  if (diffMs <= 0) {
+    return 'today';
+  }
+
+  const diffHours = Math.ceil(diffMs / (1000 * 60 * 60));
+  if (diffHours < 24) {
+    return `in ${diffHours} hr`;
+  }
+
+  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+  if (diffDays === 1) {
+    return 'tomorrow';
+  }
+
+  return `in ${diffDays} days`;
+}
+
+function trimUpdateCopy(value: string, maxLength = 118) {
+  const normalized = String(value || '').replace(/\s+/g, ' ').trim();
+  if (normalized.length <= maxLength) {
+    return normalized;
+  }
+
+  return `${normalized.slice(0, maxLength - 1).trimEnd()}...`;
+}
+
+function buildLiveUpdateCards(events: EventRecord[], announcements: PortalAnnouncement[]): LiveUpdateCard[] {
+  const activeEvents = events.filter((event) => event.registration_enabled);
+  const rankingPool = activeEvents.length ? activeEvents : events;
+  const hotEvent = [...rankingPool].sort((left, right) =>
+    (right.registrations_count - left.registrations_count)
+    || ((right.max_slots ?? 0) - (left.max_slots ?? 0))
+    || (right.registration_fee - left.registration_fee)
+  )[0];
+  const limitedSlotEvent = [...rankingPool]
+    .filter((event) => typeof event.max_slots === 'number' && event.max_slots > 0)
+    .sort((left, right) => {
+      const leftRemaining = getRemainingSlots(left) ?? Number.MAX_SAFE_INTEGER;
+      const rightRemaining = getRemainingSlots(right) ?? Number.MAX_SAFE_INTEGER;
+      const leftRatio = left.max_slots ? leftRemaining / left.max_slots : Number.MAX_SAFE_INTEGER;
+      const rightRatio = right.max_slots ? rightRemaining / right.max_slots : Number.MAX_SAFE_INTEGER;
+
+      return leftRatio - rightRatio || leftRemaining - rightRemaining || right.registrations_count - left.registrations_count;
+    })[0];
+  const nextEvent = [...events]
+    .map((event) => ({ event, startAt: getEventStartDate(event) }))
+    .sort((left, right) => {
+      const leftTime = left.startAt?.getTime() ?? Number.MAX_SAFE_INTEGER;
+      const rightTime = right.startAt?.getTime() ?? Number.MAX_SAFE_INTEGER;
+      return leftTime - rightTime;
+    })
+    .find(({ startAt }) => (startAt?.getTime() ?? 0) >= Date.now())
+    ?.event
+    ?? rankingPool[0];
+  const pinnedAnnouncement = announcements[0];
+
+  if (!events.length) {
+    return [
+      {
+        id: 'hot-fallback',
+        eyebrow: 'Hot Event',
+        title: 'TechKBC is shaping up as a crowd magnet',
+        body: 'Fast questions, two-person teams, and live pressure usually make this one move quickly once registrations start accelerating.',
+        meta: 'Technical spotlight',
+        href: '#registration-panel',
+        ctaLabel: 'Explore events',
+        icon: 'trophy',
+        surfaceClassName: 'border-amber-300/18 bg-[linear-gradient(145deg,rgba(64,32,8,0.34),rgba(13,18,33,0.92))]',
+        iconClassName: 'border-amber-300/24 bg-amber-400/14 text-amber-100',
+        ctaClassName: 'text-amber-100',
+      },
+      {
+        id: 'slots-fallback',
+        eyebrow: 'Seats Filling Fast',
+        title: 'Limited-slot events deserve early action',
+        body: 'Smaller-capacity competitions can switch from open slots to waitlist mode faster than most teams expect.',
+        meta: 'Capacity watch',
+        href: '#registration-panel',
+        ctaLabel: 'Reserve a slot',
+        icon: 'sparkles',
+        surfaceClassName: 'border-rose-300/18 bg-[linear-gradient(145deg,rgba(74,22,44,0.34),rgba(13,18,33,0.92))]',
+        iconClassName: 'border-rose-300/24 bg-rose-400/14 text-rose-100',
+        ctaClassName: 'text-rose-100',
+      },
+      {
+        id: 'countdown-fallback',
+        eyebrow: 'This Week',
+        title: 'Cognotsav 2K26 is almost live',
+        body: 'Keep your team details, payment proof, and registration code ready so check-in is smooth when the festival week starts.',
+        meta: 'Schedule locked',
+        href: '#timeline',
+        ctaLabel: 'View timeline',
+        icon: 'clock',
+        surfaceClassName: 'border-cyan-300/18 bg-[linear-gradient(145deg,rgba(8,44,60,0.34),rgba(13,18,33,0.92))]',
+        iconClassName: 'border-cyan-300/24 bg-cyan-400/14 text-cyan-100',
+        ctaClassName: 'text-cyan-100',
+      },
+      {
+        id: 'tracker-fallback',
+        eyebrow: 'Organizer Note',
+        title: 'Tracker and payment review are live',
+        body: 'Upload payment proof once and use the homepage tracker to follow approval instead of waiting without updates.',
+        meta: 'Participant flow',
+        href: '#tracker',
+        ctaLabel: 'Open tracker',
+        icon: 'bell',
+        surfaceClassName: 'border-fuchsia-300/18 bg-[linear-gradient(145deg,rgba(67,24,74,0.34),rgba(13,18,33,0.92))]',
+        iconClassName: 'border-fuchsia-300/24 bg-fuchsia-400/14 text-fuchsia-100',
+        ctaClassName: 'text-fuchsia-100',
+      },
+    ];
+  }
+
+  const hotEventBody = hotEvent
+    ? hotEvent.registrations_count > 0
+      ? `${hotEvent.name} is drawing the strongest response right now with ${hotEvent.registrations_count} registration${hotEvent.registrations_count === 1 ? '' : 's'} already logged.`
+      : `${hotEvent.name} stands out early with its ${hotEvent.category.toLowerCase()} format, ${hotEvent.prize} prize pool, and strong on-ground appeal.`
+    : 'The biggest event pulse will surface here as registrations sync in.';
+  const limitedSlots = limitedSlotEvent ? getRemainingSlots(limitedSlotEvent) : null;
+  const limitedSlotBody = limitedSlotEvent
+    ? limitedSlots !== null && limitedSlots < (limitedSlotEvent.max_slots ?? 0)
+      ? `${limitedSlotEvent.name} has ${limitedSlots} ${limitedSlots === 1 ? 'slot' : 'slots'} left out of ${limitedSlotEvent.max_slots}. Teams that wait may end up on the waitlist instead.`
+      : `${limitedSlotEvent.name} runs on a tighter-capacity format with ${limitedSlotEvent.max_slots} total slots, so early registration is the safer move.`
+    : 'Keep an eye on limited-capacity formats first if you want the easiest path to a confirmed spot.';
+  const nextEventStart = nextEvent ? getEventStartDate(nextEvent) : null;
+  const nextEventBody = nextEvent
+    ? `${nextEvent.name} is scheduled ${getRelativeScheduleLabel(nextEventStart)} on ${nextEvent.date_label} at ${nextEvent.time_label} in ${nextEvent.venue}.`
+    : 'The nearest event kickoff will appear here once the schedule feed is ready.';
+  const announcementBody = pinnedAnnouncement
+    ? trimUpdateCopy(pinnedAnnouncement.message)
+    : 'Upload payment proof after you register, then use the tracker anytime from the homepage to follow approval status.';
+
+  return [
     {
-      src: '/images/cognotsav-poster.png',
-      alt: 'Cognotsav 2026 official event poster',
-      label: 'Official Event Poster',
+      id: 'hot-event',
+      eyebrow: 'Hot Event',
+      title: hotEvent ? `${hotEvent.name} is gaining traction` : 'Most-watched event signal',
+      body: hotEventBody,
+      meta: hotEvent ? `${hotEvent.category} • ${hotEvent.date_label}` : 'Live competition pulse',
+      href: hotEvent ? `#events/${hotEvent.slug}` : '#registration-panel',
+      ctaLabel: hotEvent ? `Open ${hotEvent.name}` : 'Explore events',
+      icon: 'trophy',
+      surfaceClassName: 'border-amber-300/18 bg-[linear-gradient(145deg,rgba(64,32,8,0.34),rgba(13,18,33,0.92))]',
+      iconClassName: 'border-amber-300/24 bg-amber-400/14 text-amber-100',
+      ctaClassName: 'text-amber-100',
     },
     {
-      src: '/images/cognotsav-rules-poster.png',
-      alt: 'Cognotsav 2026 rules and regulations poster',
-      label: 'Rules and Regulations',
+      id: 'seats-filling',
+      eyebrow: 'Seats Filling Fast',
+      title: limitedSlotEvent ? `${limitedSlotEvent.name} is a limited-slot pick` : 'Capacity watch is active',
+      body: limitedSlotBody,
+      meta: limitedSlotEvent ? `${limitedSlotEvent.max_slots} total slots • ${limitedSlotEvent.date_label}` : 'Registration timing matters',
+      href: limitedSlotEvent ? `#events/${limitedSlotEvent.slug}` : '#registration-panel',
+      ctaLabel: limitedSlotEvent ? 'Secure this slot' : 'Reserve early',
+      icon: 'sparkles',
+      surfaceClassName: 'border-rose-300/18 bg-[linear-gradient(145deg,rgba(74,22,44,0.34),rgba(13,18,33,0.92))]',
+      iconClassName: 'border-rose-300/24 bg-rose-400/14 text-rose-100',
+      ctaClassName: 'text-rose-100',
+    },
+    {
+      id: 'next-up',
+      eyebrow: 'Next Up',
+      title: nextEvent ? `${nextEvent.name} is coming up fast` : 'Schedule check',
+      body: nextEventBody,
+      meta: nextEvent ? `${nextEvent.date_label} • ${nextEvent.time_label}` : 'Timeline preview',
+      href: nextEvent ? `#events/${nextEvent.slug}` : '#timeline',
+      ctaLabel: nextEvent ? 'See event details' : 'View timeline',
+      icon: 'clock',
+      surfaceClassName: 'border-cyan-300/18 bg-[linear-gradient(145deg,rgba(8,44,60,0.34),rgba(13,18,33,0.92))]',
+      iconClassName: 'border-cyan-300/24 bg-cyan-400/14 text-cyan-100',
+      ctaClassName: 'text-cyan-100',
+    },
+    {
+      id: 'organizer-note',
+      eyebrow: pinnedAnnouncement ? 'Organizer Update' : 'Portal Update',
+      title: pinnedAnnouncement ? trimUpdateCopy(pinnedAnnouncement.title, 48) : 'Tracker and payment review are live',
+      body: announcementBody,
+      meta: pinnedAnnouncement
+        ? `${pinnedAnnouncement.event_name || 'Portal-wide'} • Live notice`
+        : 'Registration support',
+      href: pinnedAnnouncement?.event_slug ? `#events/${pinnedAnnouncement.event_slug}` : '#tracker',
+      ctaLabel: pinnedAnnouncement?.event_slug ? 'Read this update' : 'Open tracker',
+      icon: 'bell',
+      surfaceClassName: 'border-fuchsia-300/18 bg-[linear-gradient(145deg,rgba(67,24,74,0.34),rgba(13,18,33,0.92))]',
+      iconClassName: 'border-fuchsia-300/24 bg-fuchsia-400/14 text-fuchsia-100',
+      ctaClassName: 'text-fuchsia-100',
     },
   ];
-  const [activePosterIndex, setActivePosterIndex] = useState(0);
+}
 
-  useEffect(() => {
-    posterSlides.forEach((poster) => {
-      const image = new Image();
-      image.decoding = 'async';
-      image.src = poster.src;
-    });
-  }, []);
-
-  const activePoster = posterSlides[activePosterIndex];
+function LiveUpdatesStripBase({ events, announcements, totalRegistrations, loading }: LiveUpdatesStripProps) {
+  const cards = buildLiveUpdateCards(events, announcements);
+  const openEventsCount = events.filter((event) => event.registration_enabled).length;
+  const stats = [
+    { label: 'Events live', value: loading && events.length === 0 ? '...' : String(events.length) },
+    { label: 'Registrations logged', value: loading && events.length === 0 ? 'Syncing' : String(totalRegistrations) },
+    { label: 'Pinned notices', value: loading && events.length === 0 ? '...' : String(announcements.length) },
+  ];
 
   return (
-    <section className="portal-brochure-strip portal-glow-card portal-glass rounded-[1.8rem] p-4 md:rounded-[2rem] md:p-6" data-reveal="fade-up">
-      <div className="portal-brochure-poster-stack">
-        <div className="portal-brochure-poster-block">
-          <div className="portal-brochure-poster-block__topbar">
-            <p className="portal-brochure-poster-block__label">{activePoster.label}</p>
-            <div className="portal-brochure-poster-block__controls">
-              <button
-                type="button"
-                onClick={() => setActivePosterIndex((current) => (current - 1 + posterSlides.length) % posterSlides.length)}
-                className="portal-brochure-poster-block__nav"
-                aria-label="Show previous poster"
-              >
-                <ArrowLeft size={16} />
-              </button>
-              <button
-                type="button"
-                onClick={() => setActivePosterIndex((current) => (current + 1) % posterSlides.length)}
-                className="portal-brochure-poster-block__nav"
-                aria-label="Show next poster"
-              >
-                <ArrowRight size={16} />
-              </button>
-            </div>
+    <section id="updates" className="portal-glow-card portal-glass overflow-hidden rounded-[1.8rem] p-4 md:rounded-[2rem] md:p-6" data-reveal="fade-up">
+      <div className="grid gap-4 xl:grid-cols-[0.96fr_1.34fr]">
+        <div className="rounded-[1.55rem] border border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.16),transparent_36%),linear-gradient(155deg,rgba(7,18,34,0.98),rgba(17,24,39,0.94))] p-5 shadow-[0_24px_80px_rgba(2,8,23,0.22)] md:p-6">
+          <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/16 bg-cyan-400/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.28em] text-cyan-100">
+            <Bell size={14} />
+            Live Updates
           </div>
-          <div className="portal-brochure-poster-frame">
-            <div className="portal-brochure-poster-frame__glow" aria-hidden="true" />
-            <div className="portal-brochure-poster-frame__inner">
-              <img
-                src={activePoster.src}
-                alt={activePoster.alt}
-                loading="eager"
-                decoding="async"
-                fetchPriority="high"
-                width={2000}
-                height={1545}
-                className="portal-brochure-poster-frame__image"
-              />
-            </div>
-          </div>
-          <div className="portal-brochure-poster-block__dots" aria-label="Poster slides">
-            {posterSlides.map((poster, index) => (
-              <button
-                key={poster.src}
-                type="button"
-                onClick={() => setActivePosterIndex(index)}
-                className={`portal-brochure-poster-block__dot ${index === activePosterIndex ? 'is-active' : ''}`}
-                aria-label={`Show ${poster.label}`}
-              />
+          <h2 className="mt-4 max-w-xl font-orbitron text-3xl font-black uppercase leading-tight text-white md:text-[2.3rem]">
+            What matters most before teams lock their slot
+          </h2>
+          <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300">
+            Fresh signals from the portal so participants can spot the hot events, the limited-capacity entries, and the notices that actually need attention.
+          </p>
+
+          <div className="mt-6 grid gap-3 sm:grid-cols-3 xl:grid-cols-1 2xl:grid-cols-3">
+            {stats.map((stat) => (
+              <div key={stat.label} className="rounded-[1.2rem] border border-white/10 bg-white/[0.04] px-4 py-4">
+                <p className="text-[10px] uppercase tracking-[0.22em] text-slate-400">{stat.label}</p>
+                <p className="mt-2 text-xl font-black text-white">{stat.value}</p>
+              </div>
             ))}
           </div>
+
+          <div className="mt-6 flex flex-wrap gap-3">
+            <a href="#registration-panel" className="portal-premium-button portal-premium-button--primary inline-flex items-center gap-2">
+              Browse events
+              <ArrowRight size={14} />
+            </a>
+            <a href="#tracker" className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-4 py-3 text-sm font-semibold text-slate-100 transition hover:border-cyan-300/18 hover:bg-cyan-400/10">
+              Open tracker
+            </a>
+          </div>
+
+          <p className="mt-5 text-xs uppercase tracking-[0.2em] text-slate-500">
+            {loading && events.length === 0
+              ? 'Syncing live event data...'
+              : `${openEventsCount || events.length} event${openEventsCount === 1 ? '' : 's'} currently open for registration.`}
+          </p>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          {cards.map((card) => {
+            const icon = card.icon === 'trophy'
+              ? <Trophy size={18} />
+              : card.icon === 'sparkles'
+                ? <Sparkles size={18} />
+                : card.icon === 'clock'
+                  ? <Clock3 size={18} />
+                  : <Bell size={18} />;
+
+            return (
+              <a
+                key={card.id}
+                href={card.href}
+                className={`group rounded-[1.55rem] border p-5 shadow-[0_20px_70px_rgba(2,8,23,0.18)] transition duration-300 hover:-translate-y-1 hover:border-white/16 ${card.surfaceClassName}`}
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.26em] text-slate-300">{card.eyebrow}</p>
+                    <h3 className="mt-3 text-xl font-black leading-tight text-white">{card.title}</h3>
+                  </div>
+                  <span className={`inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border ${card.iconClassName}`}>
+                    {icon}
+                  </span>
+                </div>
+                <p className="mt-4 text-sm leading-6 text-slate-200">{card.body}</p>
+                <div className="mt-5 flex items-center justify-between gap-3 border-t border-white/10 pt-4">
+                  <span className="text-xs uppercase tracking-[0.18em] text-slate-400">{card.meta}</span>
+                  <span className={`inline-flex items-center gap-2 text-sm font-semibold ${card.ctaClassName}`}>
+                    {card.ctaLabel}
+                    <ArrowRight size={15} className="transition duration-300 group-hover:translate-x-1" />
+                  </span>
+                </div>
+              </a>
+            );
+          })}
         </div>
       </div>
     </section>
   );
 }
 
-const PremiumBrochureStrip = memo(PremiumBrochureStripBase);
+const LiveUpdatesStrip = memo(LiveUpdatesStripBase);
 
 function DepartmentPageBase() {
   return (
@@ -2346,7 +2618,12 @@ export const App: React.FC = () => {
               }}
             />
 
-            <PremiumBrochureStrip />
+            <LiveUpdatesStrip
+              events={events}
+              announcements={visibleAnnouncements}
+              totalRegistrations={totalRegistrations}
+              loading={loadingEvents}
+            />
 
             <DepartmentIntroStrip />
 
