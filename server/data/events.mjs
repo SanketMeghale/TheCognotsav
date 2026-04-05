@@ -23,8 +23,8 @@ export const eventSeed = [
     is_team_event: true,
     poster_path: '/images/techkbc.jpg',
     intro_video_url: optimizeCloudinaryVideo('https://res.cloudinary.com/dkxddhawc/video/upload/v1774094978/techKBC_dixjux.mp4'),
-    payment_upi: 'abhijitsaykad@oksbi',
-    payment_payee: 'Abhijit Saykad',
+    payment_upi: 'sahilbhatti292005@okaxis',
+    payment_payee: 'Sahil Bhatti',
     payment_qr_image_path: '/images/tech-kbc-payment-qr.jpg',
     coordinators: [
       { name: 'Sahil B.', phone: '9028313750' },
