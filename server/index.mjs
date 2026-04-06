@@ -705,6 +705,26 @@ function formatGoogleSheetsPresentationMode(eventSlug, presentationMode) {
   return '';
 }
 
+// Keep legacy Techxcelerate rows aligned with the split poster-presentation tab.
+function resolveGoogleSheetsEventSlug(row) {
+  const rowSlug = String(row?.event_slug || '').trim();
+  if (rowSlug !== 'techxcelerate') {
+    return rowSlug;
+  }
+
+  const noteBlob = `${row?.event_name || ''} ${row?.notes || ''} ${row?.review_note || ''}`.toLowerCase();
+  if (noteBlob.includes('poster')) {
+    return 'techxcelerate-poster-presentation';
+  }
+
+  const participantCount = Number(row?.participant_count || 0);
+  if (Number(row?.total_amount) > 0 && Number(row?.total_amount) < 200 && participantCount > 0 && participantCount <= 2) {
+    return 'techxcelerate-poster-presentation';
+  }
+
+  return rowSlug;
+}
+
 function buildGoogleSheetsRowValues(row) {
   return [
     row.registration_id,
@@ -740,16 +760,16 @@ function getGoogleSheetsService() {
   return googleSheetsService;
 }
 
-async function fetchGoogleSheetsEventTabs() {
+async function fetchGoogleSheetsEvents() {
   const result = await pool.query(
     `
-      SELECT slug
+      SELECT slug, name
       FROM events
       ORDER BY name ASC
     `,
   );
 
-  return result.rows.map((row) => row.slug);
+  return result.rows;
 }
 
 async function fetchVerifiedRegistrationsForGoogleSheets() {
@@ -765,16 +785,12 @@ async function fetchVerifiedRegistrationsForGoogleSheets() {
         r.contact_email,
         r.contact_phone,
         r.college_name,
-        CASE
-          WHEN r.event_slug = 'techxcelerate' AND r.presentation_mode = 'online' THEN 'Online'
-          WHEN r.event_slug = 'techxcelerate' AND r.presentation_mode = 'offline' THEN 'Offline'
-          ELSE ''
-        END AS presentation_mode,
-        CASE
-          WHEN r.event_slug = 'techxcelerate' THEN COALESCE(r.project_title, '')
-          ELSE ''
-        END AS project_title,
+        r.presentation_mode,
+        COALESCE(r.project_title, '') AS project_title,
         r.total_amount,
+        COALESCE(r.notes, '') AS notes,
+        COALESCE(r.review_note, '') AS review_note,
+        COUNT(p.id)::int AS participant_count,
         COALESCE(string_agg(
           p.full_name || ' <' || p.email || '> (' || p.phone || ')',
           ' | '
@@ -789,10 +805,18 @@ async function fetchVerifiedRegistrationsForGoogleSheets() {
     `,
   );
 
-  return result.rows.map((row) => ({
-    ...row,
-    presentation_mode: formatGoogleSheetsPresentationMode(row.event_slug, row.presentation_mode?.toLowerCase?.() || row.presentation_mode),
-  }));
+  return result.rows.map((row) => {
+    const effectiveEventSlug = resolveGoogleSheetsEventSlug(row);
+    return {
+      ...row,
+      event_slug: effectiveEventSlug,
+      presentation_mode: formatGoogleSheetsPresentationMode(
+        effectiveEventSlug,
+        row.presentation_mode?.toLowerCase?.() || row.presentation_mode,
+      ),
+      project_title: effectiveEventSlug === 'techxcelerate' ? row.project_title : '',
+    };
+  });
 }
 
 async function ensureGoogleSheetsTabs(sheets, tabNames) {
@@ -835,16 +859,24 @@ async function syncVerifiedRegistrationsToGoogleSheets() {
     return;
   }
 
-  const [rows, tabNames] = await Promise.all([
+  const [rows, events] = await Promise.all([
     fetchVerifiedRegistrationsForGoogleSheets(),
-    fetchGoogleSheetsEventTabs(),
+    fetchGoogleSheetsEvents(),
   ]);
+  const eventNameBySlug = new Map(events.map((event) => [event.slug, event.name]));
+  const tabNames = [...new Set([
+    ...events.map((event) => event.slug),
+    ...rows.map((row) => row.event_slug).filter(Boolean),
+  ])];
 
   await ensureGoogleSheetsTabs(sheets, tabNames);
 
   const rowsByEventSlug = rows.reduce((collection, row) => {
     const eventRows = collection.get(row.event_slug) || [];
-    eventRows.push(row);
+    eventRows.push({
+      ...row,
+      event_name: eventNameBySlug.get(row.event_slug) || row.event_name,
+    });
     collection.set(row.event_slug, eventRows);
     return collection;
   }, new Map());
