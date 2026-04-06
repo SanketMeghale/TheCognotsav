@@ -169,6 +169,25 @@ export type ParticipantDraft = {
   phone: string;
 };
 
+export type SpecialDeskPaymentMethod = 'cash' | 'upi' | 'free';
+
+export type SpecialDeskRegistrationPayload = {
+  eventSlug: string;
+  teamName: string;
+  collegeName: string;
+  departmentName: string;
+  yearOfStudy: string;
+  contactName: string;
+  contactEmail: string;
+  contactPhone: string;
+  projectTitle?: string;
+  paymentMethod: SpecialDeskPaymentMethod;
+  paymentReference?: string;
+  notes?: string;
+  participants: ParticipantDraft[];
+  markVerified: boolean;
+};
+
 export type RegistrationReceipt = {
   registrationCode: string;
   eventName: string;

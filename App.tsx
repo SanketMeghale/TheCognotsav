@@ -13,6 +13,7 @@ import type {
   PortalAlert,
   PortalAnnouncement,
   RegistrationReceipt,
+  SpecialDeskRegistrationPayload,
 } from './components/portal/types.ts';
 import { getTeamLabel, makeParticipants, shellClassName } from './components/portal/utils.ts';
 
@@ -2333,6 +2334,72 @@ export const App: React.FC = () => {
     }
   };
 
+  const createSpecialDeskRegistration = async (payload: SpecialDeskRegistrationPayload) => {
+    setAdminError('');
+    try {
+      const response = await fetch('/api/admin/registrations/special', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-key': adminKey,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const { data, rawText } = await readApiBody<{
+        error?: string;
+        registration?: AdminRegistration;
+        notification?: AdminNotificationSummary | null;
+        event?: EventRecord | null;
+      }>(response);
+
+      if (!response.ok) {
+        throw new Error(getApiErrorMessage(response, data, rawText, 'Failed to create desk registration.'));
+      }
+
+      if (!data?.registration) {
+        throw new Error('Desk registration was created, but the refreshed record was missing.');
+      }
+
+      setAdminRows((current) => {
+        const nextRows = current.filter((row) => row.id !== data.registration?.id);
+        return [data.registration!, ...nextRows];
+      });
+
+      if (data.event) {
+        setEvents((current) => {
+          const eventExists = current.some((event) => event.slug === data.event?.slug);
+          if (!eventExists) {
+            return current;
+          }
+
+          return current.map((event) => (event.slug === data.event?.slug ? data.event! : event));
+        });
+      } else {
+        await refreshEvents();
+      }
+
+      const deliveryNote =
+        data.notification?.delivery_status === 'sent'
+          ? ' Confirmation email sent.'
+          : data.notification?.delivery_status === 'failed'
+            ? ` Email failed: ${data.notification.error_message || 'delivery error.'}`
+            : data.notification?.delivery_status === 'skipped'
+              ? ` Email skipped: ${data.notification.error_message || 'email not configured.'}`
+              : '';
+
+      setToastClosing(false);
+      setToastMessage(
+        `Desk registration saved for ${data.registration.team_name}. Code: ${data.registration.registration_code}.${deliveryNote}`,
+      );
+
+      return data.registration;
+    } catch (error) {
+      setAdminError(error instanceof Error ? error.message : 'Failed to create desk registration.');
+      return null;
+    }
+  };
+
   const updateAdminStatus = async (registrationId: string, status: 'verified' | 'rejected' | 'pending') => {
     setAdminError('');
     try {
@@ -2840,6 +2907,7 @@ export const App: React.FC = () => {
               setAdminError('');
             }}
             onLoadAdminRows={loadAdminRows}
+            onCreateSpecialRegistration={createSpecialDeskRegistration}
             onDownload={downloadAdminFile}
             onStatusChange={updateAdminStatus}
             onDeleteRegistration={deleteAdminRegistration}

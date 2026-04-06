@@ -10,12 +10,15 @@ import type {
   AdminRegistration,
   BackupSnapshot,
   EventRecord,
+  ParticipantDraft,
   PortalAnnouncement,
+  SpecialDeskPaymentMethod,
+  SpecialDeskRegistrationPayload,
 } from './types';
 import { formatBytes, formatCurrency, shellClassName } from './utils';
 
 type AdminAccessMode = 'global' | 'event';
-type AdminView = 'overview' | 'events' | 'verification' | 'broadcast' | 'backup';
+type AdminView = 'overview' | 'desk' | 'events' | 'verification' | 'broadcast' | 'backup';
 
 type Props = {
   adminAccessMode: AdminAccessMode;
@@ -34,6 +37,7 @@ type Props = {
   onAdminEventKeyChange: (value: string) => void;
   onAdminEventKeySlugChange: (value: string) => void;
   onLoadAdminRows: () => void;
+  onCreateSpecialRegistration: (payload: SpecialDeskRegistrationPayload) => Promise<AdminRegistration | null>;
   onDownload: (format: 'csv' | 'xlsx', eventSlug?: string) => void;
   onStatusChange: (registrationId: string, status: 'verified' | 'rejected' | 'pending') => void;
   onDeleteRegistration: (registrationId: string) => void;
@@ -48,6 +52,24 @@ type Props = {
 
 type StatusFilter = 'all' | 'pending' | 'verified' | 'waitlisted' | 'rejected';
 
+type DeskFormState = {
+  eventSlug: string;
+  teamName: string;
+  collegeName: string;
+  departmentName: string;
+  yearOfStudy: string;
+  contactName: string;
+  contactEmail: string;
+  contactPhone: string;
+  teamSize: number;
+  extraParticipants: ParticipantDraft[];
+  projectTitle: string;
+  paymentMethod: SpecialDeskPaymentMethod;
+  paymentReference: string;
+  notes: string;
+  markVerified: boolean;
+};
+
 const groupedScopedEventSlugs: Record<string, string[]> = {
   techxcelerate: ['techxcelerate', 'techxcelerate-poster-presentation'],
   'techxcelerate-poster-presentation': ['techxcelerate', 'techxcelerate-poster-presentation'],
@@ -60,8 +82,59 @@ const statusStyles: Record<string, string> = {
   rejected: 'border-rose-300/25 bg-rose-400/10 text-rose-100',
 };
 
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 function prettyStatus(value: string) {
   return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function createEmptyParticipant(): ParticipantDraft {
+  return {
+    fullName: '',
+    email: '',
+    phone: '',
+  };
+}
+
+function buildParticipantDrafts(count: number) {
+  return Array.from({ length: Math.max(count, 0) }, () => createEmptyParticipant());
+}
+
+function resizeParticipantDrafts(participants: ParticipantDraft[], count: number) {
+  const nextCount = Math.max(count, 0);
+  const nextParticipants = participants.slice(0, nextCount);
+
+  while (nextParticipants.length < nextCount) {
+    nextParticipants.push(createEmptyParticipant());
+  }
+
+  return nextParticipants;
+}
+
+function createDeskFormState(event: EventRecord | null | undefined): DeskFormState {
+  const teamSize = Math.max(Number(event?.min_members || 1), 1);
+
+  return {
+    eventSlug: event?.slug || '',
+    teamName: '',
+    collegeName: '',
+    departmentName: '',
+    yearOfStudy: '',
+    contactName: '',
+    contactEmail: '',
+    contactPhone: '',
+    teamSize,
+    extraParticipants: buildParticipantDrafts(teamSize - 1),
+    projectTitle: '',
+    paymentMethod: 'cash',
+    paymentReference: '',
+    notes: '',
+    markVerified: true,
+  };
+}
+
+function formatRegistrationSource(source: string | null | undefined) {
+  return source === 'special-desk' ? 'Desk' : 'Online';
 }
 
 function normalizeEventToken(value: string | null | undefined) {
@@ -159,7 +232,7 @@ function compactReference(value: string | null | undefined) {
   return `${normalized.slice(0, 10).toUpperCase()}...`;
 }
 
-export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, adminMainKey, adminEventKey, adminEventKeySlug, adminScope, adminRows, events, announcements, backups, adminLoading, adminError, onAdminAccessModeChange, onAdminMainKeyChange, onAdminEventKeyChange, onAdminEventKeySlugChange, onLoadAdminRows, onDownload, onStatusChange, onDeleteRegistration, onToggleEventRegistrationState, onSaveReviewNote, onResendStatusEmail, onSendBroadcast, onDeleteAnnouncement, onRunBackup, onDownloadBackup }) => {
+export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, adminMainKey, adminEventKey, adminEventKeySlug, adminScope, adminRows, events, announcements, backups, adminLoading, adminError, onAdminAccessModeChange, onAdminMainKeyChange, onAdminEventKeyChange, onAdminEventKeySlugChange, onLoadAdminRows, onCreateSpecialRegistration, onDownload, onStatusChange, onDeleteRegistration, onToggleEventRegistrationState, onSaveReviewNote, onResendStatusEmail, onSendBroadcast, onDeleteAnnouncement, onRunBackup, onDownloadBackup }) => {
   const [activeView, setActiveView] = useState<AdminView>('overview');
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
@@ -173,6 +246,9 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
   const [broadcastEventSlug, setBroadcastEventSlug] = useState('');
   const [broadcastPinned, setBroadcastPinned] = useState(true);
   const [exportEventSlug, setExportEventSlug] = useState('all');
+  const [deskSubmitting, setDeskSubmitting] = useState(false);
+  const [deskLocalError, setDeskLocalError] = useState('');
+  const [deskSuccess, setDeskSuccess] = useState<AdminRegistration | null>(null);
   const scopedEventSlug = adminScope?.mode === 'event' ? adminScope.event_slug : null;
   const scopedEventName = adminScope?.mode === 'event' ? adminScope.event_name : null;
   const isGlobalAccess = adminScope?.mode !== 'event';
@@ -190,6 +266,18 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
   const accessSummary = adminScope?.mode === 'event'
     ? `Scoped access active for ${scopedEventName || 'the selected event'}. Only that event's entries are visible below.`
     : 'Main key verified. All event content and organizer controls are available.';
+  const deskEventOptions = useMemo(() => {
+    if (scopedAllowedSlugs.length === 0) {
+      return events;
+    }
+
+    return events.filter((event) => scopedAllowedSlugs.includes(normalizeEventToken(event.slug)));
+  }, [events, scopedAllowedSlugs]);
+  const [deskForm, setDeskForm] = useState<DeskFormState>(() => createDeskFormState(deskEventOptions[0] || null));
+  const selectedDeskEvent = useMemo(
+    () => deskEventOptions.find((event) => event.slug === deskForm.eventSlug) || deskEventOptions[0] || null,
+    [deskEventOptions, deskForm.eventSlug],
+  );
 
   useEffect(() => {
     setEventFilter('all');
@@ -198,6 +286,41 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
   useEffect(() => {
     setExportEventSlug(scopedEventSlug || 'all');
   }, [scopedEventSlug]);
+
+  useEffect(() => {
+    if (deskEventOptions.length === 0) {
+      setDeskForm(createDeskFormState(null));
+      return;
+    }
+
+    setDeskForm((current) => {
+      const activeEvent =
+        deskEventOptions.find((event) => event.slug === current.eventSlug) || deskEventOptions[0];
+      const minTeamSize = Math.max(Number(activeEvent?.min_members || 1), 1);
+      const maxTeamSize = Math.max(Number(activeEvent?.max_members || minTeamSize), minTeamSize);
+      const nextTeamSize = Math.min(Math.max(current.teamSize || minTeamSize, minTeamSize), maxTeamSize);
+      const nextParticipants = resizeParticipantDrafts(current.extraParticipants, nextTeamSize - 1);
+      const nextEventSlug = activeEvent?.slug || '';
+      const nextProjectTitle = nextEventSlug === 'techxcelerate' ? current.projectTitle : '';
+
+      if (
+        current.eventSlug === nextEventSlug
+        && current.teamSize === nextTeamSize
+        && current.extraParticipants.length === nextParticipants.length
+        && current.projectTitle === nextProjectTitle
+      ) {
+        return current;
+      }
+
+      return {
+        ...current,
+        eventSlug: nextEventSlug,
+        teamSize: nextTeamSize,
+        extraParticipants: nextParticipants,
+        projectTitle: nextProjectTitle,
+      };
+    });
+  }, [deskEventOptions]);
 
   const counts = useMemo(() => ({ all: adminRows.length, pending: adminRows.filter((row) => row.status === 'pending').length, verified: adminRows.filter((row) => row.status === 'verified').length, waitlisted: adminRows.filter((row) => row.status === 'waitlisted').length, rejected: adminRows.filter((row) => row.status === 'rejected').length }), [adminRows]);
   const eventBuckets = useMemo(() => events.map((event) => {
@@ -239,17 +362,19 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
   const adminViews = useMemo(() => {
     if (!isGlobalAccess) {
       return [
+        { key: 'desk', label: 'Desk', icon: CheckCircle2 },
         { key: 'verification', label: 'Registrations', icon: ShieldCheck },
       ] as Array<{ key: AdminView; label: string; icon: typeof BarChart3 }>;
     }
 
     const views: Array<{ key: AdminView; label: string; icon: typeof BarChart3 }> = [
       { key: 'overview', label: 'Overview', icon: BarChart3 },
+      { key: 'desk', label: 'Desk', icon: CheckCircle2 },
       { key: 'verification', label: 'Registrations', icon: ShieldCheck },
     ];
 
     if (canManageEventControls) {
-      views.splice(1, 0, { key: 'events', label: 'Events', icon: Users });
+      views.splice(2, 0, { key: 'events', label: 'Events', icon: Users });
     }
     if (canShowBroadcastTools) {
       views.push({ key: 'broadcast', label: 'Broadcast', icon: Megaphone });
@@ -281,12 +406,6 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
     }
   }, [activeView, adminViews]);
 
-  useEffect(() => {
-    if (!isGlobalAccess) {
-      setActiveView('verification');
-    }
-  }, [isGlobalAccess]);
-
   const copyToClipboard = (value: string | null | undefined) => {
     const normalized = String(value || '').trim();
     if (!normalized || typeof navigator === 'undefined' || !navigator.clipboard?.writeText) {
@@ -294,6 +413,163 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
     }
 
     navigator.clipboard.writeText(normalized).catch(() => {});
+  };
+
+  const updateDeskField = <K extends keyof DeskFormState>(field: K, value: DeskFormState[K]) => {
+    setDeskLocalError('');
+    setDeskForm((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  };
+
+  const handleDeskEventChange = (eventSlug: string) => {
+    const nextEvent = deskEventOptions.find((event) => event.slug === eventSlug) || null;
+    if (!nextEvent) {
+      return;
+    }
+
+    const teamSize = Math.max(Number(nextEvent.min_members || 1), 1);
+    setDeskLocalError('');
+    setDeskForm((current) => ({
+      ...current,
+      eventSlug: nextEvent.slug,
+      teamSize,
+      extraParticipants: buildParticipantDrafts(teamSize - 1),
+      projectTitle: nextEvent.slug === 'techxcelerate' ? current.projectTitle : '',
+    }));
+  };
+
+  const handleDeskTeamSizeChange = (teamSizeValue: string) => {
+    const nextTeamSize = Number(teamSizeValue);
+    if (!Number.isFinite(nextTeamSize) || nextTeamSize < 1) {
+      return;
+    }
+
+    setDeskLocalError('');
+    setDeskForm((current) => ({
+      ...current,
+      teamSize: nextTeamSize,
+      extraParticipants: resizeParticipantDrafts(current.extraParticipants, nextTeamSize - 1),
+    }));
+  };
+
+  const handleDeskParticipantChange = (participantIndex: number, field: keyof ParticipantDraft, value: string) => {
+    setDeskLocalError('');
+    setDeskForm((current) => ({
+      ...current,
+      extraParticipants: current.extraParticipants.map((participant, index) =>
+        index === participantIndex
+          ? {
+              ...participant,
+              [field]: value,
+            }
+          : participant
+      ),
+    }));
+  };
+
+  const openDeskRegistrationInVerification = (registration: AdminRegistration) => {
+    setStatusFilter('all');
+    setSearchQuery(registration.registration_code);
+    setEventFilter(registration.event_slug);
+    setExpandedRowId(registration.id);
+    setActiveView('verification');
+  };
+
+  const handleDeskSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!selectedDeskEvent) {
+      setDeskLocalError('Select an event before saving a desk registration.');
+      return;
+    }
+
+    if (!deskForm.collegeName.trim()) {
+      setDeskLocalError('College name is required for desk registration.');
+      return;
+    }
+
+    if (!deskForm.contactName.trim()) {
+      setDeskLocalError('Lead contact name is required.');
+      return;
+    }
+
+    if (!deskForm.contactEmail.trim()) {
+      setDeskLocalError('Lead contact email is required.');
+      return;
+    }
+
+    if (!emailPattern.test(deskForm.contactEmail.trim())) {
+      setDeskLocalError('Enter a valid lead contact email address.');
+      return;
+    }
+
+    if (!deskForm.contactPhone.trim()) {
+      setDeskLocalError('Lead contact phone is required.');
+      return;
+    }
+
+    if (selectedDeskEvent.slug === 'techxcelerate' && !deskForm.projectTitle.trim()) {
+      setDeskLocalError('Project title is required for Techxcelerate desk registrations.');
+      return;
+    }
+
+    const participants: ParticipantDraft[] = [
+      {
+        fullName: deskForm.contactName.trim(),
+        email: deskForm.contactEmail.trim(),
+        phone: deskForm.contactPhone.trim(),
+      },
+      ...deskForm.extraParticipants.map((participant) => ({
+        fullName: participant.fullName.trim(),
+        email: participant.email.trim(),
+        phone: participant.phone.trim(),
+      })),
+    ];
+
+    if (participants.length < selectedDeskEvent.min_members || participants.length > selectedDeskEvent.max_members) {
+      setDeskLocalError(`This event accepts ${selectedDeskEvent.min_members} to ${selectedDeskEvent.max_members} participants.`);
+      return;
+    }
+
+    const invalidParticipantIndex = participants.findIndex((participant) =>
+      !participant.fullName || !participant.email || !participant.phone || !emailPattern.test(participant.email),
+    );
+
+    if (invalidParticipantIndex >= 0) {
+      setDeskLocalError(`Participant ${invalidParticipantIndex + 1} must include a valid name, email, and phone number.`);
+      return;
+    }
+
+    setDeskSubmitting(true);
+    setDeskLocalError('');
+
+    const createdRegistration = await onCreateSpecialRegistration({
+      eventSlug: selectedDeskEvent.slug,
+      teamName: deskForm.teamName.trim(),
+      collegeName: deskForm.collegeName.trim(),
+      departmentName: deskForm.departmentName.trim(),
+      yearOfStudy: deskForm.yearOfStudy.trim(),
+      contactName: deskForm.contactName.trim(),
+      contactEmail: deskForm.contactEmail.trim(),
+      contactPhone: deskForm.contactPhone.trim(),
+      projectTitle: deskForm.projectTitle.trim(),
+      paymentMethod: deskForm.paymentMethod,
+      paymentReference: deskForm.paymentReference.trim(),
+      notes: deskForm.notes.trim(),
+      participants,
+      markVerified: deskForm.markVerified,
+    });
+
+    setDeskSubmitting(false);
+
+    if (!createdRegistration) {
+      return;
+    }
+
+    setDeskSuccess(createdRegistration);
+    setDeskForm(createDeskFormState(selectedDeskEvent));
   };
 
   return (
@@ -476,6 +752,273 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
         </section>
       ) : null}
 
+      {activeView === 'desk' ? (
+        <section id="admin-desk" data-reveal="up" className="portal-admin-shell portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-6">
+          <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.35em] text-emerald-200/80">Venue intake</p>
+              <h3 className="mt-2 bg-gradient-to-r from-emerald-300 via-cyan-300 to-blue-400 bg-clip-text font-orbitron text-3xl font-black uppercase text-transparent">Special desk registration</h3>
+              <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300">
+                Create walk-in entries for the venue desk, record cash or instant UPI payments, and drop the team straight into the approval list without touching the public form.
+              </p>
+            </div>
+            {selectedDeskEvent ? (
+              <div className="rounded-[1.35rem] border border-emerald-300/16 bg-emerald-400/10 px-4 py-4 text-sm text-emerald-50">
+                <p className="text-[11px] uppercase tracking-[0.2em] text-emerald-100/80">Active desk event</p>
+                <p className="mt-2 text-lg font-semibold text-white">{selectedDeskEvent.name}</p>
+                <p className="mt-2 text-sm text-emerald-50/90">
+                  {selectedDeskEvent.registration_fee_label || formatCurrency(selectedDeskEvent.registration_fee)} • {selectedDeskEvent.min_members}-{selectedDeskEvent.max_members} participants
+                </p>
+                <p className="mt-1 text-xs uppercase tracking-[0.18em] text-emerald-100/70">
+                  {selectedDeskEvent.max_slots === null
+                    ? 'Open format'
+                    : `${Math.max(selectedDeskEvent.max_slots - selectedDeskEvent.registrations_count, 0)} seats left`}
+                  {' • '}
+                  {selectedDeskEvent.registration_enabled ? 'Public registration open' : 'Public registration paused'}
+                </p>
+              </div>
+            ) : null}
+          </div>
+
+          <form onSubmit={handleDeskSubmit} className="mt-6 grid gap-4 xl:grid-cols-[1.08fr_0.92fr]">
+            <div className="space-y-4">
+              <div className="rounded-[1.4rem] border border-white/10 bg-black/20 p-4">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold text-white">Desk setup</p>
+                    <p className="mt-1 text-sm text-slate-400">Choose the event first so participant limits and fee context stay accurate.</p>
+                  </div>
+                  <span className="rounded-full border border-cyan-300/16 bg-cyan-400/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-cyan-100">
+                    {selectedDeskEvent ? `${selectedDeskEvent.min_members}-${selectedDeskEvent.max_members} people` : 'Select event'}
+                  </span>
+                </div>
+
+                <div className="mt-4 grid gap-4 md:grid-cols-2">
+                  <label className="block rounded-[1.2rem] border border-white/10 bg-white/5 p-4">
+                    <span className="mb-2 block text-[11px] uppercase tracking-[0.2em] text-slate-400">Event</span>
+                    <select value={selectedDeskEvent?.slug || ''} onChange={(event) => handleDeskEventChange(event.target.value)} disabled={deskEventOptions.length <= 1 && Boolean(scopedEventSlug)} className="floating-field-input disabled:opacity-70">
+                      {deskEventOptions.length === 0 ? <option value="">No allowed events</option> : null}
+                      {deskEventOptions.map((event) => <option key={`desk-${event.slug}`} value={event.slug}>{event.name}</option>)}
+                    </select>
+                  </label>
+
+                  <label className="block rounded-[1.2rem] border border-white/10 bg-white/5 p-4">
+                    <span className="mb-2 block text-[11px] uppercase tracking-[0.2em] text-slate-400">Team size</span>
+                    <select value={deskForm.teamSize} onChange={(event) => handleDeskTeamSizeChange(event.target.value)} disabled={!selectedDeskEvent} className="floating-field-input disabled:opacity-70">
+                      {selectedDeskEvent
+                        ? Array.from({ length: selectedDeskEvent.max_members - selectedDeskEvent.min_members + 1 }, (_, index) => {
+                            const size = selectedDeskEvent.min_members + index;
+                            return <option key={`team-size-${size}`} value={size}>{size} {size === 1 ? 'participant' : 'participants'}</option>;
+                          })
+                        : <option value="1">1 participant</option>}
+                    </select>
+                  </label>
+
+                  <label className="floating-field block">
+                    <input value={deskForm.teamName} onChange={(event) => updateDeskField('teamName', event.target.value)} placeholder=" " className="floating-field-input" />
+                    <span className="floating-field-label">Team name or participant label</span>
+                  </label>
+
+                  <label className="floating-field block">
+                    <input value={deskForm.collegeName} onChange={(event) => updateDeskField('collegeName', event.target.value)} placeholder=" " className="floating-field-input" />
+                    <span className="floating-field-label">College name</span>
+                  </label>
+
+                  <label className="floating-field block">
+                    <input value={deskForm.departmentName} onChange={(event) => updateDeskField('departmentName', event.target.value)} placeholder=" " className="floating-field-input" />
+                    <span className="floating-field-label">Department (optional)</span>
+                  </label>
+
+                  <label className="floating-field block">
+                    <input value={deskForm.yearOfStudy} onChange={(event) => updateDeskField('yearOfStudy', event.target.value)} placeholder=" " className="floating-field-input" />
+                    <span className="floating-field-label">Year of study (optional)</span>
+                  </label>
+
+                  {selectedDeskEvent?.slug === 'techxcelerate' ? (
+                    <label className="floating-field block md:col-span-2">
+                      <input value={deskForm.projectTitle} onChange={(event) => updateDeskField('projectTitle', event.target.value)} placeholder=" " className="floating-field-input" />
+                      <span className="floating-field-label">Project title</span>
+                    </label>
+                  ) : null}
+                </div>
+              </div>
+
+              <div className="rounded-[1.4rem] border border-white/10 bg-black/20 p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold text-white">Lead contact</p>
+                    <p className="mt-1 text-sm text-slate-400">This person is saved as participant #1 automatically.</p>
+                  </div>
+                  <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-slate-300">Lead auto-added</span>
+                </div>
+
+                <div className="mt-4 grid gap-4 md:grid-cols-2">
+                  <label className="floating-field block">
+                    <input value={deskForm.contactName} onChange={(event) => updateDeskField('contactName', event.target.value)} placeholder=" " className="floating-field-input" />
+                    <span className="floating-field-label">Lead contact name</span>
+                  </label>
+
+                  <label className="floating-field block">
+                    <input value={deskForm.contactPhone} onChange={(event) => updateDeskField('contactPhone', event.target.value)} placeholder=" " className="floating-field-input" />
+                    <span className="floating-field-label">Lead contact phone</span>
+                  </label>
+
+                  <label className="floating-field block md:col-span-2">
+                    <input value={deskForm.contactEmail} onChange={(event) => updateDeskField('contactEmail', event.target.value)} placeholder=" " className="floating-field-input" />
+                    <span className="floating-field-label">Lead contact email</span>
+                  </label>
+                </div>
+              </div>
+
+              <div className="rounded-[1.4rem] border border-white/10 bg-black/20 p-4">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold text-white">Additional participants</p>
+                    <p className="mt-1 text-sm text-slate-400">Add only the remaining members. The lead contact above is already included.</p>
+                  </div>
+                  <span className="rounded-full border border-fuchsia-300/16 bg-fuchsia-400/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-fuchsia-100">
+                    {deskForm.extraParticipants.length} extra {deskForm.extraParticipants.length === 1 ? 'member' : 'members'}
+                  </span>
+                </div>
+
+                {deskForm.extraParticipants.length > 0 ? (
+                  <div className="mt-4 space-y-3">
+                    {deskForm.extraParticipants.map((participant, index) => (
+                      <div key={`desk-participant-${index}`} className="rounded-[1.15rem] border border-white/10 bg-white/[0.04] p-4">
+                        <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Participant {index + 2}</p>
+                        <div className="mt-3 grid gap-3 md:grid-cols-3">
+                          <label className="floating-field block">
+                            <input value={participant.fullName} onChange={(event) => handleDeskParticipantChange(index, 'fullName', event.target.value)} placeholder=" " className="floating-field-input" />
+                            <span className="floating-field-label">Full name</span>
+                          </label>
+                          <label className="floating-field block">
+                            <input value={participant.email} onChange={(event) => handleDeskParticipantChange(index, 'email', event.target.value)} placeholder=" " className="floating-field-input" />
+                            <span className="floating-field-label">Email</span>
+                          </label>
+                          <label className="floating-field block">
+                            <input value={participant.phone} onChange={(event) => handleDeskParticipantChange(index, 'phone', event.target.value)} placeholder=" " className="floating-field-input" />
+                            <span className="floating-field-label">Phone</span>
+                          </label>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="mt-4 rounded-[1.15rem] border border-dashed border-white/10 bg-black/10 px-4 py-4 text-sm text-slate-400">
+                    This entry is currently lead-only. Increase the team size above if more members are joining at the desk.
+                  </div>
+                )}
+              </div>
+
+              <div className="rounded-[1.4rem] border border-white/10 bg-black/20 p-4">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold text-white">Payment and notes</p>
+                    <p className="mt-1 text-sm text-slate-400">Use cash or quick UPI entry here. Public screenshot upload is not required for desk-created records.</p>
+                  </div>
+                  <span className={`rounded-full border px-3 py-1 text-[11px] uppercase tracking-[0.18em] ${deskForm.markVerified ? 'border-emerald-300/18 bg-emerald-400/10 text-emerald-100' : 'border-amber-300/18 bg-amber-400/10 text-amber-100'}`}>
+                    {deskForm.markVerified ? 'Verify immediately' : 'Keep pending'}
+                  </span>
+                </div>
+
+                <div className="mt-4 grid gap-4 md:grid-cols-2">
+                  <label className="block rounded-[1.2rem] border border-white/10 bg-white/5 p-4">
+                    <span className="mb-2 block text-[11px] uppercase tracking-[0.2em] text-slate-400">Payment method</span>
+                    <select value={deskForm.paymentMethod} onChange={(event) => updateDeskField('paymentMethod', event.target.value as SpecialDeskPaymentMethod)} className="floating-field-input">
+                      <option value="cash">Cash</option>
+                      <option value="upi">UPI</option>
+                      <option value="free">Free</option>
+                    </select>
+                  </label>
+
+                  <label className="floating-field block">
+                    <input value={deskForm.paymentReference} onChange={(event) => updateDeskField('paymentReference', event.target.value)} placeholder=" " className="floating-field-input" />
+                    <span className="floating-field-label">Payment reference (optional)</span>
+                  </label>
+
+                  <label className="floating-field block md:col-span-2">
+                    <textarea value={deskForm.notes} onChange={(event) => updateDeskField('notes', event.target.value)} placeholder=" " rows={4} className="floating-field-input min-h-[128px] resize-none" />
+                    <span className="floating-field-label">Desk notes (optional)</span>
+                  </label>
+                </div>
+
+                <label className="mt-4 inline-flex items-center gap-3 rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200">
+                  <input type="checkbox" checked={deskForm.markVerified} onChange={(event) => updateDeskField('markVerified', event.target.checked)} />
+                  Mark this registration verified immediately after saving
+                </label>
+
+                {deskLocalError ? (
+                  <div className="mt-4 rounded-[1.1rem] border border-rose-300/20 bg-rose-400/10 px-4 py-3 text-sm text-rose-100">
+                    {deskLocalError}
+                  </div>
+                ) : null}
+
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <button type="submit" disabled={deskSubmitting || !selectedDeskEvent} className="animated-gradient-button inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 font-bold text-slate-950 disabled:opacity-60">
+                    <CheckCircle2 size={16} />
+                    {deskSubmitting ? 'Saving...' : 'Save desk registration'}
+                  </button>
+                  <button type="button" onClick={() => { setDeskLocalError(''); setDeskSuccess(null); setDeskForm(createDeskFormState(selectedDeskEvent)); }} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-bold text-white">
+                    Reset form
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="rounded-[1.4rem] border border-white/10 bg-[linear-gradient(145deg,rgba(16,25,43,0.96),rgba(10,18,32,0.9))] p-5">
+                <p className="text-[11px] uppercase tracking-[0.24em] text-cyan-200/80">Desk checklist</p>
+                <p className="mt-3 text-lg font-semibold text-white">Fastest clean flow</p>
+                <div className="mt-4 space-y-3 text-sm leading-6 text-slate-300">
+                  <p>1. Pick the event and correct team size before you start typing names.</p>
+                  <p>2. Use the lead contact as participant #1, then add only the remaining members.</p>
+                  <p>3. Choose `Cash`, `UPI`, or `Free`, then decide whether the desk should mark the entry verified immediately.</p>
+                </div>
+              </div>
+
+              {deskSuccess ? (
+                <div className="rounded-[1.4rem] border border-emerald-300/18 bg-emerald-400/10 p-5">
+                  <p className="text-[11px] uppercase tracking-[0.24em] text-emerald-100/80">Latest desk entry</p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <span className={`rounded-full border px-3 py-1 text-[11px] uppercase tracking-[0.2em] ${statusStyles[deskSuccess.status] || 'border-white/10 bg-white/5 text-white'}`}>{prettyStatus(deskSuccess.status)}</span>
+                    <span className="rounded-full border border-cyan-300/18 bg-cyan-400/10 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-cyan-100">{formatRegistrationSource(deskSuccess.registration_source)}</span>
+                    {deskSuccess.payment_method ? <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-slate-200">{deskSuccess.payment_method}</span> : null}
+                    {deskSuccess.waitlist_position ? <span className="rounded-full border border-fuchsia-300/18 bg-fuchsia-400/10 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-fuchsia-100">Queue #{deskSuccess.waitlist_position}</span> : null}
+                  </div>
+                  <p className="mt-4 text-2xl font-bold text-white">{deskSuccess.team_name}</p>
+                  <p className="mt-2 text-sm text-slate-200">{deskSuccess.event_name}</p>
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                    <div className="rounded-[1.1rem] border border-white/10 bg-black/20 p-4">
+                      <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Registration code</p>
+                      <p className="mt-2 font-orbitron text-lg font-bold text-white">{deskSuccess.registration_code}</p>
+                    </div>
+                    <div className="rounded-[1.1rem] border border-white/10 bg-black/20 p-4">
+                      <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Lead contact</p>
+                      <p className="mt-2 text-sm font-semibold text-white">{deskSuccess.contact_name}</p>
+                      <p className="mt-1 text-sm text-slate-300">{deskSuccess.contact_email}</p>
+                    </div>
+                  </div>
+                  <div className="mt-4 flex flex-wrap gap-3">
+                    <button type="button" onClick={() => copyToClipboard(deskSuccess.registration_code)} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-bold text-white">
+                      <Copy size={15} />
+                      Copy code
+                    </button>
+                    <button type="button" onClick={() => openDeskRegistrationInVerification(deskSuccess)} className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-cyan-300/16 bg-cyan-400/10 px-4 py-3 text-sm font-bold text-cyan-100">
+                      <ArrowRight size={15} />
+                      Open in registrations
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="rounded-[1.4rem] border border-dashed border-white/10 bg-black/10 p-5 text-sm text-slate-400">
+                  The newest desk registration will appear here with its code and status as soon as you save it.
+                </div>
+              )}
+            </div>
+          </form>
+        </section>
+      ) : null}
+
       {activeView === 'events' && canManageEventControls ? (
         <section id="admin-event-controls" data-reveal="up" className="portal-glow-card portal-glass rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-8">
           <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
@@ -654,6 +1197,8 @@ export const AdminRegistrationsPage: React.FC<Props> = ({ adminAccessMode, admin
                         <p className="truncate text-[1.65rem] font-semibold text-white">{row.team_name}</p>
                       </button>
                       <span className={`portal-admin-entry__badge rounded-full border px-3 py-1 text-[11px] uppercase tracking-[0.2em] ${statusStyles[row.status] || 'border-white/10 bg-white/5 text-white'}`}>{prettyStatus(row.status)}</span>
+                      <span className="portal-admin-entry__badge rounded-full border border-cyan-300/18 bg-cyan-400/10 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-cyan-100">{formatRegistrationSource(row.registration_source)}</span>
+                      {row.payment_method ? <span className="portal-admin-entry__badge rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-slate-200">{row.payment_method}</span> : null}
                     </div>
                     <div className="portal-admin-entry__quickline mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-300">
                       <span>{resolveAdminEventName(row, events)}</span>
