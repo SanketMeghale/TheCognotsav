@@ -2615,16 +2615,16 @@ function resolveCertificateFontSize(value, variant = 'participant') {
   const length = String(value || '').trim().length;
 
   if (variant === 'event') {
-    if (length > 34) return '18px';
-    if (length > 26) return '20px';
-    if (length > 20) return '22px';
-    return '24px';
+    if (length > 34) return 'clamp(1.28rem, 2vw, 1.8rem)';
+    if (length > 26) return 'clamp(1.45rem, 2.2vw, 1.95rem)';
+    if (length > 20) return 'clamp(1.6rem, 2.4vw, 2.1rem)';
+    return 'clamp(1.8rem, 2.7vw, 2.3rem)';
   }
 
-  if (length > 40) return '20px';
-  if (length > 32) return '22px';
-  if (length > 24) return '24px';
-  return '26px';
+  if (length > 40) return 'clamp(1.72rem, 2.6vw, 2.3rem)';
+  if (length > 32) return 'clamp(1.9rem, 2.9vw, 2.55rem)';
+  if (length > 24) return 'clamp(2.08rem, 3.2vw, 2.85rem)';
+  return 'clamp(2.3rem, 3.45vw, 3.2rem)';
 }
 
 function buildCertificateNoticePage({
@@ -2758,26 +2758,110 @@ function buildParticipationCertificatePage({
           body {
             margin: 0;
             min-height: 100vh;
-            padding: 18px;
+            padding: clamp(16px, 2.8vw, 34px);
             font-family: Inter, Arial, sans-serif;
             background:
-              radial-gradient(circle at top left, rgba(59,130,246,0.18), transparent 28%),
-              radial-gradient(circle at bottom right, rgba(251,191,36,0.16), transparent 24%),
-              linear-gradient(180deg, #07111d 0%, #0f172a 100%);
+              radial-gradient(circle at top left, rgba(59,130,246,0.24), transparent 24%),
+              radial-gradient(circle at bottom right, rgba(251,191,36,0.18), transparent 24%),
+              linear-gradient(180deg, #050b16 0%, #0f172a 52%, #111827 100%);
             color: #e5eefb;
+            display: grid;
+            place-items: center;
           }
-          .wrap {
+          .preview {
             width: min(100%, 1340px);
-            margin: 0 auto;
+            display: grid;
+            gap: 18px;
+          }
+          .topbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 22px 24px;
+            border-radius: 30px;
+            background:
+              linear-gradient(135deg, rgba(15,23,42,0.88), rgba(15,23,42,0.72)),
+              radial-gradient(circle at top right, rgba(103,232,249,0.15), transparent 34%);
+            border: 1px solid rgba(148,163,184,0.18);
+            box-shadow: 0 26px 60px rgba(2,8,23,0.28);
+            backdrop-filter: blur(12px);
+          }
+          .intro {
+            min-width: 0;
+            flex: 1 1 420px;
+          }
+          .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            color: #93c5fd;
+          }
+          .eyebrow::before {
+            content: "";
+            width: 38px;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(103,232,249,0.85), rgba(251,191,36,0.92));
+          }
+          h1 {
+            margin: 12px 0 0;
+            font-size: clamp(1.8rem, 3vw, 2.4rem);
+            line-height: 1.08;
+            color: #ffffff;
+            font-family: "Palatino Linotype", Georgia, serif;
+          }
+          .summary {
+            margin: 10px 0 0;
+            font-size: 14px;
+            line-height: 1.65;
+            color: #cbd5e1;
+            max-width: 760px;
+          }
+          .summary strong {
+            color: #ffffff;
+            font-weight: 700;
+          }
+          .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+          }
+          .frame {
+            position: relative;
+            padding: clamp(12px, 1.6vw, 18px);
+            border-radius: 34px;
+            background:
+              linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.08)),
+              linear-gradient(135deg, rgba(250,204,21,0.24), rgba(147,197,253,0.12));
+            border: 1px solid rgba(255,255,255,0.14);
+            box-shadow:
+              0 34px 90px rgba(2,8,23,0.38),
+              inset 0 1px 0 rgba(255,255,255,0.2);
+          }
+          .frame::before {
+            content: "";
+            position: absolute;
+            inset: 10px;
+            border-radius: 26px;
+            border: 1px solid rgba(251,191,36,0.18);
+            pointer-events: none;
           }
           .sheet {
             position: relative;
             width: 100%;
             aspect-ratio: 2000 / 1414;
             overflow: hidden;
-            border-radius: 24px;
-            box-shadow: 0 32px 84px rgba(2,8,23,0.38);
+            border-radius: 22px;
+            box-shadow: 0 22px 54px rgba(15,23,42,0.16);
             background: #ffffff;
+            isolation: isolate;
           }
           .template {
             position: absolute;
@@ -2787,50 +2871,61 @@ function buildParticipationCertificatePage({
             object-fit: cover;
             user-select: none;
             -webkit-user-drag: none;
+            display: block;
           }
           .field {
             position: absolute;
             z-index: 2;
             text-align: center;
-            color: #13385c;
-            font-family: "Times New Roman", Georgia, serif;
+            color: #14385d;
             font-weight: 700;
-            line-height: 1;
-            text-shadow: 0 1px 0 rgba(255,255,255,0.45);
+            line-height: 1.02;
+            white-space: nowrap;
+            text-shadow:
+              0 1px 0 rgba(255,255,255,0.7),
+              0 10px 24px rgba(10,37,64,0.08);
           }
           .field--participant {
-            left: 57.075%;
-            width: 40.7%;
-            top: 47.1%;
+            left: 56.95%;
+            width: 40.9%;
+            top: 46.95%;
             transform: translate(-50%, -50%);
             font-size: ${participantFontSize};
+            font-family: "Monotype Corsiva", "Palace Script MT", "Lucida Calligraphy", "Palatino Linotype", Georgia, serif;
+            letter-spacing: 0.015em;
           }
           .field--event {
-            left: 49.125%;
-            width: 30.1%;
-            top: 51.2%;
+            left: 49.05%;
+            width: 30.5%;
+            top: 51.1%;
             transform: translate(-50%, -50%);
             font-size: ${eventFontSize};
-            color: #1e2f44;
+            color: #1a314a;
+            font-family: "Palatino Linotype", Georgia, serif;
+            letter-spacing: 0.05em;
           }
           .meta {
             position: absolute;
             z-index: 2;
-            bottom: 12.7%;
-            font-size: 12px;
+            bottom: 12.15%;
+            font-size: 11px;
             font-weight: 700;
-            letter-spacing: 0.12em;
+            letter-spacing: 0.16em;
             text-transform: uppercase;
-            color: rgba(17, 52, 88, 0.72);
+            color: rgba(17, 52, 88, 0.78);
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.72);
+            backdrop-filter: blur(3px);
+            box-shadow: 0 8px 18px rgba(15,23,42,0.08);
           }
-          .meta--left { left: 11%; }
-          .meta--right { right: 11%; text-align: right; }
+          .meta--left { left: 9.4%; }
+          .meta--right { right: 9.4%; text-align: right; }
           .actions {
-            margin-top: 18px;
             display: flex;
             flex-wrap: wrap;
             gap: 12px;
-            justify-content: center;
+            justify-content: flex-end;
           }
           .button {
             display: inline-flex;
@@ -2843,24 +2938,51 @@ function buildParticipationCertificatePage({
             letter-spacing: 0.12em;
             text-transform: uppercase;
             text-decoration: none;
-            border: 0;
+            border: 1px solid transparent;
             cursor: pointer;
+            transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
           }
           .button-primary {
-            background: linear-gradient(90deg, #67e8f9, #fbbf24);
-            color: #041018;
+            background: linear-gradient(90deg, #f8fafc, #fef3c7);
+            color: #0f172a;
+            box-shadow: 0 16px 32px rgba(15,23,42,0.16);
           }
           .button-secondary {
-            border: 1px solid rgba(255,255,255,0.12);
+            border-color: rgba(255,255,255,0.12);
             background: rgba(255,255,255,0.06);
             color: #ffffff;
           }
+          .button:hover {
+            transform: translateY(-1px);
+          }
           .note {
-            margin-top: 12px;
+            margin: 0;
             text-align: center;
             color: #cbd5e1;
             font-size: 13px;
             line-height: 1.6;
+          }
+          .note strong {
+            color: #ffffff;
+            font-weight: 700;
+          }
+          @media (max-width: 900px) {
+            .topbar {
+              padding: 18px 18px 20px;
+            }
+            .toolbar,
+            .actions {
+              width: 100%;
+              justify-content: stretch;
+            }
+            .button {
+              flex: 1 1 180px;
+            }
+            .meta {
+              font-size: 9px;
+              letter-spacing: 0.1em;
+              padding: 6px 9px;
+            }
           }
           @page {
             size: A4 landscape;
@@ -2869,9 +2991,9 @@ function buildParticipationCertificatePage({
           @media print {
             html,
             body {
-              width: 100%;
-              height: auto;
-              min-height: 0;
+              width: 297mm;
+              height: 210mm;
+              min-height: auto;
               margin: 0;
               padding: 0;
               overflow: hidden;
@@ -2880,15 +3002,32 @@ function buildParticipationCertificatePage({
             body {
               display: block;
             }
-            .wrap {
-              width: 100%;
+            .preview {
+              width: 297mm;
+              height: 210mm;
               max-width: none;
               margin: 0;
               padding: 0;
+              display: block;
+            }
+            .topbar,
+            .note {
+              display: none;
+            }
+            .frame {
+              padding: 0;
+              border: 0;
+              background: none;
+              box-shadow: none;
+            }
+            .frame::before {
+              display: none;
             }
             .sheet {
-              width: 100%;
-              max-width: 100%;
+              width: 297mm;
+              height: 210mm;
+              max-width: none;
+              aspect-ratio: auto;
               border-radius: 0;
               box-shadow: none;
               page-break-inside: avoid;
@@ -2896,27 +3035,36 @@ function buildParticipationCertificatePage({
               page-break-after: avoid;
               break-after: avoid-page;
             }
-            .actions, .note {
-              display: none;
-            }
           }
         </style>
       </head>
       <body>
-        <div class="wrap">
-          <div class="sheet">
-            <img class="template" src="${escapeHtml(templateUrl)}" alt="Participation certificate template" />
-            <div class="field field--participant">${escapeHtml(participantName)}</div>
-            <div class="field field--event">${escapeHtml(eventName)}</div>
-            <div class="meta meta--left">Certificate ID: ${escapeHtml(certificateId)}</div>
-            <div class="meta meta--right">Issued: ${escapeHtml(issueDate)}</div>
+        <div class="preview">
+          <div class="topbar">
+            <div class="intro">
+              <div class="eyebrow">Official Certificate Preview</div>
+              <h1>Cognotsav 2026 Participation Certificate</h1>
+              <p class="summary"><strong>${escapeHtml(participantName)}</strong> is placed directly onto the approved participation certificate template for <strong>${escapeHtml(eventName)}</strong>, ready for landscape A4 printing or PDF download.</p>
+            </div>
+
+            <div class="toolbar">
+              <div class="actions">
+                <button type="button" class="button button-primary" onclick="window.print()">Print / Save PDF</button>
+                <a class="button button-secondary" href="${appUrl}/#tracker">Back to Tracker</a>
+              </div>
+            </div>
           </div>
 
-          <div class="actions">
-            <button type="button" class="button button-primary" onclick="window.print()">Print / Save PDF</button>
-            <a class="button button-secondary" href="${appUrl}/#tracker">Back to Tracker</a>
+          <div class="frame">
+            <div class="sheet">
+              <img class="template" src="${escapeHtml(templateUrl)}" alt="Participation certificate template" />
+              <div class="field field--participant">${escapeHtml(participantName)}</div>
+              <div class="field field--event">${escapeHtml(eventName)}</div>
+              <div class="meta meta--left">Certificate ID: ${escapeHtml(certificateId)}</div>
+              <div class="meta meta--right">Issued: ${escapeHtml(issueDate)}</div>
+            </div>
           </div>
-          <p class="note">One certificate is generated per participant. Use Print / Save PDF to download the final certificate.</p>
+          <p class="note">Optimized for <strong>landscape A4</strong>. The controls stay outside the certificate and disappear automatically while printing.</p>
         </div>
         ${download ? `
           <script>
