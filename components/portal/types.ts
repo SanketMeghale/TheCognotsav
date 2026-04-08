@@ -64,6 +64,10 @@ export type LookupResult = {
   venue: string;
   qr_value: string;
   waitlist_position: number | null;
+  participants: {
+    fullName: string;
+    isLead: boolean;
+  }[];
   timeline: TimelineEntry[];
 };
 

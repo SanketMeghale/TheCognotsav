@@ -10,7 +10,7 @@ import {
   XCircle,
 } from 'lucide-react';
 import type { AdminRegistration, LookupResult } from './types';
-import { formatCurrency } from './utils';
+import { isEventConcluded } from './utils';
 
 type Props = {
   lookupQuery: string;
@@ -139,111 +139,146 @@ export const TrackerAdminPanel: React.FC<Props> = ({
         </form>
 
         <div className="mt-6 space-y-4">
-          {lookupResults.map((result) => (
-            <div
-              key={result.id}
-              data-reveal="up"
-              className={`tilt-card rounded-[1.5rem] border p-5 backdrop-blur-md ${
-                result.status === 'verified'
-                  ? 'border-emerald-300/16 bg-gradient-to-r from-emerald-400/10 to-cyan-400/8'
-                  : result.status === 'rejected'
-                    ? 'border-rose-300/16 bg-gradient-to-r from-rose-400/10 to-orange-400/8'
-                    : result.status === 'waitlisted'
-                      ? 'border-fuchsia-300/16 bg-gradient-to-r from-fuchsia-400/10 to-purple-400/8'
-                    : 'border-cyan-300/10 bg-gradient-to-r from-cyan-400/10 to-fuchsia-400/8'
-              }`}
-            >
-              <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr] xl:gap-5">
-                <div>
-                  <div className="flex flex-wrap items-center gap-3">
-                    <p className="text-lg font-bold text-white">{result.team_name}</p>
-                    <span
-                      className={`rounded-full border px-3 py-1 text-xs uppercase tracking-[0.2em] ${
-                        statusStyles[result.status] || 'border-white/10 bg-white/5 text-slate-100'
-                      }`}
-                    >
-                      {prettyStatus(result.status)}
-                    </span>
-                    {result.waitlist_position ? (
-                      <span className="rounded-full border border-fuchsia-300/20 bg-fuchsia-400/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-fuchsia-100">
-                        Queue #{result.waitlist_position}
-                      </span>
-                    ) : null}
-                    {result.payment_method ? (
-                      <span className="rounded-full border border-cyan-300/20 bg-cyan-400/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-cyan-100">
-                        {result.payment_method}
-                      </span>
-                    ) : null}
-                  </div>
-                  <p className="mt-2 text-sm text-slate-200">{result.event_name}</p>
-                  <p className="mt-1 text-sm text-slate-300">
-                    {result.registration_code} / {result.contact_email}
-                  </p>
-                  <p className="mt-1 text-sm text-slate-400">
-                    {result.date_label} / {result.time_label} / {result.venue}
-                  </p>
+          {lookupResults.map((result) => {
+            const certificateReady = result.status === 'verified' && isEventConcluded(result) && result.participants.length > 0;
+            const certificateNote = result.status !== 'verified'
+              ? 'Certificates are available only for verified registrations.'
+              : !isEventConcluded(result)
+                ? 'Certificates will unlock after the event has concluded.'
+                : result.participants.length === 0
+                  ? 'Participant names are still syncing for this registration.'
+                  : 'Each participant can download an individual participation certificate below.';
 
-                  {result.review_note ? (
-                    <div className="mt-4 rounded-2xl border border-amber-300/18 bg-amber-400/10 p-4 text-sm text-amber-100">
-                      Organizer note: {result.review_note}
-                    </div>
-                  ) : null}
-
-                  <div className="mt-4 rounded-[1.4rem] border border-white/10 bg-black/18 p-4">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <p className="text-sm font-semibold text-white">Participant timeline</p>
-                      <span className="text-xs uppercase tracking-[0.2em] text-slate-400">
-                        Attendance: {result.attendance_status}
+            return (
+              <div
+                key={result.id}
+                data-reveal="up"
+                className={`tilt-card rounded-[1.5rem] border p-5 backdrop-blur-md ${
+                  result.status === 'verified'
+                    ? 'border-emerald-300/16 bg-gradient-to-r from-emerald-400/10 to-cyan-400/8'
+                    : result.status === 'rejected'
+                      ? 'border-rose-300/16 bg-gradient-to-r from-rose-400/10 to-orange-400/8'
+                      : result.status === 'waitlisted'
+                        ? 'border-fuchsia-300/16 bg-gradient-to-r from-fuchsia-400/10 to-purple-400/8'
+                        : 'border-cyan-300/10 bg-gradient-to-r from-cyan-400/10 to-fuchsia-400/8'
+                }`}
+              >
+                <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr] xl:gap-5">
+                  <div>
+                    <div className="flex flex-wrap items-center gap-3">
+                      <p className="text-lg font-bold text-white">{result.team_name}</p>
+                      <span
+                        className={`rounded-full border px-3 py-1 text-xs uppercase tracking-[0.2em] ${
+                          statusStyles[result.status] || 'border-white/10 bg-white/5 text-slate-100'
+                        }`}
+                      >
+                        {prettyStatus(result.status)}
                       </span>
+                      {result.waitlist_position ? (
+                        <span className="rounded-full border border-fuchsia-300/20 bg-fuchsia-400/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-fuchsia-100">
+                          Queue #{result.waitlist_position}
+                        </span>
+                      ) : null}
+                      {result.payment_method ? (
+                        <span className="rounded-full border border-cyan-300/20 bg-cyan-400/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-cyan-100">
+                          {result.payment_method}
+                        </span>
+                      ) : null}
                     </div>
-                    <div className="mt-4 space-y-3">
-                      {result.timeline.map((entry) => (
-                        <div key={entry.id} className="flex gap-3">
-                          <div
-                            className={`mt-1 h-3 w-3 rounded-full ${
-                              entry.state === 'done'
-                                ? 'bg-emerald-300'
-                                : entry.state === 'current'
-                                  ? 'bg-cyan-300'
-                                  : entry.state === 'attention'
-                                    ? 'bg-rose-300'
-                                    : 'bg-slate-500'
-                            }`}
-                          />
-                          <div className="min-w-0">
-                            <p className="text-sm font-semibold text-white">{entry.label}</p>
-                            <p className="text-sm text-slate-300">{entry.description}</p>
-                            {entry.at ? (
-                              <p className="mt-1 text-xs uppercase tracking-[0.2em] text-slate-500">
-                                {new Date(entry.at).toLocaleString()}
-                              </p>
-                            ) : null}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5 text-center">
-                    <p className="text-xs uppercase tracking-[0.24em] text-slate-400">Event-day entry pass</p>
-                    <p className="mt-2 font-orbitron text-xl font-black text-white">{result.registration_code}</p>
-                    <p className="mt-3 text-sm leading-6 text-slate-300">
-                      Verification now uses the official pass details and registration code only.
+                    <p className="mt-2 text-sm text-slate-200">{result.event_name}</p>
+                    <p className="mt-1 text-sm text-slate-300">
+                      {result.registration_code} / {result.contact_email}
                     </p>
+                    <p className="mt-1 text-sm text-slate-400">
+                      {result.date_label} / {result.time_label} / {result.venue}
+                    </p>
+
+                    {result.review_note ? (
+                      <div className="mt-4 rounded-2xl border border-amber-300/18 bg-amber-400/10 p-4 text-sm text-amber-100">
+                        Organizer note: {result.review_note}
+                      </div>
+                    ) : null}
+
+                    <div className="mt-4 rounded-[1.4rem] border border-white/10 bg-black/18 p-4">
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <p className="text-sm font-semibold text-white">Participant timeline</p>
+                        <span className="text-xs uppercase tracking-[0.2em] text-slate-400">
+                          Attendance: {result.attendance_status}
+                        </span>
+                      </div>
+                      <div className="mt-4 space-y-3">
+                        {result.timeline.map((entry) => (
+                          <div key={entry.id} className="flex gap-3">
+                            <div
+                              className={`mt-1 h-3 w-3 rounded-full ${
+                                entry.state === 'done'
+                                  ? 'bg-emerald-300'
+                                  : entry.state === 'current'
+                                    ? 'bg-cyan-300'
+                                    : entry.state === 'attention'
+                                      ? 'bg-rose-300'
+                                      : 'bg-slate-500'
+                              }`}
+                            />
+                            <div className="min-w-0">
+                              <p className="text-sm font-semibold text-white">{entry.label}</p>
+                              <p className="text-sm text-slate-300">{entry.description}</p>
+                              {entry.at ? (
+                                <p className="mt-1 text-xs uppercase tracking-[0.2em] text-slate-500">
+                                  {new Date(entry.at).toLocaleString()}
+                                </p>
+                              ) : null}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-4 text-sm text-slate-200">
-                    <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Submitted</p>
-                    <p className="mt-2">{new Date(result.created_at).toLocaleString()}</p>
-                    <p className="mt-3 text-xs uppercase tracking-[0.2em] text-slate-400">Payment reference</p>
-                    <p className="mt-2 break-all text-white">{result.payment_reference || 'No payment reference available'}</p>
+                  <div className="space-y-4">
+                    <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5 text-center">
+                      <p className="text-xs uppercase tracking-[0.24em] text-slate-400">Event-day entry pass</p>
+                      <p className="mt-2 font-orbitron text-xl font-black text-white">{result.registration_code}</p>
+                      <p className="mt-3 text-sm leading-6 text-slate-300">
+                        Verification now uses the official pass details and registration code only.
+                      </p>
+                    </div>
+
+                    <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-4 text-sm text-slate-200">
+                      <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Submitted</p>
+                      <p className="mt-2">{new Date(result.created_at).toLocaleString()}</p>
+                      <p className="mt-3 text-xs uppercase tracking-[0.2em] text-slate-400">Payment reference</p>
+                      <p className="mt-2 break-all text-white">{result.payment_reference || 'No payment reference available'}</p>
+                    </div>
+
+                    <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-4">
+                      <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Participation certificates</p>
+                      <p className="mt-3 text-sm leading-6 text-slate-300">{certificateNote}</p>
+                      {certificateReady ? (
+                        <div className="mt-4 grid gap-2">
+                          {result.participants.map((participant, index) => (
+                            <a
+                              key={`${result.id}-certificate-${index}`}
+                              href={`/certificate/${encodeURIComponent(result.registration_code)}?participant=${index}&download=true`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="magnetic-button inline-flex items-center justify-between gap-3 rounded-2xl border border-cyan-300/16 bg-cyan-400/10 px-4 py-3 text-sm font-semibold text-cyan-100"
+                            >
+                              <span className="truncate">{participant.fullName}</span>
+                              <span className="inline-flex items-center gap-2 whitespace-nowrap">
+                                <Download size={15} />
+                                Download
+                              </span>
+                            </a>
+                          ))}
+                        </div>
+                      ) : null}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
 
           {lookupTouched && !lookupLoading && lookupResults.length === 0 ? (
             <div className="rounded-[1.5rem] border border-dashed border-white/10 bg-black/10 p-5 text-sm text-slate-400">

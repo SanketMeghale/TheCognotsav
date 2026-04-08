@@ -587,7 +587,9 @@ app.use((req, res, next) => {
     req.path.startsWith('/api') ||
     req.path.startsWith('/uploads') ||
     req.path === '/pass' ||
-    req.path.startsWith('/pass/')
+    req.path.startsWith('/pass/') ||
+    req.path === '/certificate' ||
+    req.path.startsWith('/certificate/')
   ) {
     return next();
   }
@@ -2285,6 +2287,19 @@ async function fetchLookupRegistrations(query) {
     [registrationIds],
   );
 
+  const participantsResult = await pool.query(
+    `
+      SELECT
+        registration_id,
+        full_name,
+        is_lead
+      FROM registration_participants
+      WHERE registration_id = ANY($1::text[])
+      ORDER BY registration_id ASC, id ASC
+    `,
+    [registrationIds],
+  );
+
   const notificationsByRegistrationId = new Map();
   for (const notification of notificationsResult.rows) {
     const collection = notificationsByRegistrationId.get(notification.registration_id) || [];
@@ -2292,13 +2307,30 @@ async function fetchLookupRegistrations(query) {
     notificationsByRegistrationId.set(notification.registration_id, collection);
   }
 
+  const participantsByRegistrationId = new Map();
+  for (const participant of participantsResult.rows) {
+    const collection = participantsByRegistrationId.get(participant.registration_id) || [];
+    collection.push({
+      fullName: participant.full_name,
+      isLead: Boolean(participant.is_lead),
+    });
+    participantsByRegistrationId.set(participant.registration_id, collection);
+  }
+
   return result.rows.map((row) => {
     const notifications = notificationsByRegistrationId.get(row.id) || [];
+    const participants = participantsByRegistrationId.get(row.id) || [
+      {
+        fullName: row.contact_name || row.team_name || 'Participant',
+        isLead: true,
+      },
+    ];
 
     return {
       ...row,
       qr_value: buildQrValue(row.registration_code),
       invite_link: row.invite_token ? `#join-team/${row.invite_token}` : null,
+      participants,
       timeline: buildRegistrationTimeline(row, notifications),
     };
   });
@@ -2556,6 +2588,342 @@ function buildVerifiedPassPage(registration, appUrl = resolvePublicAppUrl(), opt
           </div>
         </div>
         ${autoPrint ? `<script>window.addEventListener('load', () => { window.setTimeout(() => { if (typeof window.print === 'function') { window.print(); } }, 450); });</script>` : ''}
+      </body>
+    </html>
+  `;
+}
+
+function getCertificateParticipants(registration) {
+  const participants = Array.isArray(registration?.participants)
+    ? registration.participants
+      .map((participant) => ({
+        fullName: String(participant?.fullName || '').trim(),
+        isLead: Boolean(participant?.isLead),
+      }))
+      .filter((participant) => participant.fullName)
+    : [];
+
+  if (participants.length > 0) {
+    return participants;
+  }
+
+  const fallbackName = String(registration?.contact_name || registration?.team_name || 'Participant').trim() || 'Participant';
+  return [{ fullName: fallbackName, isLead: true }];
+}
+
+function resolveCertificateFontSize(value, variant = 'participant') {
+  const length = String(value || '').trim().length;
+
+  if (variant === 'event') {
+    if (length > 34) return '24px';
+    if (length > 26) return '27px';
+    if (length > 20) return '30px';
+    return '34px';
+  }
+
+  if (length > 40) return '24px';
+  if (length > 32) return '28px';
+  if (length > 24) return '33px';
+  return '39px';
+}
+
+function buildCertificateNoticePage({
+  title,
+  message,
+  appUrl = resolvePublicAppUrl(),
+} = {}) {
+  return `
+    <!doctype html>
+    <html lang="en">
+      <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>${escapeHtml(title || 'Certificate update')}</title>
+        <style>
+          * { box-sizing: border-box; }
+          body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 20px;
+            font-family: Inter, Arial, sans-serif;
+            color: #e5eefb;
+            background:
+              radial-gradient(circle at top left, rgba(59,130,246,0.18), transparent 26%),
+              radial-gradient(circle at bottom right, rgba(236,72,153,0.14), transparent 24%),
+              linear-gradient(180deg, #07111d 0%, #0f172a 100%);
+          }
+          .card {
+            width: min(100%, 620px);
+            border-radius: 28px;
+            border: 1px solid rgba(148,163,184,0.18);
+            background: linear-gradient(180deg, rgba(15,23,42,0.9), rgba(17,24,39,0.92));
+            box-shadow: 0 30px 80px rgba(2,8,23,0.4);
+            padding: 26px;
+          }
+          .eyebrow {
+            font-size: 11px;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            color: #93c5fd;
+            font-weight: 800;
+          }
+          h1 {
+            margin: 12px 0 0;
+            font-family: Orbitron, Inter, Arial, sans-serif;
+            font-size: 28px;
+            line-height: 1.15;
+            text-transform: uppercase;
+            color: #fff;
+          }
+          p {
+            margin: 14px 0 0;
+            color: #cbd5e1;
+            line-height: 1.7;
+          }
+          .actions {
+            margin-top: 22px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+          }
+          .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 999px;
+            padding: 12px 18px;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            text-decoration: none;
+          }
+          .button-primary {
+            background: linear-gradient(90deg, #67e8f9, #fbbf24);
+            color: #041018;
+          }
+          .button-secondary {
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.06);
+            color: #fff;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="card">
+          <div class="eyebrow">Cognotsav 2026</div>
+          <h1>${escapeHtml(title || 'Certificate update')}</h1>
+          <p>${escapeHtml(message || 'Certificate availability will appear here once the organizer requirements are met.')}</p>
+          <div class="actions">
+            <a class="button button-primary" href="${appUrl}/#tracker">Open Tracker</a>
+            <a class="button button-secondary" href="${appUrl}/">Back to Portal</a>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+}
+
+function buildParticipationCertificatePage({
+  registration,
+  participant,
+  participantIndex = 0,
+  appUrl = resolvePublicAppUrl(),
+  download = false,
+} = {}) {
+  const templateUrl = `${appUrl}/images/participation-certificate-template.png`;
+  const participantName = String(participant?.fullName || registration?.contact_name || registration?.team_name || 'Participant').trim() || 'Participant';
+  const eventName = String(registration?.event_name || 'Cognotsav 2026').trim() || 'Cognotsav 2026';
+  const participantFontSize = resolveCertificateFontSize(participantName, 'participant');
+  const eventFontSize = resolveCertificateFontSize(eventName, 'event');
+  const issueDate = new Date().toLocaleDateString('en-IN', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    timeZone: 'Asia/Kolkata',
+  });
+  const certificateId = `${String(registration?.registration_code || 'CGN').toUpperCase()}-${participantIndex + 1}`;
+
+  return `
+    <!doctype html>
+    <html lang="en">
+      <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>${escapeHtml(participantName)} Participation Certificate</title>
+        <style>
+          * { box-sizing: border-box; }
+          body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 18px;
+            font-family: Inter, Arial, sans-serif;
+            background:
+              radial-gradient(circle at top left, rgba(59,130,246,0.18), transparent 28%),
+              radial-gradient(circle at bottom right, rgba(251,191,36,0.16), transparent 24%),
+              linear-gradient(180deg, #07111d 0%, #0f172a 100%);
+            color: #e5eefb;
+          }
+          .wrap {
+            width: min(100%, 1340px);
+            margin: 0 auto;
+          }
+          .sheet {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 2000 / 1414;
+            overflow: hidden;
+            border-radius: 24px;
+            box-shadow: 0 32px 84px rgba(2,8,23,0.38);
+            background: #ffffff;
+          }
+          .template {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            user-select: none;
+            -webkit-user-drag: none;
+          }
+          .field {
+            position: absolute;
+            z-index: 2;
+            text-align: center;
+            color: #13385c;
+            font-family: "Times New Roman", Georgia, serif;
+            font-weight: 700;
+            line-height: 1.08;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.45);
+          }
+          .field--participant {
+            left: 38%;
+            width: 40%;
+            top: 52.8%;
+            transform: translateY(-50%);
+            font-size: ${participantFontSize};
+          }
+          .field--event {
+            left: 34.5%;
+            width: 30.5%;
+            top: 59.2%;
+            transform: translateY(-50%);
+            font-size: ${eventFontSize};
+            color: #1e2f44;
+          }
+          .meta {
+            position: absolute;
+            z-index: 2;
+            bottom: 12.7%;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: rgba(17, 52, 88, 0.72);
+          }
+          .meta--left { left: 11%; }
+          .meta--right { right: 11%; text-align: right; }
+          .actions {
+            margin-top: 18px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+          }
+          .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 999px;
+            padding: 12px 18px;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            text-decoration: none;
+            border: 0;
+            cursor: pointer;
+          }
+          .button-primary {
+            background: linear-gradient(90deg, #67e8f9, #fbbf24);
+            color: #041018;
+          }
+          .button-secondary {
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.06);
+            color: #ffffff;
+          }
+          .note {
+            margin-top: 12px;
+            text-align: center;
+            color: #cbd5e1;
+            font-size: 13px;
+            line-height: 1.6;
+          }
+          @page {
+            size: A4 landscape;
+            margin: 0;
+          }
+          @media print {
+            body {
+              padding: 0;
+              background: #ffffff;
+            }
+            .wrap {
+              width: 100vw;
+              max-width: none;
+              margin: 0;
+            }
+            .sheet {
+              width: 100vw;
+              border-radius: 0;
+              box-shadow: none;
+            }
+            .actions, .note {
+              display: none;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="wrap">
+          <div class="sheet">
+            <img class="template" src="${escapeHtml(templateUrl)}" alt="Participation certificate template" />
+            <div class="field field--participant">${escapeHtml(participantName)}</div>
+            <div class="field field--event">${escapeHtml(eventName)}</div>
+            <div class="meta meta--left">Certificate ID: ${escapeHtml(certificateId)}</div>
+            <div class="meta meta--right">Issued: ${escapeHtml(issueDate)}</div>
+          </div>
+
+          <div class="actions">
+            <button type="button" class="button button-primary" onclick="window.print()">Print / Save PDF</button>
+            <a class="button button-secondary" href="${appUrl}/#tracker">Back to Tracker</a>
+          </div>
+          <p class="note">One certificate is generated per participant. Use Print / Save PDF to download the final certificate.</p>
+        </div>
+        ${download ? `
+          <script>
+            window.addEventListener('load', function () {
+              var template = document.querySelector('.template');
+              var triggerPrint = function () {
+                window.setTimeout(function () {
+                  if (typeof window.print === 'function') {
+                    window.print();
+                  }
+                }, 450);
+              };
+
+              if (template && !template.complete) {
+                template.addEventListener('load', triggerPrint, { once: true });
+                template.addEventListener('error', triggerPrint, { once: true });
+              } else {
+                triggerPrint();
+              }
+            });
+          </script>
+        ` : ''}
       </body>
     </html>
   `;
@@ -3328,6 +3696,118 @@ app.get(['/pass', '/pass/:registrationCode'], async (req, res) => {
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   return res.send(buildVerifiedPassPage(registration, resolvePublicAppUrl(req), { download: downloadRequested }));
+});
+
+app.get(['/certificate', '/certificate/:registrationCode'], async (req, res) => {
+  const rawRegistrationCode = String(
+    req.params.registrationCode ||
+      req.query?.code ||
+      req.query?.registrationCode ||
+      req.query?.registration_code ||
+      '',
+  ).trim();
+  const rawRegistrationId = String(req.query?.id || '').trim();
+  const rawInviteToken = String(req.query?.token || req.query?.inviteToken || '').trim();
+  const extractedRegistrationCode = extractRegistrationCodeCandidate(rawRegistrationCode || req.originalUrl || '');
+  const normalizedRegistrationCode = extractedRegistrationCode.toLowerCase();
+  const compactRegistrationCode = normalizedRegistrationCode.replace(/[^a-z0-9]/g, '');
+  const participantIndex = Math.max(0, Number.parseInt(String(req.query?.participant || req.query?.participantIndex || '0'), 10) || 0);
+  const downloadRequested = ['1', 'true', 'yes'].includes(String(req.query?.download || '').trim().toLowerCase());
+  const appUrl = resolvePublicAppUrl(req);
+
+  if (!rawRegistrationId && !rawInviteToken && !compactRegistrationCode) {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    return res.status(400).send(buildCertificateNoticePage({
+      title: 'Certificate link is incomplete',
+      message: 'Open the tracker again and use the participant certificate buttons to generate the correct certificate.',
+      appUrl,
+    }));
+  }
+
+  const result = await pool.query(
+    `
+      SELECT
+        r.id,
+        r.registration_code,
+        r.team_name,
+        r.contact_name,
+        r.contact_email,
+        r.status,
+        r.attendance_status,
+        e.name AS event_name,
+        e.date_label,
+        e.time_label,
+        e.venue,
+        COALESCE(
+          json_agg(
+            json_build_object(
+              'fullName', p.full_name,
+              'isLead', p.is_lead
+            )
+            ORDER BY p.id
+          ) FILTER (WHERE p.id IS NOT NULL),
+          '[]'::json
+        ) AS participants
+      FROM registrations r
+      JOIN events e ON e.slug = r.event_slug
+      LEFT JOIN registration_participants p ON p.registration_id = r.id
+      WHERE ($1::text <> '' AND r.id = $1)
+         OR ($2::text <> '' AND r.invite_token = $2)
+         OR ($3::text <> '' AND LOWER(r.registration_code) = $3)
+         OR ($4::text <> '' AND REGEXP_REPLACE(LOWER(r.registration_code), '[^a-z0-9]', '', 'g') = $4)
+      GROUP BY r.id, e.name, e.date_label, e.time_label, e.venue
+      LIMIT 1
+    `,
+    [rawRegistrationId, rawInviteToken, normalizedRegistrationCode, compactRegistrationCode],
+  );
+
+  const registration = result.rows[0] ?? null;
+  if (!registration) {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    return res.status(404).send(buildCertificateNoticePage({
+      title: 'Certificate not found',
+      message: 'We could not find this registration certificate link. Search again from the tracker and open the certificate from there.',
+      appUrl,
+    }));
+  }
+
+  if (registration.status !== 'verified') {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    return res.status(403).send(buildCertificateNoticePage({
+      title: 'Certificate not ready yet',
+      message: 'This registration is not verified yet, so participation certificates are still locked.',
+      appUrl,
+    }));
+  }
+
+  if (!hasEventConcluded(registration)) {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    return res.status(403).send(buildCertificateNoticePage({
+      title: 'Certificate unlocks after the event',
+      message: 'The event has not concluded yet. Certificates will be available here after the event wraps up.',
+      appUrl,
+    }));
+  }
+
+  const participants = getCertificateParticipants(registration);
+  const participant = participants[participantIndex];
+  if (!participant) {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    return res.status(404).send(buildCertificateNoticePage({
+      title: 'Participant not found',
+      message: 'That participant certificate link is invalid. Please go back to the tracker and choose the certificate again.',
+      appUrl,
+    }));
+  }
+
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  return res.send(buildParticipationCertificatePage({
+    registration,
+    participant,
+    participantIndex,
+    appUrl,
+    download: downloadRequested,
+  }));
 });
 
 app.post('/api/registrations', async (req, res) => {
