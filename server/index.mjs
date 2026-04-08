@@ -2801,14 +2801,14 @@ function buildParticipationCertificatePage({
           .field--participant {
             left: 57.075%;
             width: 40.7%;
-            top: 47.75%;
+            top: 47.1%;
             transform: translate(-50%, -50%);
             font-size: ${participantFontSize};
           }
           .field--event {
             left: 49.125%;
             width: 30.1%;
-            top: 52.369%;
+            top: 51.65%;
             transform: translate(-50%, -50%);
             font-size: ${eventFontSize};
             color: #1e2f44;
