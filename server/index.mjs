@@ -2751,6 +2751,28 @@ function buildParticipationCertificatePage({
   });
   const certificateId = `${String(registration?.registration_code || 'CGN').toUpperCase()}-${participantIndex + 1}`;
   const shouldAutoPrint = download && !mobileDownloadView;
+  const downloadFileName = (
+    `${String(registration?.registration_code || 'cognotsav').trim()}-${participantName}-certificate.png`
+      .normalize('NFKD')
+      .replace(/[^\x00-\x7F]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .replace(/-{2,}/g, '-')
+  ) || 'cognotsav-certificate.png';
+  const mobileRenderConfig = mobileDownloadView
+    ? serializeInlineJson({
+      templateUrl,
+      participantName,
+      eventName,
+      certificateId,
+      issueDate,
+      participantFontSize: Number.parseFloat(participantFontSize) || 26,
+      eventFontSize: Number.parseFloat(eventFontSize) || 24,
+      fileName: downloadFileName,
+      trackerUrl: `${appUrl}/#tracker`,
+    })
+    : 'null';
 
   return `
     <!doctype html>
@@ -2765,7 +2787,7 @@ function buildParticipationCertificatePage({
           body {
             margin: 0;
             min-height: 100vh;
-            padding: ${mobileDownloadView ? '16px' : '18px'};
+            padding: ${mobileDownloadView ? '16px 16px 96px' : '18px'};
             font-family: Inter, Arial, sans-serif;
             background: ${mobileDownloadView ? '#0b1020' : `
               radial-gradient(circle at top left, rgba(59,130,246,0.18), transparent 28%),
@@ -2872,14 +2894,73 @@ function buildParticipationCertificatePage({
             line-height: 1.6;
           }
           ${mobileDownloadView ? `
+            .sheet {
+              display: none;
+            }
             .actions,
             .note {
               display: none;
             }
+            .mobile-preview-shell {
+              position: relative;
+              width: 100%;
+              aspect-ratio: 2000 / 1414;
+              overflow: hidden;
+              border-radius: 8px;
+              background: #ffffff;
+            }
+            .mobile-preview-image,
+            .mobile-preview-status {
+              position: absolute;
+              inset: 0;
+              width: 100%;
+              height: 100%;
+            }
+            .mobile-preview-image {
+              display: block;
+              object-fit: contain;
+              background: #ffffff;
+            }
+            .mobile-preview-status {
+              display: grid;
+              place-items: center;
+              padding: 18px;
+              text-align: center;
+              font-size: 13px;
+              font-weight: 700;
+              letter-spacing: 0.08em;
+              text-transform: uppercase;
+              color: #64748b;
+              background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+            }
+            .mobile-download-fab {
+              position: fixed;
+              right: 16px;
+              bottom: 18px;
+              z-index: 50;
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              min-height: 50px;
+              padding: 0 18px;
+              border-radius: 999px;
+              background: linear-gradient(90deg, #67e8f9, #fbbf24);
+              color: #041018;
+              font-size: 13px;
+              font-weight: 800;
+              letter-spacing: 0.1em;
+              text-transform: uppercase;
+              text-decoration: none;
+              box-shadow: 0 18px 40px rgba(2,8,23,0.36);
+            }
+            .mobile-download-fab[aria-disabled="true"] {
+              background: rgba(255,255,255,0.12);
+              color: #e2e8f0;
+            }
           ` : ''}
           @media (max-width: 720px) {
             body {
-              padding: ${mobileDownloadView ? '16px' : '0'};
+              padding: ${mobileDownloadView ? '16px 16px 96px' : '0'};
             }
             .wrap {
               width: 100%;
@@ -2892,6 +2973,11 @@ function buildParticipationCertificatePage({
             .note {
               padding-inline: 16px;
             }
+            ${mobileDownloadView ? `
+              .mobile-preview-shell {
+                border-radius: 6px;
+              }
+            ` : ''}
           }
           @page {
             size: 297mm 210mm;
@@ -2940,6 +3026,12 @@ function buildParticipationCertificatePage({
       </head>
       <body>
         <div class="wrap">
+          ${mobileDownloadView ? `
+            <div class="mobile-preview-shell">
+              <div class="mobile-preview-status">Preparing certificate...</div>
+              <img class="mobile-preview-image" alt="Participation certificate preview" hidden />
+            </div>
+          ` : ''}
           <div class="sheet">
             <img class="template" src="${escapeHtml(templateUrl)}" alt="Participation certificate template" />
             <div class="field field--participant">${escapeHtml(participantName)}</div>
@@ -2954,6 +3046,171 @@ function buildParticipationCertificatePage({
           </div>
           <p class="note">One certificate is generated per participant. Use Print / Save PDF to download the final certificate.</p>
         </div>
+        ${mobileDownloadView ? `
+          <a class="mobile-download-fab" href="#" aria-disabled="true" role="button">Preparing...</a>
+          <script>
+            (function () {
+              var config = ${mobileRenderConfig};
+              var previewImage = document.querySelector('.mobile-preview-image');
+              var previewStatus = document.querySelector('.mobile-preview-status');
+              var downloadFab = document.querySelector('.mobile-download-fab');
+              var currentUrl = '';
+
+              if (!config || !previewImage || !previewStatus || !downloadFab) {
+                return;
+              }
+
+              function releaseUrl() {
+                if (currentUrl && currentUrl.indexOf('blob:') === 0) {
+                  URL.revokeObjectURL(currentUrl);
+                }
+                currentUrl = '';
+              }
+
+              function setFabState(label, enabled) {
+                downloadFab.textContent = label;
+                downloadFab.setAttribute('aria-disabled', enabled ? 'false' : 'true');
+              }
+
+              function loadImage(source) {
+                return new Promise(function (resolve, reject) {
+                  var image = new Image();
+                  image.decoding = 'async';
+                  image.onload = function () { resolve(image); };
+                  image.onerror = function () { reject(new Error('Template image could not be loaded.')); };
+                  image.src = source;
+                });
+              }
+
+              function setCertificateFont(ctx, size) {
+                ctx.font = '700 ' + size + 'px "Times New Roman", Georgia, serif';
+              }
+
+              function drawCenteredText(ctx, text, options) {
+                var fontSize = options.fontSize;
+                ctx.save();
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = options.color;
+                ctx.shadowColor = 'rgba(255,255,255,0.45)';
+                ctx.shadowBlur = 0;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 1;
+
+                do {
+                  setCertificateFont(ctx, fontSize);
+                  if (ctx.measureText(text).width <= options.maxWidth || fontSize <= 10) {
+                    break;
+                  }
+                  fontSize -= 1;
+                } while (fontSize > 10);
+
+                ctx.fillText(text, options.x, options.y);
+                ctx.restore();
+              }
+
+              function drawMetaText(ctx, text, options) {
+                ctx.save();
+                ctx.font = '700 12px Inter, Arial, sans-serif';
+                ctx.fillStyle = 'rgba(17, 52, 88, 0.72)';
+                ctx.textBaseline = 'middle';
+                ctx.textAlign = options.align;
+                ctx.fillText(text, options.x, options.y);
+                ctx.restore();
+              }
+
+              function canvasToObjectUrl(canvas) {
+                return new Promise(function (resolve, reject) {
+                  if (typeof canvas.toBlob === 'function') {
+                    canvas.toBlob(function (blob) {
+                      if (!blob) {
+                        reject(new Error('Certificate file could not be created.'));
+                        return;
+                      }
+
+                      resolve(URL.createObjectURL(blob));
+                    }, 'image/png');
+                    return;
+                  }
+
+                  try {
+                    resolve(canvas.toDataURL('image/png'));
+                  } catch (error) {
+                    reject(error);
+                  }
+                });
+              }
+
+              async function renderCertificate() {
+                try {
+                  var template = await loadImage(config.templateUrl);
+                  var canvas = document.createElement('canvas');
+                  canvas.width = template.naturalWidth || 2000;
+                  canvas.height = template.naturalHeight || 1414;
+
+                  var ctx = canvas.getContext('2d');
+                  if (!ctx) {
+                    throw new Error('Canvas is not supported in this browser.');
+                  }
+
+                  ctx.drawImage(template, 0, 0, canvas.width, canvas.height);
+
+                  drawCenteredText(ctx, config.participantName, {
+                    x: canvas.width * 0.57075,
+                    y: canvas.height * 0.471,
+                    maxWidth: canvas.width * 0.407,
+                    fontSize: config.participantFontSize,
+                    color: '#13385c',
+                  });
+
+                  drawCenteredText(ctx, config.eventName, {
+                    x: canvas.width * 0.49125,
+                    y: canvas.height * 0.512,
+                    maxWidth: canvas.width * 0.301,
+                    fontSize: config.eventFontSize,
+                    color: '#1e2f44',
+                  });
+
+                  drawMetaText(ctx, 'Certificate ID: ' + config.certificateId, {
+                    x: canvas.width * 0.11,
+                    y: canvas.height * 0.873,
+                    align: 'left',
+                  });
+
+                  drawMetaText(ctx, 'Issued: ' + config.issueDate, {
+                    x: canvas.width * 0.89,
+                    y: canvas.height * 0.873,
+                    align: 'right',
+                  });
+
+                  releaseUrl();
+                  currentUrl = await canvasToObjectUrl(canvas);
+
+                  previewImage.src = currentUrl;
+                  previewImage.hidden = false;
+                  previewStatus.hidden = true;
+                  downloadFab.href = currentUrl;
+                  downloadFab.download = config.fileName;
+                  setFabState('Download', true);
+                } catch (error) {
+                  previewStatus.textContent = 'Unable to prepare certificate.';
+                  downloadFab.href = config.trackerUrl;
+                  downloadFab.removeAttribute('download');
+                  setFabState('Back', true);
+                }
+              }
+
+              downloadFab.addEventListener('click', function (event) {
+                if (downloadFab.getAttribute('aria-disabled') === 'true') {
+                  event.preventDefault();
+                }
+              });
+
+              window.addEventListener('pagehide', releaseUrl);
+              renderCertificate();
+            })();
+          </script>
+        ` : ''}
         ${shouldAutoPrint ? `
           <script>
             window.addEventListener('load', function () {
