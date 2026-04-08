@@ -2878,12 +2878,11 @@ function buildParticipationCertificatePage({
             z-index: 2;
             text-align: center;
             color: #14385d;
+            font-family: "Times New Roman", Georgia, serif;
             font-weight: 700;
-            line-height: 1.02;
+            line-height: 1;
             white-space: nowrap;
-            text-shadow:
-              0 1px 0 rgba(255,255,255,0.7),
-              0 10px 24px rgba(10,37,64,0.08);
+            text-shadow: 0 1px 0 rgba(255,255,255,0.45);
           }
           .field--participant {
             left: 56.95%;
@@ -2891,8 +2890,6 @@ function buildParticipationCertificatePage({
             top: 46.95%;
             transform: translate(-50%, -50%);
             font-size: ${participantFontSize};
-            font-family: "Monotype Corsiva", "Palace Script MT", "Lucida Calligraphy", "Palatino Linotype", Georgia, serif;
-            letter-spacing: 0.015em;
           }
           .field--event {
             left: 49.05%;
@@ -2901,8 +2898,6 @@ function buildParticipationCertificatePage({
             transform: translate(-50%, -50%);
             font-size: ${eventFontSize};
             color: #1a314a;
-            font-family: "Palatino Linotype", Georgia, serif;
-            letter-spacing: 0.05em;
           }
           .meta {
             position: absolute;
