@@ -1,7 +1,7 @@
 import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { CalendarDays, CreditCard, ExternalLink, Play, Trophy, Users } from 'lucide-react';
 import type { EventRecord } from './types';
-import { formatCurrency, getEventLiveState, getTeamLabel, isEventConcluded } from './utils';
+import { formatCurrency, getEventLiveState, getTeamLabel, isEventConcluded, parsePortalEventDate } from './utils';
 
 type Props = {
   events: EventRecord[];
@@ -69,6 +69,30 @@ function getSectionAvailability(events: EventRecord[], now: Date) {
   return 'Updates soon';
 }
 
+function getEventTimestamp(event: EventRecord) {
+  return parsePortalEventDate(event.date_label, event.time_label)?.getTime() ?? Number.MAX_SAFE_INTEGER;
+}
+
+function sortEventsForDisplay(events: EventRecord[], now: Date) {
+  return [...events].sort((left, right) => {
+    const leftConcluded = isEventConcluded(left, now);
+    const rightConcluded = isEventConcluded(right, now);
+
+    if (leftConcluded !== rightConcluded) {
+      return leftConcluded ? 1 : -1;
+    }
+
+    const leftTime = getEventTimestamp(left);
+    const rightTime = getEventTimestamp(right);
+
+    if (leftConcluded && rightConcluded) {
+      return rightTime - leftTime || left.name.localeCompare(right.name);
+    }
+
+    return leftTime - rightTime || left.name.localeCompare(right.name);
+  });
+}
+
 export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEvents, selectedEventSlug, onSelectEvent }) => {
   const [activeFilter, setActiveFilter] = useState<(typeof filterOrder)[number]>('All');
   const [now, setNow] = useState(() => new Date());
@@ -78,8 +102,11 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
   const videoShellRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const visibleEvents = useMemo(
-    () => (activeFilter === 'All' ? events : events.filter((event) => getDisplayCategory(event) === activeFilter)),
-    [activeFilter, events],
+    () => sortEventsForDisplay(
+      activeFilter === 'All' ? events : events.filter((event) => getDisplayCategory(event) === activeFilter),
+      now,
+    ),
+    [activeFilter, events, now],
   );
 
   const groupedEvents = useMemo(() => {
@@ -90,10 +117,28 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
     return categoryOrder
       .map((category) => ({
         category,
-        events: visibleEvents.filter((event) => getDisplayCategory(event) === category),
+        events: sortEventsForDisplay(
+          visibleEvents.filter((event) => getDisplayCategory(event) === category),
+          now,
+        ),
       }))
       .filter((group) => group.events.length > 0);
-  }, [activeFilter, visibleEvents]);
+  }, [activeFilter, now, visibleEvents])
+    .sort((left, right) => {
+      const leftHasActive = left.events.some((event) => !isEventConcluded(event, now));
+      const rightHasActive = right.events.some((event) => !isEventConcluded(event, now));
+
+      if (leftHasActive !== rightHasActive) {
+        return leftHasActive ? -1 : 1;
+      }
+
+      const leftNextStart = left.events.find((event) => !isEventConcluded(event, now));
+      const rightNextStart = right.events.find((event) => !isEventConcluded(event, now));
+      const leftNextTime = leftNextStart ? getEventTimestamp(leftNextStart) : Number.MAX_SAFE_INTEGER;
+      const rightNextTime = rightNextStart ? getEventTimestamp(rightNextStart) : Number.MAX_SAFE_INTEGER;
+
+      return leftNextTime - rightNextTime || left.category.localeCompare(right.category);
+    });
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(new Date()), 60 * 1000);
