@@ -2615,16 +2615,16 @@ function resolveCertificateFontSize(value, variant = 'participant') {
   const length = String(value || '').trim().length;
 
   if (variant === 'event') {
-    if (length > 34) return '24px';
-    if (length > 26) return '27px';
-    if (length > 20) return '30px';
-    return '34px';
+    if (length > 34) return '18px';
+    if (length > 26) return '20px';
+    if (length > 20) return '22px';
+    return '24px';
   }
 
-  if (length > 40) return '24px';
-  if (length > 32) return '28px';
-  if (length > 24) return '33px';
-  return '39px';
+  if (length > 40) return '18px';
+  if (length > 32) return '20px';
+  if (length > 24) return '22px';
+  return '24px';
 }
 
 function buildCertificateNoticePage({
@@ -2795,21 +2795,21 @@ function buildParticipationCertificatePage({
             color: #13385c;
             font-family: "Times New Roman", Georgia, serif;
             font-weight: 700;
-            line-height: 1.08;
+            line-height: 1;
             text-shadow: 0 1px 0 rgba(255,255,255,0.45);
           }
           .field--participant {
-            left: 38%;
-            width: 40%;
-            top: 52.8%;
-            transform: translateY(-50%);
+            left: 57.075%;
+            width: 40.7%;
+            top: 48.479%;
+            transform: translate(-50%, -50%);
             font-size: ${participantFontSize};
           }
           .field--event {
-            left: 34.5%;
-            width: 30.5%;
-            top: 59.2%;
-            transform: translateY(-50%);
+            left: 49.125%;
+            width: 30.1%;
+            top: 52.369%;
+            transform: translate(-50%, -50%);
             font-size: ${eventFontSize};
             color: #1e2f44;
           }
