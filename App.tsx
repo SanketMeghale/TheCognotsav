@@ -834,9 +834,9 @@ function buildNeonLiveUpdateCards(events: EventRecord[]): LiveUpdateCard[] {
     const slotRatio = typeof event.max_slots === 'number' && event.max_slots > 0
       ? Math.round((event.registrations_count / event.max_slots) * 100)
       : null;
-    const fallbackWidth = 60 + ((index % 4) * 6);
+    const fallbackWidth = 68 + ((index % 4) * 6);
     const derivedWidth = slotRatio ?? (isLimited ? 84 : isHot ? 78 : startsSoon ? 72 : fallbackWidth);
-    return Math.max(54, Math.min(94, derivedWidth));
+    return Math.max(70, Math.min(98, derivedWidth + 8));
   };
 
   return [...visibleEvents]
@@ -855,18 +855,30 @@ function buildNeonLiveUpdateCards(events: EventRecord[]): LiveUpdateCard[] {
       const startsSoon = eventStart >= now && eventStart - now <= 48 * 60 * 60 * 1000;
       const isHot = hotEventSlugs.has(event.slug);
       const isLimited = limitedEventSlugs.has(event.slug);
+      const remainingSlots = getRemainingSlots(event);
+      const secondaryTag = event.slug === 'squid-game'
+        ? '5 Seats Left Only'
+        : event.registration_enabled === false
+          ? 'Updates Soon'
+          : isLimited
+            ? 'Filling Fast'
+            : startsSoon
+              ? 'Coming Up'
+              : 'Open Now';
 
       return {
         id: event.slug,
         eventName: event.name,
         body: getLiveUpdateLine(event, { isHot, isLimited, startsSoon }),
         schedule: event.time_label ? `${event.date_label} - ${event.time_label}` : event.date_label,
-        detail: `${getTeamLabel(event)} - ${event.registration_fee_label || 'Entry details live'}`,
+        detail: event.slug === 'squid-game' && remainingSlots !== null
+          ? `${getTeamLabel(event)} - ${event.registration_fee_label || 'Entry details live'} - ${remainingSlots} seats left`
+          : `${getTeamLabel(event)} - ${event.registration_fee_label || 'Entry details live'}`,
         progressWidth: getProgressWidth(event, { isHot, isLimited, startsSoon }, index),
         href: `#events/${event.slug}`,
         ctaLabel: event.registration_enabled === false ? 'View Details' : 'Register Now',
         primaryTag: isHot ? 'Hot Event' : getEventCategoryLabel(event),
-        secondaryTag: event.registration_enabled === false ? 'Updates Soon' : isLimited ? 'Filling Fast' : startsSoon ? 'Coming Up' : 'Open Now',
+        secondaryTag,
         tone: getLiveUpdateTone(event, index),
       };
     });
@@ -946,7 +958,7 @@ function LiveUpdatesStripBase({ events, announcements, loading }: LiveUpdatesStr
                           <span>{card.schedule}</span>
                         </div>
                         <div className="flex items-center gap-2.5">
-                          <div className="h-[4px] flex-1 overflow-hidden rounded-full bg-white/10">
+                          <div className="h-[6px] flex-1 overflow-hidden rounded-full bg-white/10">
                             <div className={`h-full rounded-full ${card.tone?.railClassName || 'bg-white/10'}`} style={{ width: `${card.progressWidth ?? 68}%` }} />
                           </div>
                           <span className="text-[9px] font-semibold uppercase tracking-[0.16em] text-slate-300/80 sm:text-[10px]">
