@@ -2862,33 +2862,54 @@ function buildParticipationCertificatePage({
             font-size: 13px;
             line-height: 1.6;
           }
+          @media (max-width: 720px) {
+            body {
+              padding: 0;
+            }
+            .wrap {
+              width: 100%;
+            }
+            .sheet {
+              border-radius: 0;
+              box-shadow: none;
+            }
+            .actions,
+            .note {
+              padding-inline: 16px;
+            }
+          }
           @page {
-            size: A4 landscape;
+            size: 297mm 210mm;
             margin: 0;
           }
           @media print {
             html,
             body {
-              width: 100%;
-              height: auto;
-              min-height: 0;
+              width: 297mm;
+              height: 210mm;
+              min-height: 210mm;
               margin: 0;
               padding: 0;
               overflow: hidden;
               background: #ffffff;
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
             }
             body {
               display: block;
             }
             .wrap {
-              width: 100%;
+              width: 297mm;
+              height: 210mm;
               max-width: none;
               margin: 0;
               padding: 0;
             }
             .sheet {
-              width: 100%;
-              max-width: 100%;
+              width: 297mm;
+              height: 210mm;
+              max-width: none;
+              aspect-ratio: auto;
               border-radius: 0;
               box-shadow: none;
               page-break-inside: avoid;
