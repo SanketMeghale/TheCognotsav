@@ -2867,19 +2867,34 @@ function buildParticipationCertificatePage({
             margin: 0;
           }
           @media print {
+            html,
             body {
+              width: 100%;
+              height: auto;
+              min-height: 0;
+              margin: 0;
               padding: 0;
+              overflow: hidden;
               background: #ffffff;
             }
+            body {
+              display: block;
+            }
             .wrap {
-              width: 100vw;
+              width: 100%;
               max-width: none;
               margin: 0;
+              padding: 0;
             }
             .sheet {
-              width: 100vw;
+              width: 100%;
+              max-width: 100%;
               border-radius: 0;
               box-shadow: none;
+              page-break-inside: avoid;
+              break-inside: avoid-page;
+              page-break-after: avoid;
+              break-after: avoid-page;
             }
             .actions, .note {
               display: none;
