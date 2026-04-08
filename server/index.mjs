@@ -794,8 +794,8 @@ async function fetchVerifiedRegistrationsForGoogleSheets() {
         COALESCE(r.review_note, '') AS review_note,
         COUNT(p.id)::int AS participant_count,
         COALESCE(string_agg(
-          p.full_name || ' <' || p.email || '> (' || p.phone || ')',
-          ' | '
+          p.full_name,
+          E'\n'
           ORDER BY p.id
         ), '') AS participants
       FROM registrations r
