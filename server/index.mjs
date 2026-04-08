@@ -2106,6 +2106,10 @@ function escapeHtml(value) {
   });
 }
 
+function isLikelyMobileUserAgent(userAgent) {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(String(userAgent || ''));
+}
+
 function serializeInlineJson(value) {
   return JSON.stringify(value).replaceAll('<', '\\u003c');
 }
@@ -2732,6 +2736,7 @@ function buildParticipationCertificatePage({
   participantIndex = 0,
   appUrl = resolvePublicAppUrl(),
   download = false,
+  mobileDownloadView = false,
 } = {}) {
   const templateUrl = `${appUrl}/images/participation-certificate-template.png`;
   const participantName = String(participant?.fullName || registration?.contact_name || registration?.team_name || 'Participant').trim() || 'Participant';
@@ -2745,6 +2750,7 @@ function buildParticipationCertificatePage({
     timeZone: 'Asia/Kolkata',
   });
   const certificateId = `${String(registration?.registration_code || 'CGN').toUpperCase()}-${participantIndex + 1}`;
+  const shouldAutoPrint = download && !mobileDownloadView;
 
   return `
     <!doctype html>
@@ -2752,22 +2758,25 @@ function buildParticipationCertificatePage({
       <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="${mobileDownloadView ? '#0b1020' : '#07111d'}" />
         <title>${escapeHtml(participantName)} Participation Certificate</title>
         <style>
           * { box-sizing: border-box; }
           body {
             margin: 0;
             min-height: 100vh;
-            padding: 18px;
+            padding: ${mobileDownloadView ? '16px' : '18px'};
             font-family: Inter, Arial, sans-serif;
-            background:
+            background: ${mobileDownloadView ? '#0b1020' : `
               radial-gradient(circle at top left, rgba(59,130,246,0.18), transparent 28%),
               radial-gradient(circle at bottom right, rgba(251,191,36,0.16), transparent 24%),
-              linear-gradient(180deg, #07111d 0%, #0f172a 100%);
+              linear-gradient(180deg, #07111d 0%, #0f172a 100%)`};
             color: #e5eefb;
+            ${mobileDownloadView ? 'display: flex; align-items: flex-start; justify-content: center;' : ''}
           }
           .wrap {
-            width: min(100%, 1340px);
+            width: ${mobileDownloadView ? '100%' : 'min(100%, 1340px)'};
+            max-width: ${mobileDownloadView ? 'calc(100vw - 32px)' : '1340px'};
             margin: 0 auto;
           }
           .sheet {
@@ -2775,8 +2784,8 @@ function buildParticipationCertificatePage({
             width: 100%;
             aspect-ratio: 2000 / 1414;
             overflow: hidden;
-            border-radius: 24px;
-            box-shadow: 0 32px 84px rgba(2,8,23,0.38);
+            border-radius: ${mobileDownloadView ? '0' : '24px'};
+            box-shadow: ${mobileDownloadView ? 'none' : '0 32px 84px rgba(2,8,23,0.38)'};
             background: #ffffff;
           }
           .template {
@@ -2862,9 +2871,15 @@ function buildParticipationCertificatePage({
             font-size: 13px;
             line-height: 1.6;
           }
+          ${mobileDownloadView ? `
+            .actions,
+            .note {
+              display: none;
+            }
+          ` : ''}
           @media (max-width: 720px) {
             body {
-              padding: 0;
+              padding: ${mobileDownloadView ? '16px' : '0'};
             }
             .wrap {
               width: 100%;
@@ -2939,7 +2954,7 @@ function buildParticipationCertificatePage({
           </div>
           <p class="note">One certificate is generated per participant. Use Print / Save PDF to download the final certificate.</p>
         </div>
-        ${download ? `
+        ${shouldAutoPrint ? `
           <script>
             window.addEventListener('load', function () {
               var template = document.querySelector('.template');
@@ -3750,6 +3765,7 @@ app.get(['/certificate', '/certificate/:registrationCode'], async (req, res) => 
   const participantIndex = Math.max(0, Number.parseInt(String(req.query?.participant || req.query?.participantIndex || '0'), 10) || 0);
   const downloadRequested = ['1', 'true', 'yes'].includes(String(req.query?.download || '').trim().toLowerCase());
   const appUrl = resolvePublicAppUrl(req);
+  const mobileDownloadView = downloadRequested && isLikelyMobileUserAgent(req.get('user-agent'));
 
   if (!rawRegistrationId && !rawInviteToken && !compactRegistrationCode) {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
@@ -3843,6 +3859,7 @@ app.get(['/certificate', '/certificate/:registrationCode'], async (req, res) => 
     participantIndex,
     appUrl,
     download: downloadRequested,
+    mobileDownloadView,
   }));
 });
 
