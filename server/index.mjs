@@ -967,6 +967,15 @@ function parseEventDateTime(dateLabel, timeLabel) {
   return new Date(utcTimestamp);
 }
 
+function hasEventConcluded(event, now = new Date()) {
+  const eventStart = parseEventDateTime(event?.date_label, event?.time_label);
+  if (!eventStart) {
+    return false;
+  }
+
+  return now.getTime() - eventStart.getTime() >= 4 * 60 * 60 * 1000;
+}
+
 function formatMinutesUntilStart(minutes) {
   if (minutes <= 1) return 'less than 1 minute';
   if (minutes < 60) return `${Math.ceil(minutes)} minutes`;
@@ -3370,6 +3379,10 @@ app.post('/api/registrations', async (req, res) => {
 
   if (!event.registration_enabled) {
     return res.status(400).json({ error: 'Registration for this event is currently stopped by the organizer.' });
+  }
+
+  if (hasEventConcluded(event)) {
+    return res.status(400).json({ error: 'This event has already concluded. Registrations are closed now.' });
   }
 
   if (participants.length < event.min_members || participants.length > event.max_members) {

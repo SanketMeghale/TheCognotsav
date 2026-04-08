@@ -4,7 +4,7 @@ import {
   Eye, Info, MapPin, QrCode, Smartphone, Sparkles, Trophy, Upload, Users,
 } from 'lucide-react';
 import type { EventRecord, ParticipantDraft, RegistrationReceipt } from './types';
-import { formatCurrency, getEventLiveState, getTeamLabel } from './utils';
+import { formatCurrency, getEventLiveState, getTeamLabel, isEventConcluded } from './utils';
 
 type FormState = {
   teamName: string;
@@ -268,10 +268,12 @@ function getCompactPosterStatus(statusLabel: string) {
   if (/registration open/i.test(statusLabel)) return 'Open';
   if (/registration paused/i.test(statusLabel)) return 'Paused';
   if (/registration closed/i.test(statusLabel)) return 'Closed';
+  if (/completed/i.test(statusLabel)) return 'Concluded';
   return statusLabel;
 }
 
 function getCompactPosterCountdown(countdownLabel: string) {
+  if (/completed/i.test(countdownLabel)) return 'Wrapped';
   return countdownLabel.replace(/^starts in\s+/i, '').trim();
 }
 
@@ -316,7 +318,9 @@ export const EventRegistrationPanel: React.FC<Props> = ({
       : '';
   const canOpenPaymentApp = typeof window !== 'undefined' && /Android|iPhone|iPad|iPod/i.test(window.navigator.userAgent);
   const isSoloEvent = selectedEvent.min_members === 1 && !selectedEvent.is_team_event;
-  const registrationPaused = selectedEvent.registration_enabled === false;
+  const eventConcluded = isEventConcluded(selectedEvent, now);
+  const registrationPaused = !eventConcluded && selectedEvent.registration_enabled === false;
+  const registrationClosed = registrationPaused || eventConcluded;
   const usesPerParticipantFee = selectedEvent.slug === 'rang-manch' || selectedEvent.slug === 'techxcelerate-poster-presentation';
   const showsPresentationModeSelector = selectedEvent.slug === 'techxcelerate';
   const showsProjectTitleField = selectedEvent.slug === 'techxcelerate';
@@ -324,7 +328,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
     ? 'auto'
     : 'smooth';
   const scrollToRegistrationForm = () => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || registrationClosed) return;
 
     const formSection = document.getElementById('portal-registration-form');
     if (!formSection) return;
@@ -396,7 +400,7 @@ export const EventRegistrationPanel: React.FC<Props> = ({
 
   return (
     <section id="registration-panel">
-      <div ref={eventTopRef} className="portal-event-page">
+      <div ref={eventTopRef} className={eventConcluded ? 'grid gap-5' : 'portal-event-page'}>
         <div className="portal-event-page__main">
           <section className={`portal-event-showcase portal-glow-card portal-glass ${selectedTheme.glow}`}>
             <div className="portal-event-showcase__poster portal-event-showcase__poster--wide">
@@ -415,28 +419,40 @@ export const EventRegistrationPanel: React.FC<Props> = ({
               </div>
             </div>
             <div className="portal-event-showcase__cta-row">
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <button
-                  type="button"
-                  onClick={scrollToRegistrationForm}
-                  disabled={registrationPaused}
-                  className="portal-register-cta inline-flex w-full items-center justify-center gap-2"
-                >
-                  {registrationPaused ? 'Registration Paused' : 'Register Now'}
-                  <ArrowRight size={16} />
-                </button>
-                {selectedEvent.intro_video_url ? (
-                  <a
-                    href={selectedEvent.intro_video_url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className={`inline-flex w-full items-center justify-center gap-2 rounded-[1.2rem] border px-4 py-3 text-sm font-bold transition sm:max-w-[220px] ${selectedTheme.button}`}
+              {eventConcluded ? (
+                <div className="flex flex-wrap gap-3">
+                  <div className="inline-flex items-center gap-2 rounded-[1.2rem] border border-emerald-300/22 bg-emerald-400/12 px-4 py-3 text-sm font-bold text-emerald-100">
+                    <CheckCircle2 size={16} />
+                    Event Concluded
+                  </div>
+                  <div className="inline-flex items-center gap-2 rounded-[1.2rem] border border-white/10 bg-white/[0.05] px-4 py-3 text-sm font-semibold text-slate-100">
+                    Thank you for your participation
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <button
+                    type="button"
+                    onClick={scrollToRegistrationForm}
+                    disabled={registrationPaused}
+                    className="portal-register-cta inline-flex w-full items-center justify-center gap-2"
                   >
-                    <ExternalLink size={16} />
-                    Watch Trailer
-                  </a>
-                ) : null}
-              </div>
+                    {registrationPaused ? 'Registration Paused' : 'Register Now'}
+                    <ArrowRight size={16} />
+                  </button>
+                  {selectedEvent.intro_video_url ? (
+                    <a
+                      href={selectedEvent.intro_video_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className={`inline-flex w-full items-center justify-center gap-2 rounded-[1.2rem] border px-4 py-3 text-sm font-bold transition sm:max-w-[220px] ${selectedTheme.button}`}
+                    >
+                      <ExternalLink size={16} />
+                      Watch Trailer
+                    </a>
+                  ) : null}
+                </div>
+              )}
             </div>
             <div className="portal-event-showcase__content">
               <div className="flex flex-wrap items-center gap-3">
@@ -484,73 +500,125 @@ export const EventRegistrationPanel: React.FC<Props> = ({
             </div>
           </section>
 
-          <section className="portal-event-section portal-event-section--prep portal-glow-card portal-glass" data-reveal="up">
-            <div className="portal-event-warning-banner">
-              <AlertTriangle size={18} className="shrink-0" />
-              <span>{isSurpriseRulesEvent ? 'Squid Game rules will be revealed during the event.' : 'Please read the handbook before you register.'}</span>
-            </div>
-            <div className="portal-event-section__head portal-event-section__head--prep">
-              <div>
-                <p className="portal-event-section__eyebrow">Before You Register</p>
-                <h3 className="portal-event-section__title">Rules, format &amp; essentials</h3>
-              </div>
-            </div>
-            {prepEssentials.length || eventStoryPoints.length ? (
-              <div className="portal-event-prep-layout portal-event-prep-layout--compact">
-                {prepEssentials.length ? (
-                  <div className="portal-event-prep-essentials">
-                    {prepEssentials.map(({ label, Icon }) => (
-                      <div key={label} className="portal-event-prep-essentials__item">
-                        <Icon size={15} />
-                        <span>{label}</span>
-                      </div>
-                    ))}
+          {eventConcluded ? (
+            <section
+              className="portal-glow-card portal-glass overflow-hidden rounded-[1.75rem] border border-emerald-300/18 bg-[linear-gradient(145deg,rgba(5,34,34,0.96),rgba(8,17,30,0.98))] p-5 shadow-[0_24px_70px_rgba(16,185,129,0.14)]"
+              data-reveal="up"
+            >
+              <div className="grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(18rem,0.8fr)]">
+                <div>
+                  <div className="inline-flex items-center gap-2 rounded-full border border-emerald-300/20 bg-emerald-400/12 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-100">
+                    <CheckCircle2 size={14} />
+                    Event Concluded
                   </div>
-                ) : null}
-                {eventStoryPoints.length ? (
-                  <div className="portal-event-prep-highlights">
-                    <div className="portal-event-prep-highlights__label">
-                      <Sparkles size={15} />
-                      <span>Highlights</span>
+                  <h3 className="mt-4 text-2xl font-black text-white sm:text-3xl">Thank you for participating in {selectedEvent.name}</h3>
+                  <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-200">
+                    {liveState.detail} We appreciate the energy, creativity, and support that made this event memorable.
+                  </p>
+
+                  <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                    <div className="rounded-[1.2rem] border border-white/10 bg-white/[0.05] p-4">
+                      <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Schedule</p>
+                      <p className="mt-2 text-sm font-semibold text-white">{selectedEvent.date_label}</p>
+                      <p className="mt-1 text-sm text-slate-300">{selectedEvent.time_label}</p>
                     </div>
-                    <div className="portal-event-prep-list portal-event-prep-list--plain">
-                      {eventStoryPoints.map((item) => (
-                        <div key={item} className="portal-event-prep-list__item portal-event-prep-list__item--plain">
-                          <CheckCircle2 size={15} className="mt-0.5 shrink-0 text-cyan-200" />
-                          <span>{item}</span>
+                    <div className="rounded-[1.2rem] border border-white/10 bg-white/[0.05] p-4">
+                      <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Venue</p>
+                      <p className="mt-2 text-sm font-semibold text-white">{selectedEvent.venue}</p>
+                    </div>
+                    <div className="rounded-[1.2rem] border border-white/10 bg-white/[0.05] p-4">
+                      <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Status</p>
+                      <p className="mt-2 text-sm font-semibold text-emerald-100">Wrapped for now</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="rounded-[1.4rem] border border-white/10 bg-black/20 p-5">
+                  <p className="text-[11px] uppercase tracking-[0.18em] text-cyan-200/80">Organizer Note</p>
+                  <p className="mt-3 text-sm leading-7 text-slate-300">
+                    Registrations are closed for this event. Results, memories, or the next update can be shared through the portal and coordinators.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={onBackToEvents}
+                    className="portal-register-cta portal-register-cta--compact mt-5 inline-flex items-center justify-center gap-2"
+                  >
+                    Explore Other Events
+                    <ArrowRight size={16} />
+                  </button>
+                </div>
+              </div>
+            </section>
+          ) : (
+            <section className="portal-event-section portal-event-section--prep portal-glow-card portal-glass" data-reveal="up">
+              <div className="portal-event-warning-banner">
+                <AlertTriangle size={18} className="shrink-0" />
+                <span>{isSurpriseRulesEvent ? 'Squid Game rules will be revealed during the event.' : 'Please read the handbook before you register.'}</span>
+              </div>
+              <div className="portal-event-section__head portal-event-section__head--prep">
+                <div>
+                  <p className="portal-event-section__eyebrow">Before You Register</p>
+                  <h3 className="portal-event-section__title">Rules, format &amp; essentials</h3>
+                </div>
+              </div>
+              {prepEssentials.length || eventStoryPoints.length ? (
+                <div className="portal-event-prep-layout portal-event-prep-layout--compact">
+                  {prepEssentials.length ? (
+                    <div className="portal-event-prep-essentials">
+                      {prepEssentials.map(({ label, Icon }) => (
+                        <div key={label} className="portal-event-prep-essentials__item">
+                          <Icon size={15} />
+                          <span>{label}</span>
                         </div>
                       ))}
                     </div>
-                  </div>
-                ) : null}
-              </div>
-            ) : null}
-            {handbookReady ? (
-              <div className="portal-event-handbook-actions portal-event-handbook-actions--single">
-                <a
-                  href={selectedHandbook?.handbookUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="portal-event-handbook-button portal-event-handbook-button--wide"
-                >
-                  <span className="portal-event-handbook-button__main">
-                    <Eye size={16} />
-                    View Rules
-                  </span>
-                  <ArrowRight size={16} className="portal-event-handbook-button__arrow" />
-                </a>
-              </div>
-            ) : (
-              <div className="portal-event-note-list__item mt-5">
-                <Info size={15} className={`mt-0.5 shrink-0 ${isSurpriseRulesEvent ? 'text-cyan-200' : 'text-amber-200'}`} />
-                <span>{isSurpriseRulesEvent ? 'This event keeps its rules and round flow as a surprise until the live session starts.' : 'Full handbook is not attached for this event yet.'}</span>
-              </div>
-            )}
-          </section>
+                  ) : null}
+                  {eventStoryPoints.length ? (
+                    <div className="portal-event-prep-highlights">
+                      <div className="portal-event-prep-highlights__label">
+                        <Sparkles size={15} />
+                        <span>Highlights</span>
+                      </div>
+                      <div className="portal-event-prep-list portal-event-prep-list--plain">
+                        {eventStoryPoints.map((item) => (
+                          <div key={item} className="portal-event-prep-list__item portal-event-prep-list__item--plain">
+                            <CheckCircle2 size={15} className="mt-0.5 shrink-0 text-cyan-200" />
+                            <span>{item}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
+              {handbookReady ? (
+                <div className="portal-event-handbook-actions portal-event-handbook-actions--single">
+                  <a
+                    href={selectedHandbook?.handbookUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="portal-event-handbook-button portal-event-handbook-button--wide"
+                  >
+                    <span className="portal-event-handbook-button__main">
+                      <Eye size={16} />
+                      View Rules
+                    </span>
+                    <ArrowRight size={16} className="portal-event-handbook-button__arrow" />
+                  </a>
+                </div>
+              ) : (
+                <div className="portal-event-note-list__item mt-5">
+                  <Info size={15} className={`mt-0.5 shrink-0 ${isSurpriseRulesEvent ? 'text-cyan-200' : 'text-amber-200'}`} />
+                  <span>{isSurpriseRulesEvent ? 'This event keeps its rules and round flow as a surprise until the live session starts.' : 'Full handbook is not attached for this event yet.'}</span>
+                </div>
+              )}
+            </section>
+          )}
 
         </div>
 
-        <aside className="portal-event-page__sidebar" data-reveal="right">
+        {!eventConcluded ? (
+          <aside className="portal-event-page__sidebar" data-reveal="right">
           <form id="portal-registration-form" onSubmit={onSubmit} className="portal-event-form-shell space-y-4">
               <SectionCard title="Start with the basics" subtitle="Team Setup">
                 <div className="grid gap-3 sm:grid-cols-2">
@@ -834,7 +902,8 @@ export const EventRegistrationPanel: React.FC<Props> = ({
               </div>
           </form>
 
-        </aside>
+          </aside>
+        ) : null}
       </div>
 
     </section>

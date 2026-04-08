@@ -1,7 +1,7 @@
 import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { CalendarDays, CreditCard, ExternalLink, Play, Trophy, Users } from 'lucide-react';
 import type { EventRecord } from './types';
-import { formatCurrency, getEventLiveState, getTeamLabel } from './utils';
+import { formatCurrency, getEventLiveState, getTeamLabel, isEventConcluded } from './utils';
 
 type Props = {
   events: EventRecord[];
@@ -47,9 +47,14 @@ function getDisplayCategory(event: EventRecord) {
 }
 
 function getSectionAvailability(events: EventRecord[], now: Date) {
-  const states = events.map((event) => getEventLiveState(event, now));
+  const visibleEvents = events.filter((event) => !isEventConcluded(event, now));
+  const states = visibleEvents.map((event) => getEventLiveState(event, now));
 
-  if (events.some((event, index) => event.registration_enabled !== false && states[index]?.label === 'Registration Open')) {
+  if (!visibleEvents.length && events.length > 0) {
+    return 'Concluded';
+  }
+
+  if (visibleEvents.some((event, index) => event.registration_enabled !== false && states[index]?.label === 'Registration Open')) {
     return 'Available now';
   }
 
@@ -57,7 +62,7 @@ function getSectionAvailability(events: EventRecord[], now: Date) {
     return 'Opening soon';
   }
 
-  if (events.some((event) => event.registration_enabled !== false)) {
+  if (visibleEvents.some((event) => event.registration_enabled !== false)) {
     return 'Live updates';
   }
 
@@ -216,18 +221,23 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
                       const displayCategory = getDisplayCategory(event);
                       const theme = categoryThemes[displayCategory] || categoryThemes.Technical;
                       const liveState = getEventLiveState(event, now);
+                      const eventConcluded = isEventConcluded(event, now);
                       const teamLabel = getTeamLabel(event);
                       const handleOpenEvent = () => onSelectEvent(event.slug);
                       const hasIntroVideo = Boolean(event.intro_video_url);
                       const isVideoActive = activeVideoSlug === event.slug;
                       const isVideoReady = Boolean(videoReadyState[event.slug]);
                       const isVideoVisible = isVideoActive && isVideoReady;
-                      const statusLabel = event.registration_enabled === false
+                      const statusLabel = eventConcluded
+                        ? 'Concluded'
+                        : event.registration_enabled === false
                         ? 'Registration paused'
                         : liveState.label === 'Registration Open'
                           ? 'Open now'
                           : liveState.label;
-                      const subtitle = event.description || categoryTaglines[displayCategory] || categoryTaglines.Technical;
+                      const subtitle = eventConcluded
+                        ? 'Thank you for participating. This event has wrapped.'
+                        : event.description || categoryTaglines[displayCategory] || categoryTaglines.Technical;
                       const feeLabel = event.registration_fee_label || formatCurrency(event.registration_fee);
                       const scheduleLabel = `${event.date_label} • ${event.time_label}`;
 
@@ -361,7 +371,7 @@ export const CompetitionGridSection: React.FC<Props> = memo(({ events, loadingEv
                                 }}
                                 className="portal-register-cta portal-register-cta--compact portal-register-cta--card portal-register-cta--card-compact"
                               >
-                                {event.registration_enabled === false ? 'View Details' : 'Register Now'}
+                                {eventConcluded ? 'View Note' : event.registration_enabled === false ? 'View Details' : 'Register Now'}
                                 <ExternalLink size={15} />
                               </button>
                             </div>

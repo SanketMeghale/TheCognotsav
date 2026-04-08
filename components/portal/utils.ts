@@ -106,6 +106,20 @@ export type EventLiveState = {
   tone: 'open' | 'warning' | 'critical' | 'live' | 'muted';
 };
 
+const EVENT_LIVE_WINDOW_MS = 4 * 60 * 60 * 1000;
+
+export function isEventConcluded(
+  event: Pick<EventRecord, 'date_label' | 'time_label'>,
+  now = new Date(),
+) {
+  const eventDate = parsePortalEventDate(event.date_label, event.time_label);
+  if (!eventDate) {
+    return false;
+  }
+
+  return now.getTime() - eventDate.getTime() >= EVENT_LIVE_WINDOW_MS;
+}
+
 export function getEventLiveState(event: EventRecord, now = new Date()): EventLiveState {
   const eventDate = parsePortalEventDate(event.date_label, event.time_label);
   if (!eventDate) {
@@ -118,7 +132,6 @@ export function getEventLiveState(event: EventRecord, now = new Date()): EventLi
   }
 
   const diffMs = eventDate.getTime() - now.getTime();
-  const fourHoursMs = 4 * 60 * 60 * 1000;
   const sixHoursMs = 6 * 60 * 60 * 1000;
   const oneDayMs = 24 * 60 * 60 * 1000;
 
@@ -149,7 +162,7 @@ export function getEventLiveState(event: EventRecord, now = new Date()): EventLi
     };
   }
 
-  if (diffMs > -fourHoursMs) {
+  if (diffMs > -EVENT_LIVE_WINDOW_MS) {
     return {
       label: 'Live Now',
       detail: 'The event is currently in progress or check-in is underway.',
@@ -160,7 +173,7 @@ export function getEventLiveState(event: EventRecord, now = new Date()): EventLi
 
   return {
     label: 'Completed',
-    detail: 'This event has most likely concluded for the day.',
+    detail: 'Thank you for participating. This event has concluded.',
     countdown: 'Completed',
     tone: 'muted',
   };

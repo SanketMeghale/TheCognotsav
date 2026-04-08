@@ -15,7 +15,7 @@ import type {
   RegistrationReceipt,
   SpecialDeskRegistrationPayload,
 } from './components/portal/types.ts';
-import { getTeamLabel, makeParticipants, shellClassName } from './components/portal/utils.ts';
+import { getTeamLabel, isEventConcluded, makeParticipants, shellClassName } from './components/portal/utils.ts';
 
 const CHUNK_RELOAD_STORAGE_KEY = 'cognotsav_chunk_reload_attempt_ts';
 const CHUNK_RELOAD_COOLDOWN_MS = 60_000;
@@ -558,6 +558,17 @@ function getLiveUpdateLine(event: EventRecord, options: { isHot: boolean; isLimi
 }
 
 function buildLiveUpdateTicker(events: EventRecord[], announcements: PortalAnnouncement[]) {
+  const visibleEvents = events.filter((event) => !isEventConcluded(event));
+
+  if (!visibleEvents.length && events.length > 0) {
+    return Array.from(new Set([
+      announcements[0] ? trimUpdateCopy(announcements[0].title, 42) : null,
+      'Event cycle wrapped',
+      'Thank you for participating',
+      'More updates soon',
+    ].filter((item): item is string => Boolean(item))));
+  }
+
   const items = [
     announcements[0] ? trimUpdateCopy(announcements[0].title, 42) : null,
     'Limited slots',
@@ -566,7 +577,7 @@ function buildLiveUpdateTicker(events: EventRecord[], announcements: PortalAnnou
     'Tracker active',
   ];
 
-  if (events.some((event) => event.registration_enabled === false)) {
+  if (visibleEvents.some((event) => event.registration_enabled === false)) {
     items.push('Organizer updates rolling out');
   }
 
@@ -736,6 +747,26 @@ function buildLiveUpdateCards(events: EventRecord[], announcements: PortalAnnoun
 }
 
 function buildNeonLiveUpdateCards(events: EventRecord[]): LiveUpdateCard[] {
+  const visibleEvents = events.filter((event) => !isEventConcluded(event));
+
+  if (!visibleEvents.length && events.length > 0) {
+    return [
+      {
+        id: 'festival-wrap',
+        eventName: 'Cognotsav',
+        body: 'thanks everyone for the participation, support, and energy across the event lineup.',
+        schedule: 'Live event cycle wrapped',
+        detail: 'Fresh organizer updates will appear here next',
+        progressWidth: 88,
+        href: '#registration-panel',
+        ctaLabel: 'Browse events',
+        primaryTag: 'Concluded',
+        secondaryTag: 'Thank You',
+        tone: LIVE_UPDATE_TONE_PRESETS.cyan,
+      },
+    ];
+  }
+
   if (!events.length) {
     return [
       {
@@ -768,8 +799,8 @@ function buildNeonLiveUpdateCards(events: EventRecord[]): LiveUpdateCard[] {
   }
 
   const now = Date.now();
-  const activeEvents = events.filter((event) => event.registration_enabled !== false);
-  const rankingPool = activeEvents.length ? activeEvents : events;
+  const activeEvents = visibleEvents.filter((event) => event.registration_enabled !== false);
+  const rankingPool = activeEvents.length ? activeEvents : visibleEvents;
   const hotEventSlugs = new Set(
     [...rankingPool]
       .sort((left, right) => right.registrations_count - left.registrations_count || left.name.localeCompare(right.name))
@@ -808,7 +839,7 @@ function buildNeonLiveUpdateCards(events: EventRecord[]): LiveUpdateCard[] {
     return Math.max(54, Math.min(94, derivedWidth));
   };
 
-  return [...events]
+  return [...visibleEvents]
     .sort((left, right) => {
       const scoreDelta = getPriority(right) - getPriority(left);
       if (scoreDelta !== 0) {
@@ -2080,6 +2111,11 @@ export const App: React.FC = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!selectedEvent) return;
+
+    if (isEventConcluded(selectedEvent)) {
+      setErrorMessage('This event has already concluded. Registrations are closed now.');
+      return;
+    }
 
     markAllErrorsTouched();
     if (Object.keys(validationErrors).length > 0) {
