@@ -41,6 +41,10 @@ function prettyStatus(status: string) {
   return status.charAt(0).toUpperCase() + status.slice(1);
 }
 
+function buildCertificateHref(registrationCode: string, participantIndex: number) {
+  return `/certificate/${encodeURIComponent(registrationCode)}?participant=${participantIndex}&download=true`;
+}
+
 function FloatingSearchField({
   label,
   icon,
@@ -87,6 +91,12 @@ export const TrackerAdminPanel: React.FC<Props> = ({
   const verifiedRows = adminRows.filter((row) => row.status === 'verified');
   const rejectedRows = adminRows.filter((row) => row.status === 'rejected');
 
+  const handleDownloadAllCertificates = (registrationCode: string, participantCount: number) => {
+    for (let index = 0; index < participantCount; index += 1) {
+      window.open(buildCertificateHref(registrationCode, index), '_blank', 'noopener,noreferrer');
+    }
+  };
+
   return (
     <section id="tracker" className={`grid gap-5 ${showAdmin ? 'xl:grid-cols-[0.92fr_1.08fr] xl:gap-6' : ''}`}>
       <div data-reveal="left" className="portal-glow-card portal-glass rounded-[1.6rem] p-4 md:rounded-[2rem] md:p-8">
@@ -99,13 +109,12 @@ export const TrackerAdminPanel: React.FC<Props> = ({
             </div>
           </div>
         </div>
-        <p className="text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Registration lookup</p>
+        <p className="text-[11px] uppercase tracking-[0.35em] text-blue-300/80">Certificate Hub</p>
         <h3 className="portal-title-lg mt-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text font-orbitron font-black uppercase text-transparent">
-          Track your status
+          Certificates Ready!
         </h3>
         <p className="mt-3 text-sm leading-6 text-slate-200 md:leading-7">
-          Participants can search by registration code or contact email and instantly see where their
-          payment review stands.
+          Download your participation certificates instantly and check approval status from one place.
         </p>
 
         <div className="mt-5 flex flex-wrap gap-2">
@@ -251,25 +260,58 @@ export const TrackerAdminPanel: React.FC<Props> = ({
                       <p className="mt-2 break-all text-white">{result.payment_reference || 'No payment reference available'}</p>
                     </div>
 
-                    <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-4">
-                      <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Participation certificates</p>
-                      <p className="mt-3 text-sm leading-6 text-slate-300">{certificateNote}</p>
-                      {certificateReady ? (
-                        <div className="mt-4 grid gap-2">
-                          {result.participants.map((participant, index) => (
-                            <a
-                              key={`${result.id}-certificate-${index}`}
-                              href={`/certificate/${encodeURIComponent(result.registration_code)}?participant=${index}&download=true`}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="magnetic-button inline-flex items-center justify-between gap-3 rounded-2xl border border-cyan-300/16 bg-cyan-400/10 px-4 py-3 text-sm font-semibold text-cyan-100"
+                    <div className="rounded-[1.65rem] border border-cyan-300/14 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.16),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(34,197,94,0.14),transparent_26%),linear-gradient(180deg,rgba(9,17,33,0.92),rgba(11,24,39,0.96))] p-4 shadow-[0_24px_60px_rgba(2,8,23,0.26)]">
+                      <div className="rounded-[1.4rem] border border-cyan-300/18 bg-[linear-gradient(135deg,rgba(34,211,238,0.16),rgba(59,130,246,0.06)_38%,rgba(17,24,39,0.94))] p-4">
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                          <div className="min-w-0">
+                            <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-200/80">Participation certificates</p>
+                            <h4 className="mt-2 text-xl font-bold text-white">Certificates Ready!</h4>
+                            <p className="mt-2 text-sm leading-6 text-slate-300">{certificateNote}</p>
+                          </div>
+
+                          {certificateReady ? (
+                            <button
+                              type="button"
+                              onClick={() => handleDownloadAllCertificates(result.registration_code, result.participants.length)}
+                              className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-cyan-300/20 bg-cyan-400/10 px-4 py-3 text-sm font-semibold text-cyan-100"
                             >
-                              <span className="truncate">{participant.fullName}</span>
-                              <span className="inline-flex items-center gap-2 whitespace-nowrap">
+                              <Download size={15} />
+                              Download All Certificates
+                            </button>
+                          ) : null}
+                        </div>
+                      </div>
+
+                      {certificateReady ? (
+                        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                          {result.participants.map((participant, index) => (
+                            <div
+                              key={`${result.id}-certificate-${index}`}
+                              className="rounded-[1.35rem] border border-cyan-300/14 bg-[radial-gradient(circle_at_bottom_left,rgba(45,212,191,0.14),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.07),rgba(255,255,255,0.03))] p-4 shadow-[0_14px_34px_rgba(2,8,23,0.22)]"
+                            >
+                              <div className="flex items-start gap-3">
+                                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-emerald-300/20 bg-emerald-400/10 text-sm font-bold text-emerald-100">
+                                  {participant.fullName.trim().charAt(0).toUpperCase()}
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <p className="truncate text-sm font-semibold text-white">{participant.fullName}</p>
+                                  <div className="mt-1 inline-flex items-center gap-1 text-xs text-emerald-200">
+                                    <CheckCircle2 size={13} />
+                                    <span>Verified Participant</span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <a
+                                href={buildCertificateHref(result.registration_code, index)}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="magnetic-button mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-cyan-300/20 bg-cyan-400/10 px-4 py-3 text-sm font-semibold text-cyan-100"
+                              >
                                 <Download size={15} />
-                                Download
-                              </span>
-                            </a>
+                                Download Certificate
+                              </a>
+                            </div>
                           ))}
                         </div>
                       ) : null}

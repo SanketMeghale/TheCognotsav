@@ -153,7 +153,7 @@ const phonePattern = /^\d{10}$/;
 const NAV_LINKS = [
   { href: '#overview', label: 'Home' },
   { href: '#registration-panel', label: 'Competitions' },
-  { href: '#tracker', label: 'Tracker' },
+  { href: '#tracker', label: 'Certificates' },
   { href: '#timeline', label: 'Timeline' },
 ];
 const GALLERY_PHOTOS = [
@@ -574,7 +574,7 @@ function buildLiveUpdateTicker(events: EventRecord[], announcements: PortalAnnou
     'Limited slots',
     'Schedules live',
     'Register early',
-    'Tracker active',
+    'Certificates ready',
   ];
 
   if (visibleEvents.some((event) => event.registration_enabled === false)) {
@@ -658,11 +658,11 @@ function buildLiveUpdateCards(events: EventRecord[], announcements: PortalAnnoun
       {
         id: 'tracker-fallback',
         eyebrow: 'Organizer Note',
-        title: 'Tracker and payment review are live',
-        body: 'Upload payment proof once and use the homepage tracker to follow approval instead of waiting without updates.',
+        title: 'Certificates Ready!',
+        body: 'Download your participation certificates instantly and check approval status from one place.',
         meta: 'Participant flow',
         href: '#tracker',
-        ctaLabel: 'Open tracker',
+        ctaLabel: 'Open certificates section',
         icon: 'bell',
         surfaceClassName: 'border-fuchsia-300/18 bg-[linear-gradient(145deg,rgba(67,24,74,0.34),rgba(13,18,33,0.92))]',
         iconClassName: 'border-fuchsia-300/24 bg-fuchsia-400/14 text-fuchsia-100',
@@ -686,7 +686,7 @@ function buildLiveUpdateCards(events: EventRecord[], announcements: PortalAnnoun
     : 'The nearest event kickoff will appear here once the schedule feed is ready.';
   const announcementBody = pinnedAnnouncement
     ? trimUpdateCopy(pinnedAnnouncement.message)
-    : 'Upload payment proof after you register, then use the tracker anytime from the homepage to follow approval status.';
+    : 'Download your participation certificates instantly and follow approval status from the same certificates section.';
 
   return [
     {
@@ -731,13 +731,13 @@ function buildLiveUpdateCards(events: EventRecord[], announcements: PortalAnnoun
     {
       id: 'organizer-note',
       eyebrow: pinnedAnnouncement ? 'Organizer Update' : 'Portal Update',
-      title: pinnedAnnouncement ? trimUpdateCopy(pinnedAnnouncement.title, 48) : 'Tracker and payment review are live',
+      title: pinnedAnnouncement ? trimUpdateCopy(pinnedAnnouncement.title, 48) : 'Certificates Ready!',
       body: announcementBody,
       meta: pinnedAnnouncement
         ? `${pinnedAnnouncement.event_name || 'Portal-wide'} • Live notice`
         : 'Registration support',
       href: pinnedAnnouncement?.event_slug ? `#events/${pinnedAnnouncement.event_slug}` : '#tracker',
-      ctaLabel: pinnedAnnouncement?.event_slug ? 'Read this update' : 'Open tracker',
+      ctaLabel: pinnedAnnouncement?.event_slug ? 'Read this update' : 'Open certificates section',
       icon: 'bell',
       surfaceClassName: 'border-fuchsia-300/18 bg-[linear-gradient(145deg,rgba(67,24,74,0.34),rgba(13,18,33,0.92))]',
       iconClassName: 'border-fuchsia-300/24 bg-fuchsia-400/14 text-fuchsia-100',
@@ -1233,14 +1233,14 @@ function getReceiptInstructions(receipt: RegistrationReceipt) {
   if (receipt.status === 'waitlisted') {
     return [
       'Keep this code saved while you are on the waitlist.',
-      'Track your status regularly from the tracker section.',
+      'Check the certificates section regularly for the latest status updates.',
       'You will receive an updated email if a confirmed slot opens.',
     ];
   }
 
   return [
     'Download this pending pass and save the registration code.',
-    'Use the tracker to follow payment verification status.',
+    'Use the certificates section to follow payment verification status.',
     'You will continue receiving organizer status updates on your registered email.',
   ];
 }
@@ -1320,7 +1320,7 @@ function buildPassWindowHtml(receipt: RegistrationReceipt) {
         <div class="toolbar">
           <div class="toolbar-copy">
             <h1>Registration Pass Window</h1>
-            <p>Review your pass, then use <strong>Print / Save PDF</strong> to download it. Keep the QR and registration code ready for tracker and event-day entry.</p>
+            <p>Review your pass, then use <strong>Print / Save PDF</strong> to download it. Keep the QR and registration code ready for the certificates section and event-day entry.</p>
           </div>
           <div class="toolbar-actions">
             <button type="button" class="primary" onclick="window.print()">Print / Save PDF</button>
@@ -1342,7 +1342,7 @@ function buildPassWindowHtml(receipt: RegistrationReceipt) {
             <div class="hero">
               <div>
                 <h2 class="event-title">${escapePassHtml(receipt.eventName)}</h2>
-                <p class="event-copy">Official participant pass for entry, verification, and tracker reference. Keep this one-page pass with you until the event is completed.</p>
+                <p class="event-copy">Official participant pass for entry, verification, and certificate reference. Keep this one-page pass with you until the event is completed.</p>
                 <div class="status">${escapePassHtml(statusLabel)}</div>
                 <div class="hero-highlights">
                   <div class="hero-chip">${escapePassHtml(receipt.dateLabel)}</div>
@@ -1375,7 +1375,7 @@ function buildPassWindowHtml(receipt: RegistrationReceipt) {
             </div>
 
             <div class="footer">
-              Use <strong>${escapePassHtml(receipt.registrationCode)}</strong> in the tracker to check approval status anytime. Organizer status updates will continue on your registered email address.
+              Use <strong>${escapePassHtml(receipt.registrationCode)}</strong> in the certificates section to check approval status anytime. Organizer status updates will continue on your registered email address.
             </div>
           </div>
         </div>
@@ -3032,8 +3032,8 @@ export const App: React.FC = () => {
               onSelectEvent={handleSelectEvent}
             />
 
-            <DeferredSection className="portal-deferred-section" fallback={<PortalSectionFallback label="Loading tracker..." />} renderOnIdle>
-              <Suspense fallback={<PortalSectionFallback label="Loading tracker..." />}>
+            <DeferredSection className="portal-deferred-section" fallback={<PortalSectionFallback label="Loading certificates..." />} renderOnIdle>
+              <Suspense fallback={<PortalSectionFallback label="Loading certificates..." />}>
                 <TrackerAdminPanel
                   lookupQuery={lookupQuery}
                   lookupLoading={lookupLoading}
@@ -3107,7 +3107,7 @@ export const App: React.FC = () => {
                 className={`portal-bottom-dock__item ${activeBottomDock === 'tracker' ? 'is-active' : ''}`}
               >
                 <Search size={18} />
-                <span>Tracker</span>
+                <span>Certificates</span>
               </a>
             </nav>
           </div>
