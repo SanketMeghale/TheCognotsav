@@ -2621,10 +2621,10 @@ function resolveCertificateFontSize(value, variant = 'participant') {
     return '24px';
   }
 
-  if (length > 40) return '18px';
-  if (length > 32) return '20px';
-  if (length > 24) return '22px';
-  return '24px';
+  if (length > 40) return '20px';
+  if (length > 32) return '22px';
+  if (length > 24) return '24px';
+  return '26px';
 }
 
 function buildCertificateNoticePage({
