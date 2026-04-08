@@ -2832,14 +2832,14 @@ function buildParticipationCertificatePage({
           .field--participant {
             left: 57.075%;
             width: 40.7%;
-            top: 46.35%;
+            top: 46.65%;
             transform: translate(-50%, -50%);
             font-size: ${participantFontSize};
           }
           .field--event {
             left: 49.125%;
             width: 30.1%;
-            top: 50.2%;
+            top: 50.45%;
             transform: translate(-50%, -50%);
             font-size: ${eventFontSize};
             color: #1e2f44;
@@ -3157,7 +3157,7 @@ function buildParticipationCertificatePage({
 
                   drawCenteredText(ctx, config.participantName, {
                     x: canvas.width * 0.57075,
-                    y: canvas.height * 0.4635,
+                    y: canvas.height * 0.4665,
                     maxWidth: canvas.width * 0.407,
                     fontSize: config.participantFontSize,
                     color: '#13385c',
@@ -3165,7 +3165,7 @@ function buildParticipationCertificatePage({
 
                   drawCenteredText(ctx, config.eventName, {
                     x: canvas.width * 0.49125,
-                    y: canvas.height * 0.502,
+                    y: canvas.height * 0.5045,
                     maxWidth: canvas.width * 0.301,
                     fontSize: config.eventFontSize,
                     color: '#1e2f44',
