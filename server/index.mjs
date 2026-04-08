@@ -2801,7 +2801,7 @@ function buildParticipationCertificatePage({
           .field--participant {
             left: 57.075%;
             width: 40.7%;
-            top: 48.479%;
+            top: 47.75%;
             transform: translate(-50%, -50%);
             font-size: ${participantFontSize};
           }
