@@ -2619,16 +2619,16 @@ function resolveCertificateFontSize(value, variant = 'participant') {
   const length = String(value || '').trim().length;
 
   if (variant === 'event') {
-    if (length > 34) return '24px';
-    if (length > 26) return '26px';
-    if (length > 20) return '28px';
-    return '30px';
+    if (length > 34) return '21px';
+    if (length > 26) return '23px';
+    if (length > 20) return '25px';
+    return '27px';
   }
 
-  if (length > 40) return '24px';
-  if (length > 32) return '27px';
-  if (length > 24) return '30px';
-  return '33px';
+  if (length > 40) return '21px';
+  if (length > 32) return '23px';
+  if (length > 24) return '26px';
+  return '29px';
 }
 
 function buildCertificateNoticePage({
@@ -2832,14 +2832,14 @@ function buildParticipationCertificatePage({
           .field--participant {
             left: 57.075%;
             width: 40.7%;
-            top: 47.1%;
+            top: 45.95%;
             transform: translate(-50%, -50%);
             font-size: ${participantFontSize};
           }
           .field--event {
             left: 49.125%;
             width: 30.1%;
-            top: 51.2%;
+            top: 49.85%;
             transform: translate(-50%, -50%);
             font-size: ${eventFontSize};
             color: #1e2f44;
@@ -3157,7 +3157,7 @@ function buildParticipationCertificatePage({
 
                   drawCenteredText(ctx, config.participantName, {
                     x: canvas.width * 0.57075,
-                    y: canvas.height * 0.471,
+                    y: canvas.height * 0.4595,
                     maxWidth: canvas.width * 0.407,
                     fontSize: config.participantFontSize,
                     color: '#13385c',
@@ -3165,7 +3165,7 @@ function buildParticipationCertificatePage({
 
                   drawCenteredText(ctx, config.eventName, {
                     x: canvas.width * 0.49125,
-                    y: canvas.height * 0.512,
+                    y: canvas.height * 0.4985,
                     maxWidth: canvas.width * 0.301,
                     fontSize: config.eventFontSize,
                     color: '#1e2f44',
