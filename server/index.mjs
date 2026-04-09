@@ -2742,6 +2742,27 @@ function resolveCertificateLayout({
   };
 }
 
+function resolveMobileCertificateFieldOverrides(field) {
+  if (field?.key === 'participant') {
+    return {
+      fontBoost: 3,
+      yShift: 0.005,
+    };
+  }
+
+  if (field?.key === 'event' || field?.key === 'project') {
+    return {
+      fontBoost: 2,
+      yShift: 0.004,
+    };
+  }
+
+  return {
+    fontBoost: 0,
+    yShift: 0,
+  };
+}
+
 function buildCertificateNoticePage({
   title,
   message,
@@ -2882,18 +2903,21 @@ function buildParticipationCertificatePage({
   const mobileRenderConfig = mobileDownloadView
     ? serializeInlineJson({
       templateUrl,
-      fields: certificateLayout.fields.map((field) => ({
-        value: field.value,
-        fontSize: Number.parseFloat(field.fontSize) || 26,
-        color: field.canvas.color,
-        x: field.canvas.x,
-        y: field.canvas.y,
-        maxWidth: field.canvas.maxWidth,
-        chipBackground: field.canvas.chipBackground || null,
-        chipPaddingX: field.canvas.chipPaddingX || 0,
-        chipPaddingY: field.canvas.chipPaddingY || 0,
-        chipRadius: field.canvas.chipRadius || 0,
-      })),
+      fields: certificateLayout.fields.map((field) => {
+        const mobileOverrides = resolveMobileCertificateFieldOverrides(field);
+        return {
+          value: field.value,
+          fontSize: (Number.parseFloat(field.fontSize) || 26) + mobileOverrides.fontBoost,
+          color: field.canvas.color,
+          x: field.canvas.x,
+          y: field.canvas.y + mobileOverrides.yShift,
+          maxWidth: field.canvas.maxWidth,
+          chipBackground: field.canvas.chipBackground || null,
+          chipPaddingX: field.canvas.chipPaddingX || 0,
+          chipPaddingY: field.canvas.chipPaddingY || 0,
+          chipRadius: field.canvas.chipRadius || 0,
+        };
+      }),
       certificateId,
       issueDate,
       showMeta: certificateLayout.showMeta,
