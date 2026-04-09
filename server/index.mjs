@@ -2760,7 +2760,7 @@ function resolveCertificateLayout({
           css: {
             left: '55%',
             width: '62.75%',
-            top: '51.25%',
+            top: '51.1%',
             color: '#202020',
           },
           canvas: {
