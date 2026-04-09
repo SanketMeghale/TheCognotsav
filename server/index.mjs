@@ -4168,25 +4168,13 @@ app.get(['/certificate', '/certificate/:registrationCode'], async (req, res) => 
         e.name AS event_name,
         e.date_label,
         e.time_label,
-        e.venue,
-        COALESCE(
-          json_agg(
-            json_build_object(
-              'fullName', p.full_name,
-              'isLead', p.is_lead
-            )
-            ORDER BY p.id
-          ) FILTER (WHERE p.id IS NOT NULL),
-          '[]'::json
-        ) AS participants
+        e.venue
       FROM registrations r
       JOIN events e ON e.slug = r.event_slug
-      LEFT JOIN registration_participants p ON p.registration_id = r.id
       WHERE ($1::text <> '' AND r.id = $1)
          OR ($2::text <> '' AND r.invite_token = $2)
          OR ($3::text <> '' AND LOWER(r.registration_code) = $3)
          OR ($4::text <> '' AND REGEXP_REPLACE(LOWER(r.registration_code), '[^a-z0-9]', '', 'g') = $4)
-      GROUP BY r.id, r.event_slug, r.project_title, e.name, e.date_label, e.time_label, e.venue
       LIMIT 1
     `,
     [rawRegistrationId, rawInviteToken, normalizedRegistrationCode, compactRegistrationCode],
@@ -4219,6 +4207,23 @@ app.get(['/certificate', '/certificate/:registrationCode'], async (req, res) => 
       appUrl,
     }));
   }
+
+  const participantsResult = await pool.query(
+    `
+      SELECT
+        full_name,
+        is_lead
+      FROM registration_participants
+      WHERE registration_id = $1
+      ORDER BY id ASC
+    `,
+    [registration.id],
+  );
+
+  registration.participants = participantsResult.rows.map((participantRow) => ({
+    fullName: participantRow.full_name,
+    isLead: Boolean(participantRow.is_lead),
+  }));
 
   const participants = getCertificateParticipants(registration);
   const participant = participants[participantIndex];
