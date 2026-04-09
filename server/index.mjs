@@ -2668,12 +2668,12 @@ function resolveCertificateLayout({
           css: {
             left: '51.9%',
             width: '55.15%',
-            top: '47.4%',
+            top: '48.1%',
             color: '#202020',
           },
           canvas: {
             x: 0.519,
-            y: 0.474,
+            y: 0.481,
             maxWidth: 0.5515,
             color: '#202020',
           },
@@ -2685,12 +2685,12 @@ function resolveCertificateLayout({
           css: {
             left: '55%',
             width: '62.75%',
-            top: '51.35%',
+            top: '52.05%',
             color: '#202020',
           },
           canvas: {
             x: 0.55,
-            y: 0.5135,
+            y: 0.5205,
             maxWidth: 0.6275,
             color: '#202020',
           },
