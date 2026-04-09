@@ -2670,12 +2670,19 @@ function resolveCertificateLayout({
             width: '55.15%',
             top: '48.1%',
             color: '#202020',
+            chipBackground: 'rgba(255,255,255,0.98)',
+            chipPadding: '0 18px 4px',
+            chipRadius: '999px',
           },
           canvas: {
             x: 0.519,
             y: 0.481,
             maxWidth: 0.5515,
             color: '#202020',
+            chipBackground: 'rgba(255,255,255,0.98)',
+            chipPaddingX: 18,
+            chipPaddingY: 4,
+            chipRadius: 18,
           },
         },
         {
@@ -2687,12 +2694,19 @@ function resolveCertificateLayout({
             width: '62.75%',
             top: '52.05%',
             color: '#202020',
+            chipBackground: 'rgba(255,255,255,0.98)',
+            chipPadding: '0 14px 4px',
+            chipRadius: '999px',
           },
           canvas: {
             x: 0.55,
             y: 0.5205,
             maxWidth: 0.6275,
             color: '#202020',
+            chipBackground: 'rgba(255,255,255,0.98)',
+            chipPaddingX: 14,
+            chipPaddingY: 4,
+            chipRadius: 16,
           },
         },
       ],
@@ -2877,7 +2891,7 @@ function buildParticipationCertificatePage({
   ) || 'cognotsav-certificate.png';
   const fieldMarkup = certificateLayout.fields
     .map((field) => `
-            <div class="field field--${field.key}" style="left:${field.css.left};width:${field.css.width};top:${field.css.top};font-size:${field.fontSize};color:${field.css.color};">${escapeHtml(field.value)}</div>`)
+            <div class="field field--${field.key}" style="left:${field.css.left};width:${field.css.width};top:${field.css.top};font-size:${field.fontSize};color:${field.css.color};"><span class="field-chip"${field.css.chipBackground ? ` style="background:${field.css.chipBackground};padding:${field.css.chipPadding};border-radius:${field.css.chipRadius};"` : ''}>${escapeHtml(field.value)}</span></div>`)
     .join('');
   const mobileRenderConfig = mobileDownloadView
     ? serializeInlineJson({
@@ -2889,6 +2903,10 @@ function buildParticipationCertificatePage({
         x: field.canvas.x,
         y: field.canvas.y,
         maxWidth: field.canvas.maxWidth,
+        chipBackground: field.canvas.chipBackground || null,
+        chipPaddingX: field.canvas.chipPaddingX || 0,
+        chipPaddingY: field.canvas.chipPaddingY || 0,
+        chipRadius: field.canvas.chipRadius || 0,
       })),
       certificateId,
       issueDate,
@@ -2953,6 +2971,11 @@ function buildParticipationCertificatePage({
             font-weight: 700;
             line-height: 1;
             text-shadow: 0 1px 0 rgba(255,255,255,0.45);
+          }
+          .field-chip {
+            display: inline-block;
+            -webkit-box-decoration-break: clone;
+            box-decoration-break: clone;
           }
           .meta {
             position: absolute;
@@ -3201,11 +3224,6 @@ function buildParticipationCertificatePage({
                 ctx.save();
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillStyle = options.color;
-                ctx.shadowColor = 'rgba(255,255,255,0.45)';
-                ctx.shadowBlur = 0;
-                ctx.shadowOffsetX = 0;
-                ctx.shadowOffsetY = 1;
 
                 do {
                   setCertificateFont(ctx, fontSize);
@@ -3215,6 +3233,40 @@ function buildParticipationCertificatePage({
                   fontSize -= 1;
                 } while (fontSize > 10);
 
+                if (options.chipBackground) {
+                  var textWidth = ctx.measureText(text).width;
+                  var chipWidth = textWidth + (options.chipPaddingX || 0) * 2;
+                  var chipHeight = fontSize * 1.1 + (options.chipPaddingY || 0) * 2;
+                  var chipLeft = options.x - chipWidth / 2;
+                  var chipTop = options.y - chipHeight / 2;
+                  var chipRadius = Math.max(0, Math.min(options.chipRadius || 0, chipHeight / 2, chipWidth / 2));
+
+                  ctx.save();
+                  ctx.fillStyle = options.chipBackground;
+                  if (chipRadius > 0) {
+                    ctx.beginPath();
+                    ctx.moveTo(chipLeft + chipRadius, chipTop);
+                    ctx.lineTo(chipLeft + chipWidth - chipRadius, chipTop);
+                    ctx.quadraticCurveTo(chipLeft + chipWidth, chipTop, chipLeft + chipWidth, chipTop + chipRadius);
+                    ctx.lineTo(chipLeft + chipWidth, chipTop + chipHeight - chipRadius);
+                    ctx.quadraticCurveTo(chipLeft + chipWidth, chipTop + chipHeight, chipLeft + chipWidth - chipRadius, chipTop + chipHeight);
+                    ctx.lineTo(chipLeft + chipRadius, chipTop + chipHeight);
+                    ctx.quadraticCurveTo(chipLeft, chipTop + chipHeight, chipLeft, chipTop + chipHeight - chipRadius);
+                    ctx.lineTo(chipLeft, chipTop + chipRadius);
+                    ctx.quadraticCurveTo(chipLeft, chipTop, chipLeft + chipRadius, chipTop);
+                    ctx.closePath();
+                    ctx.fill();
+                  } else {
+                    ctx.fillRect(chipLeft, chipTop, chipWidth, chipHeight);
+                  }
+                  ctx.restore();
+                }
+
+                ctx.fillStyle = options.color;
+                ctx.shadowColor = 'rgba(255,255,255,0.45)';
+                ctx.shadowBlur = 0;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 1;
                 ctx.fillText(text, options.x, options.y);
                 ctx.restore();
               }
@@ -3272,6 +3324,10 @@ function buildParticipationCertificatePage({
                       maxWidth: canvas.width * field.maxWidth,
                       fontSize: field.fontSize,
                       color: field.color || '#13385c',
+                      chipBackground: field.chipBackground || null,
+                      chipPaddingX: field.chipPaddingX || 0,
+                      chipPaddingY: field.chipPaddingY || 0,
+                      chipRadius: field.chipRadius || 0,
                     });
                   });
 
