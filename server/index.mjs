@@ -2742,7 +2742,23 @@ function resolveCertificateLayout({
   };
 }
 
-function resolveMobileCertificateFieldOverrides(field) {
+function resolveMobileCertificateFieldOverrides(field, registration) {
+  const isProjectCertificate = registration?.event_slug === 'techxcelerate';
+
+  if (isProjectCertificate && field?.key === 'participant') {
+    return {
+      fontBoost: 3,
+      yShift: 0.002,
+    };
+  }
+
+  if (isProjectCertificate && field?.key === 'project') {
+    return {
+      fontBoost: 2,
+      yShift: 0.0015,
+    };
+  }
+
   if (field?.key === 'participant') {
     return {
       fontBoost: 3,
@@ -2750,7 +2766,14 @@ function resolveMobileCertificateFieldOverrides(field) {
     };
   }
 
-  if (field?.key === 'event' || field?.key === 'project') {
+  if (field?.key === 'event') {
+    return {
+      fontBoost: 4,
+      yShift: 0.004,
+    };
+  }
+
+  if (field?.key === 'project') {
     return {
       fontBoost: 2,
       yShift: 0.004,
@@ -2904,7 +2927,7 @@ function buildParticipationCertificatePage({
     ? serializeInlineJson({
       templateUrl,
       fields: certificateLayout.fields.map((field) => {
-        const mobileOverrides = resolveMobileCertificateFieldOverrides(field);
+        const mobileOverrides = resolveMobileCertificateFieldOverrides(field, registration);
         return {
           value: field.value,
           fontSize: (Number.parseFloat(field.fontSize) || 26) + mobileOverrides.fontBoost,
