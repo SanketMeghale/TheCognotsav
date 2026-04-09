@@ -9,16 +9,24 @@ const { Pool } = pg;
 const connectionString = process.env.DATABASE_URL;
 const projectTitleBackfills = [
   {
-    eventSlug: 'techxcelerate',
+    eventSlugs: ['techxcelerate', 'techxcelerate-poster-presentation'],
     teamName: 'Team Garuda',
     projectTitle: 'Multi utility robot',
   },
   {
-    eventSlug: 'techxcelerate',
+    eventSlugs: ['techxcelerate', 'techxcelerate-poster-presentation'],
     teamName: 'Team Future Visionaries',
     projectTitle: 'Bridging Communication: Sign Language to Multiple Languages',
   },
 ];
+
+function normalizeProjectTitleBackfillTeamName(value) {
+  return String(value || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+    .replace(/\s+/g, ' ');
+}
 
 if (!connectionString) {
   throw new Error('DATABASE_URL is not configured.');
@@ -230,11 +238,15 @@ export async function initDatabase() {
         UPDATE registrations
         SET project_title = $1,
             updated_at = NOW()
-        WHERE event_slug = $2
-          AND LOWER(TRIM(team_name)) = LOWER(TRIM($3))
+        WHERE event_slug = ANY($2::text[])
+          AND REGEXP_REPLACE(LOWER(COALESCE(team_name, '')), '[^a-z0-9]+', ' ', 'g') = $3
           AND COALESCE(TRIM(project_title), '') = ''
       `,
-      [backfill.projectTitle, backfill.eventSlug, backfill.teamName],
+      [
+        backfill.projectTitle,
+        backfill.eventSlugs,
+        normalizeProjectTitleBackfillTeamName(backfill.teamName),
+      ],
     );
   }
 }

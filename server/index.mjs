@@ -816,7 +816,7 @@ async function fetchVerifiedRegistrationsForGoogleSheets() {
         effectiveEventSlug,
         row.presentation_mode?.toLowerCase?.() || row.presentation_mode,
       ),
-      project_title: effectiveEventSlug === 'techxcelerate' ? row.project_title : '',
+      project_title: effectiveEventSlug === 'techxcelerate' ? resolveCertificateProjectTitle(row) : '',
     };
   });
 }
@@ -2231,6 +2231,7 @@ async function fetchLookupRegistrations(query) {
         r.team_name,
         r.contact_name,
         r.contact_email,
+        COALESCE(r.project_title, '') AS project_title,
         r.registration_source,
         r.payment_method,
         r.payment_reference,
@@ -2332,6 +2333,7 @@ async function fetchLookupRegistrations(query) {
 
     return {
       ...row,
+      project_title: resolveCertificateProjectTitle(row),
       qr_value: buildQrValue(row.registration_code),
       invite_link: row.invite_token ? `#join-team/${row.invite_token}` : null,
       participants,
@@ -2647,9 +2649,17 @@ function resolveCertificateFontSize(value, variant = 'participant') {
   return '29px';
 }
 
+function normalizeProjectTitleTeamName(value) {
+  return String(value || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+    .replace(/\s+/g, ' ');
+}
+
 const techxcelerateProjectTitleFallbacks = new Map([
-  ['team garuda', 'Multi utility robot'],
-  ['team future visionaries', 'Bridging Communication: Sign Language to Multiple Languages'],
+  [normalizeProjectTitleTeamName('Team Garuda'), 'Multi utility robot'],
+  [normalizeProjectTitleTeamName('Team Future Visionaries'), 'Bridging Communication: Sign Language to Multiple Languages'],
 ]);
 
 function resolveCertificateProjectTitle(registration) {
@@ -2659,7 +2669,7 @@ function resolveCertificateProjectTitle(registration) {
   }
 
   const fallbackProjectTitle = techxcelerateProjectTitleFallbacks.get(
-    String(registration?.team_name || '').trim().toLowerCase(),
+    normalizeProjectTitleTeamName(registration?.team_name),
   );
 
   return fallbackProjectTitle || 'Project Title';
@@ -4105,6 +4115,7 @@ async function fetchAdminRegistrations(whereClause = '', params = []) {
 
     return {
       ...row,
+      project_title: resolveCertificateProjectTitle(row),
       qr_value: buildQrValue(row.registration_code),
       latest_notification: hasNotification
         ? {
@@ -5265,9 +5276,13 @@ app.get('/api/admin/export.csv', requireAdmin, async (req, res) => {
     `,
     scopeParams,
   );
+  const exportRows = result.rows.map((row) => ({
+    ...row,
+    project_title: row.event_slug === 'techxcelerate' ? resolveCertificateProjectTitle(row) : row.project_title,
+  }));
 
-  const includePresentationMode = result.rows.some((row) => row.event_slug === 'techxcelerate');
-  const includeProjectTitle = result.rows.some((row) => row.event_slug === 'techxcelerate');
+  const includePresentationMode = exportRows.some((row) => row.event_slug === 'techxcelerate');
+  const includeProjectTitle = exportRows.some((row) => row.event_slug === 'techxcelerate');
   const headers = [
     'registration_code',
     'event_name',
@@ -5291,7 +5306,7 @@ app.get('/api/admin/export.csv', requireAdmin, async (req, res) => {
 
   const csvRows = [
     headers.join(','),
-    ...result.rows.map((row) =>
+    ...exportRows.map((row) =>
       headers
         .map((header) => `"${String(row[header] ?? '').replaceAll('"', '""')}"`)
         .join(','),
@@ -5340,9 +5355,17 @@ app.get('/api/admin/export.xlsx', requireAdmin, async (req, res) => {
     `,
     scopeParams,
   );
+  const exportRows = result.rows.map((row) => ({
+    ...row,
+    'Project Title': row.event_slug === 'techxcelerate' ? resolveCertificateProjectTitle({
+      event_slug: row.event_slug,
+      project_title: row['Project Title'],
+      team_name: row['Team Name'],
+    }) : row['Project Title'],
+  }));
 
   const workbook = XLSX.utils.book_new();
-  const rowsByEventSlug = result.rows.reduce((collection, row) => {
+  const rowsByEventSlug = exportRows.reduce((collection, row) => {
     const eventRows = collection.get(row.event_slug) || [];
     const { event_slug: rowEventSlug, ...sheetRow } = row;
     if (rowEventSlug !== 'techxcelerate') {
