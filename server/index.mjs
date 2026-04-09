@@ -2627,11 +2627,11 @@ function resolveCertificateFontSize(value, variant = 'participant') {
   }
 
   if (variant === 'project-title') {
-    if (length > 80) return '24px';
-    if (length > 64) return '26px';
-    if (length > 50) return '28px';
-    if (length > 36) return '31px';
-    return '34px';
+    if (length > 80) return '26px';
+    if (length > 64) return '28px';
+    if (length > 50) return '30px';
+    if (length > 36) return '33px';
+    return '36px';
   }
 
   if (variant === 'event') {
