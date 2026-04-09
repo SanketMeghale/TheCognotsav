@@ -2668,12 +2668,12 @@ function resolveCertificateLayout({
           css: {
             left: '51.9%',
             width: '55.15%',
-            top: '46.7%',
+            top: '46.95%',
             color: '#202020',
           },
           canvas: {
             x: 0.519,
-            y: 0.467,
+            y: 0.4695,
             maxWidth: 0.5515,
             color: '#202020',
           },
@@ -2685,12 +2685,12 @@ function resolveCertificateLayout({
           css: {
             left: '55%',
             width: '62.75%',
-            top: '51.15%',
+            top: '51.4%',
             color: '#202020',
           },
           canvas: {
             x: 0.55,
-            y: 0.5115,
+            y: 0.514,
             maxWidth: 0.6275,
             color: '#202020',
           },
@@ -2711,12 +2711,12 @@ function resolveCertificateLayout({
         css: {
           left: '57.075%',
           width: '40.7%',
-          top: '46.65%',
+          top: '46.9%',
           color: '#13385c',
         },
         canvas: {
           x: 0.57075,
-          y: 0.4665,
+          y: 0.469,
           maxWidth: 0.407,
           color: '#13385c',
         },
@@ -2728,12 +2728,12 @@ function resolveCertificateLayout({
         css: {
           left: '49.125%',
           width: '30.1%',
-          top: '50.45%',
+          top: '50.7%',
           color: '#1e2f44',
         },
         canvas: {
           x: 0.49125,
-          y: 0.5045,
+          y: 0.507,
           maxWidth: 0.301,
           color: '#1e2f44',
         },
