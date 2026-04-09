@@ -2618,6 +2618,22 @@ function getCertificateParticipants(registration) {
 function resolveCertificateFontSize(value, variant = 'participant') {
   const length = String(value || '').trim().length;
 
+  if (variant === 'project-participant') {
+    if (length > 50) return '26px';
+    if (length > 42) return '29px';
+    if (length > 34) return '32px';
+    if (length > 26) return '35px';
+    return '38px';
+  }
+
+  if (variant === 'project-title') {
+    if (length > 80) return '22px';
+    if (length > 64) return '24px';
+    if (length > 50) return '26px';
+    if (length > 36) return '29px';
+    return '32px';
+  }
+
   if (variant === 'event') {
     if (length > 34) return '21px';
     if (length > 26) return '23px';
@@ -2629,6 +2645,101 @@ function resolveCertificateFontSize(value, variant = 'participant') {
   if (length > 32) return '23px';
   if (length > 24) return '26px';
   return '29px';
+}
+
+function resolveCertificateLayout({
+  registration,
+  participantName,
+  eventName,
+  appUrl = resolvePublicAppUrl(),
+} = {}) {
+  if (registration?.event_slug === 'techxcelerate') {
+    const projectTitle = String(registration?.project_title || 'Project Title').trim() || 'Project Title';
+
+    return {
+      certificateLabel: 'Project Participation Certificate',
+      templateUrl: `${appUrl}/images/techxcelerate-project-certificate-template.png`,
+      showMeta: false,
+      fields: [
+        {
+          key: 'participant',
+          value: participantName,
+          fontSize: resolveCertificateFontSize(participantName, 'project-participant'),
+          css: {
+            left: '51.9%',
+            width: '55.15%',
+            top: '47.4%',
+            color: '#202020',
+          },
+          canvas: {
+            x: 0.519,
+            y: 0.474,
+            maxWidth: 0.5515,
+            color: '#202020',
+          },
+        },
+        {
+          key: 'project',
+          value: projectTitle,
+          fontSize: resolveCertificateFontSize(projectTitle, 'project-title'),
+          css: {
+            left: '55%',
+            width: '62.75%',
+            top: '51.35%',
+            color: '#202020',
+          },
+          canvas: {
+            x: 0.55,
+            y: 0.5135,
+            maxWidth: 0.6275,
+            color: '#202020',
+          },
+        },
+      ],
+    };
+  }
+
+  return {
+    certificateLabel: 'Participation Certificate',
+    templateUrl: `${appUrl}/images/participation-certificate-template.png`,
+    showMeta: true,
+    fields: [
+      {
+        key: 'participant',
+        value: participantName,
+        fontSize: resolveCertificateFontSize(participantName, 'participant'),
+        css: {
+          left: '57.075%',
+          width: '40.7%',
+          top: '46.65%',
+          color: '#13385c',
+        },
+        canvas: {
+          x: 0.57075,
+          y: 0.4665,
+          maxWidth: 0.407,
+          color: '#13385c',
+        },
+      },
+      {
+        key: 'event',
+        value: eventName,
+        fontSize: resolveCertificateFontSize(eventName, 'event'),
+        css: {
+          left: '49.125%',
+          width: '30.1%',
+          top: '50.45%',
+          color: '#1e2f44',
+        },
+        canvas: {
+          x: 0.49125,
+          y: 0.5045,
+          maxWidth: 0.301,
+          color: '#1e2f44',
+        },
+      },
+    ],
+  };
 }
 
 function buildCertificateNoticePage({
@@ -2738,11 +2849,15 @@ function buildParticipationCertificatePage({
   download = false,
   mobileDownloadView = false,
 } = {}) {
-  const templateUrl = `${appUrl}/images/participation-certificate-template.png`;
   const participantName = String(participant?.fullName || registration?.contact_name || registration?.team_name || 'Participant').trim() || 'Participant';
   const eventName = String(registration?.event_name || 'Cognotsav 2026').trim() || 'Cognotsav 2026';
-  const participantFontSize = resolveCertificateFontSize(participantName, 'participant');
-  const eventFontSize = resolveCertificateFontSize(eventName, 'event');
+  const certificateLayout = resolveCertificateLayout({
+    registration,
+    participantName,
+    eventName,
+    appUrl,
+  });
+  const templateUrl = certificateLayout.templateUrl;
   const issueDate = new Date().toLocaleDateString('en-IN', {
     day: '2-digit',
     month: 'short',
@@ -2760,15 +2875,24 @@ function buildParticipationCertificatePage({
       .replace(/^-+|-+$/g, '')
       .replace(/-{2,}/g, '-')
   ) || 'cognotsav-certificate.png';
+  const fieldMarkup = certificateLayout.fields
+    .map((field) => `
+            <div class="field field--${field.key}" style="left:${field.css.left};width:${field.css.width};top:${field.css.top};font-size:${field.fontSize};color:${field.css.color};">${escapeHtml(field.value)}</div>`)
+    .join('');
   const mobileRenderConfig = mobileDownloadView
     ? serializeInlineJson({
       templateUrl,
-      participantName,
-      eventName,
+      fields: certificateLayout.fields.map((field) => ({
+        value: field.value,
+        fontSize: Number.parseFloat(field.fontSize) || 26,
+        color: field.canvas.color,
+        x: field.canvas.x,
+        y: field.canvas.y,
+        maxWidth: field.canvas.maxWidth,
+      })),
       certificateId,
       issueDate,
-      participantFontSize: Number.parseFloat(participantFontSize) || 26,
-      eventFontSize: Number.parseFloat(eventFontSize) || 24,
+      showMeta: certificateLayout.showMeta,
       fileName: downloadFileName,
       trackerUrl: `${appUrl}/#tracker`,
     })
@@ -2781,7 +2905,7 @@ function buildParticipationCertificatePage({
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="${mobileDownloadView ? '#0b1020' : '#07111d'}" />
-        <title>${escapeHtml(participantName)} Participation Certificate</title>
+        <title>${escapeHtml(participantName)} ${escapeHtml(certificateLayout.certificateLabel)}</title>
         <style>
           * { box-sizing: border-box; }
           body {
@@ -3033,11 +3157,11 @@ function buildParticipationCertificatePage({
             </div>
           ` : ''}
           <div class="sheet">
-            <img class="template" src="${escapeHtml(templateUrl)}" alt="Participation certificate template" />
-            <div class="field field--participant">${escapeHtml(participantName)}</div>
-            <div class="field field--event">${escapeHtml(eventName)}</div>
+            <img class="template" src="${escapeHtml(templateUrl)}" alt="${escapeHtml(certificateLayout.certificateLabel)} template" />
+            ${fieldMarkup}
+            ${certificateLayout.showMeta ? `
             <div class="meta meta--left">Certificate ID: ${escapeHtml(certificateId)}</div>
-            <div class="meta meta--right">Issued: ${escapeHtml(issueDate)}</div>
+            <div class="meta meta--right">Issued: ${escapeHtml(issueDate)}</div>` : ''}
           </div>
 
           <div class="actions">
@@ -3155,33 +3279,29 @@ function buildParticipationCertificatePage({
 
                   ctx.drawImage(template, 0, 0, canvas.width, canvas.height);
 
-                  drawCenteredText(ctx, config.participantName, {
-                    x: canvas.width * 0.57075,
-                    y: canvas.height * 0.4665,
-                    maxWidth: canvas.width * 0.407,
-                    fontSize: config.participantFontSize,
-                    color: '#13385c',
+                  (Array.isArray(config.fields) ? config.fields : []).forEach(function (field) {
+                    drawCenteredText(ctx, field.value, {
+                      x: canvas.width * field.x,
+                      y: canvas.height * field.y,
+                      maxWidth: canvas.width * field.maxWidth,
+                      fontSize: field.fontSize,
+                      color: field.color || '#13385c',
+                    });
                   });
 
-                  drawCenteredText(ctx, config.eventName, {
-                    x: canvas.width * 0.49125,
-                    y: canvas.height * 0.5045,
-                    maxWidth: canvas.width * 0.301,
-                    fontSize: config.eventFontSize,
-                    color: '#1e2f44',
-                  });
+                  if (config.showMeta) {
+                    drawMetaText(ctx, 'Certificate ID: ' + config.certificateId, {
+                      x: canvas.width * 0.11,
+                      y: canvas.height * 0.873,
+                      align: 'left',
+                    });
 
-                  drawMetaText(ctx, 'Certificate ID: ' + config.certificateId, {
-                    x: canvas.width * 0.11,
-                    y: canvas.height * 0.873,
-                    align: 'left',
-                  });
-
-                  drawMetaText(ctx, 'Issued: ' + config.issueDate, {
-                    x: canvas.width * 0.89,
-                    y: canvas.height * 0.873,
-                    align: 'right',
-                  });
+                    drawMetaText(ctx, 'Issued: ' + config.issueDate, {
+                      x: canvas.width * 0.89,
+                      y: canvas.height * 0.873,
+                      align: 'right',
+                    });
+                  }
 
                   releaseUrl();
                   currentUrl = await canvasToObjectUrl(canvas);
@@ -4038,6 +4158,8 @@ app.get(['/certificate', '/certificate/:registrationCode'], async (req, res) => 
       SELECT
         r.id,
         r.registration_code,
+        r.event_slug,
+        COALESCE(r.project_title, '') AS project_title,
         r.team_name,
         r.contact_name,
         r.contact_email,
@@ -4064,7 +4186,7 @@ app.get(['/certificate', '/certificate/:registrationCode'], async (req, res) => 
          OR ($2::text <> '' AND r.invite_token = $2)
          OR ($3::text <> '' AND LOWER(r.registration_code) = $3)
          OR ($4::text <> '' AND REGEXP_REPLACE(LOWER(r.registration_code), '[^a-z0-9]', '', 'g') = $4)
-      GROUP BY r.id, e.name, e.date_label, e.time_label, e.venue
+      GROUP BY r.id, r.event_slug, r.project_title, e.name, e.date_label, e.time_label, e.venue
       LIMIT 1
     `,
     [rawRegistrationId, rawInviteToken, normalizedRegistrationCode, compactRegistrationCode],
