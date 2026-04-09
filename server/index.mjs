@@ -2760,12 +2760,12 @@ function resolveCertificateLayout({
           css: {
             left: '55%',
             width: '62.75%',
-            top: '51.4%',
+            top: '51.25%',
             color: '#202020',
           },
           canvas: {
             x: 0.55,
-            y: 0.514,
+            y: 0.5125,
             maxWidth: 0.6275,
             color: '#202020',
           },
@@ -2830,7 +2830,7 @@ function resolveMobileCertificateFieldOverrides(field, registration) {
   if (isProjectCertificate && field?.key === 'project') {
     return {
       fontBoost: 2,
-      yShift: 0.0015,
+      yShift: 0.0005,
     };
   }
 
