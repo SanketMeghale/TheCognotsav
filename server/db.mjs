@@ -11,11 +11,13 @@ const projectTitleBackfills = [
   {
     eventSlugs: ['techxcelerate', 'techxcelerate-poster-presentation'],
     teamName: 'Team Garuda',
+    teamPatterns: ['%garuda%'],
     projectTitle: 'Multi utility robot',
   },
   {
     eventSlugs: ['techxcelerate', 'techxcelerate-poster-presentation'],
     teamName: 'Team Future Visionaries',
+    teamPatterns: ['%future visionaries%', '%future%visionaries%'],
     projectTitle: 'Bridging Communication: Sign Language to Multiple Languages',
   },
 ];
@@ -239,7 +241,10 @@ export async function initDatabase() {
         SET project_title = $1,
             updated_at = NOW()
         WHERE event_slug = ANY($2::text[])
-          AND REGEXP_REPLACE(LOWER(COALESCE(team_name, '')), '[^a-z0-9]+', ' ', 'g') = $3
+          AND (
+            REGEXP_REPLACE(LOWER(COALESCE(team_name, '')), '[^a-z0-9]+', ' ', 'g') = $3
+            OR LOWER(COALESCE(team_name, '')) LIKE ANY($4::text[])
+          )
           AND (
             COALESCE(TRIM(project_title), '') = ''
             OR LOWER(TRIM(project_title)) IN ('unknown', 'project title', 'n/a', 'na', '-', '--')
@@ -249,6 +254,7 @@ export async function initDatabase() {
         backfill.projectTitle,
         backfill.eventSlugs,
         normalizeProjectTitleBackfillTeamName(backfill.teamName),
+        backfill.teamPatterns,
       ],
     );
   }

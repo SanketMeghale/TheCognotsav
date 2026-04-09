@@ -710,14 +710,15 @@ function formatGoogleSheetsPresentationMode(eventSlug, presentationMode) {
 // Keep legacy Techxcelerate rows aligned with the split poster-presentation tab.
 function resolveGoogleSheetsEventSlug(row) {
   const rowSlug = String(row?.event_slug || '').trim();
+  if (rowSlug === 'techxcelerate-poster-presentation' && resolveKnownTechxcelerateProjectTitle(row?.team_name)) {
+    return 'techxcelerate';
+  }
+
   if (rowSlug !== 'techxcelerate') {
     return rowSlug;
   }
 
-  if (
-    !isPlaceholderProjectTitle(row?.project_title) ||
-    techxcelerateProjectTitleFallbacks.has(normalizeProjectTitleTeamName(row?.team_name))
-  ) {
+  if (!isPlaceholderProjectTitle(row?.project_title) || resolveKnownTechxcelerateProjectTitle(row?.team_name)) {
     return 'techxcelerate';
   }
 
@@ -823,7 +824,7 @@ async function fetchVerifiedRegistrationsForGoogleSheets() {
         effectiveEventSlug,
         row.presentation_mode?.toLowerCase?.() || row.presentation_mode,
       ),
-      project_title: row.event_slug === 'techxcelerate' ? resolveCertificateProjectTitle(row) : '',
+      project_title: effectiveEventSlug === 'techxcelerate' ? resolveCertificateProjectTitle(row) : '',
     };
   });
 }
@@ -2673,10 +2674,42 @@ function isPlaceholderProjectTitle(value) {
   return !normalized || ['unknown', 'project title', 'n/a', 'na', '-', '--'].includes(normalized);
 }
 
-const techxcelerateProjectTitleFallbacks = new Map([
-  [normalizeProjectTitleTeamName('Team Garuda'), 'Multi utility robot'],
-  [normalizeProjectTitleTeamName('Team Future Visionaries'), 'Bridging Communication: Sign Language to Multiple Languages'],
-]);
+const techxcelerateProjectTitleFallbacks = [
+  {
+    teamTokens: ['garuda'],
+    title: 'Multi utility robot',
+  },
+  {
+    teamTokens: ['future', 'visionaries'],
+    title: 'Bridging Communication: Sign Language to Multiple Languages',
+  },
+];
+
+function resolveKnownTechxcelerateProjectTitle(teamName) {
+  const normalizedTeamName = normalizeProjectTitleTeamName(teamName);
+  if (!normalizedTeamName) {
+    return '';
+  }
+
+  const match = techxcelerateProjectTitleFallbacks.find((entry) =>
+    entry.teamTokens.every((token) => normalizedTeamName.includes(token)),
+  );
+
+  return match?.title || '';
+}
+
+function isTechxcelerateProjectExpoRegistration(registration) {
+  const slug = String(registration?.event_slug || '').trim();
+  if (slug === 'techxcelerate') {
+    return true;
+  }
+
+  if (slug === 'techxcelerate-poster-presentation' && resolveKnownTechxcelerateProjectTitle(registration?.team_name)) {
+    return true;
+  }
+
+  return false;
+}
 
 function resolveCertificateProjectTitle(registration) {
   const explicitProjectTitle = String(registration?.project_title || '').trim();
@@ -2684,9 +2717,7 @@ function resolveCertificateProjectTitle(registration) {
     return explicitProjectTitle;
   }
 
-  const fallbackProjectTitle = techxcelerateProjectTitleFallbacks.get(
-    normalizeProjectTitleTeamName(registration?.team_name),
-  );
+  const fallbackProjectTitle = resolveKnownTechxcelerateProjectTitle(registration?.team_name);
 
   return fallbackProjectTitle || 'Project Title';
 }
@@ -2697,7 +2728,7 @@ function resolveCertificateLayout({
   eventName,
   appUrl = resolvePublicAppUrl(),
 } = {}) {
-  if (registration?.event_slug === 'techxcelerate') {
+  if (isTechxcelerateProjectExpoRegistration(registration)) {
     const projectTitle = resolveCertificateProjectTitle(registration);
 
     return {
@@ -5294,11 +5325,11 @@ app.get('/api/admin/export.csv', requireAdmin, async (req, res) => {
   );
   const exportRows = result.rows.map((row) => ({
     ...row,
-    project_title: row.event_slug === 'techxcelerate' ? resolveCertificateProjectTitle(row) : row.project_title,
+    project_title: isTechxcelerateProjectExpoRegistration(row) ? resolveCertificateProjectTitle(row) : row.project_title,
   }));
 
-  const includePresentationMode = exportRows.some((row) => row.event_slug === 'techxcelerate');
-  const includeProjectTitle = exportRows.some((row) => row.event_slug === 'techxcelerate');
+  const includePresentationMode = exportRows.some((row) => isTechxcelerateProjectExpoRegistration(row));
+  const includeProjectTitle = exportRows.some((row) => isTechxcelerateProjectExpoRegistration(row));
   const headers = [
     'registration_code',
     'event_name',
@@ -5373,7 +5404,10 @@ app.get('/api/admin/export.xlsx', requireAdmin, async (req, res) => {
   );
   const exportRows = result.rows.map((row) => ({
     ...row,
-    'Project Title': row.event_slug === 'techxcelerate' ? resolveCertificateProjectTitle({
+    'Project Title': isTechxcelerateProjectExpoRegistration({
+      event_slug: row.event_slug,
+      team_name: row['Team Name'],
+    }) ? resolveCertificateProjectTitle({
       event_slug: row.event_slug,
       project_title: row['Project Title'],
       team_name: row['Team Name'],
