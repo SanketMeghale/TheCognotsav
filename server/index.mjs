@@ -2619,11 +2619,11 @@ function resolveCertificateFontSize(value, variant = 'participant') {
   const length = String(value || '').trim().length;
 
   if (variant === 'project-participant') {
-    if (length > 50) return '26px';
-    if (length > 42) return '29px';
-    if (length > 34) return '32px';
-    if (length > 26) return '35px';
-    return '38px';
+    if (length > 50) return '24px';
+    if (length > 42) return '27px';
+    if (length > 34) return '30px';
+    if (length > 26) return '33px';
+    return '36px';
   }
 
   if (variant === 'project-title') {
@@ -2668,12 +2668,12 @@ function resolveCertificateLayout({
           css: {
             left: '51.9%',
             width: '55.15%',
-            top: '47.15%',
+            top: '46.7%',
             color: '#202020',
           },
           canvas: {
             x: 0.519,
-            y: 0.4715,
+            y: 0.467,
             maxWidth: 0.5515,
             color: '#202020',
           },
