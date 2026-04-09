@@ -2947,26 +2947,12 @@ function buildParticipationCertificatePage({
             position: absolute;
             z-index: 2;
             text-align: center;
+            transform: translate(-50%, -50%);
             color: #13385c;
             font-family: "Times New Roman", Georgia, serif;
             font-weight: 700;
             line-height: 1;
             text-shadow: 0 1px 0 rgba(255,255,255,0.45);
-          }
-          .field--participant {
-            left: 57.075%;
-            width: 40.7%;
-            top: 46.65%;
-            transform: translate(-50%, -50%);
-            font-size: ${participantFontSize};
-          }
-          .field--event {
-            left: 49.125%;
-            width: 30.1%;
-            top: 50.45%;
-            transform: translate(-50%, -50%);
-            font-size: ${eventFontSize};
-            color: #1e2f44;
           }
           .meta {
             position: absolute;
