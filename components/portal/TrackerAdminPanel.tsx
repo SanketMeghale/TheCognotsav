@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  ChevronDown,
   CheckCircle2,
   Clock3,
   Download,
@@ -7,6 +8,7 @@ import {
   FileSpreadsheet,
   Search,
   ShieldCheck,
+  Trophy,
   XCircle,
 } from 'lucide-react';
 import type { AdminRegistration, LookupResult } from './types';
@@ -36,6 +38,29 @@ const statusStyles: Record<string, string> = {
   rejected: 'border-rose-300/25 bg-rose-400/10 text-rose-100',
   waitlisted: 'border-fuchsia-300/25 bg-fuchsia-400/10 text-fuchsia-100',
 };
+
+const certificateCardThemes = [
+  {
+    shell: 'border-cyan-300/40 bg-gradient-to-br from-cyan-500/20 via-slate-900/90 to-indigo-500/15 shadow-xl',
+    avatar: 'from-cyan-300 to-sky-400',
+    button: 'border-cyan-200/55 bg-gradient-to-r from-cyan-500/90 to-indigo-500/85 text-white shadow-lg',
+  },
+  {
+    shell: 'border-fuchsia-300/40 bg-gradient-to-br from-fuchsia-500/20 via-slate-900/90 to-pink-500/15 shadow-xl',
+    avatar: 'from-fuchsia-300 to-pink-400',
+    button: 'border-fuchsia-200/55 bg-gradient-to-r from-fuchsia-500/90 to-pink-500/85 text-white shadow-lg',
+  },
+  {
+    shell: 'border-amber-300/45 bg-gradient-to-br from-amber-500/22 via-slate-900/90 to-orange-500/18 shadow-xl',
+    avatar: 'from-amber-300 to-orange-400',
+    button: 'border-amber-200/55 bg-gradient-to-r from-amber-500/90 to-orange-500/85 text-white shadow-lg',
+  },
+  {
+    shell: 'border-emerald-300/45 bg-gradient-to-br from-emerald-500/22 via-slate-900/90 to-teal-500/16 shadow-xl',
+    avatar: 'from-emerald-300 to-teal-400',
+    button: 'border-emerald-200/55 bg-gradient-to-r from-emerald-500/90 to-teal-500/85 text-white shadow-lg',
+  },
+];
 
 function prettyStatus(status: string) {
   return status.charAt(0).toUpperCase() + status.slice(1);
@@ -90,11 +115,19 @@ export const TrackerAdminPanel: React.FC<Props> = ({
   const pendingRows = adminRows.filter((row) => row.status === 'pending');
   const verifiedRows = adminRows.filter((row) => row.status === 'verified');
   const rejectedRows = adminRows.filter((row) => row.status === 'rejected');
+  const [expandedLookupDetails, setExpandedLookupDetails] = React.useState<Record<string, boolean>>({});
 
   const handleDownloadAllCertificates = (registrationCode: string, participantCount: number) => {
     for (let index = 0; index < participantCount; index += 1) {
       window.open(buildCertificateHref(registrationCode, index), '_blank', 'noopener,noreferrer');
     }
+  };
+
+  const toggleLookupDetails = (registrationId: string) => {
+    setExpandedLookupDetails((current) => ({
+      ...current,
+      [registrationId]: !current[registrationId],
+    }));
   };
 
   return (
@@ -157,31 +190,56 @@ export const TrackerAdminPanel: React.FC<Props> = ({
                 : result.participants.length === 0
                   ? 'Participant names are still syncing for this registration.'
                   : 'Each participant can download an individual participation certificate below.';
+            const detailsOpen = Boolean(expandedLookupDetails[result.id]);
+            const heroTitle = certificateReady ? 'Your Certificates Are Ready!' : 'Certificate Status';
 
             return (
               <div
                 key={result.id}
                 data-reveal="up"
-                className={`tilt-card rounded-[1.5rem] border p-5 backdrop-blur-md ${
-                  result.status === 'verified'
-                    ? 'border-emerald-300/16 bg-gradient-to-r from-emerald-400/10 to-cyan-400/8'
-                    : result.status === 'rejected'
-                      ? 'border-rose-300/16 bg-gradient-to-r from-rose-400/10 to-orange-400/8'
-                      : result.status === 'waitlisted'
-                        ? 'border-fuchsia-300/16 bg-gradient-to-r from-fuchsia-400/10 to-purple-400/8'
-                        : 'border-cyan-300/10 bg-gradient-to-r from-cyan-400/10 to-fuchsia-400/8'
-                }`}
+                className="tilt-card overflow-hidden rounded-[1.7rem] border border-white/10 bg-gradient-to-br from-fuchsia-500/10 via-slate-950/95 to-cyan-500/10 p-4 shadow-2xl md:p-5"
               >
-                <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr] xl:gap-5">
-                  <div>
-                    <div className="flex flex-wrap items-center gap-3">
-                      <p className="text-lg font-bold text-white">{result.team_name}</p>
-                      <span
-                        className={`rounded-full border px-3 py-1 text-xs uppercase tracking-[0.2em] ${
-                          statusStyles[result.status] || 'border-white/10 bg-white/5 text-slate-100'
-                        }`}
-                      >
-                        {prettyStatus(result.status)}
+                <div className="rounded-[1.55rem] border border-white/12 bg-gradient-to-br from-fuchsia-500/12 via-slate-950/95 to-cyan-500/12 p-4 shadow-2xl md:p-5">
+                  <div className="rounded-[1.4rem] border border-fuchsia-300/35 bg-gradient-to-r from-fuchsia-500/18 via-indigo-500/10 to-cyan-500/16 p-4 shadow-xl">
+                    <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+                      <div className="flex items-start gap-4">
+                        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-fuchsia-300/30 bg-gradient-to-br from-amber-300 to-yellow-400 to-orange-400 text-slate-950 shadow-xl">
+                          <Trophy size={24} />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-[11px] uppercase tracking-[0.32em] text-fuchsia-100/80">Participation certificates</p>
+                          <h4 className="mt-1 text-2xl font-black tracking-tight text-white md:text-[2rem]">{heroTitle}</h4>
+                          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-200">{certificateNote}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span
+                          className={`rounded-full border px-3 py-1 text-xs uppercase tracking-[0.2em] ${
+                            statusStyles[result.status] || 'border-white/10 bg-white/5 text-slate-100'
+                          }`}
+                        >
+                          {prettyStatus(result.status)}
+                        </span>
+                        {certificateReady ? (
+                          <button
+                            type="button"
+                            onClick={() => handleDownloadAllCertificates(result.registration_code, result.participants.length)}
+                            className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-cyan-200/55 bg-gradient-to-r from-cyan-500 via-indigo-500 to-fuchsia-500 px-5 py-3 text-sm font-semibold text-white shadow-lg"
+                          >
+                            <Download size={15} />
+                            Download All Certificates
+                          </button>
+                        ) : null}
+                      </div>
+                    </div>
+
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <span className="rounded-full border border-white/10 bg-white/8 px-3 py-1 text-xs uppercase tracking-[0.2em] text-slate-100">
+                        {result.event_name}
+                      </span>
+                      <span className="rounded-full border border-white/10 bg-white/8 px-3 py-1 text-xs uppercase tracking-[0.2em] text-slate-100">
+                        {result.registration_code}
                       </span>
                       {result.waitlist_position ? (
                         <span className="rounded-full border border-fuchsia-300/20 bg-fuchsia-400/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-fuchsia-100">
@@ -194,129 +252,158 @@ export const TrackerAdminPanel: React.FC<Props> = ({
                         </span>
                       ) : null}
                     </div>
-                    <p className="mt-2 text-sm text-slate-200">{result.event_name}</p>
-                    <p className="mt-1 text-sm text-slate-300">
-                      {result.registration_code} / {result.contact_email}
-                    </p>
-                    <p className="mt-1 text-sm text-slate-400">
-                      {result.date_label} / {result.time_label} / {result.venue}
-                    </p>
-
-                    {result.review_note ? (
-                      <div className="mt-4 rounded-2xl border border-amber-300/18 bg-amber-400/10 p-4 text-sm text-amber-100">
-                        Organizer note: {result.review_note}
-                      </div>
-                    ) : null}
-
-                    <div className="mt-4 rounded-[1.4rem] border border-white/10 bg-black/18 p-4">
-                      <div className="flex flex-wrap items-center justify-between gap-3">
-                        <p className="text-sm font-semibold text-white">Participant timeline</p>
-                        <span className="text-xs uppercase tracking-[0.2em] text-slate-400">
-                          Attendance: {result.attendance_status}
-                        </span>
-                      </div>
-                      <div className="mt-4 space-y-3">
-                        {result.timeline.map((entry) => (
-                          <div key={entry.id} className="flex gap-3">
-                            <div
-                              className={`mt-1 h-3 w-3 rounded-full ${
-                                entry.state === 'done'
-                                  ? 'bg-emerald-300'
-                                  : entry.state === 'current'
-                                    ? 'bg-cyan-300'
-                                    : entry.state === 'attention'
-                                      ? 'bg-rose-300'
-                                      : 'bg-slate-500'
-                              }`}
-                            />
-                            <div className="min-w-0">
-                              <p className="text-sm font-semibold text-white">{entry.label}</p>
-                              <p className="text-sm text-slate-300">{entry.description}</p>
-                              {entry.at ? (
-                                <p className="mt-1 text-xs uppercase tracking-[0.2em] text-slate-500">
-                                  {new Date(entry.at).toLocaleString()}
-                                </p>
-                              ) : null}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
                   </div>
 
-                  <div className="space-y-4">
-                    <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5 text-center">
-                      <p className="text-xs uppercase tracking-[0.24em] text-slate-400">Event-day entry pass</p>
-                      <p className="mt-2 font-orbitron text-xl font-black text-white">{result.registration_code}</p>
-                      <p className="mt-3 text-sm leading-6 text-slate-300">
-                        Verification now uses the official pass details and registration code only.
-                      </p>
-                    </div>
+                  {certificateReady ? (
+                    <div className="mt-4 grid gap-4 md:grid-cols-2">
+                      {result.participants.map((participant, index) => {
+                        const theme = certificateCardThemes[index % certificateCardThemes.length];
 
-                    <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-4 text-sm text-slate-200">
-                      <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Submitted</p>
-                      <p className="mt-2">{new Date(result.created_at).toLocaleString()}</p>
-                      <p className="mt-3 text-xs uppercase tracking-[0.2em] text-slate-400">Payment reference</p>
-                      <p className="mt-2 break-all text-white">{result.payment_reference || 'No payment reference available'}</p>
-                    </div>
-
-                    <div className="rounded-[1.65rem] border border-cyan-300/14 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.16),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(34,197,94,0.14),transparent_26%),linear-gradient(180deg,rgba(9,17,33,0.92),rgba(11,24,39,0.96))] p-4 shadow-[0_24px_60px_rgba(2,8,23,0.26)]">
-                      <div className="rounded-[1.4rem] border border-cyan-300/18 bg-[linear-gradient(135deg,rgba(34,211,238,0.16),rgba(59,130,246,0.06)_38%,rgba(17,24,39,0.94))] p-4">
-                        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                          <div className="min-w-0">
-                            <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-200/80">Participation certificates</p>
-                            <h4 className="mt-2 text-xl font-bold text-white">Certificates Ready!</h4>
-                            <p className="mt-2 text-sm leading-6 text-slate-300">{certificateNote}</p>
-                          </div>
-
-                          {certificateReady ? (
-                            <button
-                              type="button"
-                              onClick={() => handleDownloadAllCertificates(result.registration_code, result.participants.length)}
-                              className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-cyan-300/20 bg-cyan-400/10 px-4 py-3 text-sm font-semibold text-cyan-100"
-                            >
-                              <Download size={15} />
-                              Download All Certificates
-                            </button>
-                          ) : null}
-                        </div>
-                      </div>
-
-                      {certificateReady ? (
-                        <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                          {result.participants.map((participant, index) => (
-                            <div
-                              key={`${result.id}-certificate-${index}`}
-                              className="rounded-[1.35rem] border border-cyan-300/14 bg-[radial-gradient(circle_at_bottom_left,rgba(45,212,191,0.14),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.07),rgba(255,255,255,0.03))] p-4 shadow-[0_14px_34px_rgba(2,8,23,0.22)]"
-                            >
-                              <div className="flex items-start gap-3">
-                                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-emerald-300/20 bg-emerald-400/10 text-sm font-bold text-emerald-100">
-                                  {participant.fullName.trim().charAt(0).toUpperCase()}
-                                </div>
-                                <div className="min-w-0 flex-1">
-                                  <p className="truncate text-sm font-semibold text-white">{participant.fullName}</p>
-                                  <div className="mt-1 inline-flex items-center gap-1 text-xs text-emerald-200">
-                                    <CheckCircle2 size={13} />
-                                    <span>Verified Participant</span>
-                                  </div>
+                        return (
+                          <div
+                            key={`${result.id}-certificate-${index}`}
+                            className={`rounded-[1.45rem] border p-4 ${theme.shell}`}
+                          >
+                            <div className="flex items-start gap-3">
+                              <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br ${theme.avatar} text-base font-black text-slate-950 shadow-[0_10px_24px_rgba(255,255,255,0.16)]`}>
+                                {participant.fullName.trim().charAt(0).toUpperCase()}
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="truncate text-lg font-bold text-white">{participant.fullName}</p>
+                                <div className="mt-1 inline-flex items-center gap-1.5 text-sm text-emerald-200">
+                                  <CheckCircle2 size={14} />
+                                  <span>Verified</span>
                                 </div>
                               </div>
-
-                              <a
-                                href={buildCertificateHref(result.registration_code, index)}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="magnetic-button mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-cyan-300/20 bg-cyan-400/10 px-4 py-3 text-sm font-semibold text-cyan-100"
-                              >
-                                <Download size={15} />
-                                Download Certificate
-                              </a>
                             </div>
-                          ))}
-                        </div>
-                      ) : null}
+
+                            <a
+                              href={buildCertificateHref(result.registration_code, index)}
+                              target="_blank"
+                              rel="noreferrer"
+                              className={`magnetic-button mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-semibold ${theme.button}`}
+                            >
+                              <Download size={15} />
+                              Download Certificate
+                            </a>
+                          </div>
+                        );
+                      })}
                     </div>
-                  </div>
+                  ) : (
+                    <div className="mt-4 rounded-[1.35rem] border border-dashed border-white/12 bg-black/15 px-4 py-4 text-sm leading-6 text-slate-300">
+                      {certificateNote}
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-4 rounded-[1.35rem] border border-white/10 bg-white/[0.04]">
+                  <button
+                    type="button"
+                    onClick={() => toggleLookupDetails(result.id)}
+                    className="flex w-full flex-col items-center justify-center gap-2 px-4 py-4 text-center"
+                  >
+                    <div className="flex items-center gap-2 text-sm font-semibold text-white">
+                      <ChevronDown className={`text-slate-300 transition-transform ${detailsOpen ? 'rotate-180' : ''}`} size={17} />
+                      <span>{detailsOpen ? 'Hide Registration Details' : 'View Registration Details'}</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="hidden rounded-full border border-white/10 bg-white/8 px-3 py-1 text-xs uppercase tracking-[0.2em] text-slate-200 sm:inline-flex">
+                        {result.registration_code}
+                      </span>
+                      <span className="text-[11px] uppercase tracking-[0.24em] text-slate-400">
+                        {detailsOpen ? 'Tap to collapse' : 'Tap to expand'}
+                      </span>
+                    </div>
+                  </button>
+
+                  {detailsOpen ? (
+                    <div className="border-t border-white/10 px-4 pb-4 pt-4">
+                      <div className="grid gap-4 xl:grid-cols-[1.08fr_0.92fr]">
+                        <div className="space-y-4">
+                          <div className="rounded-[1.25rem] border border-white/10 bg-black/20 p-4">
+                            <p className="text-[11px] uppercase tracking-[0.24em] text-slate-400">Registration overview</p>
+                            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                              <div>
+                                <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Team</p>
+                                <p className="mt-1 text-sm font-semibold text-white">{result.team_name}</p>
+                              </div>
+                              <div>
+                                <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Contact</p>
+                                <p className="mt-1 text-sm text-white">{result.contact_email}</p>
+                              </div>
+                              <div>
+                                <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Schedule</p>
+                                <p className="mt-1 text-sm text-slate-200">{result.date_label} / {result.time_label}</p>
+                              </div>
+                              <div>
+                                <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Venue</p>
+                                <p className="mt-1 text-sm text-slate-200">{result.venue}</p>
+                              </div>
+                            </div>
+                          </div>
+
+                          {result.review_note ? (
+                            <div className="rounded-[1.25rem] border border-amber-300/18 bg-amber-400/10 p-4 text-sm text-amber-100">
+                              Organizer note: {result.review_note}
+                            </div>
+                          ) : null}
+
+                          <div className="rounded-[1.25rem] border border-white/10 bg-black/20 p-4">
+                            <div className="flex flex-wrap items-center justify-between gap-3">
+                              <p className="text-sm font-semibold text-white">Participant timeline</p>
+                              <span className="text-xs uppercase tracking-[0.2em] text-slate-400">
+                                Attendance: {result.attendance_status}
+                              </span>
+                            </div>
+                            <div className="mt-4 space-y-3">
+                              {result.timeline.map((entry) => (
+                                <div key={entry.id} className="flex gap-3">
+                                  <div
+                                    className={`mt-1 h-3 w-3 rounded-full ${
+                                      entry.state === 'done'
+                                        ? 'bg-emerald-300'
+                                        : entry.state === 'current'
+                                          ? 'bg-cyan-300'
+                                          : entry.state === 'attention'
+                                            ? 'bg-rose-300'
+                                            : 'bg-slate-500'
+                                    }`}
+                                  />
+                                  <div className="min-w-0">
+                                    <p className="text-sm font-semibold text-white">{entry.label}</p>
+                                    <p className="text-sm text-slate-300">{entry.description}</p>
+                                    {entry.at ? (
+                                      <p className="mt-1 text-xs uppercase tracking-[0.2em] text-slate-500">
+                                        {new Date(entry.at).toLocaleString()}
+                                      </p>
+                                    ) : null}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="space-y-4">
+                          <div className="rounded-[1.25rem] border border-white/10 bg-white/5 p-5 text-center">
+                            <p className="text-xs uppercase tracking-[0.24em] text-slate-400">Event-day entry pass</p>
+                            <p className="mt-2 font-orbitron text-xl font-black text-white">{result.registration_code}</p>
+                            <p className="mt-3 text-sm leading-6 text-slate-300">
+                              Verification uses this registration code and the official participant details.
+                            </p>
+                          </div>
+
+                          <div className="rounded-[1.25rem] border border-white/10 bg-black/20 p-4 text-sm text-slate-200">
+                            <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Submitted</p>
+                            <p className="mt-2">{new Date(result.created_at).toLocaleString()}</p>
+                            <p className="mt-3 text-xs uppercase tracking-[0.2em] text-slate-400">Payment reference</p>
+                            <p className="mt-2 break-all text-white">{result.payment_reference || 'No payment reference available'}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
                 </div>
               </div>
             );
