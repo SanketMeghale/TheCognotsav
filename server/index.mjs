@@ -714,6 +714,13 @@ function resolveGoogleSheetsEventSlug(row) {
     return rowSlug;
   }
 
+  if (
+    !isPlaceholderProjectTitle(row?.project_title) ||
+    techxcelerateProjectTitleFallbacks.has(normalizeProjectTitleTeamName(row?.team_name))
+  ) {
+    return 'techxcelerate';
+  }
+
   const noteBlob = `${row?.event_name || ''} ${row?.notes || ''} ${row?.review_note || ''}`.toLowerCase();
   if (noteBlob.includes('poster')) {
     return 'techxcelerate-poster-presentation';
@@ -816,7 +823,7 @@ async function fetchVerifiedRegistrationsForGoogleSheets() {
         effectiveEventSlug,
         row.presentation_mode?.toLowerCase?.() || row.presentation_mode,
       ),
-      project_title: effectiveEventSlug === 'techxcelerate' ? resolveCertificateProjectTitle(row) : '',
+      project_title: row.event_slug === 'techxcelerate' ? resolveCertificateProjectTitle(row) : '',
     };
   });
 }
