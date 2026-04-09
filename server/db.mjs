@@ -240,7 +240,10 @@ export async function initDatabase() {
             updated_at = NOW()
         WHERE event_slug = ANY($2::text[])
           AND REGEXP_REPLACE(LOWER(COALESCE(team_name, '')), '[^a-z0-9]+', ' ', 'g') = $3
-          AND COALESCE(TRIM(project_title), '') = ''
+          AND (
+            COALESCE(TRIM(project_title), '') = ''
+            OR LOWER(TRIM(project_title)) IN ('unknown', 'project title', 'n/a', 'na', '-', '--')
+          )
       `,
       [
         backfill.projectTitle,

@@ -2657,6 +2657,15 @@ function normalizeProjectTitleTeamName(value) {
     .replace(/\s+/g, ' ');
 }
 
+function isPlaceholderProjectTitle(value) {
+  const normalized = String(value || '')
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, ' ');
+
+  return !normalized || ['unknown', 'project title', 'n/a', 'na', '-', '--'].includes(normalized);
+}
+
 const techxcelerateProjectTitleFallbacks = new Map([
   [normalizeProjectTitleTeamName('Team Garuda'), 'Multi utility robot'],
   [normalizeProjectTitleTeamName('Team Future Visionaries'), 'Bridging Communication: Sign Language to Multiple Languages'],
@@ -2664,7 +2673,7 @@ const techxcelerateProjectTitleFallbacks = new Map([
 
 function resolveCertificateProjectTitle(registration) {
   const explicitProjectTitle = String(registration?.project_title || '').trim();
-  if (explicitProjectTitle) {
+  if (explicitProjectTitle && !isPlaceholderProjectTitle(explicitProjectTitle)) {
     return explicitProjectTitle;
   }
 
