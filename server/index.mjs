@@ -2647,6 +2647,24 @@ function resolveCertificateFontSize(value, variant = 'participant') {
   return '29px';
 }
 
+const techxcelerateProjectTitleFallbacks = new Map([
+  ['team garuda', 'Multi utility robot'],
+  ['team future visionaries', 'Bridging Communication: Sign Language to Multiple Languages'],
+]);
+
+function resolveCertificateProjectTitle(registration) {
+  const explicitProjectTitle = String(registration?.project_title || '').trim();
+  if (explicitProjectTitle) {
+    return explicitProjectTitle;
+  }
+
+  const fallbackProjectTitle = techxcelerateProjectTitleFallbacks.get(
+    String(registration?.team_name || '').trim().toLowerCase(),
+  );
+
+  return fallbackProjectTitle || 'Project Title';
+}
+
 function resolveCertificateLayout({
   registration,
   participantName,
@@ -2654,7 +2672,7 @@ function resolveCertificateLayout({
   appUrl = resolvePublicAppUrl(),
 } = {}) {
   if (registration?.event_slug === 'techxcelerate') {
-    const projectTitle = String(registration?.project_title || 'Project Title').trim() || 'Project Title';
+    const projectTitle = resolveCertificateProjectTitle(registration);
 
     return {
       certificateLabel: 'Project Participation Certificate',

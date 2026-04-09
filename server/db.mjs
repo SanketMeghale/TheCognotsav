@@ -7,6 +7,18 @@ import { eventSeed } from './data/events.mjs';
 const { Pool } = pg;
 
 const connectionString = process.env.DATABASE_URL;
+const projectTitleBackfills = [
+  {
+    eventSlug: 'techxcelerate',
+    teamName: 'Team Garuda',
+    projectTitle: 'Multi utility robot',
+  },
+  {
+    eventSlug: 'techxcelerate',
+    teamName: 'Team Future Visionaries',
+    projectTitle: 'Bridging Communication: Sign Language to Multiple Languages',
+  },
+];
 
 if (!connectionString) {
   throw new Error('DATABASE_URL is not configured.');
@@ -209,6 +221,20 @@ export async function initDatabase() {
         event.payment_qr_image_path ?? null,
         JSON.stringify(event.coordinators ?? []),
       ],
+    );
+  }
+
+  for (const backfill of projectTitleBackfills) {
+    await pool.query(
+      `
+        UPDATE registrations
+        SET project_title = $1,
+            updated_at = NOW()
+        WHERE event_slug = $2
+          AND LOWER(TRIM(team_name)) = LOWER(TRIM($3))
+          AND COALESCE(TRIM(project_title), '') = ''
+      `,
+      [backfill.projectTitle, backfill.eventSlug, backfill.teamName],
     );
   }
 }
