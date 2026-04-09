@@ -147,22 +147,10 @@ export const TrackerAdminPanel: React.FC<Props> = ({
           Certificates Ready!
         </h3>
         <p className="mt-3 text-sm leading-6 text-slate-200 md:leading-7">
-          Download your participation certificates instantly and check approval status from one place.
+          Find your certificates and download them instantly.
         </p>
 
-        <div className="mt-5 flex flex-wrap gap-2">
-          <span className="rounded-full border border-blue-400/16 bg-blue-500/10 px-4 py-2 text-xs uppercase tracking-[0.22em] text-blue-100">
-            Code lookup
-          </span>
-          <span className="rounded-full border border-purple-400/16 bg-purple-500/10 px-4 py-2 text-xs uppercase tracking-[0.22em] text-purple-100">
-            Email lookup
-          </span>
-          <span className="rounded-full border border-pink-400/16 bg-pink-500/10 px-4 py-2 text-xs uppercase tracking-[0.22em] text-pink-100">
-            Live status
-          </span>
-        </div>
-
-        <form onSubmit={onLookup} className="mt-5 flex flex-col gap-3 sm:flex-row">
+        <form onSubmit={onLookup} className="mt-4 flex flex-col gap-3 sm:flex-row">
           <div className="flex-1">
             <FloatingSearchField
               label="Enter registration code or contact email"
