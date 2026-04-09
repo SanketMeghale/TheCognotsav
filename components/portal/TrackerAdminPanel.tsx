@@ -197,25 +197,25 @@ export const TrackerAdminPanel: React.FC<Props> = ({
               <div
                 key={result.id}
                 data-reveal="up"
-                className="tilt-card overflow-hidden rounded-[1.7rem] border border-white/10 bg-gradient-to-br from-fuchsia-500/10 via-slate-950/95 to-cyan-500/10 p-4 shadow-2xl md:p-5"
+                className="tilt-card overflow-hidden rounded-[1.7rem] bg-transparent p-0 shadow-none md:border md:border-white/10 md:bg-gradient-to-br md:from-fuchsia-500/10 md:via-slate-950/95 md:to-cyan-500/10 md:p-5 md:shadow-2xl"
               >
-                <div className="rounded-[1.55rem] border border-white/12 bg-gradient-to-br from-fuchsia-500/12 via-slate-950/95 to-cyan-500/12 p-4 shadow-2xl md:p-5">
-                  <div className="rounded-[1.4rem] border border-fuchsia-300/35 bg-gradient-to-r from-fuchsia-500/18 via-indigo-500/10 to-cyan-500/16 p-4 shadow-xl">
-                    <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-                      <div className="flex items-start gap-4">
-                        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-fuchsia-300/30 bg-gradient-to-br from-amber-300 to-yellow-400 to-orange-400 text-slate-950 shadow-xl">
+                <div className="rounded-[1.55rem] border-0 bg-transparent p-0 shadow-none md:border md:border-white/12 md:bg-gradient-to-br md:from-fuchsia-500/12 md:via-slate-950/95 md:to-cyan-500/12 md:p-5 md:shadow-2xl">
+                  <div className="rounded-[1.5rem] border border-fuchsia-300/45 bg-gradient-to-br from-fuchsia-500/24 via-indigo-500/14 to-cyan-500/24 p-4 shadow-[0_0_28px_rgba(80,180,255,0.18)] md:rounded-[1.4rem] md:border-fuchsia-300/35 md:bg-gradient-to-r md:from-fuchsia-500/18 md:via-indigo-500/10 md:to-cyan-500/16 md:shadow-xl">
+                    <div className="flex flex-col gap-3 md:gap-4 xl:flex-row xl:items-center xl:justify-between">
+                      <div className="flex items-start gap-3 md:gap-4">
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-fuchsia-300/40 bg-gradient-to-br from-amber-300 via-yellow-300 to-orange-400 text-slate-950 shadow-[0_0_20px_rgba(255,181,64,0.35)] md:h-14 md:w-14 md:border-fuchsia-300/30 md:shadow-xl">
                           <Trophy size={24} />
                         </div>
                         <div className="min-w-0">
-                          <p className="text-[11px] uppercase tracking-[0.32em] text-fuchsia-100/80">Participation certificates</p>
-                          <h4 className="mt-1 text-2xl font-black tracking-tight text-white md:text-[2rem]">{heroTitle}</h4>
-                          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-200">{certificateNote}</p>
+                          <p className="text-[10px] uppercase tracking-[0.28em] text-fuchsia-100/80 md:text-[11px] md:tracking-[0.32em]">Participation certificates</p>
+                          <h4 className="mt-1 max-w-[12rem] text-[1.8rem] font-black leading-[1.05] tracking-tight text-white sm:max-w-none sm:text-2xl md:text-[2rem]">{heroTitle}</h4>
+                          <p className="mt-2 max-w-2xl text-xs leading-5 text-slate-200 sm:text-sm sm:leading-6">{certificateNote}</p>
                         </div>
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-2">
+                      <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
                         <span
-                          className={`rounded-full border px-3 py-1 text-xs uppercase tracking-[0.2em] ${
+                          className={`inline-flex items-center justify-center rounded-full border px-3 py-1 text-[11px] uppercase tracking-[0.18em] ${
                             statusStyles[result.status] || 'border-white/10 bg-white/5 text-slate-100'
                           }`}
                         >
@@ -225,7 +225,7 @@ export const TrackerAdminPanel: React.FC<Props> = ({
                           <button
                             type="button"
                             onClick={() => handleDownloadAllCertificates(result.registration_code, result.participants.length)}
-                            className="magnetic-button inline-flex items-center justify-center gap-2 rounded-2xl border border-cyan-200/55 bg-gradient-to-r from-cyan-500 via-indigo-500 to-fuchsia-500 px-5 py-3 text-sm font-semibold text-white shadow-lg"
+                            className="magnetic-button inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-cyan-200/55 bg-gradient-to-r from-cyan-500 via-indigo-500 to-fuchsia-500 px-5 py-3 text-sm font-semibold text-white shadow-[0_0_26px_rgba(87,220,255,0.22)] sm:w-auto sm:shadow-lg"
                           >
                             <Download size={15} />
                             Download All Certificates
@@ -234,7 +234,7 @@ export const TrackerAdminPanel: React.FC<Props> = ({
                       </div>
                     </div>
 
-                    <div className="mt-4 flex flex-wrap gap-2">
+                    <div className="mt-4 hidden flex-wrap gap-2 sm:flex">
                       <span className="rounded-full border border-white/10 bg-white/8 px-3 py-1 text-xs uppercase tracking-[0.2em] text-slate-100">
                         {result.event_name}
                       </span>
@@ -262,15 +262,15 @@ export const TrackerAdminPanel: React.FC<Props> = ({
                         return (
                           <div
                             key={`${result.id}-certificate-${index}`}
-                            className={`rounded-[1.45rem] border p-4 ${theme.shell}`}
+                            className={`rounded-[1.45rem] border p-4 shadow-[0_0_26px_rgba(120,160,255,0.14)] ${theme.shell}`}
                           >
                             <div className="flex items-start gap-3">
                               <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br ${theme.avatar} text-base font-black text-slate-950 shadow-[0_10px_24px_rgba(255,255,255,0.16)]`}>
                                 {participant.fullName.trim().charAt(0).toUpperCase()}
                               </div>
                               <div className="min-w-0 flex-1">
-                                <p className="truncate text-lg font-bold text-white">{participant.fullName}</p>
-                                <div className="mt-1 inline-flex items-center gap-1.5 text-sm text-emerald-200">
+                                <p className="truncate text-base font-bold text-white sm:text-lg">{participant.fullName}</p>
+                                <div className="mt-1 inline-flex items-center gap-1.5 text-[13px] text-emerald-200 sm:text-sm">
                                   <CheckCircle2 size={14} />
                                   <span>Verified</span>
                                 </div>
@@ -281,7 +281,7 @@ export const TrackerAdminPanel: React.FC<Props> = ({
                               href={buildCertificateHref(result.registration_code, index)}
                               target="_blank"
                               rel="noreferrer"
-                              className={`magnetic-button mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-semibold ${theme.button}`}
+                              className={`magnetic-button mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-semibold ${theme.button}`}
                             >
                               <Download size={15} />
                               Download Certificate
@@ -297,11 +297,11 @@ export const TrackerAdminPanel: React.FC<Props> = ({
                   )}
                 </div>
 
-                <div className="mt-4 rounded-[1.35rem] border border-white/10 bg-white/[0.04]">
+                <div className={`mt-4 border border-white/10 bg-white/[0.04] ${detailsOpen ? 'rounded-[1.35rem]' : 'rounded-full'}`}>
                   <button
                     type="button"
                     onClick={() => toggleLookupDetails(result.id)}
-                    className="flex w-full flex-col items-center justify-center gap-2 px-4 py-4 text-center"
+                    className={`flex w-full flex-col items-center justify-center gap-2 px-4 text-center ${detailsOpen ? 'py-4' : 'py-3.5'}`}
                   >
                     <div className="flex items-center gap-2 text-sm font-semibold text-white">
                       <ChevronDown className={`text-slate-300 transition-transform ${detailsOpen ? 'rotate-180' : ''}`} size={17} />
